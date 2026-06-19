@@ -15,8 +15,8 @@ Deploys to the same Pi as oiatc.ca, but is its own app and its own repo.
 
 ## Identity and guardrails (hard rules)
 
-These are not style preferences. They are the reason the Circle works and the reason it carries
-less legal exposure than naming-and-blaming. Apply them to every page and every edit:
+These are not style preferences. They are the reason the Circle works as an independent,
+member-led effort. Apply them to every page and every edit:
 
 1. **Independent, member-led, non-partisan.** Not the Fund, not affiliated with it, not a council
    committee. Transparency and member information, never removing or attacking any leader. The
@@ -24,9 +24,8 @@ less legal exposure than naming-and-blaming. Apply them to every page and every 
 2. **Sourced facts framed as questions. No accusations.** Lead with what members are entitled to
    ask, backed by the public record, not with conclusions about wrongdoing.
 3. **Name no private individuals.** Public office-holders acting in public roles may be named from
-   the public record where the user has approved it; private individuals never. When migrating
-   OIATC content, strip conflict-by-juxtaposition framing and any unverified `(confirm)` claims
-   (see `Projects/Sagamok-Accountability/legal/oiatc-content-audit/LEGAL-RISK-AUDIT.md`).
+   the public record; private individuals never (no personal emails, phone numbers, or home
+   details). Lead with neutral structure and questions rather than conclusions about any person.
 4. **No em dashes (U+2014) anywhere in copy.** Use commas, colons, or new sentences. Enforced by
    `php bin/lint-copy.php` (run before every commit/deploy).
 
