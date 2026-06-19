@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Robinson Huron Treaty Members' Transparency Circle{% endblock %}</title>
+  <meta name="description" content="{% block description %}A member-led circle of beneficiaries across the Robinson Huron Treaty First Nations, asking clear, respectful questions about how our shared settlement is governed.{% endblock %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/site.css">
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+<a class="skip" href="#main">Skip to content</a>
+
+<hr class="rainbow-rule">
+<header class="site-head">
+  <div class="wrap wrap--wide">
+    <p class="site-title"><a href="/">Robinson Huron Treaty Members' Transparency Circle</a></p>
+    <p class="site-tag">Members and beneficiaries, asking together.</p>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="/" {% if nav == 'home' %}aria-current="page"{% endif %}>Home</a>
+      <a href="/treaty-wide" {% if nav == 'treaty-wide' %}aria-current="page"{% endif %}>The treaty-wide ask</a>
+      <a href="/standard" {% if nav == 'standard' %}aria-current="page"{% endif %}>The shared standard</a>
+      <a href="/communities" {% if nav == 'communities' %}aria-current="page"{% endif %}>Communities</a>
+      <a href="/get-involved" {% if nav == 'get-involved' %}aria-current="page"{% endif %}>Get involved</a>
+    </nav>
+  </div>
+</header>
+
+{% block hero %}{% endblock %}
+
+<main id="main">
+  <div class="wrap{% block main_wide %}{% endblock %}">
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap wrap--wide">
+    <nav class="foot-links" aria-label="Footer">
+      <a href="/">Home</a>
+      <a href="/treaty-wide">The treaty-wide ask</a>
+      <a href="/standard">The shared standard</a>
+      <a href="/communities">Communities</a>
+      <a href="/get-involved">Get involved</a>
+    </nav>
+    <p class="disclaimer"><strong>Independent and member-led.</strong> The Robinson Huron Treaty Members' Transparency Circle is not the Robinson Huron Treaty Litigation Fund and is not affiliated with it. We are an independent group of members and beneficiaries. We are non-partisan. We work from sourced facts framed as questions, and we do not make accusations.</p>
+    <p class="muted">Prepared by members, for members.</p>
+  </div>
+</footer>
+
+</body>
+</html>

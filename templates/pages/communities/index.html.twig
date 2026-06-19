@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}Communities · RHT Members' Transparency Circle{% endblock %}
+{% block description %}Per-community resources for the 21 Robinson Huron Treaty signatory First Nations and their surrounding areas. Each runs the same shared standard. Sagamok Anishnawbek is the first worked example.{% endblock %}
+
+{% block hero %}
+<section class="hero">
+  <div class="wrap wrap--wide">
+    <p class="eyebrow">All 21 signatory nations</p>
+    <h1>Communities.</h1>
+    <p class="lead">The Circle grows community by community. Each of the 21 Robinson Huron Treaty signatory nations, and its surrounding area, gets its own page that runs the same shared standard, so members everywhere can ask the same plain questions of their own council. Sagamok Anishnawbek is the first worked example.</p>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+  <ul class="community-grid">
+    <li>
+      <a class="community-card" href="/communities/sagamok">
+        <p class="name">Sagamok Anishnawbek</p>
+        <p class="status is-live">Worked example</p>
+      </a>
+    </li>
+    <li>
+      <span class="community-card is-soon">
+        <p class="name">The other 20 signatory nations</p>
+        <p class="status is-soon">Added as contacts join</p>
+      </span>
+    </li>
+  </ul>
+
+  <div class="card">
+    <h3>How a community page works</h3>
+    <p>Each page is a member resource, independent of that community's Chief and Council. It carries the same Part 2 of the shared standard, a plain map of how to ask, and links to public sources. The structure is the same everywhere, so once one community runs it, the next is a short step.</p>
+  </div>
+
+  <div class="card card--magenta">
+    <h3>Is this your community?</h3>
+    <p>If you are a beneficiary of one of the 21 Robinson Huron Treaty First Nations and would like a page for your community and its surrounding area, the Circle will help you stand it up. <a href="/get-involved">Get involved.</a></p>
+  </div>
+{% endblock %}
