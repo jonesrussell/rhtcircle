@@ -1,0 +1,417 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+{% block main_class %}{% endblock %}
+
+{% block title %}How Sagamok Anishnawbek is organized: a member's guide · RHT Members' Transparency Circle{% endblock %}
+{% block description %}A plain-language map of how Sagamok Anishnawbek is organized: the elected Chief and Council, the administration that runs day-to-day services, and the band-owned companies, with the people in each public role and how they overlap. Built from public records.{% endblock %}
+{% block body_class %}route-explainer-sagamok-org{% endblock %}
+
+{# Canonical / og:* / twitter:* come from base.html.twig defaults using the
+   title + description blocks and the per-route OG card (falls back to
+   og-default.png until a card is generated). Override og_description for a
+   shorter social line than the meta description. #}
+{% block og_description %}How Sagamok is organized: the Council you elect, the administration, and the band-owned companies, with who holds which public role and where they overlap.{% endblock %}
+
+{% block head_styles %}
+  <style>
+    /* "How Sagamok is organized" explainer. Built on the site's editorial tokens
+       (so it follows the light/dark theme toggle), but in a WIDE frame: a ~1180px
+       container for the data visuals (org chart, board grid, pay chart) with prose
+       capped near 74ch for readability, collapsing to a single column under 620px.
+       Everything is namespaced .sog-* so nothing leaks into site.css. */
+    .sog-wrap {
+      --sog-max: 1180px;
+      --sog-read: 74ch;
+      /* Category hues, chosen at a mid lightness so they read on both the warm
+         paper and the dark storm surface. Dark gets a small lift below. */
+      --sog-gov: oklch(0.56 0.11 240);
+      --sog-adm: oklch(0.55 0.09 150);
+      --sog-ent: oklch(0.56 0.12 300);
+      --sog-par: oklch(0.60 0.02 250);
+      --sog-zei: oklch(0.58 0.13 45);
+      --sog-grt: oklch(0.66 0.12 78);
+      --sog-rf:  oklch(0.58 0.13 320);
+      --sog-sre: oklch(0.60 0.09 175);
+      --sog-mh:  oklch(0.58 0.12 250);
+      --sog-staff: oklch(0.55 0.09 150);
+      max-width: var(--sog-max);
+      margin: 0 auto;
+      padding: var(--gap-7) var(--gap-5) var(--gap-9);
+    }
+    [data-theme="dark"] .sog-wrap {
+      --sog-gov: oklch(0.68 0.12 240);
+      --sog-adm: oklch(0.70 0.11 150);
+      --sog-ent: oklch(0.70 0.13 300);
+      --sog-par: oklch(0.70 0.02 250);
+      --sog-zei: oklch(0.72 0.14 55);
+      --sog-grt: oklch(0.78 0.13 80);
+      --sog-rf:  oklch(0.72 0.14 320);
+      --sog-sre: oklch(0.74 0.10 175);
+      --sog-mh:  oklch(0.72 0.13 250);
+      --sog-staff: oklch(0.70 0.11 150);
+    }
+
+    .sog-wrap h1 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(28px, 4.4vw, 42px); line-height: 1.12; letter-spacing: -0.015em; margin: 0 0 var(--gap-3); max-width: 20ch; }
+    .sog-wrap h1 em { font-style: italic; color: var(--accent-deep); }
+    .sog-wrap h2 { font-family: var(--font-serif); font-weight: 600; font-size: clamp(22px, 2.6vw, 28px); line-height: 1.2; letter-spacing: -0.01em; margin: var(--gap-8) 0 var(--gap-2); scroll-margin-top: 80px; }
+    .sog-wrap p { margin: 0 0 var(--gap-4); }
+    .sog-wrap strong { color: var(--ink); font-weight: 600; }
+
+    .sog-lede { font-family: var(--font-serif); font-size: clamp(18px, 1.7vw, 22px); line-height: 1.5; color: var(--ink-2); max-width: var(--sog-read); margin: 0 0 var(--gap-4); text-wrap: pretty; }
+    .sog-col { max-width: var(--sog-read); }
+    .sog-sub { color: var(--ink-3); font-size: 15px; max-width: 90ch; margin: 0 0 var(--gap-4); }
+    .sog-byline { font-size: 13.5px; color: var(--ink-3); line-height: 1.55; margin: var(--gap-4) 0 0; padding-top: var(--gap-4); border-top: 1px solid var(--rule); max-width: 96ch; }
+
+    .sog-hl { background: var(--accent-wash); color: var(--ink); padding: .03em .28em; border-radius: 4px; font-weight: 600; }
+    .sog-pull { font-family: var(--font-serif); font-size: clamp(19px, 1.9vw, 23px); line-height: 1.45; color: var(--ink); font-weight: 500; border-left: 3px solid var(--accent); padding: 4px 0 4px 20px; margin: var(--gap-6) 0; max-width: 80ch; }
+    .sog-featured { font-family: var(--font-serif); font-size: clamp(24px, 3.6vw, 38px); line-height: 1.26; font-weight: 400; font-style: italic; color: var(--accent-deep); text-align: center; max-width: 20em; margin: var(--gap-7) auto; padding: var(--gap-6) 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); text-wrap: balance; }
+
+    /* Screen-reader only */
+    .sog-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .sog-tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.02em; color: var(--ink-3); white-space: nowrap; }
+
+    /* Jump nav, inline, scrolls horizontally on narrow screens */
+    .sog-jump { display: flex; flex-wrap: wrap; gap: var(--gap-2); margin: var(--gap-6) 0 0; padding: var(--gap-3) 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .sog-jump a { font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: var(--ink-2); text-decoration: none; border: 1px solid var(--rule); border-radius: 999px; padding: 5px 13px; white-space: nowrap; transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+    .sog-jump a:hover { color: var(--accent-deep); border-color: var(--accent-soft); }
+
+    /* Stat strip */
+    .sog-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: var(--radius-lg); overflow: hidden; margin: var(--gap-6) 0 0; }
+    @media (max-width: 820px) { .sog-stats { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 420px) { .sog-stats { grid-template-columns: 1fr; } }
+    .sog-stat { background: var(--paper); padding: 16px 18px; }
+    .sog-stat b { display: block; font-family: var(--font-sans); font-size: 24px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); line-height: 1.1; }
+    .sog-stat span { display: block; font-size: 12.5px; color: var(--ink-3); line-height: 1.4; margin-top: 5px; }
+
+    /* "Why this matters to you" box */
+    .sog-why { background: var(--accent-wash); border: 1px solid var(--accent-soft); border-left: 4px solid var(--accent); border-radius: var(--radius-md); padding: 18px 22px; margin: var(--gap-6) 0 0; max-width: 90ch; }
+    .sog-why h3 { font-family: var(--font-sans); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-deep); margin: 0 0 8px; }
+    .sog-why p { margin: 0; color: var(--ink); font-size: 15.5px; line-height: 1.6; }
+    .sog-why p + p { margin-top: 10px; }
+
+    /* Three-layer intro cards */
+    .sog-cards { display: grid; gap: var(--gap-3); margin: var(--gap-4) 0; }
+    @media (min-width: 720px) { .sog-cards { grid-template-columns: repeat(3, 1fr); } }
+    .sog-card { background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--radius-md); padding: 16px 18px; }
+    .sog-card.is-gov { border-left: 3px solid var(--sog-gov); }
+    .sog-card.is-adm { border-left: 3px solid var(--sog-adm); }
+    .sog-card.is-ent { border-left: 3px solid var(--sog-ent); }
+    .sog-card h3 { font-family: var(--font-serif); font-size: 18px; font-weight: 600; margin: 0 0 6px; color: var(--ink); }
+    .sog-card p { margin: 0; color: var(--ink-2); font-size: 14.5px; line-height: 1.55; }
+
+    /* Org chart */
+    .sog-chart { background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--radius-lg); padding: 6px 18px 20px; margin: var(--gap-4) 0; }
+    .sog-tier { padding: 20px 0; border-bottom: 1px dashed var(--rule); }
+    .sog-tier:last-of-type { border-bottom: none; }
+    .sog-tierhead { display: flex; align-items: flex-start; gap: 12px; margin: 4px 0 16px; }
+    .sog-tierhead .sog-bar { flex: none; width: 4px; align-self: stretch; min-height: 40px; border-radius: 3px; }
+    .sog-tierhead h3 { font-family: var(--font-serif); font-size: 18px; font-weight: 600; margin: 0; color: var(--ink); }
+    .sog-tierhead span { display: block; color: var(--ink-3); font-size: 13.5px; line-height: 1.45; margin-top: 2px; max-width: 80ch; }
+    .t-gov .sog-bar { background: var(--sog-gov); }
+    .t-adm .sog-bar { background: var(--sog-adm); }
+    .t-ent .sog-bar { background: var(--sog-ent); }
+    .t-par .sog-bar { background: var(--sog-par); }
+
+    .sog-node { background: var(--paper); border: 1px solid var(--rule-strong); border-radius: var(--radius-md); padding: 12px 14px; }
+    .sog-node.lead { border-color: var(--accent-soft); background: color-mix(in oklab, var(--accent-wash) 60%, var(--paper)); }
+    .sog-node .sog-role { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 3px; }
+    .sog-node b { font-size: 15px; color: var(--ink); display: block; line-height: 1.3; }
+    .sog-node small { display: block; color: var(--ink-2); font-size: 12.5px; margin-top: 5px; line-height: 1.5; }
+    .sog-node small a { color: var(--accent-deep); }
+
+    .sog-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .sog-row > * { flex: 1 1 240px; }
+    .sog-grid4 { display: grid; gap: 12px; grid-template-columns: repeat(4, 1fr); }
+    @media (max-width: 900px) { .sog-grid4 { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px) { .sog-grid4 { grid-template-columns: 1fr; } }
+
+    /* Parent -> subsidiary tree */
+    .sog-tree { display: grid; grid-template-columns: repeat(2, minmax(260px, 1fr)); gap: 24px; }
+    @media (max-width: 760px) { .sog-tree { grid-template-columns: 1fr; } }
+    .sog-branch .sog-children { display: grid; gap: 12px; margin-top: 14px; padding-top: 14px; position: relative; }
+    .sog-branch .sog-children::before { content: ""; position: absolute; top: 0; left: 22px; width: 2px; height: 14px; background: var(--rule-strong); }
+    .sog-branch .sog-children .sog-node { position: relative; margin-left: 22px; }
+    .sog-branch .sog-children .sog-node::before { content: ""; position: absolute; left: -22px; top: 26px; width: 22px; height: 2px; background: var(--rule-strong); }
+    .sog-branch .sog-children .sog-node::after { content: ""; position: absolute; left: -22px; top: 0; width: 2px; height: 26px; background: var(--rule-strong); }
+
+    .sog-legend { display: flex; flex-wrap: wrap; gap: 16px; margin: 16px 2px 0; font-size: 13px; color: var(--ink-3); }
+    .sog-legend span { display: inline-flex; align-items: center; gap: 7px; }
+    .sog-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex: none; }
+
+    /* Board grid (matrix) */
+    .sog-matrix-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: var(--gap-4) 0; border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper-2); }
+    .sog-matrix { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 13.5px; }
+    .sog-matrix th, .sog-matrix td { padding: 9px 10px; border-bottom: 1px solid var(--rule); text-align: center; }
+    .sog-matrix thead th { color: var(--ink-3); font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; vertical-align: bottom; }
+    .sog-matrix th small, .sog-matrix td small { font-weight: 400; color: var(--ink-3); }
+    .sog-matrix td.nm, .sog-matrix th.nm { text-align: left; color: var(--ink); white-space: nowrap; font-weight: 500; }
+    .sog-matrix tbody tr:last-child td { border-bottom: none; }
+    .sog-matrix td.cnt { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); }
+    .sog-matrix td.cnt.hi { color: var(--accent-deep); }
+    .sog-matrix tbody tr.is-chief td.nm { color: var(--accent-deep); }
+    .sog-mdot { width: 15px; height: 15px; border-radius: 50%; display: inline-block; vertical-align: middle; }
+    .m-zei { background: var(--sog-zei); } .m-grt { background: var(--sog-grt); } .m-rf { background: var(--sog-rf); }
+    .m-sre { background: var(--sog-sre); } .m-mh { background: var(--sog-mh); } .m-staff { background: var(--sog-staff); }
+
+
+    /* Bulleted lists */
+    .sog-list { list-style: none; padding-left: 0; margin: 0 0 var(--gap-4); max-width: 92ch; }
+    .sog-list li { position: relative; padding-left: 22px; margin: 0 0 12px; line-height: 1.6; }
+    .sog-list li::before { content: ""; position: absolute; left: 3px; top: 11px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+    .sog-list li strong { color: var(--ink); }
+
+    /* "What you can ask for" cards */
+    .sog-ask { display: grid; gap: var(--gap-3); margin: var(--gap-4) 0; }
+    @media (min-width: 760px) { .sog-ask { grid-template-columns: repeat(2, 1fr); } }
+    .sog-askcard { background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--radius-md); padding: 16px 18px; }
+    .sog-askcard h3 { font-family: var(--font-serif); font-size: 17px; font-weight: 600; margin: 0 0 6px; color: var(--ink); }
+    .sog-askcard p { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--ink-2); }
+    .sog-askcard .cite { display: block; margin-top: 8px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.02em; color: var(--ink-3); }
+
+    /* Glossary */
+    .sog-gloss { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 36px; max-width: 96ch; }
+    @media (max-width: 760px) { .sog-gloss { grid-template-columns: 1fr; } }
+    .sog-gloss dt { color: var(--ink); font-weight: 700; margin-top: 16px; }
+    .sog-gloss dt:first-of-type { margin-top: 0; }
+    .sog-gloss dd { margin: 4px 0 0; color: var(--ink-2); font-size: 14.5px; line-height: 1.55; }
+
+    /* Note / caveat box */
+    .sog-note { background: var(--paper-2); border: 1px solid var(--rule); border-left: 3px solid var(--accent); border-radius: var(--radius-md); padding: 14px 18px; color: var(--ink-2); font-size: 14px; line-height: 1.6; margin: var(--gap-5) 0; max-width: 92ch; }
+    .sog-note strong { color: var(--ink); }
+
+    .sog-foot { font-size: 13.5px; color: var(--ink-3); line-height: 1.6; margin: var(--gap-7) 0 0; padding-top: var(--gap-4); border-top: 1px solid var(--rule); max-width: 96ch; }
+    .sog-foot a { color: var(--accent-deep); }
+  </style>
+{% endblock %}
+
+{% block content %}
+<article class="sog-wrap">
+
+  <p class="eyebrow">Sagamok Anishnawbek, a member resource, updated 2026-06-18</p>
+  <h1>How Sagamok Anishnawbek is organized: <em>a member's guide</em></h1>
+  <p class="sog-lede">Aanii. As a member, you have the right to see how your Nation is organized. This page helps you use it. Sagamok Anishnawbek is really three things working together: the people you elect, the administration that runs day-to-day services, and a set of companies the Nation owns. This page maps the structure and names the people in each public role, drawn entirely from public records.</p>
+
+  <nav class="sog-jump" aria-label="On this page">
+    <a href="#why">Why this matters</a>
+    <a href="#structure">The structure</a>
+    <a href="#board">Who sits on which board</a>
+    <a href="#ask">What you can ask for</a>
+    <a href="#terms">Key terms</a>
+    <a href="#sources">Sources</a>
+  </nav>
+
+  <div class="sog-stats">
+    <div class="sog-stat"><b>1 + 12</b><span>Chief and Councillors, elected</span></div>
+    <div class="sog-stat"><b>~11</b><span>departments and program areas</span></div>
+    <div class="sog-stat"><b>3</b><span>standing committees</span></div>
+    <div class="sog-stat"><b>8+</b><span>band-owned companies and partnerships</span></div>
+    <div class="sog-stat"><b>2</b><span>parent companies (SDC and ZEI)</span></div>
+  </div>
+
+  <p class="sog-featured">Once you can see how it is organized, it is easier to know who to ask.</p>
+
+  <section id="why">
+    <div class="sog-why">
+      <h3>Why this matters to you</h3>
+      <p>Understanding how your Nation is organized helps you know who does what, and who to contact. This guide lays the whole shape out in one place, named and sourced.</p>
+    </div>
+  </section>
+
+  <section id="structure">
+    <h2>The short version: three layers</h2>
+    <p class="sog-col">Almost every question about "who runs Sagamok" is really a question about which layer you are looking at.</p>
+    <div class="sog-cards">
+      <div class="sog-card is-gov"><h3>1. Governance</h3><p>The Chief and twelve Councillors you elect, plus the committees that advise them. They set direction and approve decisions.</p></div>
+      <div class="sog-card is-adm"><h3>2. Administration</h3><p>The staff side: a senior officer over a set of department directors.</p></div>
+      <div class="sog-card is-ent"><h3>3. The companies</h3><p>Band-owned businesses, held mostly through two parent companies.</p></div>
+    </div>
+    <p class="sog-pull">The board grid below shows the board and director roles each Council member holds.</p>
+
+    <h2 style="margin-top: var(--gap-6)">The whole structure, in one chart</h2>
+    <p class="sog-sub">Each item is tagged with its source: <strong>registry</strong> = Ontario Business Registry, <strong>zgamok.ca</strong> = the company's own team page.</p>
+
+    <div class="sog-chart">
+      <div class="sog-tier t-gov">
+        <div class="sog-tierhead"><div class="sog-bar"></div><div><h3>Governance · the elected layer</h3><span>The government you elect each term. The names sit in the board grid below, so they are not repeated here.</span></div></div>
+        <div class="sog-row" style="margin-bottom: 14px">
+          <div class="sog-node lead" style="flex: 1 1 100%"><div class="sog-role">Elected</div><b>Chief and Council</b><small>One Chief and twelve Councillors. They set direction, pass laws and budgets, and appoint members to most of the company boards and committees shown below.</small></div>
+        </div>
+        <div class="sog-row">
+          <div class="sog-node"><div class="sog-role">Committee</div><b>Finance and Audit Committee</b><small>Required by the Financial Administration Law (s.11); members must be independent. Current membership not published.</small></div>
+          <div class="sog-node"><div class="sog-role">Committee</div><b>Governance Committee</b><small>Guides the Nation's Governance Strategic Plan.</small></div>
+          <div class="sog-node"><div class="sog-role">Committee</div><b>Community Justice Committee</b><small>Members, Elders, and Council representatives.</small></div>
+        </div>
+      </div>
+
+      <div class="sog-tier t-adm">
+        <div class="sog-tierhead"><div class="sog-bar"></div><div><h3>Administration · the staff layer</h3><span>Roles defined in the Financial Administration Law. Directors are shown by role; people are named only where independently public.</span></div></div>
+        <div class="sog-row" style="margin-bottom: 14px">
+          <div class="sog-node lead" style="flex: 1 1 100%"><div class="sog-role">Reports to Council</div><b>Chief Administrative Officer (also titled Director of Operations)</b><small>The senior staff officer. Recommends the organizational chart, supervises hiring, and oversees internal financial controls. The directors below report up through this office.</small></div>
+        </div>
+        <div class="sog-grid4">
+          <div class="sog-node"><div class="sog-role">Officer</div><b>Director of Finance</b></div>
+          <div class="sog-node"><div class="sog-role">Officer</div><b>Director of Governance</b></div>
+          <div class="sog-node"><div class="sog-role">Officer</div><b>Director of HR &amp; Shared Services</b></div>
+          <div class="sog-node"><div class="sog-role">Officer</div><b>Director of Community Wellness</b></div>
+          <div class="sog-node"><div class="sog-role">Officer</div><b>Director of Education</b></div>
+          <div class="sog-node"><div class="sog-role">Officer</div><b>Director of Lands, Resources &amp; Environment</b></div>
+          <div class="sog-node"><div class="sog-role">Officer</div><b>Director of Planning &amp; Infrastructure</b></div>
+          <div class="sog-node"><div class="sog-role">Officer</div><b>Tax Administrator</b></div>
+        </div>
+      </div>
+
+      <div class="sog-tier t-ent">
+        <div class="sog-tierhead"><div class="sog-bar"></div><div><h3>The companies · band-owned enterprises</h3><span>Owned or controlled by the Nation, mostly through two parent companies. Directors and officers named where public.</span></div></div>
+        <div class="sog-tree">
+          <div class="sog-branch">
+            <div class="sog-node lead"><div class="sog-role">Parent</div><b>Sagamok Development Corporation (SDC)</b><small>The Nation's development corporation, consolidated in the audited statements.</small></div>
+            <div class="sog-children">
+              <div class="sog-node"><b>Ritchie Falls Resort</b><small>2344827 Ontario Inc. Directors per the corporate registry (board static since 2016): Councillor Michael Abitong, with Alan Ozawanimki, Sheldon Toulouse, and Garnette Trudeau (former Council members). <span class="sog-tag">registry</span></small></div>
+              <div class="sog-node"><b>Sagamok Real Estate Holdings LP</b><small>The Nation's off-reserve real-estate holding partnership.</small></div>
+            </div>
+          </div>
+          <div class="sog-branch">
+            <div class="sog-node lead"><div class="sog-role">Parent</div><b>Z'gamok Enterprises Inc. (ZEI)</b><small>100% owned by Sagamok. Board and officers per <a href="https://zgamok.ca/" target="_blank" rel="noopener">zgamok.ca</a>: President Paul Eshkakogan (Councillor); Directors Nelson Toulouse, Norma Petahtegoose, Lawrence Solomon, Leroy Bennett, and Arnelda Bennett (all Councillors); CEO Will Sayers; COO Kevin Sanderson; CFO Ryan Halk. <span class="sog-tag">zgamok.ca</span></small></div>
+            <div class="sog-children">
+              <div class="sog-node"><b>Z'gamok Construction LP</b><small>Construction and resource development.</small></div>
+              <div class="sog-node"><b>OCL Custom Crushing &amp; Quarrying Ltd</b><small>Aggregate crushing and quarrying.</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="sog-grid4" style="margin-top: 18px">
+          <div class="sog-node"><div class="sog-role">Garden River company</div><b>GR Truss · 2262012 Ontario Ltd</b><small>Directors per the corporate registry: Angus Toulouse (Chief), Michael Abitong, Norma Petahtegoose. <span class="sog-tag">registry</span></small></div>
+          <div class="sog-node"><div class="sog-role">Enterprise</div><b>Legend Mining Inc.</b><small>Government business enterprise.</small></div>
+          <div class="sog-node"><div class="sog-role">Enterprise</div><b>Robinson Huron Forestry Company Inc.</b><small>Government business enterprise.</small></div>
+          <div class="sog-node"><div class="sog-role">Partnership (11.78%)</div><b>Great Lakes Hospitality Group LP</b><small>Minority interest; owns and manages a hotel.</small></div>
+        </div>
+        <p class="sog-sub" style="margin: 16px 0 0">Also: Sagamok Recreation (<a href="https://sagamokrecreation.com/" target="_blank" rel="noopener">sagamokrecreation.com</a>) and the education authority (<a href="https://sagamokeducation.ca/" target="_blank" rel="noopener">sagamokeducation.ca</a>).</p>
+      </div>
+
+      <div class="sog-tier t-par">
+        <div class="sog-tierhead"><div class="sog-bar"></div><div><h3>Community partner organizations</h3><span>Independent organizations Sagamok works with. Partners, <strong>not</strong> companies the Nation owns.</span></div></div>
+        <div class="sog-grid4">
+          <div class="sog-node"><b>Maamwesying North Shore Community Health Services</b></div>
+          <div class="sog-node"><b>Niigaaniin</b><small>Employment and social services.</small></div>
+          <div class="sog-node"><b>Nogdawindamin Family &amp; Community Services</b></div>
+          <div class="sog-node"><b>Anishinabek Police Service</b></div>
+        </div>
+      </div>
+
+      <div class="sog-legend">
+        <span><i style="background: var(--sog-gov)"></i> Governance (elected)</span>
+        <span><i style="background: var(--sog-adm)"></i> Administration (staff)</span>
+        <span><i style="background: var(--sog-ent)"></i> Band-owned companies</span>
+        <span><i style="background: var(--sog-par)"></i> Partners (not owned)</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="board">
+    <h2>Who sits on which board</h2>
+    <p class="sog-sub">This grid shows the documented board and director roles for each Council member, drawn from public corporate-registry filings and zgamok.ca. Each dot is one documented role; reading across a row shows the boards a member sits on. ZEI includes its related entities (Z'gamok Construction, OCL, Legend Mining).</p>
+    <div class="sog-matrix-wrap">
+      <table class="sog-matrix">
+        <caption class="sog-sr">Documented board and director roles by Council member, from public registry filings and zgamok.ca.</caption>
+        <thead>
+          <tr>
+            <th class="nm" scope="col">Councillor</th>
+            <th scope="col">ZEI <small>(+ZCLP / OCL / Legend)</small></th>
+            <th scope="col">GR Truss</th>
+            <th scope="col">Ritchie Falls</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="is-chief"><td class="nm">Angus Toulouse <small>(Chief)</small></td><td></td><td><i class="sog-mdot m-grt"></i><span class="sog-sr">GR Truss seat</span></td><td></td></tr>
+          <tr><td class="nm">Arnelda Bennett</td><td><i class="sog-mdot m-zei"></i><span class="sog-sr">ZEI seat</span></td><td></td><td></td></tr>
+          <tr><td class="nm">Conrad Toulouse</td><td></td><td></td><td></td></tr>
+          <tr><td class="nm">Dan Owl</td><td></td><td></td><td></td></tr>
+          <tr><td class="nm">Lawrence Solomon Sr.</td><td><i class="sog-mdot m-zei"></i><span class="sog-sr">ZEI seat</span></td><td></td><td></td></tr>
+          <tr><td class="nm">Leroy Bennett</td><td><i class="sog-mdot m-zei"></i><span class="sog-sr">ZEI seat</span></td><td></td><td></td></tr>
+          <tr><td class="nm">McKenzie Toulouse</td><td></td><td></td><td></td></tr>
+          <tr><td class="nm">Michael Abitong</td><td></td><td><i class="sog-mdot m-grt"></i><span class="sog-sr">GR Truss seat</span></td><td><i class="sog-mdot m-rf"></i><span class="sog-sr">Ritchie Falls seat</span></td></tr>
+          <tr><td class="nm">Nelson Toulouse</td><td><i class="sog-mdot m-zei"></i><span class="sog-sr">ZEI seat</span></td><td></td><td></td></tr>
+          <tr><td class="nm">Norma Petahtegoose</td><td><i class="sog-mdot m-zei"></i><span class="sog-sr">ZEI seat</span></td><td><i class="sog-mdot m-grt"></i><span class="sog-sr">GR Truss seat</span></td><td></td></tr>
+          <tr><td class="nm">Paul Eshkakogan <small>(ZEI President)</small></td><td><i class="sog-mdot m-zei"></i><span class="sog-sr">ZEI seat</span></td><td></td><td></td></tr>
+          <tr><td class="nm">Sadie Southwind</td><td></td><td></td><td></td></tr>
+          <tr><td class="nm">Veronica Nashkawa</td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="sog-legend">
+      <span><i style="background: var(--sog-zei); border-radius: 50%"></i> ZEI board (incl. ZCLP / OCL / Legend)</span>
+      <span><i style="background: var(--sog-grt); border-radius: 50%"></i> GR Truss</span>
+      <span><i style="background: var(--sog-rf); border-radius: 50%"></i> Ritchie Falls</span>
+    </div>
+    <p class="sog-sub" style="margin: 12px 0 0">Sources by column: ZEI board, <a href="https://zgamok.ca/" target="_blank" rel="noopener">zgamok.ca</a>; GR Truss and Ritchie Falls, the Ontario Business Registry. A blank means no board or director role is documented for that member in these public sources.</p>
+    <p class="sog-sub" style="margin: 10px 0 0"><strong>Boards not yet mapped here.</strong> Several band entities and committees exist but are left out of the grid because no public director roster has been gathered for them yet: <strong>Sagamok Development Corporation, Legend Mining Inc., Robinson Huron Forestry Company Inc., Great Lakes Hospitality Group LP, and Aki-eh Dibinwewziwin LP</strong>, plus the <strong>Finance and Audit, Governance, and Community Justice committees</strong>. Their corporate profiles are paywalled in the Ontario Business Registry and have not been purchased, and committee membership is not published. These are the gaps a records request to Council, or the remaining registry profiles, would fill.</p>
+
+  </section>
+
+  <section id="ask">
+    <h2>What you can ask for</h2>
+    <p class="sog-col">As a member, you have rights to see how the Nation is organized and how its money is handled. A few of the most useful, and where they come from:</p>
+    <div class="sog-ask">
+      <div class="sog-askcard">
+        <h3>The current organizational chart</h3>
+        <p>You can request the Nation's current org chart from the Chief Administrative Officer, who is required to keep it current and recommend it to Council.</p>
+        <span class="cite">Financial Administration Law, s.20(3)</span>
+      </div>
+      <div class="sog-askcard">
+        <h3>The Schedule of Remuneration and the audited statements</h3>
+        <p>What the Chief and Council are paid, and the Nation's audited consolidated financial statements, are public documents the Nation publishes each year.</p>
+        <span class="cite">First Nations Financial Transparency Act (FNFTA)</span>
+      </div>
+      <div class="sog-askcard">
+        <h3>Conflict-of-interest disclosures</h3>
+        <p>Councillors must file an annual conflict-of-interest disclosure with the CAO. You can ask whether these have been filed and how they are handled.</p>
+        <span class="cite">Financial Administration Law, s.22</span>
+      </div>
+      <div class="sog-askcard">
+        <h3>Records from Council</h3>
+        <p>To ask Council directly for records, minutes, or a Band Council Resolution, write to the Council Secretariat, the office that manages Council's correspondence and records.</p>
+        <span class="cite">via the Council Secretariat</span>
+      </div>
+    </div>
+
+    <div class="sog-why" style="margin-top: var(--gap-6)">
+      <h3>Add your voice</h3>
+      <p>Members have submitted a records request to Chief and Council asking, on the record, what the membership gains from the Nation's businesses and ventures, and who they serve. You can <a href="/standard/records-request" style="color: var(--accent-deep); font-weight: 700;">add your name in support of that request &rarr;</a></p>
+    </div>
+  </section>
+
+  <section id="terms">
+    <h2>Key terms</h2>
+    <dl class="sog-gloss">
+      <dt>Chief and Council</dt><dd>The elected government: the Chief plus twelve Councillors.</dd>
+      <dt>Chief Administrative Officer (CAO) / Director of Operations</dt><dd>The most senior staff officer, over the department directors. Titled "Director of Operations" in the Nation's HR policy.</dd>
+      <dt>Finance and Audit Committee</dt><dd>A committee required by the Financial Administration Law, with independent members, that oversees budgets, the audit, and financial reporting.</dd>
+      <dt>Financial Administration Law (FAL, 2020)</dt><dd>The Nation's 2020 law, under the First Nations Fiscal Management Act, setting the rules for budgets, officers, committees, borrowing, and reporting.</dd>
+      <dt>Government Business Enterprise (GBE)</dt><dd>A company a government owns or controls but that operates as a self-sustaining business. Sagamok's companies are reported this way.</dd>
+      <dt>Director / Officer</dt><dd>A board member or senior officer of a company or, under the FAL, of the Nation's administration.</dd>
+    </dl>
+  </section>
+
+  <section id="sources">
+    <h2>Sources</h2>
+    <p class="sog-sub">Every name and role above is from a public source. The most useful:</p>
+    <ul class="sog-list">
+      <li><a href="https://www.sagamokanishnawbek.com/governance" target="_blank" rel="noopener">Sagamok governance</a>, <a href="https://www.sagamokanishnawbek.com/administration-and-council-secretariat" target="_blank" rel="noopener">Administration and Council Secretariat</a>, and <a href="https://www.sagamokanishnawbek.com/chief-council" target="_blank" rel="noopener">Chief and Council</a> pages (sagamokanishnawbek.com).</li>
+      <li>The FNFTA <strong>Schedule of Remuneration and Expenses</strong> (Chief and Council pay, published annually under the First Nations Financial Transparency Act).</li>
+      <li><a href="https://zgamok.ca/" target="_blank" rel="noopener">zgamok.ca</a> team page (the Z'gamok Enterprises board and officers).</li>
+      <li>The <strong>Ontario Business Registry</strong> (corporate profiles, including GR Truss / 2262012 and Ritchie Falls / 2344827).</li>
+      <li>The Sagamok <strong>Financial Administration Law (2020)</strong>.</li>
+      <li>The <strong>FY2025 audited consolidated financial statements</strong> (Note 1c, the consolidated-entities list).</li>
+      <li><strong>AI research tools and public search indexes</strong>, used to locate, read, and cross-reference the public records above.</li>
+    </ul>
+  </section>
+
+  
+
+  <nav class="sog-foot" aria-label="More for Sagamok members" style="border-top: 1px solid var(--rule); padding-top: var(--gap-4); margin-top: var(--gap-6);">More for Sagamok members: <a href="/standard/records-request" style="color: var(--accent-deep)">the records request</a>, <a href="/communities/sagamok" style="color: var(--accent-deep)">the Sagamok hub</a>, and <a href="/standard" style="color: var(--accent-deep)">the shared standard</a>.</nav>
+
+  <p class="sog-byline"><strong>Put together by members of Sagamok Anishnawbek</strong> as a community resource for the Robinson Huron Treaty Members' Transparency Circle. Every name and role is drawn from the public sources listed above. This is an independent resource, not an official Sagamok publication. Corrections welcome.</p>
+
+  <p class="sog-foot">An independent member resource of the Robinson Huron Treaty Members' Transparency Circle. Chi-miigwech for reading.</p>
+
+</article>
+{% endblock %}

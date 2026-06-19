@@ -18,20 +18,32 @@ final class AppServiceProvider extends ServiceProvider
         $controller = new SiteController();
 
         $pages = [
-            'home' => ['/', fn () => $controller->home()],
-            'treaty-wide' => ['/treaty-wide', fn () => $controller->treatyWide()],
-            'standard' => ['/standard', fn () => $controller->standard()],
-            'about' => ['/about', fn () => $controller->about()],
-            'get-involved' => ['/get-involved', fn () => $controller->getInvolved()],
-            'communities' => ['/communities', fn () => $controller->communities()],
-            'community-sagamok' => ['/communities/sagamok', fn () => $controller->sagamok()],
+            'home' => ['/', 'pages/home.html.twig'],
+
+            'treaty-wide' => ['/treaty-wide', 'pages/treaty-wide.html.twig'],
+            'treaty-the-treaty' => ['/treaty-wide/the-treaty', 'pages/treaty-wide/the-treaty.html.twig'],
+            'treaty-distribution-models' => ['/treaty-wide/distribution-models', 'pages/treaty-wide/distribution-models.html.twig'],
+
+            'standard' => ['/standard', 'pages/standard.html.twig'],
+            'records-request' => ['/standard/records-request', 'pages/standard/records-request.html.twig'],
+
+            'about' => ['/about', 'pages/about.html.twig'],
+            'get-involved' => ['/get-involved', 'pages/get-involved.html.twig'],
+
+            'communities' => ['/communities', 'pages/communities/index.html.twig'],
+            'community-sagamok' => ['/communities/sagamok', 'pages/communities/sagamok.html.twig'],
+            'sagamok-how-organized' => ['/communities/sagamok/how-its-organized', 'pages/communities/sagamok/how-its-organized.html.twig'],
+            'sagamok-massey' => ['/communities/sagamok/massey', 'pages/communities/sagamok/massey.html.twig'],
+            'sagamok-massey-what-youve-heard' => ['/communities/sagamok/massey-what-youve-heard', 'pages/communities/sagamok/massey-what-youve-heard.html.twig'],
+            'sagamok-massey-voices' => ['/communities/sagamok/massey-voices', 'pages/communities/sagamok/massey-voices.html.twig'],
+            'sagamok-massey-climate' => ['/communities/sagamok/massey-climate', 'pages/communities/sagamok/massey-climate.html.twig'],
         ];
 
-        foreach ($pages as $name => [$path, $action]) {
+        foreach ($pages as $name => [$path, $template]) {
             $router->addRoute(
                 $name,
                 RouteBuilder::create($path)
-                    ->controller($action)
+                    ->controller(fn () => $controller->page($template))
                     ->allowAll()
                     ->methods('GET')
                     ->build(),

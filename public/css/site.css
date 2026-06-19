@@ -215,3 +215,39 @@ li { margin: 0 0 9px; }
 .skip { position: absolute; left: -9999px; top: auto; }
 .skip:focus { left: 12px; top: 12px; z-index: 10; background: #fff; color: var(--indigo-deep); padding: 8px 14px; border-radius: 6px; }
 :focus-visible { outline: 3px solid var(--violet); outline-offset: 2px; }
+
+/* ---- OIATC migration compatibility tokens ----
+   Migrated explainers (.sog-*, .docwrap, .mas-* etc.) were authored against the
+   OIATC token system. Map those names onto the rht brand so migrated content
+   renders in the Circle's palette with no per-doc edits. Light-only here; the
+   docs' own [data-theme="dark"] blocks simply never trigger. */
+:root {
+  --font-serif: var(--serif);
+  --font-sans: var(--sans);
+  --font-mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", monospace;
+
+  --accent: var(--magenta);
+  --accent-deep: var(--magenta-deep);
+  --accent-soft: #e8c4de;
+  --accent-wash: #f9ecf4;
+
+  --rule: var(--line);
+  --rule-strong: #d6cdea;
+  --ink-blue: #2f4a8c;
+
+  --radius-sm: 2px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  --density: 1;
+  --gap-1: 4px; --gap-2: 8px; --gap-3: 12px; --gap-4: 16px;
+  --gap-5: 24px; --gap-6: 32px; --gap-7: 48px; --gap-8: 64px; --gap-9: 96px;
+  --section-y: 120px;
+
+  --shell-max: 1080px;
+  --ease: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --dur-fast: 140ms; --dur: 220ms; --dur-slow: 420ms;
+
+  --statement-bg: #2b2147;
+  --statement-fg: #f7f4ff;
+}

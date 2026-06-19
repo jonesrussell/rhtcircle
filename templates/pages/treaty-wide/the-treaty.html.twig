@@ -1,0 +1,704 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'treaty-wide' %}
+{% block main_class %}{% endblock %}
+
+{% block title %}The Robinson Huron Treaty in 2026 · A guide for members · RHT Members' Transparency Circle{% endblock %}
+{% block description %}A plain-language guide for Robinson Huron Treaty members. What's settled, what's still being decided, and what each piece means.{% endblock %}
+{% block og_title %}The Robinson Huron Treaty in 2026: what's settled, what's still being decided{% endblock %}
+{% block og_description %}A plain-language guide for Robinson Huron Treaty members. What's settled, what's still being decided, and what each piece means.{% endblock %}
+{% block body_class %}route-explainer-robinson-huron-treaty{% endblock %}
+
+{% block head_styles %}
+  <style>
+    .docwrap {
+      --bg: var(--paper);
+      --surface: var(--paper-2);
+      --ink-soft: var(--ink-2);
+      --ink-mute: var(--ink-3);
+      --rule-soft: var(--rule);
+      --highlight: var(--accent-wash);
+      --serif: var(--font-serif);
+      --sans: var(--font-sans);
+      --mono: var(--font-mono);
+      --content: 800px;
+      --gap-1: 4px;
+      --gap-2: 8px;
+      --gap-3: 12px;
+      --gap-4: 20px;
+      --gap-5: 32px;
+      --gap-6: 56px;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    .docwrap {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.65;
+      font-feature-settings: "ss01", "ss02";
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+    a:hover { color: var(--ink); }
+
+    .doctop {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 18px 32px;
+      max-width: 880px;
+      margin: 0 auto;
+      border-bottom: 1px solid var(--rule);
+      font-family: var(--sans);
+      font-size: 12px;
+      color: var(--ink-mute);
+      letter-spacing: 0.04em;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .doctop__brand {
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .doctop__brand a { color: var(--ink); border-bottom: none; }
+    .doctop__brand a:hover { color: var(--accent); }
+    .doctop__meta { font-variant-numeric: tabular-nums; }
+
+    .page {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 40px 28px 72px;
+    }
+    @media (min-width: 700px) {
+      .page { padding: 56px 40px 96px; }
+    }
+
+    /* Cover */
+    .cover { padding: 24px 0 40px; border-bottom: 1px solid var(--rule); }
+    .cover__eyebrow {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .cover__title {
+      font-size: clamp(30px, 5vw, 44px);
+      line-height: 1.1;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin: 0 0 24px;
+    }
+    .cover__title em { font-style: italic; color: var(--accent); }
+    .cover__lede {
+      font-size: 19px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      margin: 0 0 28px;
+    }
+    .cover__byline {
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink-mute);
+      line-height: 1.55;
+      padding-top: 16px;
+      border-top: 1px solid var(--rule-soft);
+    }
+    .cover__byline strong { color: var(--ink); font-weight: 600; }
+
+    /* Sections */
+    section { padding: 40px 0; border-bottom: 1px solid var(--rule-soft); }
+    section:last-of-type { border-bottom: none; }
+    h2 {
+      font-size: clamp(22px, 3vw, 28px);
+      line-height: 1.2;
+      font-weight: 400;
+      letter-spacing: -0.005em;
+      margin: 0 0 var(--gap-4);
+    }
+    h3 {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: var(--gap-5) 0 var(--gap-3);
+    }
+    h3:first-child { margin-top: 0; }
+    p { margin: 0 0 var(--gap-4); }
+    p:last-child { margin-bottom: 0; }
+
+    /* Bottom-line callout */
+    .bottomline {
+      background: var(--highlight);
+      padding: 24px 28px;
+      border-left: 3px solid var(--accent);
+      margin: 0;
+    }
+    .bottomline p { font-size: 18px; line-height: 1.6; }
+    .bottomline p:last-child { margin-bottom: 0; }
+
+    /* Cards for the four moving parts */
+    .parts {
+      display: grid;
+      gap: var(--gap-3);
+    }
+    @media (min-width: 700px) {
+      .parts { grid-template-columns: 1fr 1fr; }
+    }
+    .part {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      padding: 22px;
+      border-radius: 4px;
+    }
+    .part__num {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+    }
+    .part__name {
+      font-family: var(--serif);
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 500;
+      margin: 6px 0 4px;
+    }
+    .part__amount {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-bottom: 12px;
+    }
+    .part__body { font-size: 15px; line-height: 1.55; color: var(--ink-soft); }
+    .part__body p { margin: 0 0 8px; }
+    .part__body p:last-child { margin-bottom: 0; }
+    .part__what {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--rule-soft);
+      font-family: var(--sans);
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--ink-mute);
+    }
+    .part__what strong {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    /* Two-column "settled vs still being decided" */
+    .columns {
+      display: grid;
+      gap: var(--gap-4);
+      margin-top: var(--gap-4);
+    }
+    @media (min-width: 700px) {
+      .columns { grid-template-columns: 1fr 1fr; }
+    }
+    .column {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      padding: 22px;
+      border-radius: 4px;
+    }
+    .column h4 {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 16px;
+    }
+    .column ul { list-style: none; padding: 0; margin: 0; }
+    .column li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+    .column li:first-child { padding-top: 0; }
+    .column li:last-child { border-bottom: none; padding-bottom: 0; }
+
+    /* Timeline */
+    .tl { margin-top: var(--gap-3); border-top: 1px solid var(--rule); }
+    .tl__entry {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      align-items: baseline;
+    }
+    @media (max-width: 600px) {
+      .tl__entry { grid-template-columns: 1fr; gap: 4px; }
+    }
+    .tl__date {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+    }
+    .tl__body h4 {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 500;
+      margin: 0 0 4px;
+      letter-spacing: -0.005em;
+    }
+    .tl__body p {
+      font-size: 15px;
+      color: var(--ink-soft);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    /* Glossary */
+    .glossary { margin-top: var(--gap-3); }
+    .glossary dt {
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--ink);
+      margin-top: 16px;
+    }
+    .glossary dt:first-child { margin-top: 0; }
+    .glossary dd {
+      margin: 4px 0 0;
+      font-size: 16px;
+      color: var(--ink-soft);
+      line-height: 1.55;
+    }
+
+    /* Sources list */
+    .src-list { list-style: none; padding: 0; margin: var(--gap-3) 0 0; }
+    .src-list li {
+      padding: 12px 0;
+      border-top: 1px solid var(--rule-soft);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+    .src-list li:first-child { border-top: none; padding-top: 0; }
+    .src-list small {
+      display: block;
+      color: var(--ink-mute);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    /* Pull quote */
+    .pull {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      padding: 22px 26px;
+      border-left: 3px solid var(--accent);
+      margin: var(--gap-4) 0;
+      font-style: italic;
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--ink);
+    }
+    .pull cite {
+      display: block;
+      margin-top: 10px;
+      font-style: normal;
+      font-family: var(--sans);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+    }
+
+    /* Footer */
+    footer {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 32px 28px 56px;
+      border-top: 1px solid var(--rule);
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink-mute);
+      line-height: 1.6;
+    }
+    @media (min-width: 700px) { footer { padding: 32px 40px 64px; } }
+    footer p { margin: 0 0 12px; }
+    footer p:last-child { margin-bottom: 0; }
+    footer .signoff {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--accent);
+      font-style: italic;
+      margin-bottom: 16px;
+    }
+
+    @media print {
+      .doctop { display: none; }
+      section, .part, .column { page-break-inside: avoid; }
+      footer { border-top: 1px solid var(--rule); }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="docwrap">
+<main class="page">
+
+  <section class="cover">
+    <p class="cover__eyebrow">For Robinson Huron Treaty members</p>
+    <h1 class="cover__title">The Robinson Huron Treaty in 2026: <em>what's settled, what's still being decided</em></h1>
+    <p class="cover__lede">Ahnii. There's a lot happening with the Robinson Huron Treaty right now. A $10 billion settlement still being distributed, a court ruling last fall that pulled hundreds of millions of dollars in legal fees back to the Treaty First Nations, an unresolved negotiation about future annuity payments, and the annual $4 Treaty Day payment that continues as it always has. It's easy to mix all of this up. This page is a plain-language guide for members who want to understand what each piece is and what it means.</p>
+    <p class="cover__byline">
+      <strong>Put together by members of Sagamok Anishnawbek</strong> as a community resource for the Robinson Huron Treaty Members' Transparency Circle. Not affiliated with the Robinson Huron Treaty Litigation Fund. Sources are linked throughout. If you spot something that needs correction, please get in touch.
+    </p>
+  </section>
+
+  <section>
+    <h2>The bottom line</h2>
+    <div class="bottomline">
+      <p>Your annual $4 Treaty Day payment is being paid in 2026 as always, by Indigenous Services Canada. Nothing in the 2024 Settlement Agreement or the legal-fees court ruling has changed that.</p>
+      <p>The bigger questions, about how any future annuity increase would be distributed, are still being negotiated. The Robinson Huron Treaty Litigation Fund has signalled in its 2026 statement that any future increase is a collective entitlement to "Chiefs and their Tribes" rather than to individuals. That position is not yet settled. It is the most important thing for members to track over the next year or two.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Five things are happening at once</h2>
+    <p>The reason this gets confusing is that five different things are in motion, each on its own timeline. Keeping them apart is most of the work.</p>
+
+    <div class="parts">
+
+      <article class="part">
+        <span class="part__num">01</span>
+        <h3 class="part__name">The 2026 $4 Treaty Day payment</h3>
+        <p class="part__amount">$4.00 · paid by Indigenous Services Canada</p>
+        <div class="part__body">
+          <p>The annual treaty annuity has been $4 per person since 1875. It is paid by Indigenous Services Canada to registered members affiliated with a signatory First Nation. This continues in 2026 as always.</p>
+          <p>The 2026 RHTLF statement also says explicitly that the individual-payment practice is "without prejudice to the collective treaty rights of the RHT Anishinabek." That language matters for what comes next.</p>
+        </div>
+        <p class="part__what"><strong>What it means for me</strong>If you're a registered member of one of the Treaty First Nations, you can expect your $4 the same way you got it last year. Treaty Day procedures are coordinated by your community and ISC.</p>
+      </article>
+
+      <article class="part">
+        <span class="part__num">02</span>
+        <h3 class="part__name">The 2024 past-compensation settlement</h3>
+        <p class="part__amount">$10.0 billion · settled January 2024</p>
+        <div class="part__body">
+          <p>Half from Canada, half from Ontario. This is compensation for the Crown's failure to honour the augmentation clause in the Treaty for nearly 150 years. The Supreme Court confirmed in July 2024 that this was a Treaty breach.</p>
+          <p>How each of the 21 First Nations distributes its share, between per-capita payments to members and collective uses like programs, infrastructure, or trusts, is a community-by-community decision. Different communities have made different choices.</p>
+        </div>
+        <p class="part__what"><strong>What it means for me</strong>If you have questions about your community's allocation, contact your Chief and Council directly. Each community decides on its own.</p>
+      </article>
+
+      <article class="part">
+        <span class="part__num">03</span>
+        <h3 class="part__name">The legal-fees return</h3>
+        <p class="part__amount">$232 million plus interest · distributing in 2026</p>
+        <div class="part__body">
+          <p>In October 2025 the Ontario Superior Court ruled in <em>Nootchtai v. Nahwegahbow Corbiere</em> that the $510 million success fee paid to the lawyers who ran the Treaty case was not fair or reasonable. Justice F.L. Myers reduced it to about $40 million in total and ordered the law firm to return $232 million to the Robinson Huron Treaty Litigation Fund. Another $255 million that was held by the Fund as a "gift" goes back into settlement proceeds; those funds are expected to be available by mid-summer 2026. The lawyers have appealed.</p>
+          <p>In factums filed at the Court of Appeal for Ontario in early 2026, the law firm has argued that Justice Myers's reasoning would have a "chilling effect" on complex, contingency-funded cases brought by under-resourced groups, that cases like <em>Restoule</em> itself might never reach trial under the new standard. The appeal is on the legal principle as much as the dollar figure; distribution of the returned funds is proceeding in parallel and is not paused by the appeal.</p>
+          <p>The $232 million plus $16.2 million in interest is now distributing to the 21 First Nations alongside the original past-compensation settlement.</p>
+        </div>
+        <p class="part__what"><strong>What it means for me</strong>This is more money flowing back to your community in 2026, on top of the past-compensation share. Same as the past-comp money, your community decides locally how to allocate it. Watch for your community's PCD (per-capita distribution) communications, many councils are running info sessions and have packages available to members on their portals right now.</p>
+      </article>
+
+      <article class="part">
+        <span class="part__num">04</span>
+        <h3 class="part__name">The future (go-forward) annuity</h3>
+        <p class="part__amount">Amount and distribution model: not yet decided</p>
+        <div class="part__body">
+          <p>The Supreme Court ruled in 2024 that, above $4, any further increase to the annuity is at the Crown's discretion. The Robinson Huron Treaty Litigation Fund invited Canada and Ontario back to the negotiating table in June 2025. The 2026 RHTLF statement says discussions are currently "focusing on process and data issues."</p>
+          <p>The RHTLF has framed the augmentation as a collective treaty right belonging to "Chiefs and their Tribes" and pointed toward "community collective and future generation purposes." This is the institutional posture. It is not yet the agreed outcome.</p>
+        </div>
+        <p class="part__what"><strong>What it means for me</strong>Whether any future annuity increase flows to you as an individual, or to your community as a whole, is the question being decided. There is no number, no timeline, and no settled distribution rule yet.</p>
+      </article>
+
+      <article class="part">
+        <span class="part__num">05</span>
+        <h3 class="part__name">The General List share</h3>
+        <p class="part__amount">~1% of $10B · ~$100 million · "Sudbury 817"</p>
+        <div class="part__body">
+          <p>About one per cent of the $10 billion past-compensation settlement, roughly $100 million, is set aside for status-card holders who aren't registered with any of the 21 signatory First Nations. This pool is sometimes called the "Sudbury 817 General List," after the administrative list number assigned by Indigenous Services Canada when the General List was first created in 1951. Recent reporting puts the current count of eligible people around 1,059, the number has grown over time, partly because of Bill S-3 restoring status to women who had lost it through marriage, and partly because of people whose connection to a signatory First Nation was severed by the Sixties Scoop or other life events.</p>
+          <p>As of May 2026, applications for this share have not yet opened. They are expected to open in July 2026. Part of the delay is that the Robinson Huron Treaty Litigation Fund has been waiting on years of missing data from Indigenous Services Canada about who is on the list and when; without that data, the Fund cannot finalize who is eligible or how the per-person share works out. The per-person amount will depend on how many eligible people come forward.</p>
+        </div>
+        <p class="part__what"><strong>What it means for me</strong>If you hold an Indian status card but are not a registered member of a signatory Robinson Huron Treaty First Nation, watch for the application opening this summer. If you are a registered member of a signatory First Nation, this pool does not apply to you; your share comes through your community.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>How communities are deciding (and disagreeing)</h2>
+    <p>"Each community decides locally" is accurate as far as it goes. It can read, though, as if the decisions themselves are settled inside each community. In at least one community, they aren't.</p>
+    <p>On May 13 2026 the CBC <a href="https://www.cbc.ca/news/canada/sudbury/wiikwemkoong-rht-litigation-annuities-settlement-funds-mismanagement-9.7154243">reported</a> that members of Wiikwemkoong Unceded Territory have filed a federal court application for judicial review of how Chief and Council are managing the community's share of the settlement. The applicants are challenging three decisions in particular: the use of roughly $85 million of the settlement as collateral for the purchase and development of a commercial and residential complex in Edmonton, called the Connect Centre, without member consultation; the structure of a $10,000 per-member holiday distribution funded from settlement interest; and the placement of the bulk of the funds into a 100-year trust. They are asking for regular reporting on the Connect Centre purchase and a declared right to participate in a referendum on settlement decisions.</p>
+    <p>Chief and Council have responded that the decisions were made lawfully and transparently, on professional and legal advice. The application has been filed and has not yet been decided.</p>
+    <p>This page does not take a position on the underlying disagreement. It notes only that the question of how each community distributes its share is itself being contested, formally, in at least one community, and that members elsewhere may be watching their own councils make comparable decisions right now.</p>
+    <p>For a companion page that lays out the three distribution models (per-capita, collective, hybrid) side by side and the questions each one has to answer to be fair to the whole membership, see <a href="/treaty-wide/distribution-models">Distribution models: questions each model has to answer</a>.</p>
+  </section>
+
+  <section>
+    <h2>What's settled, what's still being decided</h2>
+    <p>Each new headline can read like a single decision is being made. It usually isn't. Here is the split.</p>
+
+    <div class="columns">
+
+      <div class="column">
+        <h4>Settled</h4>
+        <ul>
+          <li>The Crown breached the Treaty by leaving the annuity at $4 since 1875 (Supreme Court of Canada, July 2024).</li>
+          <li>$10 billion in past compensation, half from Canada and half from Ontario, settled in January 2024.</li>
+          <li>The Treaty's augmentation clause is enforceable; the Crown has a duty to act honourably toward the beneficiaries.</li>
+          <li>The lawyers' $510 million success fee was reduced to about $40 million; $232 million plus interest is being returned (Ontario Superior Court, October 2025).</li>
+          <li>The 2026 $4 Treaty Day payment is being paid by Indigenous Services Canada as always.</li>
+        </ul>
+      </div>
+
+      <div class="column">
+        <h4>Still being decided</h4>
+        <ul>
+          <li>How much will any future annuity increase be?</li>
+          <li>Will any future annuity increase be paid to individuals, or to Chiefs and Tribes as a community-level entitlement?</li>
+          <li>Will the lawyers' appeal of the legal-fees ruling change the outcome?</li>
+          <li>How will each community distribute its share of the past compensation and the returned legal fees, between per-capita payments and collective uses?</li>
+          <li>What data and methodology will be used to measure the "relative needs of the Anishinaabe as compared to non-Anishinaabe," which the Supreme Court named as one of the augmentation factors?</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>What you may have heard</h2>
+    <p>Two claims have been circulating in community conversations. Both are easy to misread once the moving parts get mixed up. Here is what the public record actually shows. This is about mechanics, not a position on what should happen next.</p>
+
+    <h3>Not to be confused with the Robinson Superior case</h3>
+    <p>Members sometimes mix this case up with the Robinson <em>Superior</em> Treaty case, a separate proceeding covering 12 First Nations in northwestern Ontario. In March 2026 the Ontario Superior Court affirmed a $3.6 billion settlement in that case and those First Nations are appealing, but nothing about the Robinson Superior process directly changes anything on this page.</p>
+
+    <h3>"$5 billion is still being held back."</h3>
+    <p>The full $10 billion has been paid by the Crown. Ontario deposited its $5 billion on March 15 2024 and Canada deposited its $5 billion on March 25 2024. Both halves are with the Robinson Huron Treaty Litigation Fund.</p>
+    <p>What hasn't yet been distributed as per-capita payments is sitting in specific pools: the 10% collective "war chest" under Priority Payment 2, the ~1% / ~$100 million General List share described above, the $255 million trust tranche being returned to settlement proceeds, and each band's own decision about how much to retain versus distribute per-capita. None of those pools is $5 billion, and none of it is money the Crown still owes.</p>
+
+    <h3>"The lawyers got away with $510 million."</h3>
+    <p>The Ontario Superior Court reduced the success fee in October 2025. Total approved compensation to the legal team is about $40 million. $232 million plus roughly $16.2 million in interest was ordered returned to the Robinson Huron Treaty Litigation Fund. A further $255 million that the law firm had set aside is going back into settlement proceeds. The lawyers have appealed; distribution of the returned funds is proceeding in parallel.</p>
+  </section>
+
+  <section>
+    <h2>The RHTLF's own words on the future annuity</h2>
+    <p>The 2026 Treaty Day Payments statement is the closest thing to an official position from the Robinson Huron Treaty side at the moment. Two passages worth reading carefully.</p>
+
+    <div class="pull">
+      "The annuity augmentation promise in the Treaty stipulates that the annuity is a collective entitlement to be paid annually by the Crown to the 'Chiefs and their Tribes'. ... In the meantime, Canada (through Indigenous Services Canada) will continue paying $4.00 per year to individuals, without prejudice to the collective treaty rights of the RHT Anishinabek."
+      <cite>RHTLF, 2026 Treaty Day Payments, May 4 2026</cite>
+    </div>
+
+    <div class="pull">
+      "There is now an opportunity for the RHT Anishinaabe communities to grow, prosper, and provide a good future for the children and future generations through the application of Treaty benefits to community collective and future generation purposes."
+      <cite>RHTLF, 2026 Treaty Day Payments, May 4 2026</cite>
+    </div>
+
+    <p>This framing is collective. It does not commit to a per-capita distribution of any future increase. It also does not commit to a fully community-level distribution. It is the framing that the RHTLF is bringing into negotiation. What members do with that information, including whether and how to push for a different framing, is up to members.</p>
+  </section>
+
+  <section>
+    <h2>What's happened so far</h2>
+    <p>A short timeline of the moments that matter most for members.</p>
+
+    <div class="tl">
+
+      <div class="tl__entry">
+        <span class="tl__date">1850-09-09</span>
+        <div class="tl__body">
+          <h4>Robinson Huron Treaty signed</h4>
+          <p>Anishinaabe along Lake Huron's north shore enter into the Treaty with the Crown. The Treaty includes the augmentation clause, the promise that the annuity will be increased over time as the territory produces more.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">1875</span>
+        <div class="tl__body">
+          <h4>Annuity raised to $4</h4>
+          <p>Last increase. Stays at $4 from this point forward, despite the augmentation clause.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2010</span>
+        <div class="tl__body">
+          <h4>Robinson Huron Treaty Litigation Fund formed</h4>
+          <p>The 21 Robinson Huron Treaty First Nations come together to pursue the augmentation case as one.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2014</span>
+        <div class="tl__body">
+          <h4>The Restoule case begins</h4>
+          <p>The legal action that becomes the Robinson Huron Treaty annuity case is filed.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2023-06-17</span>
+        <div class="tl__body">
+          <h4>$10 billion settlement announced</h4>
+          <p>Canada, Ontario, and the Robinson Huron Treaty leadership announce the proposed settlement of the past-compensation portion of the case, half from each Crown party.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2024-03</span>
+        <div class="tl__body">
+          <h4>$10 billion paid in full</h4>
+          <p>Ontario deposits its $5 billion share on March 15 2024; Canada deposits its $5 billion share on March 25 2024. Court approval of the settlement is finalized in early 2024.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2024-07-26</span>
+        <div class="tl__body">
+          <h4>Supreme Court ruling: <em>Restoule</em></h4>
+          <p>The Supreme Court of Canada confirms that the Crown breached the Treaty. Above $4, any further increase is at the Crown's discretion. The Court orders Canada and Ontario to negotiate.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2025-06</span>
+        <div class="tl__body">
+          <h4>Go-forward negotiations open</h4>
+          <p>RHT leadership invites Canada and Ontario back to the table to negotiate the future annuity.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2025-10-28</span>
+        <div class="tl__body">
+          <h4>Legal fees ruling: <em>Nootchtai</em></h4>
+          <p>Ontario Superior Court rules the $510 million legal fee is not fair and reasonable. Total approved compensation to the legal team is about $40 million. $232 million is ordered returned to the Robinson Huron Treaty Litigation Fund.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2025-11</span>
+        <div class="tl__body">
+          <h4>Legal team appeals</h4>
+          <p>The lawyers appeal the October ruling. Factums filed at the Court of Appeal for Ontario in early 2026 argue that Justice Myers's reasoning would have a "chilling effect" on complex, contingency-funded cases brought by under-resourced groups, and that cases like <em>Restoule</em> itself might never reach trial under the new standard. Distribution of the returned funds proceeds in parallel.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2026-05</span>
+        <div class="tl__body">
+          <h4>2026 Treaty Day statement</h4>
+          <p>RHTLF confirms the 2026 $4 payment, frames the future annuity as a collective entitlement, and says discussions with Canada and Ontario are focused on process and data.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Key terms</h2>
+    <dl class="glossary">
+      <dt>Annuity</dt>
+      <dd>The annual payment the Crown owes under the Treaty. Currently $4 per person per year, paid by Indigenous Services Canada.</dd>
+
+      <dt>Augmentation clause</dt>
+      <dd>The promise in the 1850 Treaty that the annuity would be increased over time, as the Treaty Territory produced enough to enable an increase without loss to the Crown.</dd>
+
+      <dt>Past compensation</dt>
+      <dd>Damages owed for the historical breach of the augmentation clause. Settled at $10 billion in January 2024.</dd>
+
+      <dt>Go-forward</dt>
+      <dd>The future-payments side of the negotiation. What the annuity should be from now on. Still open.</dd>
+
+      <dt>RHTLF</dt>
+      <dd>Robinson Huron Treaty Litigation Fund. The trust and litigation vehicle representing the 21 RHT First Nations in the case.</dd>
+
+      <dt>Restoule</dt>
+      <dd>Shorthand for the Supreme Court case <em>Ontario (Attorney General) v. Restoule</em>, 2024 SCC 27, which confirmed the Crown's Treaty breach.</dd>
+
+      <dt>Nootchtai</dt>
+      <dd>Shorthand for the Ontario Superior Court case <em>Nootchtai v. Nahwegahbow Corbiere</em>, 2025 ONSC 6071, which reduced the legal-team success fee.</dd>
+
+      <dt>Treaty Day</dt>
+      <dd>The annual day on which the $4 treaty annuity is distributed. Coordinated by each First Nation with Indigenous Services Canada.</dd>
+
+      <dt>Per-capita vs collective distribution</dt>
+      <dd>The choice between paying treaty money to individual members directly, or holding it for community-level uses such as programs, trusts, or infrastructure. Each community decides for the past compensation and the legal-fees return. The future annuity question is open.</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Where to read more</h2>
+    <p>The most useful primary sources, if you want to verify anything on this page or read further.</p>
+    <ul class="src-list">
+      <li>
+        <a href="https://www.rht1850.ca/so/e0PtutHMz?languageTag=en">RHTLF, 2026 Treaty Day Payments statement</a>
+        <small>The May 4 2026 statement quoted above. PDF version linked from the page.</small>
+      </li>
+      <li>
+        <a href="https://decisions.scc-csc.ca/scc-csc/scc-csc/en/item/20489/index.do"><em>Ontario (Attorney General) v. Restoule</em>, 2024 SCC 27</a>
+        <small>The Supreme Court of Canada ruling on the Crown's breach of the Treaty.</small>
+      </li>
+      <li>
+        <a href="https://www.canlii.org/en/on/onsc/doc/2025/2025onsc6071/2025onsc6071.html"><em>Nootchtai v. Nahwegahbow Corbiere</em>, 2025 ONSC 6071</a>
+        <small>The Ontario Superior Court ruling on the legal fees. The "lottery ticket" language is at paragraphs 19 to 20.</small>
+      </li>
+      <li>
+        <a href="https://www.rht1850.ca/">Robinson Huron Treaty Litigation Fund site</a>
+        <small>News and resources from the RHTLF.</small>
+      </li>
+      <li>
+        <a href="https://www.youtube.com/watch?v=_ffD13__3gM"><em>Waawiindamaagewin: The Spirit of Treaty</em></a>
+        <small>May 4 2026 documentary from Robinson Huron Waawiindamaagewin, the 21 Nations' deliberative body. Background on the Treaty, the case, and what the 21 Nations are building together.</small>
+      </li>
+      <li>
+        <a href="https://www.cbc.ca/news/canada/sudbury/wiikwemkoong-rht-litigation-annuities-settlement-funds-mismanagement-9.7154243">Wiikwemkoong members seek court's intervention on settlement management, CBC News</a>
+        <small>May 13 2026 reporting on the federal court application discussed above.</small>
+      </li>
+      <li>
+        <a href="https://www.cbc.ca/news/canada/sudbury">CBC Sudbury</a>
+        <small>Most accessible ongoing reporting on the case and distribution.</small>
+      </li>
+      <li>
+        Your own community's Chief and Council
+        <small>The most reliable answer on how your specific community is allocating its share. Each community decides locally.</small>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>About this page</h2>
+    <p>This is a community resource, not an official source. It was put together by members of Sagamok Anishnawbek for the Robinson Huron Treaty Members' Transparency Circle. It is independent of the Robinson Huron Treaty Litigation Fund and of any First Nation's Chief and Council.</p>
+    <p>The goal is to help members hold the four moving parts apart, see what's settled and what's still being decided, and find the primary sources if they want to dig deeper. Members are capable of drawing their own conclusions; the page does not take a side on the per-capita-vs-collective question or on the institutional disagreements visible in community discussion right now.</p>
+    <p>If you spot something that needs correction, or you have a question this page doesn't answer, please get in touch. Suggestions for additions welcome.</p>
+  </section>
+
+</main>
+
+<footer>
+  <p class="signoff">Chi-miigwech for reading.</p>
+  <p>More: <a href="/treaty-wide">the treaty-wide ask</a>, <a href="/standard">the shared standard</a>, and <a href="/communities/sagamok">Sagamok</a>.</p>
+  <p>This page will be updated as new developments land. The most recent update was 2026-05-14.</p>
+  <p>Robinson Huron Treaty Members' Transparency Circle · <a href="/">rhtcircle.ca</a></p>
+</footer>
+
+</div>
+{% endblock %}

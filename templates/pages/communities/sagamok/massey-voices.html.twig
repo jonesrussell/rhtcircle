@@ -1,0 +1,321 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+{% block main_class %}{% endblock %}
+
+{% block title %}Voices on the Massey Solar Project · RHT Members' Transparency Circle{% endblock %}
+{% block description %}The committee, the Mayor and Deputy Mayor, a former councillor, Potentia, and the First Nations, a representative range of positions on the Massey Solar Project, in their own framing.{% endblock %}
+{% block og_title %}Voices on the Massey Solar Project{% endblock %}
+{% block og_description %}A representative range of positions on the Massey Solar Project, in their own framing.{% endblock %}
+{% block body_class %}route-explainer-massey-solar-project-voices{% endblock %}
+
+{% block head_styles %}
+  <style>
+    .docwrap {
+      --bg: var(--paper);
+      --surface: var(--paper-2);
+      --ink-soft: var(--ink-2);
+      --ink-mute: var(--ink-3);
+      --rule-soft: var(--rule);
+      --highlight: var(--accent-wash);
+      --serif: var(--font-serif);
+      --sans: var(--font-sans);
+      --mono: var(--font-mono);
+      --content: 800px;
+      --gap-1: 4px;
+      --gap-2: 8px;
+      --gap-3: 12px;
+      --gap-4: 20px;
+      --gap-5: 32px;
+      --gap-6: 56px;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    .docwrap {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.65;
+      font-feature-settings: "ss01", "ss02";
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+    a:hover { color: var(--ink); }
+
+    .doctop {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 18px 32px;
+      max-width: 880px;
+      margin: 0 auto;
+      border-bottom: 1px solid var(--rule);
+      font-family: var(--sans);
+      font-size: 12px;
+      color: var(--ink-mute);
+      letter-spacing: 0.04em;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .doctop__brand {
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .doctop__brand a { color: var(--ink); border-bottom: none; }
+    .doctop__brand a:hover { color: var(--accent); }
+    .doctop__meta { font-variant-numeric: tabular-nums; }
+
+    .page {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 40px 28px 72px;
+    }
+    @media (min-width: 700px) {
+      .page { padding: 56px 40px 96px; }
+    }
+
+    .backnav {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .backnav a { border-bottom: none; color: var(--accent); }
+    .backnav a:hover { color: var(--ink); }
+
+    /* Cover */
+    .cover { padding: 0 0 40px; border-bottom: 1px solid var(--rule); }
+    .cover__eyebrow {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .cover__title {
+      font-size: clamp(30px, 5vw, 44px);
+      line-height: 1.1;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin: 0 0 24px;
+    }
+    .cover__title em { font-style: italic; color: var(--accent); }
+    .cover__lede {
+      font-size: 19px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      margin: 0;
+    }
+
+    /* Sections */
+    section { padding: 40px 0; border-bottom: 1px solid var(--rule-soft); }
+    section:last-of-type { border-bottom: none; }
+    h2 {
+      font-size: clamp(22px, 3vw, 28px);
+      line-height: 1.2;
+      font-weight: 400;
+      letter-spacing: -0.005em;
+      margin: 0 0 var(--gap-4);
+    }
+    p { margin: 0 0 var(--gap-4); }
+    p:last-child { margin-bottom: 0; }
+
+    /* Voice cards */
+    .voices { margin-top: var(--gap-3); }
+    .voice {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      padding: 22px 24px;
+      margin-bottom: var(--gap-3);
+    }
+    .voice__who {
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+      margin: 0 0 4px;
+    }
+    .voice__role {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 14px;
+    }
+    .voice__body {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      margin: 0;
+    }
+    .voice__body p { margin: 0 0 12px; }
+    .voice__body p:last-child { margin-bottom: 0; }
+    .voice__body em { font-style: italic; }
+
+    .note {
+      background: var(--highlight);
+      padding: 20px 24px;
+      border-left: 3px solid var(--accent);
+      margin-top: var(--gap-4);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .note p:last-child { margin-bottom: 0; }
+
+    /* Footer */
+    footer {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 32px 28px 56px;
+      border-top: 1px solid var(--rule);
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink-mute);
+      line-height: 1.6;
+    }
+    @media (min-width: 700px) { footer { padding: 32px 40px 64px; } }
+    footer p { margin: 0 0 12px; }
+    footer p:last-child { margin-bottom: 0; }
+    footer .signoff {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--accent);
+      font-style: italic;
+      margin-bottom: 16px;
+    }
+    footer a { color: var(--accent); }
+
+    @media print {
+      .doctop, .backnav { display: none; }
+      .voice { page-break-inside: avoid; }
+      footer { border-top: 1px solid var(--rule); }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="docwrap">
+<main class="page">
+
+  <p class="backnav"><a href="/communities/sagamok/massey">← Massey Solar Project overview</a></p>
+
+  <section class="cover">
+    <p class="cover__eyebrow">Massey Solar Project · companion page</p>
+    <h1 class="cover__title">Voices</h1>
+    <p class="cover__lede">The substantive disagreement is real, and not all of it falls neatly on one "side." Here is a representative range, in their own framing. These are summaries of public positions as of May 2026, not direct endorsements; where wording is quoted it is attributed.</p>
+  </section>
+
+  <section>
+    <h2>Who's saying what</h2>
+
+    <div class="voices">
+
+      <article class="voice">
+        <p class="voice__who">Massey Wildlife Conservation Committee</p>
+        <p class="voice__role">Founders Claudine Bichette, Lena Vermeer, Robert Rigby · opposed</p>
+        <div class="voice__body">
+          <p>The project threatens farmland, the local aquifer, the Aux Sables River, and bird and reptile populations. The committee has gathered over 1,600 signatures on a <a href="https://www.change.org/p/oppose-the-solar-farm-in-sables-spanish-river-save-the-natural-spring">Change.org petition</a> and is lobbying the IESO and the province directly. (<a href="https://www.facebook.com/masseywildlifeconservationcommittee/">Facebook page</a>.)</p>
+        </div>
+      </article>
+
+      <article class="voice">
+        <p class="voice__who">Massey Agricultural Society</p>
+        <p class="voice__role">Community institution · opposed</p>
+        <div class="voice__body">
+          <p>Among the institutions publicly objecting to the project, per <a href="https://shorereport.substack.com/p/opposition-growing-to-solar-farm">Shore Report's coverage</a>. Its concern is less about current zoning than about designation: that the township has not identified its continuous prime agricultural land (the Canada Land Inventory Class 1 to 3 soils) in the way the 2024 Provincial Policy Statement requires, and should do so through the overdue Official Plan review.</p>
+        </div>
+      </article>
+
+      <article class="voice">
+        <p class="voice__who">Deputy Mayor Mike Mercieca</p>
+        <p class="voice__role">Township council · moved to rescind</p>
+        <div class="voice__body">
+          <p>The township's process has not adequately consulted residents or Sagamok Anishnawbek; the Official Plan may contain incorrect zoning for the site. He was the only member to vote to rescind the August 2025 support on March 25, 2026.</p>
+        </div>
+      </article>
+
+      <article class="voice">
+        <p class="voice__who">Mayor Kevin Burke</p>
+        <p class="voice__role">Township council · support upheld</p>
+        <div class="voice__body">
+          <p>The township checked the proposal against its Official Plan and zoning bylaw, found compliance, and does not have the authority to block a permitted use. "We were elected to represent the <em>whole</em> township," he said at the March 25 meeting, pushing back on the view that the gallery's opposition reflected the entire community.</p>
+        </div>
+      </article>
+
+      <article class="voice">
+        <p class="voice__who">Former Councillor Harry Hobbs</p>
+        <p class="voice__role">Former council · supportive of the use</p>
+        <div class="voice__body">
+          <p>Solar is a permitted use; some opposition arguments rest on misreadings of the geography, specifically the relationship between Birch Lake and the Aux Sables River, and commercial farming and forestry also use herbicides.</p>
+        </div>
+      </article>
+
+      <article class="voice">
+        <p class="voice__who">Potentia Renewables</p>
+        <p class="voice__role">Developer</p>
+        <div class="voice__body">
+          <p>The site is outside designated agricultural resource lands; Class 3 solar is permitted in rural zones; the REA process under Regulation 359/09 will address groundwater, wetlands, wildlife, archaeology, and noise; panels are non-hazardous.</p>
+          <p>The project will deliver about an 8× increase in taxable revenue, 150 construction jobs, and a $75,000/year community benefit fund ($1.5M over 20 years).</p>
+        </div>
+      </article>
+
+      <article class="voice">
+        <p class="voice__who">Sagamok Anishnawbek, Michelle Toulouse</p>
+        <p class="voice__role">Director of Claims and Negotiations</p>
+        <div class="voice__body">
+          <p>Emailed objections raising concerns about consultation, read into the township's record in March 2026.</p>
+        </div>
+      </article>
+
+      <article class="voice">
+        <p class="voice__who">Sagamok Anishnawbek, Chief Angus Toulouse</p>
+        <p class="voice__role">Per Mayor Burke, March 25 meeting</p>
+        <div class="voice__body">
+          <p>Verbal interest in the community participating in the project. As of May 2026, no formal Sagamok position has been published.</p>
+        </div>
+      </article>
+
+      <article class="voice">
+        <p class="voice__who">Wahnapitae &amp; Atikameksheng Anishnawbek First Nations</p>
+        <p class="voice__role">Equity partners</p>
+        <div class="voice__body">
+          <p>No public statement specific to community sentiment around the Massey site has been issued as of May 2026; the partnership itself is the public position. Both are partners with the City of Greater Sudbury in the <a href="https://www.greatersudbury.ca/city-hall/news-and-public-notices/2026/joint-media-release-atikameksheng-anishnawbek-wahnapitae-first-nation-and-the-city-of-greater-sudbury-commit-to-cedi-participation-strenghtening-economic-collaboration/">Community Economic Development Initiative</a>.</p>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="note">
+      <p>Two things can be true at once: Sagamok's formal objections about consultation, and informal expressions of interest in participation. They are not necessarily in conflict, and neither substitutes for the formal Crown consultation owed once the Renewable Energy Approval is filed.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Read alongside</h2>
+    <p><a href="/communities/sagamok/massey">← The Massey Solar Project in 2026</a>, the overview: the five moving pieces, who decides what, and what's still ahead.</p>
+    <p><a href="/communities/sagamok/massey-what-youve-heard">What you may have heard →</a>, six circulating claims checked against the public record.</p>
+    <p><a href="/communities/sagamok/massey-climate">Climate and environment context →</a>: the grid emissions picture, land, water, wildlife, the panel lifecycle, and decommissioning, with sources.</p>
+  </section>
+
+</main>
+
+<footer>
+  <p class="signoff">Chi-miigwech for reading.</p>
+  <p>A companion to the Massey Solar Project explainer, an independent member resource of the Robinson Huron Treaty Members' Transparency Circle. Not affiliated with Potentia Renewables, the Township, the Massey Wildlife Conservation Committee, or any First Nation. Corrections welcome.</p>
+  <p>Robinson Huron Treaty Members' Transparency Circle · <a href="/">rhtcircle.ca</a></p>
+</footer>
+
+</div>
+{% endblock %}

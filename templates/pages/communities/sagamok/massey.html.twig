@@ -1,0 +1,1077 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+{% block main_class %}{% endblock %}
+
+{% block title %}The Massey Solar Project in 2026 · A guide for the North Shore · RHT Members' Transparency Circle{% endblock %}
+{% block description %}A plain-language guide to the Massey Solar Project in Sables-Spanish Rivers Township. What's been decided, what's still ahead, and what each piece means.{% endblock %}
+{% block og_title %}The Massey Solar Project in 2026: what's been decided, what's still ahead{% endblock %}
+{% block og_description %}A plain-language guide to the Massey Solar Project for residents, council-watchers, and First Nations on the North Shore.{% endblock %}
+{% block body_class %}route-explainer-massey-solar-project{% endblock %}
+
+{% block head_styles %}
+  <style>
+    .docwrap {
+      --bg: var(--paper);
+      --surface: var(--paper-2);
+      --ink-soft: var(--ink-2);
+      --ink-mute: var(--ink-3);
+      --rule-soft: var(--rule);
+      --highlight: var(--accent-wash);
+      --serif: var(--font-serif);
+      --sans: var(--font-sans);
+      --mono: var(--font-mono);
+      --content: 800px;
+      --gap-1: 4px;
+      --gap-2: 8px;
+      --gap-3: 12px;
+      --gap-4: 20px;
+      --gap-5: 32px;
+      --gap-6: 56px;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    .docwrap {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.65;
+      font-feature-settings: "ss01", "ss02";
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+    a:hover { color: var(--ink); }
+
+    .doctop {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 18px 32px;
+      max-width: 880px;
+      margin: 0 auto;
+      border-bottom: 1px solid var(--rule);
+      font-family: var(--sans);
+      font-size: 12px;
+      color: var(--ink-mute);
+      letter-spacing: 0.04em;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .doctop__brand {
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .doctop__brand a { color: var(--ink); border-bottom: none; }
+    .doctop__brand a:hover { color: var(--accent); }
+    .doctop__meta { font-variant-numeric: tabular-nums; }
+
+    .page {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 40px 28px 72px;
+    }
+    @media (min-width: 700px) {
+      .page { padding: 56px 40px 96px; }
+    }
+
+    /* Cover */
+    .cover { padding: 24px 0 40px; border-bottom: 1px solid var(--rule); }
+    .cover__eyebrow {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .cover__title {
+      font-size: clamp(30px, 5vw, 44px);
+      line-height: 1.1;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin: 0 0 24px;
+    }
+    .cover__title em { font-style: italic; color: var(--accent); }
+    .cover__lede {
+      font-size: 19px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      margin: 0 0 28px;
+    }
+    .cover__byline {
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink-mute);
+      line-height: 1.55;
+      padding-top: 16px;
+      border-top: 1px solid var(--rule-soft);
+    }
+    .cover__byline strong { color: var(--ink); font-weight: 600; }
+    .cover__updated { font-family: var(--mono); font-size: 12px; color: var(--ink-mute); margin: 14px 0 0; }
+
+    /* Stat strip */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 28px;
+    }
+    @media (min-width: 640px) {
+      .stats { grid-template-columns: repeat(5, 1fr); }
+    }
+    .stat { background: var(--surface); padding: 16px 18px; }
+    .stat__fig {
+      font-family: var(--sans);
+      font-size: 21px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+    }
+    .stat__lab {
+      font-family: var(--sans);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-top: 6px;
+      line-height: 1.35;
+    }
+
+    /* Sections */
+    section { padding: 40px 0; border-bottom: 1px solid var(--rule-soft); }
+    section:last-of-type { border-bottom: none; }
+    h2 {
+      font-size: clamp(22px, 3vw, 28px);
+      line-height: 1.2;
+      font-weight: 400;
+      letter-spacing: -0.005em;
+      margin: 0 0 var(--gap-4);
+    }
+    h3 {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: var(--gap-5) 0 var(--gap-3);
+    }
+    h3:first-child { margin-top: 0; }
+    p { margin: 0 0 var(--gap-4); }
+    p:last-child { margin-bottom: 0; }
+
+    /* Bottom-line callout */
+    .bottomline {
+      background: var(--highlight);
+      padding: 24px 28px;
+      border-left: 3px solid var(--accent);
+      margin: 0;
+    }
+    .bottomline p { font-size: 18px; line-height: 1.6; }
+    .bottomline p:last-child { margin-bottom: 0; }
+
+    /* Visually-hidden (screen-reader only) */
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0);
+      white-space: nowrap; border: 0;
+    }
+
+    /* Progress stepper, proposal to power */
+    .pipeline-caption {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin: var(--gap-5) 0 var(--gap-4);
+    }
+    .pipeline {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 var(--gap-5);
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+    }
+    .pipeline__step {
+      position: relative;
+      text-align: center;
+      padding: 0 4px;
+    }
+    .pipeline__step::before {
+      content: "";
+      position: absolute;
+      top: 16px;
+      left: -50%;
+      width: 100%;
+      height: 2px;
+      background: var(--rule);
+      z-index: 0;
+    }
+    .pipeline__step:first-child::before { display: none; }
+    .pipeline__step.is-done::before,
+    .pipeline__step.is-now::before { background: var(--accent-soft); }
+    .pipeline__marker {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--rule);
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink-mute);
+      line-height: 1;
+    }
+    .pipeline__label {
+      display: block;
+      margin-top: 10px;
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.3;
+    }
+    .pipeline__meta {
+      display: block;
+      margin-top: 3px;
+      font-family: var(--sans);
+      font-size: 10.5px;
+      color: var(--ink-mute);
+      line-height: 1.3;
+    }
+    .pipeline__step.is-done .pipeline__marker {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .pipeline__step.is-now .pipeline__marker {
+      background: var(--surface);
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(106, 58, 31, 0.14);
+    }
+    .pipeline__step.is-now .pipeline__label { color: var(--accent); }
+    @media (max-width: 600px) {
+      .pipeline { grid-template-columns: 1fr; }
+      .pipeline__step {
+        text-align: left;
+        display: grid;
+        grid-template-columns: 34px 1fr;
+        column-gap: 14px;
+        align-items: center;
+        padding: 0 0 22px 0;
+      }
+      .pipeline__marker { grid-row: 1 / span 2; align-self: start; }
+      .pipeline__label { margin-top: 0; }
+      .pipeline__step::before {
+        top: 17px;
+        left: 16px;
+        width: 2px;
+        height: 100%;
+      }
+      .pipeline__step:first-child::before { display: block; }
+      .pipeline__step:last-child::before { display: none; }
+      .pipeline__step.is-now::before { background: var(--rule); }
+    }
+
+    /* Numbered cards for the five moving parts */
+    .parts {
+      display: grid;
+      gap: var(--gap-3);
+    }
+    @media (min-width: 700px) {
+      .parts { grid-template-columns: 1fr 1fr; }
+    }
+    .part {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      padding: 22px;
+      border-radius: 4px;
+    }
+    .part__num {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+    }
+    .part__name {
+      font-family: var(--serif);
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 500;
+      margin: 6px 0 4px;
+    }
+    .part__amount {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-bottom: 12px;
+    }
+    .part__body { font-size: 15px; line-height: 1.55; color: var(--ink-soft); }
+    .part__body p { margin: 0 0 8px; }
+    .part__body p:last-child { margin-bottom: 0; }
+    .part__what {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--rule-soft);
+      font-family: var(--sans);
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--ink-mute);
+    }
+    .part__what strong {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    /* Authority cards, who decides what */
+    .deciders {
+      display: grid;
+      gap: var(--gap-3);
+      margin-top: var(--gap-4);
+    }
+    @media (min-width: 700px) {
+      .deciders { grid-template-columns: 1fr 1fr; }
+    }
+    .decider {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      padding: 22px;
+    }
+    .decider__name {
+      font-family: var(--serif);
+      font-size: 20px;
+      line-height: 1.2;
+      font-weight: 500;
+      margin: 0 0 14px;
+    }
+    .decider ul { list-style: none; padding: 0; margin: 0; }
+    .decider li {
+      position: relative;
+      padding: 8px 0 8px 16px;
+      border-bottom: 1px solid var(--rule-soft);
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--ink-soft);
+    }
+    .decider li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 16px;
+      width: 5px;
+      height: 5px;
+      background: var(--accent-soft);
+      border-radius: 50%;
+    }
+    .decider li:last-child { border-bottom: none; padding-bottom: 0; }
+
+    /* Two-column "decided vs still ahead" */
+    .columns {
+      display: grid;
+      gap: var(--gap-4);
+      margin-top: var(--gap-4);
+    }
+    @media (min-width: 700px) {
+      .columns { grid-template-columns: 1fr 1fr; }
+    }
+    .column {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      padding: 22px;
+      border-radius: 4px;
+    }
+    .column h4 {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 16px;
+    }
+    .column ul { list-style: none; padding: 0; margin: 0; }
+    .column li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+    .column li:first-child { padding-top: 0; }
+    .column li:last-child { border-bottom: none; padding-bottom: 0; }
+
+    /* Timeline */
+    .tl { margin-top: var(--gap-3); border-top: 1px solid var(--rule); }
+    .tl__entry {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      align-items: baseline;
+    }
+    @media (max-width: 600px) {
+      .tl__entry { grid-template-columns: 1fr; gap: 4px; }
+    }
+    .tl__date {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+    }
+    .tl__body h4 {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 500;
+      margin: 0 0 4px;
+      letter-spacing: -0.005em;
+    }
+    .tl__body p {
+      font-size: 15px;
+      color: var(--ink-soft);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    /* Companion cross-links */
+    .more-links {
+      display: grid;
+      gap: var(--gap-3);
+      margin-top: var(--gap-4);
+    }
+    @media (min-width: 700px) {
+      .more-links { grid-template-columns: 1fr 1fr; }
+    }
+    .more-link {
+      display: block;
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      padding: 22px;
+    }
+    .more-link:hover { border-color: var(--accent-soft); color: var(--ink); }
+    .more-link__k {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+    }
+    .more-link__t {
+      font-family: var(--serif);
+      font-size: 20px;
+      line-height: 1.2;
+      font-weight: 500;
+      color: var(--ink);
+      margin: 8px 0 8px;
+    }
+    .more-link__d {
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--ink-mute);
+    }
+    .more-link__go {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 14px;
+    }
+
+    /* Glossary */
+    .glossary { margin-top: var(--gap-3); }
+    .glossary dt {
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--ink);
+      margin-top: 16px;
+    }
+    .glossary dt:first-child { margin-top: 0; }
+    .glossary dd {
+      margin: 4px 0 0;
+      font-size: 16px;
+      color: var(--ink-soft);
+      line-height: 1.55;
+    }
+
+    /* Sources list */
+    .src-list { list-style: none; padding: 0; margin: var(--gap-3) 0 0; }
+    .src-list li {
+      padding: 12px 0;
+      border-top: 1px solid var(--rule-soft);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+    .src-list li:first-child { border-top: none; padding-top: 0; }
+    .src-list small {
+      display: block;
+      color: var(--ink-mute);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    /* Footer */
+    footer {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 32px 28px 56px;
+      border-top: 1px solid var(--rule);
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink-mute);
+      line-height: 1.6;
+    }
+    @media (min-width: 700px) { footer { padding: 32px 40px 64px; } }
+    footer p { margin: 0 0 12px; }
+    footer p:last-child { margin-bottom: 0; }
+    footer .signoff {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--accent);
+      font-style: italic;
+      margin-bottom: 16px;
+    }
+
+    @media print {
+      .doctop { display: none; }
+      section, .part, .column, .decider { page-break-inside: avoid; }
+      footer { border-top: 1px solid var(--rule); }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="docwrap">
+<main class="page">
+
+  <section class="cover">
+    <p class="cover__eyebrow">For residents, council-watchers &amp; First Nations on the North Shore</p>
+    <h1 class="cover__title">The Massey Solar Project in 2026: <em>what's been decided, what's still ahead</em></h1>
+    <p class="cover__lede">Ahnii. A 141-megawatt solar farm has been proposed about 14 kilometres from Massey, in the Township of Sables-Spanish Rivers, with a 400 to 500 acre development footprint planned within a roughly 1,000 acre study area and leased land block. It has split the township's council chambers, generated petitions with thousands of signatures, drawn the formation of a citizen committee, and, as of April 10, 2026, been awarded a 20-year contract by Ontario's electricity system operator. It is also being built in partnership with two First Nations. The reason the public conversation about this project feels confusing isn't that people are wrong. It's that several different decisions are happening on different timelines, governed by different bodies, and a concern raised about one piece often gets cited as if it answered another. This page holds them apart.</p>
+    <p class="cover__byline">
+      <strong>Put together by members of Sagamok Anishnawbek</strong> as a community resource for the Robinson Huron Treaty Members' Transparency Circle. This page is not affiliated with Potentia Renewables, the Township of Sables-Spanish Rivers, the Massey Wildlife Conservation Committee, or any First Nation. Sources are linked throughout. If you spot something that needs correction, please get in touch.
+    </p>
+    <p class="cover__updated">Last updated June 18, 2026. This page is kept current as developments land.</p>
+
+    <div class="stats">
+      <div class="stat"><div class="stat__fig">141 MW</div><div class="stat__lab">Nameplate capacity</div></div>
+      <div class="stat"><div class="stat__fig">400 to 500 ac</div><div class="stat__lab">Development footprint, within a ~1,000 acre lease</div></div>
+      <div class="stat"><div class="stat__fig">~14 km</div><div class="stat__lab">From Massey</div></div>
+      <div class="stat"><div class="stat__fig">20 yr</div><div class="stat__lab">IESO contract (Apr 10, 2026)</div></div>
+      <div class="stat"><div class="stat__fig">51%</div><div class="stat__lab">Indigenous equity</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The bottom line</h2>
+    <p>There are two different kinds of decision here, and they have gone in two different directions, which is the whole reason this feels confusing. The <strong>political and financial</strong> decisions are done: the project has been chosen, contracted, and funded. The <strong>environmental</strong> decision is not: the review that has to happen before anyone can build hasn't started yet.</p>
+
+    <p class="pipeline-caption">Where the project sits on the path from proposal to power</p>
+
+    <ol class="pipeline">
+      <li class="pipeline__step is-done">
+        <span class="sr-only">Complete: </span>
+        <span class="pipeline__marker" aria-hidden="true">✓</span>
+        <span class="pipeline__label">Site secured</span>
+        <span class="pipeline__meta">Private land leased</span>
+      </li>
+      <li class="pipeline__step is-done">
+        <span class="sr-only">Complete: </span>
+        <span class="pipeline__marker" aria-hidden="true">✓</span>
+        <span class="pipeline__label">Township support</span>
+        <span class="pipeline__meta">Aug 2025 · reaffirmed Mar 2026</span>
+      </li>
+      <li class="pipeline__step is-done">
+        <span class="sr-only">Complete: </span>
+        <span class="pipeline__marker" aria-hidden="true">✓</span>
+        <span class="pipeline__label">Provincial contract</span>
+        <span class="pipeline__meta">IESO, 20-year · Apr 2026</span>
+      </li>
+      <li class="pipeline__step is-now">
+        <span class="sr-only">Current step, not yet started: </span>
+        <span class="pipeline__marker" aria-hidden="true">●</span>
+        <span class="pipeline__label">Environmental approval</span>
+        <span class="pipeline__meta">Studies underway, not yet approved</span>
+      </li>
+      <li class="pipeline__step is-future">
+        <span class="sr-only">Upcoming: </span>
+        <span class="pipeline__marker" aria-hidden="true"></span>
+        <span class="pipeline__label">Construction</span>
+        <span class="pipeline__meta">Proposed 2028</span>
+      </li>
+      <li class="pipeline__step is-future">
+        <span class="sr-only">Upcoming: </span>
+        <span class="pipeline__marker" aria-hidden="true"></span>
+        <span class="pipeline__label">Operation</span>
+        <span class="pipeline__meta">Proposed 2029</span>
+      </li>
+    </ol>
+
+    <div class="bottomline">
+      <p>The project is real, chosen, and funded, but it is <strong>not yet approved to build</strong>. The next step, Ontario's environmental review (the Renewable Energy Approval), is where the groundwater, wildlife, wetland, and consultation questions actually get studied and decided. As of June 2026 the REA studies are underway and the application has not yet been filed; construction is anticipated for 2028 and operation for 2029, conditional on approvals.</p>
+      <p>So the single most important thing to watch from here is that review's consultation, especially with <a href="https://www.sagamokanishnawbek.com/">Sagamok Anishnawbek</a>, whose territory the project sits in but <strong>which is not one of the two First Nation equity partners</strong>. Potentia reports it has been in economic-benefit discussions with Sagamok since the fall of 2025 (Patrick Russell, Potentia Renewables, written response, June 2026).</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Five things are happening at once</h2>
+    <p>The reason this gets confusing is that five different things are in motion, each on its own timeline, each decided by a different body. Keeping them apart is most of the work.</p>
+
+    <div class="parts">
+
+      <article class="part">
+        <span class="part__num">01</span>
+        <h3 class="part__name">The project itself</h3>
+        <p class="part__amount">141 MW · 400 to 500 ac footprint within a ~1,000 ac lease · 14 km from Massey</p>
+        <div class="part__body">
+          <p>The <a href="https://www.potentiarenewables.com/our-portfolio/massey-solar-project/">Massey Solar Project</a> is a proposed utility-scale ground-mount solar facility with a 400 to 500 acre development footprint planned within a roughly 1,000 acre study area and leased land block, about 14 km from Massey and 90 km west of Sudbury. The project entity is Massey Solar Inc., an Ontario corporation. Per Patrick Russell, Potentia Renewables (written response, June 2026), Massey Solar Inc. is owned 51 per cent, held collectively, indirectly through subsidiaries of Wahnapitae First Nation and Atikameksheng Anishnawbek, and 49 per cent through subsidiaries of Power Sustainable Energy Infrastructure Partnership (PSEIP), a private renewable energy investment fund. The developer is <a href="https://www.potentiarenewables.com/">Potentia Renewables Inc.</a>, an affiliate of PSEIP that provides development and construction services to PSEIP subsidiaries including Massey Solar Inc. The equity partner is PSEIP. Potentia is the developer, not the 49 per cent owner.</p>
+          <p>Once operating, it is expected to power roughly 23,000 Ontario homes and offset about 3,500 tonnes of CO₂-equivalent per year. Construction is projected at about 18 months and up to 150 jobs; operations may last up to 35 years with a small on-site team.</p>
+        </div>
+        <p class="part__what"><strong>What it means for the North Shore</strong>The largest single-site renewable project the township has ever considered. Land use, jobs, tax base, water, wildlife, and Indigenous consultation are all in play at once, none answered by this one number.</p>
+      </article>
+
+      <article class="part">
+        <span class="part__num">02</span>
+        <h3 class="part__name">The municipal decision</h3>
+        <p class="part__amount">Approved Aug 2025 · Reaffirmed Mar 25, 2026</p>
+        <div class="part__body">
+          <p>Council gave the project a Municipal Support Confirmation in August 2025, conditional on the farm not being built on land designated "prime" agricultural. That confirmation was a required input to the IESO procurement. On <a href="https://shorereport.substack.com/p/massey-solar-project-can-proceed">March 25, 2026</a>, after a motion to rescind, Council voted to keep the support in place, Deputy Mayor Mike Mercieca was the lone vote to rescind.</p>
+          <p>Mayor Kevin Burke's position is that the township checked the proposal against its <a href="https://www.sables-spanish.ca/wp-content/uploads/2020/07/Final-Version-OP-May-28-2020_compressed.pdf">Official Plan</a> and zoning bylaw and found compliance: solar is a permitted use in the rural zone, and Section 3.11.4 commits the township to "promoting and supporting the development of renewable energy sources."</p>
+        </div>
+        <p class="part__what"><strong>What it means for the North Shore</strong>The municipal piece is effectively done. The Official Plan amendment opponents are seeking is about correcting how prime agricultural land is designated, not removing solar as a permitted use. Even if it succeeds it would not by itself undo a contracted project, and the next decision points are provincial, not local.</p>
+      </article>
+
+      <article class="part">
+        <span class="part__num">03</span>
+        <h3 class="part__name">The IESO contract</h3>
+        <p class="part__amount">Selected Apr 10, 2026 · 20-year contract</p>
+        <div class="part__body">
+          <p>On April 10, 2026 the IESO announced the winners of its <a href="https://www.ieso.ca/Sector-Participants/Resource-Acquisition-and-Contracts/Long-Term-2-RFP">Long-Term 2 RFP</a>. Massey Solar was one of <a href="https://www.potentiarenewables.com/2026/04/10/massey-solar-project-selected-through-ontario-lt2-procurement/">14 projects awarded 20-year contracts</a> (12 solar, 2 wind), about 1.3 GW total, priced roughly 21% below previous large-scale renewable contracts.</p>
+          <p>Two LT2 features matter: Indigenous participation was heavily incentivized through rated criteria (all 14 winners hold ≥50% Indigenous equity), and a Municipal Support Confirmation was required at submission. Commercial operation must begin before May 1, 2030.</p>
+        </div>
+        <p class="part__what"><strong>What it means for the North Shore</strong>This is the moment that turned a proposal into a financed project. With a 20-year revenue contract and equity partners signed on, it has the resources to move ahead. Not yet permitted, but committed.</p>
+      </article>
+
+      <article class="part">
+        <span class="part__num">04</span>
+        <h3 class="part__name">The Indigenous partnership</h3>
+        <p class="part__amount">51% Wahnapitae &amp; Atikameksheng (collectively) · 49% PSEIP fund</p>
+        <div class="part__body">
+          <p>Massey Solar Inc. is owned 51 per cent, held collectively, indirectly through subsidiaries of <a href="https://www.wahnapitaefn.com/">Wahnapitae First Nation</a> and <a href="https://www.atikamekshenganishnawbek.ca/">Atikameksheng Anishnawbek First Nation</a>, with the remaining 49 per cent held through subsidiaries of Power Sustainable Energy Infrastructure Partnership (PSEIP). Per Patrick Russell, Potentia Renewables (written response, June 2026), the two First Nations were selected as <a href="/treaty-wide/the-treaty">Robinson Huron Treaty</a> signatories for the treaty rights area where the project is located. The split between Wahnapitae and Atikameksheng inside the 51 per cent is not disclosed. Both First Nations' reserves sit roughly 75 to 100 km east of the site, near Sudbury.</p>
+          <p><strong>Sagamok Anishnawbek</strong>, whose reserve and traditional territory sit closer to the project, is not one of the equity partners. Potentia reports that it has been in discussions with Sagamok since the fall of 2025 regarding economic benefit opportunities, and that it intends to continue through the REA and development process (Patrick Russell, Potentia Renewables, written response, June 2026). Potentia says these discussions cover all forms of economic benefit, which can include equity in the project. Sagamok submitted emailed objections about consultation in March; the Mayor also reported verbal interest from Chief Angus Toulouse in participating. Both can be true at once.</p>
+        </div>
+        <p class="part__what"><strong>What it means for the North Shore</strong>Wahnapitae and Atikameksheng as equity partners is significant. It does not, however, resolve the separate Crown duty to consult Sagamok and any other community whose rights may be affected.</p>
+      </article>
+
+      <article class="part">
+        <span class="part__num">05</span>
+        <h3 class="part__name">The provincial environmental review</h3>
+        <p class="part__amount">Reg. 359/09 · Studies underway, not yet filed</p>
+        <div class="part__body">
+          <p>Before it can be built, Massey Solar must obtain a <a href="https://www.ontario.ca/page/renewable-energy-approvals">Renewable Energy Approval (REA)</a> under <a href="https://www.ontario.ca/laws/regulation/090359">Ontario Regulation 359/09</a>, the substantive environmental review, and the stage at which most current concerns are formally studied.</p>
+          <p>The application must include a hydrogeological assessment, wetland and woodland evaluations, a Natural Heritage Assessment, a Species at Risk review, an archaeological assessment, and a noise study, plus formal public consultation (at least two meetings) and Indigenous consultation. As of June 2026, Potentia reports that specialist consultants have begun the studies required for the REA, including natural environment surveys, species-at-risk screening, wetland confirmation, noise assessment modelling, water and drainage assessments, and archaeological and cultural heritage assessments (Patrick Russell, Potentia Renewables, written response, June 2026). The REA application itself has not yet been submitted.</p>
+          <p>As part of its public engagement, Potentia has scheduled community drop-in sessions at the <strong>Massey Fire Hall</strong> (Imperial St N, Massey): Wednesday June 10 and Wednesday July 22 from 4:00pm to 7:00pm, and Thursday June 11 and Thursday July 23 from 11:00am to 2:00pm. The sessions were moved from the Massey Public Library to accommodate the number of people interested in attending (Massey Solar Team notice, June 2026; questions to info@masseysolar.ca).</p>
+          <p>On the local concerns about groundwater, wildlife, and farmland, Potentia states that it will undertake a detailed hydrogeological study to characterize groundwater conditions and assess potential impacts, that panel materials are non-hazardous, and that solar facilities typically pose minimal risk to drinking water. It says vegetation management will prioritize mechanical methods such as mowing and trimming, with low-impact approaches that may include native plantings and managed grazing (Patrick Russell, Potentia Renewables, written response, June 2026). Potentia says it does not intend to use herbicides at the site, and would turn to them only if invasive species required control and only in agreement with the municipality and landowners.</p>
+        </div>
+        <p class="part__what"><strong>What it means for the North Shore</strong>The questions driving the local debate, the Aux Sables River and Massey's water, 200+ bird species, wildlife, herbicides, and decommissioning, are properly addressed here, not at the municipal stage.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Who decides what</h2>
+    <p>Three governments and one independent agency each hold authority over a different piece. The municipal piece is local; everything substantive about whether the project actually gets built is provincial or federal.</p>
+
+    <div class="deciders">
+
+      <div class="decider">
+        <h3 class="decider__name">Township of Sables-Spanish Rivers</h3>
+        <ul>
+          <li>Confirms whether the proposed use fits the Official Plan and zoning.</li>
+          <li>Issues (or does not issue) a Municipal Support Confirmation for IESO bids.</li>
+          <li>Can revise the Official Plan and zoning going forward, but cannot retroactively undo a project that already has provincial approval and a signed IESO contract.</li>
+          <li>Applies Site Plan Control under Section 41 of the Planning Act, which operates even when the use is permitted by zoning. It can attach binding conditions on building location and grading, landscaping, screening and buffering, drainage and stormwater, pedestrian and vehicle access, setbacks and fencing, and lighting and signage.</li>
+        </ul>
+      </div>
+
+      <div class="decider">
+        <h3 class="decider__name">Independent Electricity System Operator</h3>
+        <ul>
+          <li>Runs the LT2 procurement and awards 20-year contracts.</li>
+          <li>Sets the rules, including weighted Indigenous-participation criteria and the Municipal Support Confirmation requirement.</li>
+          <li>Holds the contract and can enforce its terms, but does not regulate environmental impact.</li>
+        </ul>
+      </div>
+
+      <div class="decider">
+        <h3 class="decider__name">Province of Ontario (MECP)</h3>
+        <ul>
+          <li>Issues the Renewable Energy Approval under Regulation 359/09.</li>
+          <li>Reviews hydrogeology, wildlife, wetlands, archaeology, noise, and Species at Risk.</li>
+          <li>Requires public and Indigenous consultation.</li>
+          <li>Can refuse the approval, attach conditions, or require design changes.</li>
+        </ul>
+      </div>
+
+      <div class="decider">
+        <h3 class="decider__name">The Crown (Canada and Ontario)</h3>
+        <ul>
+          <li>Owes a duty to consult Indigenous communities whose Aboriginal or Treaty rights may be adversely affected.</li>
+          <li>That duty is not extinguished by an equity partnership with one or two First Nations; it is owed to each Nation whose rights are at stake.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>What's been decided, what's still ahead</h2>
+    <p>Each new headline can read like a single decision is being made. It usually isn't. Here is the split.</p>
+
+    <div class="columns">
+
+      <div class="column">
+        <h4>Decided</h4>
+        <ul>
+          <li>Municipal Support Confirmation: granted August 2025, reaffirmed March 25, 2026.</li>
+          <li>IESO LT2 contract: awarded April 10, 2026 for 20 years.</li>
+          <li>Ownership of Massey Solar Inc.: 51 per cent held collectively through subsidiaries of Wahnapitae and Atikameksheng Anishnawbek, 49 per cent through PSEIP, with Potentia as the developer (Patrick Russell, Potentia Renewables, written response, June 2026).</li>
+          <li>Official Plan and zoning: solar is a permitted use in the rural zone (Section 3.11.4, 2020 Plan).</li>
+          <li>Site: a 400 to 500 acre development footprint within a roughly 1,000 acre study area and leased land block, about 14 km from Massey.</li>
+        </ul>
+      </div>
+
+      <div class="column">
+        <h4>Still ahead</h4>
+        <ul>
+          <li>Renewable Energy Approval application and review under Regulation 359/09.</li>
+          <li>Completion of the REA studies now underway (natural environment, species at risk, wetland, noise, water and drainage, hydrogeology, archaeology and cultural heritage), begun June 2026.</li>
+          <li>Crown consultation with Sagamok Anishnawbek and any other affected First Nation, distinct from the equity partnership.</li>
+          <li>At least two public consultation meetings as part of the REA.</li>
+          <li>A 2026 municipal election that could change council composition.</li>
+          <li>Construction (proposed 2028) and commercial operation (proposed 2029; before May 1, 2030).</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>What's happened so far</h2>
+    <p>A short timeline of the moments that matter most for residents.</p>
+
+    <div class="tl">
+
+      <div class="tl__entry">
+        <span class="tl__date">1998</span>
+        <div class="tl__body">
+          <h4>Township of Sables-Spanish Rivers formed</h4>
+          <p>Massey, Webbwood, The Spanish River, and the geographic townships of May and Shakespeare amalgamate, named for Massey's location at the junction of the Spanish and Aux Sables rivers.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2020</span>
+        <div class="tl__body">
+          <h4>Official Plan revision</h4>
+          <p>Council adopts a Plan that recognizes climate change and commits the township to "promoting and supporting the development of renewable energy sources," including commercial-scale solar (Section 3.11.4). The Plan was due for revision in 2025.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2025-08</span>
+        <div class="tl__body">
+          <h4>Municipal Support Confirmation granted</h4>
+          <p>Council gives Potentia's application its required Municipal Support Confirmation, conditional on the project not being sited on land designated "prime" agricultural.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2025-10</span>
+        <div class="tl__body">
+          <h4>IESO bid submitted</h4>
+          <p>Potentia submits the Massey Solar bid to the IESO under the Long-Term 2 RFP, with Wahnapitae First Nation and Atikameksheng Anishnawbek as Indigenous equity partners.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2026-02-25</span>
+        <div class="tl__body">
+          <h4>Council debate begins</h4>
+          <p>Deputy Mayor Mike Mercieca raises citizen concerns. Farmer Gary Vermeer questions the zoning interpretation. The Massey Wildlife Conservation Committee is publicly named for the first time.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2026-03-10</span>
+        <div class="tl__body">
+          <h4>Potentia responds publicly</h4>
+          <p>Through a statement to Espanola's Moose FM, Potentia addresses groundwater, vegetation management, panel materials, farmland classification, and decommissioning, noting the REA process has not yet started.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2026-03-11</span>
+        <div class="tl__body">
+          <h4>Rescind motion blocked on procedure</h4>
+          <p>An MWCC delegation presents to Council. Deputy Mayor Mercieca moves to rescind the August 2025 approval, citing emailed objections from Sagamok's Michelle Toulouse. The Mayor rules the motion out of order pending proper notice.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2026-03-25</span>
+        <div class="tl__body">
+          <h4>Council reaffirms support</h4>
+          <p>After delegations, Council votes against rescinding; Deputy Mayor Mercieca is the only vote in favour. The Mayor says Council heard verbal interest from Sagamok Chief Angus Toulouse in his community participating.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2026-04-10</span>
+        <div class="tl__body">
+          <h4>IESO awards LT2 contract</h4>
+          <p>Massey Solar is one of 14 projects (12 solar, 2 wind) awarded 20-year contracts. All 14 include ≥50% Indigenous equity. Total awarded capacity is about 1.3 GW.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2026-05</span>
+        <div class="tl__body">
+          <h4>Project in development phase</h4>
+          <p>Potentia begins the development phase and publishes a project newsletter ("Massey Solar Project Pulse"). REA application not yet filed; construction proposed for 2028, commercial operation in 2029.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2026-06-02</span>
+        <div class="tl__body">
+          <h4>Potentia responds on the record</h4>
+          <p>In a written response, Patrick Russell, Project Manager at Potentia Renewables, sets out the project's ownership (Massey Solar Inc. owned 51 per cent collectively through subsidiaries of Wahnapitae and Atikameksheng Anishnawbek and 49 per cent through PSEIP, with Potentia as the developer), confirms economic-benefit discussions with Sagamok since the fall of 2025, and reports that the REA studies are underway. The timeline anticipates studies through 2026 into 2027, permitting to 2028, construction beginning in 2028, and operation in 2029, conditional on approvals.</p>
+        </div>
+      </div>
+
+      <div class="tl__entry">
+        <span class="tl__date">2026-06-09</span>
+        <div class="tl__body">
+          <h4>Drop-in sessions move to the Massey Fire Hall</h4>
+          <p>Potentia notifies the community that its drop-in sessions have moved from the Massey Public Library to the Massey Fire Hall (Imperial St N, Massey), to accommodate the number of people interested in attending. Dates: June 10 and 11, and July 22 and 23, 2026, with the times unchanged (Massey Solar Team notice).</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>The local debate, in depth</h2>
+    <p>The substantive disagreement is real, and not all of it falls neatly on one "side." Companion pages go deeper than this overview: one on the claims circulating in town, one on who is saying what, and one on the climate and environment context. For the climate and environment context, see <a href="/communities/sagamok/massey-climate">Climate and environment context</a>.</p>
+
+    <p>The concerns residents and the Massey Wildlife Conservation Committee have raised, in their own terms:</p>
+    <ul>
+      <li>groundwater, the natural spring, and drinking water</li>
+      <li>wildlife and bird habitat</li>
+      <li>vegetation management and any herbicide use</li>
+      <li>whether any of the site is "prime" agricultural land</li>
+      <li>whether Sagamok Anishnawbek has been adequately consulted</li>
+      <li>the scale of the project and its visual impact</li>
+      <li>trust in the process</li>
+    </ul>
+    <p>Most of these are not settled at the municipal or contract stage. They are assessed in the Renewable Energy Approval, which has not yet been filed. The companion pages below take each one up in detail.</p>
+
+    <div class="more-links">
+
+      <a class="more-link" href="/communities/sagamok/massey-what-youve-heard">
+        <span class="more-link__k">Companion · 6 claims</span>
+        <span class="more-link__t">What you may have heard</span>
+        <span class="more-link__d">Six claims circulating in conversation and on social media, prime farmland, drinking water, 200 bird species, bypassed council, consultation, Power Corp, checked against the public record.</span>
+        <span class="more-link__go">Read the claims →</span>
+      </a>
+
+      <a class="more-link" href="/communities/sagamok/massey-voices">
+        <span class="more-link__k">Companion · who's saying what</span>
+        <span class="more-link__t">Voices</span>
+        <span class="more-link__d">The committee, the Mayor and Deputy Mayor, a former councillor, Potentia, and the First Nations, a representative range of positions, in their own framing.</span>
+        <span class="more-link__go">Read the voices →</span>
+      </a>
+
+      <a class="more-link" href="/communities/sagamok/massey-climate">
+        <span class="more-link__k">Companion · climate and environment</span>
+        <span class="more-link__t">Climate and environment context</span>
+        <span class="more-link__d">The grid emissions picture, land and farmland, water, wildlife, the panel lifecycle, and decommissioning, with sources. A neutral companion that takes no position.</span>
+        <span class="more-link__go">Read the context →</span>
+      </a>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>What is not yet known</h2>
+    <p>Several questions cannot be answered yet, because the studies that answer them are part of the Renewable Energy Approval, which is underway but not complete. Until those studies are done, statements from any party, including the developer, are positions rather than findings.</p>
+    <ul>
+      <li>the groundwater and drinking-water impact</li>
+      <li>wetland and woodland boundaries on the site</li>
+      <li>whether species at risk are present</li>
+      <li>the final vegetation-management plan, and any herbicide use</li>
+      <li>the final site layout within the study area</li>
+      <li>Sagamok Anishnawbek's formal position</li>
+      <li>what conditions or modifications the REA may attach, and whether it is approved at all</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>How to take part in the review</h2>
+    <p>When the Renewable Energy Approval is filed, the provincial process has formal ways for residents and First Nations to be heard, on the record.</p>
+    <ul>
+      <li>Attend the public consultation meetings the REA requires (at least two).</li>
+      <li>Submit written comments to the Ministry of the Environment, Conservation and Parks (MECP), which is the decision-maker.</li>
+      <li>Ask MECP for specific studies, or for conditions to be attached to any approval.</li>
+      <li>Attend Potentia's community drop-in sessions (dates in the timeline above) to ask the developer directly.</li>
+      <li>For First Nations members, the Crown's duty to consult runs through the REA, separate from the equity partnership.</li>
+    </ul>
+    <p>Ontario's <a href="https://www.ontario.ca/page/renewable-energy-approvals">Renewable Energy Approvals overview</a> sets out the steps.</p>
+  </section>
+
+  <section>
+    <h2>Key terms</h2>
+    <dl class="glossary">
+      <dt>Class 3 solar facility</dt>
+      <dd>Under Ontario Regulation 359/09, a ground-mount solar generation facility with nameplate capacity over 10 kW connected to a transmission system. Massey Solar is a Class 3 facility.</dd>
+
+      <dt>Commercial Operation Date (CoD)</dt>
+      <dd>The date a project is contractually required to begin selling electricity to the grid. For Massey Solar, currently projected as 2029, with a regulatory deadline before May 1, 2030.</dd>
+
+      <dt>Crown duty to consult</dt>
+      <dd>The legal obligation on Canada and Ontario to consult, and, where appropriate, accommodate, Indigenous communities when a proposed Crown decision may adversely affect Aboriginal or Treaty rights. Triggered by the REA decision, not by the IESO contract or municipal approval.</dd>
+
+      <dt>IESO</dt>
+      <dd>Independent Electricity System Operator. Ontario's not-for-profit agency that operates the wholesale electricity market and runs procurements.</dd>
+
+      <dt>LT2 / Long-Term 2 RFP</dt>
+      <dd>The IESO's second long-term procurement, which awarded about 1.3 GW of renewable contracts in April 2026, including Massey Solar. Required Municipal Support Confirmation; heavily weighted Indigenous participation; all 14 awarded projects ended up with ≥50% Indigenous equity.</dd>
+
+      <dt>Municipal Support Confirmation</dt>
+      <dd>A document from a host municipality required for a project to bid into LT2. Sables-Spanish Rivers issued one in August 2025.</dd>
+
+      <dt>Official Plan</dt>
+      <dd>The municipal land-use planning document. Sables-Spanish Rivers' current Plan was revised in 2020 and was due for review in 2025. Solar is a permitted use in the rural zone under Section 3.11.4.</dd>
+
+      <dt>REA / Renewable Energy Approval</dt>
+      <dd>The provincial environmental approval required under Ontario Regulation 359/09. Includes hydrogeology, wetlands, woodlands, wildlife habitat, Species at Risk, archaeology, and noise studies plus formal public and Indigenous consultation. Not yet filed.</dd>
+
+      <dt>Robinson Huron Treaty</dt>
+      <dd>The 1850 treaty between the Anishinaabe of Lake Huron's north shore and the Crown. The project site sits on Robinson Huron Treaty territory. (See the <a href="/treaty-wide/the-treaty">Robinson Huron Treaty explainer</a>.)</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Where to read more</h2>
+    <p>The most useful primary sources, if you want to verify anything on this page or read further.</p>
+    <ul class="src-list">
+      <li>
+        <a href="https://www.potentiarenewables.com/our-portfolio/massey-solar-project/">Massey Solar Project page (Potentia Renewables)</a>
+        <small>Project specs, milestone schedule, and newsletter. Includes the May 2026 "Project Pulse."</small>
+      </li>
+      <li>
+        <a href="https://www.potentiarenewables.com/2026/04/10/massey-solar-project-selected-through-ontario-lt2-procurement/">Massey Solar Project Selected Through Ontario LT2 Procurement (April 10, 2026)</a>
+        <small>Potentia's announcement of the LT2 award.</small>
+      </li>
+      <li>
+        <a href="https://www.ieso.ca/Sector-Participants/Resource-Acquisition-and-Contracts/Long-Term-2-RFP">IESO Long-Term 2 RFP page</a>
+        <small>Procurement rules, including the ≥50% Indigenous equity weighting.</small>
+      </li>
+      <li>
+        <a href="https://www.ontario.ca/laws/regulation/090359">Ontario Regulation 359/09, Renewable Energy Approvals</a>
+        <small>The provincial regulation governing the REA process.</small>
+      </li>
+      <li>
+        <a href="https://www.ontario.ca/page/renewable-energy-approvals">Ontario's REA overview page</a>
+        <small>Plain-language summary of the approval process.</small>
+      </li>
+      <li>
+        <a href="https://www.sables-spanish.ca/wp-content/uploads/2020/07/Final-Version-OP-May-28-2020_compressed.pdf">Township of Sables-Spanish Rivers Official Plan, May 2020</a>
+        <small>Section 3.11.4 on renewable energy.</small>
+      </li>
+      <li>
+        <a href="https://en.wikipedia.org/wiki/Sables-Spanish_Rivers">Sables-Spanish Rivers, Wikipedia</a>
+        <small>Township history, population, and geography.</small>
+      </li>
+      <li>
+        <a href="https://www.cbc.ca/news/canada/sudbury/massey-solar-project-9.7103177">Residents oppose proposed solar project, CBC News, February 2026</a>
+        <small>The first major CBC report.</small>
+      </li>
+      <li>
+        <a href="https://www.ctvnews.ca/northern-ontario/article/opposition-emerges-to-solar-project-proposed-rural-area-in-massey/">Opposition emerges to solar project, CTV News, March 2026</a>
+        <small>Profile of the Massey Wildlife Conservation Committee.</small>
+      </li>
+      <li>
+        <a href="https://shorereport.substack.com/p/massey-solar-project-can-proceed">Massey Solar Project Can Proceed to Next Phase, Shore Report, March 26, 2026</a>
+        <small>Coverage of the March 25 council vote.</small>
+      </li>
+      <li>
+        <a href="https://www.aroundandabout.ca/potentia-acknowledges-concerns-of-sables-spanish-rivers-township-massey-solar-project/">Potentia acknowledges concerns, Around and About, March 10, 2026</a>
+        <small>Potentia's full point-by-point response statement.</small>
+      </li>
+      <li>
+        <a href="https://www.change.org/p/oppose-the-solar-farm-in-sables-spanish-river-save-the-natural-spring">Change.org petition, Oppose the Solar Farm in Sables-Spanish River</a>
+        <small>The most-circulated opposition petition.</small>
+      </li>
+      <li>
+        <a href="https://www.sagamokanishnawbek.com/">Sagamok Anishnawbek</a>
+        <small>Chief and Council page; the most direct source for any formal position the community publishes.</small>
+      </li>
+    </ul>
+    <p>Acreage figures reflect an August 11, 2025 email between Potentia's David Biggar and Township Clerk Anne Whalen, provided by the Massey Wildlife Conservation Committee. The roughly 600 acre figure on Potentia's public project page sits between the development footprint and the lease area.</p>
+  </section>
+
+  <section>
+    <h2>About this page</h2>
+    <p>This is a community resource, not an official source. It was put together by members of Sagamok Anishnawbek for the Robinson Huron Treaty Members' Transparency Circle. It is not affiliated with Potentia Renewables, the Township of Sables-Spanish Rivers, the Massey Wildlife Conservation Committee, or any First Nation including Sagamok.</p>
+    <p>The goal is to help residents and First Nations members on the North Shore hold the five moving pieces apart, see what has been decided and what is still ahead, and find the primary sources if they want to dig deeper. People are capable of drawing their own conclusions; the page does not take a side on whether the project should be built, or on whether the Indigenous partnership as currently structured is adequate.</p>
+    <p>To be explicit about its boundaries: this page does not argue for or against the project, judge whether the land should be used for solar, assess whether consultation has been adequate, or take a position on any party's claims. What it does is separate the decisions, explain the process, link to primary sources, and mark what is known and what is not yet known.</p>
+    <p>If you spot something that needs correction, or you have a question this page doesn't answer, please get in touch. Suggestions for additions welcome.</p>
+  </section>
+
+</main>
+
+<footer>
+  <p class="signoff">Chi-miigwech for reading.</p>
+  <p>More: <a href="/treaty-wide">the treaty-wide ask</a>, <a href="/standard">the shared standard</a>, and <a href="/communities/sagamok">Sagamok</a>.</p>
+  <p>This page will be updated as new developments land. The most recent update was 2026-06-18.</p>
+  <p>Robinson Huron Treaty Members' Transparency Circle · <a href="/">rhtcircle.ca</a></p>
+</footer>
+
+</div>
+{% endblock %}

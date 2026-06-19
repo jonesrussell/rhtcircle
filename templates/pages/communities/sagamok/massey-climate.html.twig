@@ -1,0 +1,279 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+{% block main_class %}{% endblock %}
+
+{% block title %}Massey Solar Project: climate and environment context · RHT Members' Transparency Circle{% endblock %}
+{% block description %}The climate and environment context of the Massey Solar Project: grid emissions, land, water, wildlife, panel lifecycle, and decommissioning, with sources. A neutral companion to the main explainer.{% endblock %}
+{% block og_title %}Massey Solar Project: climate and environment context{% endblock %}
+{% block og_description %}The climate and environment context, with facts and sources, so readers can form their own view. A neutral companion to the main explainer.{% endblock %}
+{% block body_class %}route-explainer-massey-solar-project-climate-and-environment{% endblock %}
+
+{% block head_styles %}
+  <style>
+    .docwrap {
+      --bg: var(--paper);
+      --surface: var(--paper-2);
+      --ink-soft: var(--ink-2);
+      --ink-mute: var(--ink-3);
+      --rule-soft: var(--rule);
+      --highlight: var(--accent-wash);
+      --serif: var(--font-serif);
+      --sans: var(--font-sans);
+      --mono: var(--font-mono);
+      --content: 800px;
+      --gap-1: 4px;
+      --gap-2: 8px;
+      --gap-3: 12px;
+      --gap-4: 20px;
+      --gap-5: 32px;
+      --gap-6: 56px;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    .docwrap {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.65;
+      font-feature-settings: "ss01", "ss02";
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+    a:hover { color: var(--ink); }
+
+    .doctop {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 18px 32px;
+      max-width: 880px;
+      margin: 0 auto;
+      border-bottom: 1px solid var(--rule);
+      font-family: var(--sans);
+      font-size: 12px;
+      color: var(--ink-mute);
+      letter-spacing: 0.04em;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .doctop__brand {
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .doctop__brand a { color: var(--ink); border-bottom: none; }
+    .doctop__brand a:hover { color: var(--accent); }
+    .doctop__meta { font-variant-numeric: tabular-nums; }
+
+    .page {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 40px 28px 72px;
+    }
+    @media (min-width: 700px) {
+      .page { padding: 56px 40px 96px; }
+    }
+
+    .backnav {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .backnav a { border-bottom: none; color: var(--accent); }
+    .backnav a:hover { color: var(--ink); }
+
+    /* Cover */
+    .cover { padding: 0 0 40px; border-bottom: 1px solid var(--rule); }
+    .cover__eyebrow {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .cover__title {
+      font-size: clamp(30px, 5vw, 44px);
+      line-height: 1.1;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin: 0 0 24px;
+    }
+    .cover__title em { font-style: italic; color: var(--accent); }
+    .cover__lede {
+      font-size: 19px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      margin: 0;
+    }
+
+    /* Sections */
+    section { padding: 40px 0; border-bottom: 1px solid var(--rule-soft); }
+    section:last-of-type { border-bottom: none; }
+    h2 {
+      font-size: clamp(22px, 3vw, 28px);
+      line-height: 1.2;
+      font-weight: 400;
+      letter-spacing: -0.005em;
+      margin: 0 0 var(--gap-4);
+    }
+    p { margin: 0 0 var(--gap-4); }
+    p:last-child { margin-bottom: 0; }
+    ul { margin: 0 0 var(--gap-4); padding-left: 22px; }
+    li { margin-bottom: 12px; }
+    li:last-child { margin-bottom: 0; }
+
+    /* Source attributions under a section */
+    .src {
+      font-family: var(--sans);
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--ink-mute);
+      margin-top: var(--gap-3);
+    }
+    .src a { color: var(--accent); }
+
+    .note {
+      background: var(--highlight);
+      padding: 20px 24px;
+      border-left: 3px solid var(--accent);
+      margin-top: var(--gap-4);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .note p:last-child { margin-bottom: 0; }
+
+    /* Footer */
+    footer {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 32px 28px 56px;
+      border-top: 1px solid var(--rule);
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink-mute);
+      line-height: 1.6;
+    }
+    @media (min-width: 700px) { footer { padding: 32px 40px 64px; } }
+    footer p { margin: 0 0 12px; }
+    footer p:last-child { margin-bottom: 0; }
+    footer .signoff {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--accent);
+      font-style: italic;
+      margin-bottom: 16px;
+    }
+    footer a { color: var(--accent); }
+
+    @media print {
+      .doctop, .backnav { display: none; }
+      footer { border-top: 1px solid var(--rule); }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="docwrap">
+<main class="page">
+
+  <p class="backnav"><a href="/communities/sagamok/massey">← Massey Solar Project overview</a></p>
+
+  <section class="cover">
+    <p class="cover__eyebrow">Massey Solar Project · companion page</p>
+    <h1 class="cover__title">Climate and environment context</h1>
+    <p class="cover__lede">This page sets out the climate and environment context of the Massey Solar Project, with the facts and the sources, so readers can form their own view. It does not take a position on the project, and it does not argue for or against it. For the approvals process, the timeline, and who decides what, see <a href="/communities/sagamok/massey">the main explainer</a>.</p>
+  </section>
+
+  <section>
+    <div class="note">
+      <p>An independent member resource of the Robinson Huron Treaty Members' Transparency Circle. Independent of the Township, the developer, and the First Nations named. It describes and links to public sources and does not take a position.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Why solar projects are proposed</h2>
+    <p>Large solar projects add electricity from a renewable source. The scientific consensus is that greenhouse gas emissions from burning fossil fuels are the main driver of climate change, and renewable generation is one of the tools used to reduce those emissions. Whether this particular project is the right way to do that is a separate question, which the considerations below are meant to inform.</p>
+    <p class="src">Source: IPCC assessments on the causes of climate change (<a href="https://www.ipcc.ch/report/ar6/syr/" target="_blank" rel="noopener">ipcc.ch</a>).</p>
+  </section>
+
+  <section>
+    <h2>The Ontario grid context</h2>
+    <p>A solar farm's effect on emissions depends on the grid it joins, and Ontario's grid is already relatively low-emission. In a recent year about 84 percent of the province's electricity was emissions-free, with most of the remainder from natural gas, and nuclear and hydro together supplied close to three-quarters of the total. The natural-gas share has risen in recent years as demand has grown.</p>
+    <p>Ontario has already phased out coal, so new solar does not displace coal here. Its emissions effect comes from displacing natural gas at the margin and from helping meet rising demand without adding more gas. The effect is real, and smaller than the same equipment would have on a coal-heavy grid.</p>
+    <p class="src">Sources: IESO, Supply Mix and Generation (<a href="https://www.ieso.ca/en/Learn/Ontario-Electricity-Grid/Supply-Mix-and-Generation" target="_blank" rel="noopener">ieso.ca</a>); CBC News on the rising natural-gas share (<a href="https://www.cbc.ca/news/canada/toronto/ontario-electricity-greenhouse-gas-1.7534474" target="_blank" rel="noopener">cbc.ca</a>).</p>
+  </section>
+
+  <section>
+    <h2>The footprint of solar</h2>
+    <p>Solar panels involve both emissions and land use.</p>
+    <ul>
+      <li><strong>Lifecycle emissions:</strong> manufacturing and installing panels causes emissions. Over a panel's working life the total is roughly 10 to 41 grams of CO2-equivalent per kilowatt-hour, with a carbon payback of about two years. That is well below natural gas or coal per unit of electricity.</li>
+      <li><strong>Land:</strong> utility-scale solar requires land. This project's acreage, and the difference between the leased area and the actual panel footprint, are set out in <a href="/communities/sagamok/massey">the main explainer</a>; see it for the current figures.</li>
+    </ul>
+    <p class="src">Sources: NREL, life cycle assessment of utility-scale solar (<a href="https://docs.nrel.gov/docs/fy24osti/87372.pdf" target="_blank" rel="noopener">nrel.gov</a>); IPCC lifecycle emissions figures (<a href="https://www.ipcc.ch/report/ar6/syr/" target="_blank" rel="noopener">ipcc.ch</a>).</p>
+  </section>
+
+  <section>
+    <h2>Land, farmland, and wildlife</h2>
+    <p>Residents have raised concerns about farmland, water, and wildlife. The points raised, and the context reported alongside each:</p>
+    <ul>
+      <li><strong>Farmland:</strong> a concern is that solar removes productive land from use. Some solar operations graze livestock such as sheep beneath and around the panels, keeping the land in agricultural use; this has been reported at Ontario sites.</li>
+      <li><strong>Birds:</strong> a concern is that panels harm birds. Major bird-conservation organizations state that climate change is the larger threat to birds and support well-sited clean energy.</li>
+    </ul>
+    <p class="src">Sources: Toronto Star, on sheep grazing at Ontario solar sites (<a href="https://www.thestar.com/news/ontario/for-years-farming-communities-opposed-renewables-these-sheep-are-changing-peoples-minds/article_215b22da-fc3f-46c4-9e5a-f38f68a7852c.html" target="_blank" rel="noopener">thestar.com</a>); Audubon Society, on clean energy and birds (<a href="https://www.audubon.org/our-work/climate/clean-energy" target="_blank" rel="noopener">audubon.org</a>).</p>
+  </section>
+
+  <section>
+    <h2>Water and stormwater</h2>
+    <p>A concern is that a large solar site changes how water moves across the land. A solar farm uses very little water to operate, unlike gas or nuclear plants that need water for cooling. The water questions are mostly about construction and the years following it: rain running off panels and across compacted soil can increase runoff and erosion, and sediment reaching wetlands or watercourses can harm them. Research finds these effects can be substantial on a poorly designed site and can be largely managed on a well-designed one, through ground vegetation, spacing between rows, and stormwater controls. Ontario's provincial review sets setbacks from water bodies and wetlands and requires erosion and stormwater management.</p>
+    <p class="src">Sources: Penn State, study on solar farm stormwater controls (<a href="https://www.psu.edu/news/research/story/solar-farms-stormwater-controls-mitigate-runoff-erosion-study-finds" target="_blank" rel="noopener">psu.edu</a>); Ontario, Technical Guide to Renewable Energy Approvals (<a href="https://www.ontario.ca/document/technical-guide-renewable-energy-approvals-0" target="_blank" rel="noopener">ontario.ca</a>).</p>
+  </section>
+
+  <section>
+    <h2>Panels at the end of their life</h2>
+    <p>A common claim is that solar panels are toxic and will pile up in landfills. Panels are mostly glass, aluminum, and silicon, but can contain small amounts of metals such as lead, and some panels test as hazardous waste, so sending them to ordinary landfill is discouraged and recycling is preferred. Recycling technology exists and can recover most of the materials, but it is still under-developed and not yet widely deployed, and large volumes of end-of-life panels are projected worldwide over the coming decades. How a particular project handles this is tied to its decommissioning plan, below.</p>
+    <p class="src">Sources: US EPA, end-of-life solar panel regulations and recycling (<a href="https://www.epa.gov/hw/end-life-solar-panels-regulations-and-management" target="_blank" rel="noopener">epa.gov</a>); IRENA, projections on end-of-life volumes (<a href="https://www.irena.org/publications/2016/Jun/End-of-life-management-Solar-Photovoltaic-Panels" target="_blank" rel="noopener">irena.org</a>); Yale E360 on recycling (<a href="https://e360.yale.edu/features/solar-energy-panels-recycling" target="_blank" rel="noopener">e360.yale.edu</a>).</p>
+  </section>
+
+  <section>
+    <h2>Decommissioning</h2>
+    <p>A common question is what happens in twenty-five or thirty years. Ontario's renewable approval process requires a Decommissioning Plan Report that describes how the facility is dismantled and the land restored to a clean and safe condition suitable for its likely future use. For a project on agricultural land, that generally means returning it to similar agricultural use, and the plan must also cover what happens if the project is abandoned during construction. The specific terms, including any financial assurance for removal, are set in that plan and in the agreement between the developer and the landowner.</p>
+    <p class="src">Source: Ontario, Technical Guide to Renewable Energy Approvals, O. Reg. 359/09 (<a href="https://www.ontario.ca/document/technical-guide-renewable-energy-approvals-0/chapter-7-guidance-preparing-decommissioning" target="_blank" rel="noopener">ontario.ca</a>).</p>
+  </section>
+
+  <section>
+    <h2>Where these questions are formally assessed</h2>
+    <p>The project must pass a provincial environmental review, the Renewable Energy Approval, before it can be built. That review is where land, water, and wildlife effects are assessed against provincial requirements. <a href="/communities/sagamok/massey">The main explainer</a> tracks where the process stands.</p>
+  </section>
+
+  <section>
+    <h2>Sources and further reading</h2>
+    <p>IESO (<a href="https://www.ieso.ca/en/Learn/Ontario-Electricity-Grid/Supply-Mix-and-Generation" target="_blank" rel="noopener">ieso.ca</a>); CBC News (<a href="https://www.cbc.ca/news/canada/toronto/ontario-electricity-greenhouse-gas-1.7534474" target="_blank" rel="noopener">cbc.ca</a>); NREL (<a href="https://docs.nrel.gov/docs/fy24osti/87372.pdf" target="_blank" rel="noopener">nrel.gov</a>); IPCC (<a href="https://www.ipcc.ch/report/ar6/syr/" target="_blank" rel="noopener">ipcc.ch</a>); Audubon Society (<a href="https://www.audubon.org/our-work/climate/clean-energy" target="_blank" rel="noopener">audubon.org</a>); Toronto Star (<a href="https://www.thestar.com/news/ontario/for-years-farming-communities-opposed-renewables-these-sheep-are-changing-peoples-minds/article_215b22da-fc3f-46c4-9e5a-f38f68a7852c.html" target="_blank" rel="noopener">thestar.com</a>); Penn State (<a href="https://www.psu.edu/news/research/story/solar-farms-stormwater-controls-mitigate-runoff-erosion-study-finds" target="_blank" rel="noopener">psu.edu</a>); US EPA (<a href="https://www.epa.gov/hw/end-life-solar-panels-regulations-and-management" target="_blank" rel="noopener">epa.gov</a>); IRENA (<a href="https://www.irena.org/publications/2016/Jun/End-of-life-management-Solar-Photovoltaic-Panels" target="_blank" rel="noopener">irena.org</a>); Yale E360 (<a href="https://e360.yale.edu/features/solar-energy-panels-recycling" target="_blank" rel="noopener">e360.yale.edu</a>); Ontario Technical Guide to Renewable Energy Approvals (<a href="https://www.ontario.ca/document/technical-guide-renewable-energy-approvals-0" target="_blank" rel="noopener">ontario.ca</a>). Local coverage of the project and of OIATC's explainer: John Degen, Shore Report, "A Bit of Sunshine on the Solar Debate" (<a href="https://shorereport.substack.com/p/a-bit-of-sunshine-on-the-solar-debate" target="_blank" rel="noopener">shorereport.substack.com</a>).</p>
+  </section>
+
+  <section>
+    <h2>Read alongside</h2>
+    <p><a href="/communities/sagamok/massey">The Massey Solar Project in 2026</a>: the overview, the five moving pieces, who decides what, and what is still ahead.</p>
+    <p><a href="/communities/sagamok/massey-what-youve-heard">What you may have heard</a>: six claims circulating in town, checked against the public record.</p>
+    <p><a href="/communities/sagamok/massey-voices">Voices</a>: the committee, the Mayor and Deputy Mayor, a former councillor, Potentia, and the First Nations, in their own framing.</p>
+  </section>
+
+</main>
+
+<footer>
+  <p class="signoff">Chi-miigwech for reading.</p>
+  <p>An independent member resource of the Robinson Huron Treaty Members' Transparency Circle. Independent of the Township of Sables-Spanish Rivers, the developer, and the First Nations named. It does not take a position on the project. Corrections welcome.</p>
+  <p>Robinson Huron Treaty Members' Transparency Circle · <a href="/">rhtcircle.ca</a></p>
+</footer>
+
+</div>
+{% endblock %}

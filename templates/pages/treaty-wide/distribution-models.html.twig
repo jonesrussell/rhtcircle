@@ -1,0 +1,641 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'treaty-wide' %}
+{% block main_class %}{% endblock %}
+
+{% block title %}Distribution models · The Robinson Huron Treaty in 2026 · RHT Members' Transparency Circle{% endblock %}
+{% block description %}Three ways a Robinson Huron Treaty community can distribute its share, and the questions each approach has to answer to be fair to the whole membership, on-reserve and off.{% endblock %}
+{% block og_title %}Distribution models: questions each model has to answer{% endblock %}
+{% block og_description %}Three ways a Robinson Huron Treaty community can distribute its share, and the questions each approach has to answer.{% endblock %}
+{% block body_class %}route-explainer-robinson-huron-treaty-distribution-models{% endblock %}
+
+{% block head_styles %}
+  <style>
+    .docwrap {
+      --bg: var(--paper);
+      --surface: var(--paper-2);
+      --ink-soft: var(--ink-2);
+      --ink-mute: var(--ink-3);
+      --rule-soft: var(--rule);
+      --highlight: var(--accent-wash);
+      --serif: var(--font-serif);
+      --sans: var(--font-sans);
+      --mono: var(--font-mono);
+      --content: 800px;
+      --gap-1: 4px;
+      --gap-2: 8px;
+      --gap-3: 12px;
+      --gap-4: 20px;
+      --gap-5: 32px;
+      --gap-6: 56px;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    .docwrap {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.65;
+      font-feature-settings: "ss01", "ss02";
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+    a:hover { color: var(--ink); }
+
+    .doctop {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 18px 32px;
+      max-width: 940px;
+      margin: 0 auto;
+      border-bottom: 1px solid var(--rule);
+      font-family: var(--sans);
+      font-size: 12px;
+      color: var(--ink-mute);
+      letter-spacing: 0.04em;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .doctop__brand {
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .doctop__meta { font-variant-numeric: tabular-nums; }
+
+    .page {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 40px 28px 72px;
+    }
+    @media (min-width: 700px) {
+      .page { padding: 56px 40px 96px; }
+    }
+
+    .cover { padding: 24px 0 40px; border-bottom: 1px solid var(--rule); }
+    .cover__eyebrow {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .cover__title {
+      font-size: clamp(30px, 5vw, 44px);
+      line-height: 1.1;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin: 0 0 24px;
+    }
+    .cover__title em { font-style: italic; color: var(--accent); }
+    .cover__lede {
+      font-size: 19px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      margin: 0 0 20px;
+    }
+
+    section { padding: 40px 0; border-bottom: 1px solid var(--rule-soft); }
+    section:last-of-type { border-bottom: none; }
+    h2 {
+      font-size: clamp(22px, 3vw, 28px);
+      line-height: 1.2;
+      font-weight: 400;
+      letter-spacing: -0.005em;
+      margin: 0 0 var(--gap-3);
+    }
+    .lede {
+      font-size: 16px;
+      color: var(--ink-soft);
+      margin: 0 0 var(--gap-4);
+    }
+    p { margin: 0 0 var(--gap-3); }
+    p:last-child { margin-bottom: 0; }
+
+    .takeaway {
+      background: var(--highlight);
+      padding: 28px 32px;
+      border-radius: 4px;
+      font-size: 19px;
+      line-height: 1.55;
+      color: var(--ink);
+    }
+    .takeaway strong { color: var(--accent); font-weight: 600; }
+    .takeaway p { margin: 0 0 12px; }
+    .takeaway p:last-child { margin-bottom: 0; }
+
+    .matrix-wrap {
+      margin-top: var(--gap-4);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .matrix {
+      width: 100%;
+      min-width: 580px;
+      border-collapse: collapse;
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .matrix th, .matrix td {
+      padding: 14px 14px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--rule-soft);
+    }
+    .matrix thead th {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--surface);
+      border-bottom: 2px solid var(--rule);
+      padding-bottom: 12px;
+    }
+    .matrix thead th:first-child {
+      color: var(--ink-mute);
+      font-size: 11px;
+    }
+    .matrix tbody th {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      background: var(--bg);
+      width: 26%;
+    }
+    .matrix tbody td { color: var(--ink-soft); background: var(--surface); }
+    .matrix tbody tr:last-child th, .matrix tbody tr:last-child td { border-bottom: none; }
+    .matrix__hard td { background: var(--highlight); color: var(--ink); font-style: italic; }
+    .matrix__hard th { background: var(--highlight); color: var(--accent); font-style: italic; }
+    .matrix-note {
+      font-family: var(--sans);
+      font-size: 12px;
+      color: var(--ink-mute);
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    .models { margin-top: var(--gap-4); display: grid; gap: var(--gap-4); }
+    @media (min-width: 880px) { .models { grid-template-columns: 1fr 1fr 1fr; } }
+    .model {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      padding: 22px;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+    }
+    .model__num {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+    .model__name {
+      font-family: var(--serif);
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 500;
+      margin: 4px 0 14px;
+      color: var(--ink);
+    }
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      font-family: var(--sans);
+      font-size: 11px;
+      letter-spacing: 0.03em;
+    }
+    .flow__node {
+      padding: 5px 9px;
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      color: var(--ink-soft);
+      background: var(--bg);
+      white-space: nowrap;
+    }
+    .flow__node--end {
+      background: var(--accent);
+      color: #fffefb;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+    .flow__arrow { color: var(--accent-soft); font-size: 13px; }
+
+    .model__pitch {
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+      margin: 0 0 16px;
+    }
+    .model__block {
+      padding-top: 14px;
+      border-top: 1px solid var(--rule-soft);
+      margin-top: auto;
+    }
+    .model__label {
+      font-family: var(--sans);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 6px;
+    }
+    .model__qs {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--ink-soft);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .model__qs li {
+      padding: 7px 0 7px 18px;
+      position: relative;
+    }
+    .model__qs li:before {
+      content: "?";
+      position: absolute;
+      left: 0;
+      top: 7px;
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--highlight);
+      text-align: center;
+      line-height: 14px;
+    }
+
+    .split-vis {
+      margin: var(--gap-4) 0;
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      padding: 24px;
+    }
+    .split-vis__bar {
+      display: flex;
+      height: 44px;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .split-vis__on {
+      flex: 1;
+      background: var(--accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fffefb;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .split-vis__off {
+      flex: 1;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fffefb;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .split-vis__legend {
+      font-family: var(--sans);
+      font-size: 12px;
+      color: var(--ink-mute);
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+    .split-vis__test {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--rule-soft);
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--ink);
+    }
+    .split-vis__test strong { color: var(--accent); }
+
+    .ask {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      padding: 8px 24px;
+      border-radius: 4px;
+      margin-top: var(--gap-3);
+    }
+    .ask ol {
+      list-style: none;
+      counter-reset: ask-counter;
+      padding: 0;
+      margin: 0;
+    }
+    .ask li {
+      padding: 14px 0 14px 38px;
+      border-bottom: 1px solid var(--rule-soft);
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--ink-soft);
+      position: relative;
+      counter-increment: ask-counter;
+    }
+    .ask li:before {
+      content: counter(ask-counter);
+      position: absolute;
+      left: 0;
+      top: 14px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent);
+      width: 24px;
+      height: 24px;
+      border: 1px solid var(--accent-soft);
+      border-radius: 50%;
+      text-align: center;
+      line-height: 22px;
+    }
+    .ask li:last-child { border-bottom: none; }
+
+    .src-list { list-style: none; padding: 0; margin: var(--gap-3) 0 0; }
+    .src-list li {
+      padding: 12px 0;
+      border-top: 1px solid var(--rule-soft);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+    .src-list li:first-child { border-top: none; padding-top: 0; }
+    .src-list small {
+      display: block;
+      color: var(--ink-mute);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .about {
+      font-size: 15px;
+      color: var(--ink-mute);
+      line-height: 1.55;
+    }
+    .about p { margin: 0 0 12px; }
+
+    footer {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 32px 28px 56px;
+      border-top: 1px solid var(--rule);
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink-mute);
+      line-height: 1.6;
+    }
+    @media (min-width: 700px) { footer { padding: 32px 40px 64px; } }
+    footer p { margin: 0 0 12px; }
+    footer p:last-child { margin-bottom: 0; }
+    footer .signoff {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--accent);
+      font-style: italic;
+      margin-bottom: 16px;
+    }
+
+    @media print {
+      .doctop { display: none; }
+      section, .model, .matrix { page-break-inside: avoid; }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="docwrap">
+<main class="page">
+
+  <section class="cover">
+    <p class="cover__eyebrow">A companion to the RHT 2026 explainer</p>
+    <h1 class="cover__title">Distribution models: <em>questions each model has to answer</em></h1>
+    <p class="cover__lede">Three ways your community can distribute its share. None of them is automatically right. Each one has to answer the same fair-test question: does this work for the whole membership, including the roughly half of members who live off-reserve, and for the children not yet born?</p>
+  </section>
+
+  <section>
+    <div class="takeaway">
+      <p>This page does not argue for any model. It shows what each model is good at, and the hard question each model has to answer before it is fair.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>At a glance</h2>
+    <p class="lede">Three approaches, same fair-test questions. Scroll right on mobile.</p>
+
+    <div class="matrix-wrap">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th>The question</th>
+            <th>Per-capita</th>
+            <th>Collective</th>
+            <th>Hybrid</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Who gets cash directly?</th>
+            <td>Every member, equal share</td>
+            <td>No one. Funds go to programs or trust.</td>
+            <td>Members get a portion; rest goes collective.</td>
+          </tr>
+          <tr>
+            <th>Off-reserve member access?</th>
+            <td>Equal by default. Same dollar, anywhere.</td>
+            <td>Only if programs are designed to reach off-reserve.</td>
+            <td>Equal on the cash portion. Depends on design for the rest.</td>
+          </tr>
+          <tr>
+            <th>Future generations?</th>
+            <td>Each member decides for their own family.</td>
+            <td>Trust or programs preserve capital long-term.</td>
+            <td>Trust portion preserves; cash portion is members' choice.</td>
+          </tr>
+          <tr>
+            <th>Who decides spending?</th>
+            <td>Each member, once received.</td>
+            <td>Chief and Council, trustees, program staff.</td>
+            <td>Members on cash; Council on collective.</td>
+          </tr>
+          <tr class="matrix__hard">
+            <th>The hard question</th>
+            <td>How do big community-scale projects get funded?</td>
+            <td>How do off-reserve members actually reach the programs?</td>
+            <td>What is the split, and who decides it?</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="matrix-note">The hard-question row is what each model has to answer to be fair. Highlighted because it is the load-bearing question for that model.</p>
+  </section>
+
+  <section>
+    <h2>The three approaches in plain language</h2>
+    <div class="models">
+
+      <div class="model">
+        <p class="model__num">Model 01</p>
+        <h3 class="model__name">Per-capita</h3>
+        <div class="flow">
+          <span class="flow__node">Settlement</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__node">Community</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__node flow__node--end">Every member</span>
+        </div>
+        <p class="model__pitch">Every registered member gets the same dollar amount. Nipissing First Nation is running per-capita distribution sessions for the returned legal fees through May 2026.</p>
+        <div class="model__block">
+          <p class="model__label">Questions to answer</p>
+          <ul class="model__qs">
+            <li>Future generations not yet members: how are they provided for?</li>
+            <li>Members who need supports beyond cash: how are they helped?</li>
+            <li>Big community projects: who funds them?</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="model">
+        <p class="model__num">Model 02</p>
+        <h3 class="model__name">Collective</h3>
+        <div class="flow">
+          <span class="flow__node">Settlement</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__node">Community</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__node flow__node--end">Programs / trust</span>
+        </div>
+        <p class="model__pitch">Funds held by the community for programs, infrastructure, or a long-term trust. Wiikwemkoong placed the bulk into a 100-year trust, used ~$85M as collateral for a development in Edmonton, and pays a $10,000 holiday distribution from interest.</p>
+        <div class="model__block">
+          <p class="model__label">Questions to answer</p>
+          <ul class="model__qs">
+            <li>Off-reserve members: how do they reach on-reserve programs?</li>
+            <li>Membership consent: how are decisions ratified, including off-reserve?</li>
+            <li>Accountability: audits, reports, member votes year over year?</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="model">
+        <p class="model__num">Model 03</p>
+        <h3 class="model__name">Hybrid</h3>
+        <div class="flow">
+          <span class="flow__node">Settlement</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__node">Community</span>
+          <span class="flow__arrow">→</span>
+          <span class="flow__node flow__node--end">Both</span>
+        </div>
+        <p class="model__pitch">A split between direct payments and collective use. Can be one-time (holiday distribution this year, rest into trust) or structured (fixed annual share plus programs).</p>
+        <div class="model__block">
+          <p class="model__label">Questions to answer</p>
+          <ul class="model__qs">
+            <li>What is the split, and who decides it?</li>
+            <li>Do the collective questions still apply to that portion?</li>
+            <li>Do the per-capita questions still apply to that portion?</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>The off-reserve question</h2>
+    <p class="lede">Roughly half of most RHT communities' members live off-reserve. That fact does not pick a model. It sets a test every model has to pass.</p>
+
+    <div class="split-vis">
+      <div class="split-vis__bar" aria-label="Membership split, on-reserve and off-reserve, roughly half and half">
+        <div class="split-vis__on">~50% on-reserve</div>
+        <div class="split-vis__off">~50% off-reserve</div>
+      </div>
+      <p class="split-vis__legend">A typical RHT community's membership, approximate.</p>
+      <p class="split-vis__test"><strong>The test:</strong> can a member in Sudbury, Toronto, or Edmonton participate on the same terms as a member who lives in the community?</p>
+    </div>
+
+    <p>Per-capita answers this by giving every member the same dollar. Collective answers it only if programs are designed to be accessible from anywhere: remote enrolment, electronic participation, communications that reach members wherever they live. Hybrid inherits both answers.</p>
+    <p>This is the standard. It is not an argument for one model.</p>
+  </section>
+
+  <section>
+    <h2>Six questions to take to your Chief and Council</h2>
+    <p class="lede">Useful for any model. Not loaded against any approach.</p>
+    <div class="ask">
+      <ol>
+        <li>What share of the past compensation and the returned legal fees has our community received so far, and where is it held?</li>
+        <li>What is the distribution plan: per-capita, collective, hybrid, or undecided?</li>
+        <li>If any portion goes to collective use, what programs does it fund, and how do off-reserve members access them?</li>
+        <li>How is the membership consulted, and how are off-reserve members included in that consultation?</li>
+        <li>Who is the trustee or administrator, and what are the reporting and audit obligations?</li>
+        <li>How can a member see the current balance, the annual spending, and the planned spending?</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sources and further reading</h2>
+    <ul class="src-list">
+      <li>
+        <a href="/treaty-wide/the-treaty">The main RHT 2026 explainer</a>
+        <small>The four moving parts and the timeline.</small>
+      </li>
+      <li>
+        <a href="https://www.rht1850.ca/so/e0PtutHMz?languageTag=en">RHTLF, 2026 Treaty Day Payments statement</a>
+        <small>Establishes the collective framing for any future augmentation. May 4 2026.</small>
+      </li>
+      <li>
+        <a href="https://nfn.ca/urgent-notice-member-update-on-per-capita-distribution-of-rht-returned-legal-fees/">Nipissing First Nation per-capita notice</a>
+        <small>A community running per-capita distribution. May 12 2026.</small>
+      </li>
+      <li>
+        <a href="https://www.cbc.ca/news/canada/sudbury/wiikwemkoong-rht-litigation-annuities-settlement-funds-mismanagement-9.7154243">CBC, Wiikwemkoong members seek judicial review</a>
+        <small>A community using collective trusts, and members challenging that approach in federal court. May 13 2026.</small>
+      </li>
+      <li>
+        Your own community's Chief and Council
+        <small>The most reliable answer for your specific community.</small>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>About this page</h2>
+    <div class="about">
+      <p>Put together by members of Sagamok Anishnawbek for the Robinson Huron Treaty Members' Transparency Circle. Independent of the Robinson Huron Treaty Litigation Fund and of any First Nation's Chief and Council.</p>
+      <p>The page does not take a side on which distribution model a community should choose. It treats the three approaches symmetrically. If you think it tilts toward one model in its wording, the matrix, the questions, or the sourcing, please get in touch. Corrections welcome.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p class="signoff">Chi-miigwech for reading.</p>
+  <p>Updated as more communities publish their distribution plans and as members tell us what is missing. Last update 2026-05-16.</p>
+  <p>RHT Members' Transparency Circle · <a href="/treaty-wide/the-treaty">Back to the main explainer</a></p>
+</footer>
+
+</div>
+{% endblock %}

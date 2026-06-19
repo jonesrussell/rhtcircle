@@ -1,0 +1,311 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+{% block main_class %}{% endblock %}
+
+{% block title %}What you may have heard about the Massey Solar Project · RHT Members' Transparency Circle{% endblock %}
+{% block description %}Six claims about the Massey Solar Project, prime farmland, drinking water, birds, bypassed council, Sagamok consultation, Power Corp, checked against the public record.{% endblock %}
+{% block og_title %}What you may have heard about the Massey Solar Project{% endblock %}
+{% block og_description %}Six claims circulating in town, checked against the public record. About mechanics, not a position.{% endblock %}
+{% block body_class %}route-explainer-massey-solar-project-what-youve-heard{% endblock %}
+
+{% block head_styles %}
+  <style>
+    .docwrap {
+      --bg: var(--paper);
+      --surface: var(--paper-2);
+      --ink-soft: var(--ink-2);
+      --ink-mute: var(--ink-3);
+      --rule-soft: var(--rule);
+      --highlight: var(--accent-wash);
+      --serif: var(--font-serif);
+      --sans: var(--font-sans);
+      --mono: var(--font-mono);
+      --content: 800px;
+      --gap-1: 4px;
+      --gap-2: 8px;
+      --gap-3: 12px;
+      --gap-4: 20px;
+      --gap-5: 32px;
+      --gap-6: 56px;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    .docwrap {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.65;
+      font-feature-settings: "ss01", "ss02";
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+    a:hover { color: var(--ink); }
+
+    .doctop {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 18px 32px;
+      max-width: 880px;
+      margin: 0 auto;
+      border-bottom: 1px solid var(--rule);
+      font-family: var(--sans);
+      font-size: 12px;
+      color: var(--ink-mute);
+      letter-spacing: 0.04em;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .doctop__brand {
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .doctop__brand a { color: var(--ink); border-bottom: none; }
+    .doctop__brand a:hover { color: var(--accent); }
+    .doctop__meta { font-variant-numeric: tabular-nums; }
+
+    .page {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 40px 28px 72px;
+    }
+    @media (min-width: 700px) {
+      .page { padding: 56px 40px 96px; }
+    }
+
+    .backnav {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .backnav a { border-bottom: none; color: var(--accent); }
+    .backnav a:hover { color: var(--ink); }
+
+    /* Cover */
+    .cover { padding: 0 0 40px; border-bottom: 1px solid var(--rule); }
+    .cover__eyebrow {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .cover__title {
+      font-size: clamp(30px, 5vw, 44px);
+      line-height: 1.1;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin: 0 0 24px;
+    }
+    .cover__title em { font-style: italic; color: var(--accent); }
+    .cover__lede {
+      font-size: 19px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      margin: 0;
+    }
+
+    /* Sections */
+    section { padding: 40px 0; border-bottom: 1px solid var(--rule-soft); }
+    section:last-of-type { border-bottom: none; }
+    h2 {
+      font-size: clamp(22px, 3vw, 28px);
+      line-height: 1.2;
+      font-weight: 400;
+      letter-spacing: -0.005em;
+      margin: 0 0 var(--gap-4);
+    }
+    p { margin: 0 0 var(--gap-4); }
+    p:last-child { margin-bottom: 0; }
+
+    /* Claim cards */
+    .claim {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      padding: 24px 26px;
+      margin-bottom: var(--gap-3);
+    }
+    .claim__num {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+    }
+    .claim__heard {
+      font-family: var(--serif);
+      font-size: 21px;
+      line-height: 1.3;
+      font-style: italic;
+      color: var(--ink);
+      margin: 8px 0 18px;
+      padding-left: 16px;
+      border-left: 3px solid var(--accent-soft);
+    }
+    .claim__rec strong {
+      display: block;
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .claim__rec p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      margin: 0 0 12px;
+    }
+    .claim__rec p:last-child { margin-bottom: 0; }
+
+    .note {
+      background: var(--highlight);
+      padding: 20px 24px;
+      border-left: 3px solid var(--accent);
+      margin-top: var(--gap-4);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .note p:last-child { margin-bottom: 0; }
+
+    /* Footer */
+    footer {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 32px 28px 56px;
+      border-top: 1px solid var(--rule);
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink-mute);
+      line-height: 1.6;
+    }
+    @media (min-width: 700px) { footer { padding: 32px 40px 64px; } }
+    footer p { margin: 0 0 12px; }
+    footer p:last-child { margin-bottom: 0; }
+    footer .signoff {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--accent);
+      font-style: italic;
+      margin-bottom: 16px;
+    }
+    footer a { color: var(--accent); }
+
+    @media print {
+      .doctop, .backnav { display: none; }
+      .claim { page-break-inside: avoid; }
+      footer { border-top: 1px solid var(--rule); }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="docwrap">
+<main class="page">
+
+  <p class="backnav"><a href="/communities/sagamok/massey">← Massey Solar Project overview</a></p>
+
+  <section class="cover">
+    <p class="cover__eyebrow">Massey Solar Project · companion page</p>
+    <h1 class="cover__title">What you may have heard</h1>
+    <p class="cover__lede">Several claims have circulated in local conversation and on social media. Many contain a kernel of truth wrapped around a piece that is wrong, or vice versa. Here is what the public record actually shows. This is about mechanics, not a position on what should happen next.</p>
+  </section>
+
+  <section>
+    <h2>The claims, checked against the record</h2>
+
+    <article class="claim">
+      <span class="claim__num">Claim 01</span>
+      <p class="claim__heard">"The project is being built on prime farmland."</p>
+      <div class="claim__rec">
+        <strong>What the record shows</strong>
+        <p>The site is zoned rural, where solar is a permitted use. According to Potentia's response statement, roughly 20% of the site is currently farmed; the rest is a mix of marginal farmland, shrubland, woodland, and forest. The township maintains the site sits outside its designated agricultural resource lands, and its August 2025 support was conditional on the project not being built on land designated "prime" agricultural.</p>
+        <p>Opponents are not asking the township to remove solar as a permitted use. Their argument is narrower. They say the township has never properly designated its continuous prime agricultural areas (the Canada Land Inventory Class 1 to 3 soils) in the way the Provincial Policy Statement now requires. The 2024 PPS made the "geographically continuous agricultural land base" approach a requirement rather than something only encouraged. The township's Official Plan was last revised in 2020 under the earlier policy, and the five-year review due in 2025 has not happened. Opponents argue that gap is a municipal error, and that the remedy is an Official Plan amendment to designate the agricultural land correctly.</p>
+        <p>This is a contested legal position, not a settled fact. The township reads the designation one way and opponents read it another, and the question has not been resolved. The Massey Agricultural Society is among the institutions that have publicly objected, per <a href="https://shorereport.substack.com/p/opposition-growing-to-solar-farm">Shore Report's coverage</a>.</p>
+      </div>
+    </article>
+
+    <article class="claim">
+      <span class="claim__num">Claim 02</span>
+      <p class="claim__heard">"It threatens Massey's drinking water."</p>
+      <div class="claim__rec">
+        <strong>What the record shows</strong>
+        <p>Massey's municipal water draws from sources connected to the Aux Sables River system. Some opponents argue that contaminants from a solar facility, herbicides used to manage vegetation, or leaching panel components, could reach those sources. Former councillor Harry Hobbs publicly disputed the geography in March, arguing that "Birch Lake doesn't go anywhere near the Aux Sables River."</p>
+        <p>Both claims are testable. The answer is what the REA's hydrogeological assessment is for. Until that study is done, neither "it will" nor "it won't" is supported by the public record.</p>
+      </div>
+    </article>
+
+    <article class="claim">
+      <span class="claim__num">Claim 03</span>
+      <p class="claim__heard">"200 bird species will be harmed."</p>
+      <div class="claim__rec">
+        <strong>What the record shows</strong>
+        <p>The Massey area is genuinely birding-rich; over 200 species have been recorded. Whether siting a solar facility at this specific location would harm those populations is a separate empirical question.</p>
+        <p>Both <a href="https://www.birdscanada.org/introducing-the-state-of-canadas-birds">Birds Canada</a> and the <a href="https://www.audubon.org/our-work/climate/clean-energy">National Audubon Society</a> have published nuanced positions: well-sited renewable energy is generally beneficial to bird populations relative to continued climate change, and poorly-sited installations near critical wetlands can be locally damaging. The Natural Heritage Assessment portion of the REA is the formal mechanism for answering this at this site.</p>
+      </div>
+    </article>
+
+    <article class="claim">
+      <span class="claim__num">Claim 04</span>
+      <p class="claim__heard">"The municipality has been bypassed."</p>
+      <div class="claim__rec">
+        <strong>What the record shows</strong>
+        <p>The project required a Municipal Support Confirmation to even bid into the IESO procurement, and the township issued one in August 2025 and reaffirmed it in March 2026 by majority vote. The municipality has not been bypassed; it has been an active and visible participant.</p>
+        <p>What is true is that on substantive environmental questions, the township's authority is limited. Those decisions are provincial.</p>
+      </div>
+    </article>
+
+    <article class="claim">
+      <span class="claim__num">Claim 05</span>
+      <p class="claim__heard">"Sagamok was never consulted."</p>
+      <div class="claim__rec">
+        <strong>What the record shows</strong>
+        <p>Sagamok Anishnawbek has not, as of May 2026, been formally consulted under the Crown's duty to consult, because that duty attaches to a provincial decision (the REA) that hasn't been made yet. Sagamok's Director of Claims and Negotiations submitted emailed objections that were read into the township's record in March 2026.</p>
+        <p>The Mayor has also said publicly that Council heard verbal interest from Chief Angus Toulouse in Sagamok community participation. Both of those things are early-stage; neither substitutes for formal consultation, which is owed by the Crown when the REA is filed.</p>
+      </div>
+    </article>
+
+    <article class="claim">
+      <span class="claim__num">Claim 06</span>
+      <p class="claim__heard">"It's a Power Corporation project."</p>
+      <div class="claim__rec">
+        <strong>What the record shows</strong>
+        <p>On the record, the project entity Massey Solar Inc. is owned 51 per cent, held collectively, through subsidiaries of Wahnapitae First Nation and Atikameksheng Anishnawbek, and 49 per cent through subsidiaries of Power Sustainable Energy Infrastructure Partnership (PSEIP), a private renewable energy investment fund. Potentia Renewables is an affiliate of PSEIP and is the developer, not the majority owner (Patrick Russell, Potentia Renewables, written response, June 2026). Earlier coverage described Potentia as wholly owned by Power Sustainable Capital Inc., an affiliate of Power Corporation of Canada; the equity in Massey Solar Inc. itself is majority First Nations held.</p>
+        <p>Whether the Power Sustainable connection is significant is a matter of judgment, not fact: the LT2 procurement was competitive and open to bidders of various sizes, and the corporate structure does not change the project's regulatory obligations.</p>
+      </div>
+    </article>
+
+    <div class="note">
+      <p>A claim being "partly true" is the rule here, not the exception. The most reliable test for most of these questions is the same: the Renewable Energy Approval process under Regulation 359/09, which has not yet started. Until it does, the studies that would settle the water, wildlife, and farmland questions don't exist yet.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Read alongside</h2>
+    <p><a href="/communities/sagamok/massey">← The Massey Solar Project in 2026</a>, the overview: the five moving pieces, who decides what, and what's still ahead.</p>
+    <p><a href="/communities/sagamok/massey-voices">Voices →</a>, the committee, the Mayor and Deputy Mayor, a former councillor, Potentia, and the First Nations, in their own framing.</p>
+    <p><a href="/communities/sagamok/massey-climate">Climate and environment context →</a>: the grid emissions picture, land, water, wildlife, the panel lifecycle, and decommissioning, with sources.</p>
+  </section>
+
+</main>
+
+<footer>
+  <p class="signoff">Chi-miigwech for reading.</p>
+  <p>A companion to the Massey Solar Project explainer, an independent member resource of the Robinson Huron Treaty Members' Transparency Circle. Not affiliated with Potentia Renewables, the Township, the Massey Wildlife Conservation Committee, or any First Nation. Corrections welcome.</p>
+  <p>Robinson Huron Treaty Members' Transparency Circle · <a href="/">rhtcircle.ca</a></p>
+</footer>
+
+</div>
+{% endblock %}

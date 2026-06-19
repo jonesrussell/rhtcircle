@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'standard' %}
+{% block main_class %}{% endblock %}
+
+{% block title %}A member records request, the worked example · RHT Members' Transparency Circle{% endblock %}
+{% block description %}The full text of the member records request submitted to Sagamok Chief and Council: a plain ask, tied to the Nation's own records, for what the membership gains from its investments and who is being served.{% endblock %}
+{% block body_class %}route-records-request-letter{% endblock %}
+{% block og_description %}The full member records request to Sagamok Chief and Council: what are the benefits of the Nation's investments, and who is being served?{% endblock %}
+
+{% block head_styles %}
+  <style>
+    /* The records request letter on the site shell (base + site.css tokens), so
+       it follows the light/dark theme. Scoped .rrl-*. */
+    .rrl-wrap { max-width: 820px; margin: 0 auto; padding: var(--gap-7) var(--gap-5) var(--gap-9); }
+    .rrl-wrap h1 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; letter-spacing: -0.01em; margin: var(--gap-3) 0 var(--gap-4); max-width: 26ch; }
+    .rrl-wrap p { margin: 0 0 var(--gap-4); max-width: 74ch; }
+    .rrl-wrap strong, .rrl-wrap b { color: var(--ink); font-weight: 600; }
+
+    .rrl-meta { font-family: var(--font-sans); font-size: 14px; color: var(--ink-2); line-height: 1.6; margin: 0 0 var(--gap-3); }
+    .rrl-meta b { color: var(--ink); }
+    .rrl-re { font-family: var(--font-serif); font-weight: 600; font-size: 18px; line-height: 1.4; color: var(--ink); margin: var(--gap-4) 0; max-width: 74ch; }
+
+    .rrl-wrap h3 { font-family: var(--font-sans); font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-deep); margin: var(--gap-6) 0 var(--gap-3); padding-bottom: 6px; border-bottom: 1px solid var(--rule); }
+
+    .rrl-list { margin: 0 0 var(--gap-3); padding-left: 24px; max-width: 74ch; }
+    .rrl-list li { margin: 0 0 14px; line-height: 1.6; color: var(--ink-2); }
+    .rrl-list li b { color: var(--ink); }
+    .rrl-basis { margin: 0 0 var(--gap-3); padding-left: 24px; max-width: 74ch; }
+    .rrl-basis li { margin: 0 0 9px; line-height: 1.55; color: var(--ink-2); }
+
+    /* Board overlap table, horizontally scrollable on mobile. */
+    .rrl-matrix-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: var(--gap-4) 0; border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper-2); }
+    .rrl-matrix { border-collapse: collapse; width: 100%; min-width: 640px; font-family: var(--font-sans); font-size: 12.5px; }
+    .rrl-matrix th, .rrl-matrix td { border-bottom: 1px solid var(--rule); padding: 7px 9px; text-align: center; vertical-align: middle; }
+    .rrl-matrix thead th { color: var(--ink-3); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.03em; font-weight: 600; vertical-align: bottom; }
+    .rrl-matrix td.nm, .rrl-matrix th.nm { text-align: left; white-space: nowrap; color: var(--ink); }
+    .rrl-matrix td.nm .role2 { color: var(--ink-3); font-size: 11px; }
+    .rrl-matrix tbody tr:last-child td { border-bottom: none; }
+    .rrl-matrix td.d { color: var(--accent-deep); font-size: 14px; }
+    .rrl-matrix td.cnt { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); }
+    .rrl-srcnote { font-family: var(--font-sans); font-size: 12px; color: var(--ink-3); line-height: 1.5; margin: 6px 0 var(--gap-5); max-width: 90ch; }
+
+    .rrl-sig p { margin: 0 0 4px; }
+    .rrl-cta { margin: var(--gap-7) 0 0; background: var(--accent-wash); border: 1px solid var(--accent-soft); border-left: 4px solid var(--accent); border-radius: var(--radius-md); padding: 18px 22px; }
+    .rrl-cta h3 { border: none; padding: 0; margin: 0 0 6px; color: var(--accent-deep); }
+    .rrl-cta p { margin: 0; max-width: none; color: var(--ink); }
+    .rrl-cta a { color: var(--accent-deep); font-weight: 700; }
+  </style>
+{% endblock %}
+
+{% block content %}
+<article class="rrl-wrap">
+  <p class="eyebrow">The shared standard, in practice</p>
+  <h1>Member records request to Chief and Council</h1>
+
+  <p style="margin: 0 0 var(--gap-4); font-family: var(--font-sans); font-size: 14px; font-weight: 600; color: var(--accent-deep);">Status: submitted June 10, 2026, with 28 member and 2 supporter signatures. A response was requested within 30 days.</p>
+
+  <p style="margin: 4px 0 var(--gap-6)"><a class="btn btn--primary" href="/get-involved">Get involved &rarr;</a></p>
+
+  <p class="rrl-meta">Submitted to Chief and Council, c/o the Council Secretariat, on June 10, 2026.</p>
+  <p class="rrl-meta"><b>To:</b> Chief and Council, Sagamok Anishnawbek<br>
+  <b>c/o</b> Office of the Council Secretariat<br>
+  (delivered by mail and email)</p>
+  <p class="rrl-meta"><b>From:</b> A member of Sagamok Anishnawbek</p>
+
+  <p class="rrl-re">Re: Member records request: what are the benefits of the Nation's investments, and who is being served?</p>
+
+  <p>Aanii,</p>
+
+  <p>As a member of Sagamok Anishnawbek, I am writing to ask a question that many members are asking, and to request the records that would answer it. When the Nation invests in businesses and ventures, <b>what exactly are the benefits to the membership, and who is being served?</b> Leadership has consistently described these investments as benefiting the community. I would like to understand, from the Nation's own records, how that benefit is defined, measured, and delivered.</p>
+
+  <p>The Governance Department's published mandate commits the Nation to "systems that demonstrate accountability and transparency to Chief, Council, and Sagamok Anishnawbek," and this request is made in that spirit. Each item below is tied to a specific source, the Nation's audited financial statements, its Financial Administration Law and policies, the public corporate registry, or a Council motion or resolution, and the records this request draws on are listed under "Basis for this request" at the end, so that what I am asking for is concrete and verifiable rather than a matter of opinion.</p>
+
+  <p>The reason for these questions is itself in the public record. The people who govern the Nation also sit on the boards of the companies it invests in, and several hold paid staff roles as well. The table below sets out who sits where, with each seat tied to its source. I draw no conclusion from it. I am asking for the records that would show what benefit flows back to members from these arrangements.</p>
+
+  <div class="rrl-matrix-wrap">
+    <table class="rrl-matrix">
+      <thead><tr><th class="nm">Councillor</th><th>ZEI</th><th>GR Truss</th><th>Ritchie Falls</th><th>Sagamok Real Estate</th><th>Manitoulin Hotel</th><th>SDC / SPV</th><th>Band staff role</th><th>Roles</th></tr></thead>
+      <tbody>
+        <tr><td class="nm">Arnelda Bennett</td><td class="d">&#9679;</td><td></td><td></td><td class="d">&#9679;</td><td class="d">&#9679;</td><td></td><td class="d">&#9679;</td><td class="cnt">4</td></tr>
+        <tr><td class="nm">Michael Abitong</td><td></td><td class="d">&#9679;</td><td class="d">&#9679;</td><td></td><td></td><td class="d">&#9679;</td><td class="d">&#9679;</td><td class="cnt">4</td></tr>
+        <tr><td class="nm">Norma Petahtegoose</td><td class="d">&#9679;</td><td class="d">&#9679;</td><td></td><td class="d">&#9679;</td><td></td><td></td><td></td><td class="cnt">3</td></tr>
+        <tr><td class="nm">Leroy Bennett</td><td class="d">&#9679;</td><td></td><td></td><td></td><td></td><td class="d">&#9679;</td><td class="d">&#9679;</td><td class="cnt">3</td></tr>
+        <tr><td class="nm">Paul Eshkakogan <span class="role2">(ZEI President)</span></td><td class="d">&#9679;</td><td></td><td></td><td></td><td></td><td class="d">&#9679;</td><td></td><td class="cnt">2</td></tr>
+        <tr><td class="nm">Dan Owl</td><td></td><td></td><td></td><td class="d">&#9679;</td><td></td><td></td><td class="d">&#9679;</td><td class="cnt">2</td></tr>
+        <tr><td class="nm">McKenzie Toulouse</td><td></td><td></td><td></td><td></td><td></td><td class="d">&#9679;</td><td></td><td class="cnt">1</td></tr>
+        <tr><td class="nm">Nelson Toulouse</td><td class="d">&#9679;</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="cnt">1</td></tr>
+        <tr><td class="nm">Lawrence Solomon Sr.</td><td class="d">&#9679;</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="cnt">1</td></tr>
+        <tr><td class="nm">Angus Toulouse <span class="role2">(Chief)</span></td><td></td><td class="d">&#9679;</td><td></td><td></td><td></td><td></td><td></td><td class="cnt">1</td></tr>
+        <tr><td class="nm">Sadie Southwind</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="d">&#9679;</td><td class="cnt">1</td></tr>
+        <tr><td class="nm">Conrad Toulouse</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="cnt">?</td></tr>
+        <tr><td class="nm">Veronica Nashkawa</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="cnt">0</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="rrl-srcnote">Sources by column: ZEI board, zgamok.ca; GR Truss and Ritchie Falls, the Ontario Business Registry; Sagamok Real Estate and Manitoulin Hotel, Council minutes and Band Council Resolutions; band staff role, the FNFTA Schedule of Remuneration and the Nation's staff directory. SDC / SPV is the board of Sagamok Development Corporation, which is also the board of 15558409 Canada Ltd, the federal company that is the general partner of Sagamok Real Estate Holdings LP; that board also includes Nicole Eshkakogan, a former councillor (source: Corporations Canada and the Ontario Business Registry). A blank means not documented, not that no one serves; "?" means a role may exist but is not documented here; "0" means none found.</p>
+
+  <p>I would be grateful for copies of, or supervised access to, the following. Where a document cannot be released in full, I would appreciate a written explanation of why, and of any redactions.</p>
+
+  <h3>Benefit to members, and the investments behind it</h3>
+  <ol class="rrl-list">
+    <li><b>Benefit to the membership.</b> The Nation's criteria for how members benefit from its enterprise investments, and a plain accounting of the return or benefit that has actually reached members (jobs, dividends, distributions, services) set against the funds committed, including the approximately $97 million in loans to the Nation's Government Business Enterprises reported in the FY2025 audited statements (Note 14, at interest rates of 4% to 12%). The table above shows how closely Council and these companies' boards overlap, which is why a clear accounting of the benefit that reaches members matters.</li>
+    <li><b>The Sault Ste. Marie urban housing investment.</b> The complete investment agreement and supporting documentation for the staged commitments that grew to approximately $7 million (Motion 2024/10 #07; BCR 2024-05-69; BCR 2025-12-80, Build Canada Homes), including the rate of return, security, and repayment terms (for comparison, the enterprise facility approved at the same meeting carried a rate of "not less than 4%"); the identity of the developer or counterparty; and any due diligence or independent valuation done before the commitment.</li>
+    <li><b>The Manitoulin Hotel interest.</b> The complete record of the Nation's interest in the Manitoulin Hotel: any acquisition, and any sale or transfer of shares, with dates, price, terms, counterparties, and current status. The Manitoulin Hotel appears in Council minutes but is not listed among the Nation's consolidated entities in the FY2025 audited financial statements, which leaves open what was bought or sold and on what terms.</li>
+    <li><b>GR Truss (2262012 Ontario Limited).</b> The acquisition terms (price and vendor), the business case and purpose of the Nation's involvement, how many Sagamok members the company employs, and the expected and actual benefit to the membership. (2262012 Ontario Limited is the company operating as GR Truss per the Ontario Business Registry; the Nation's involvement was ratified by Council in 2025.)</li>
+    <li><b>The off-reserve real-estate structure.</b> The corporate structure and governing documents of 15558409 Canada Ltd (the federal company whose directors are the SDC board) and Sagamok Real Estate Holdings LP, including the limited partners and the source of the partnership's capital (the LP's registered Declaration lists only the general partner), the documents establishing this structure under BCR 2023-11-40, and clarification of how the "Sagamok Real Estate Co." board appointed by BCR 2025-05-59 relates to Sagamok Real Estate Holdings LP. Per the FY2025 audited statements (Note 18), GR Truss was acquired through 15558409 Canada Ltd and Sagamok Real Estate Holdings LP.</li>
+    <li><b>Loans to Government Business Enterprises.</b> A list of these loans by enterprise, with the amount, interest rate, security, and repayment terms of each, and the Council authorization for them.</li>
+    <li><b>Investment, borrowing and for-profit policies.</b> Any policy or criteria governing the investment of Nation or settlement funds, including off-reserve, and any framework referenced in BCR 2023-11-40; the borrowing policy required under Financial Administration Law section 36; the for-profit risk-management policy required under section 40; and any director-of-finance risk reports for guarantees under section 41. If any of these do not exist in writing, I would appreciate confirmation of that.</li>
+    <li><b>The trust deed or indenture.</b> The governing instrument for the Robinson-Huron settlement trust held at BMO Trust Company, including the trustee(s), the schedule of permitted investments, the conflict-of-interest provisions binding the trustees and any release authorities, and the compensation arrangements for the trustee(s) and any advisor acting in connection with the trust. The Nation's published BMO quarterly report (quarter ending December 31, 2025) shows the trust held about $219 million invested in the BMO AM Balanced Fund, so the holdings are visible; what is not is the governing instrument. In particular I am asking for the trust indenture, the process and authorities for approving a withdrawal, the terms of the separate trust for members under 18, and any trustee, advisor, or management fees. The September 2025 engagement materials describe a proposed Trust Committee that would recommend the annual cash-flow allocation to Chief and Council for approval, and a distribution policy that was still being finalized. I am asking for the final adopted trust income-distribution policy, the Trust Committee's terms of reference and current membership, and confirmation of the corporate trustee (and any individual co-trustee or protector).</li>
+    <li><b>The financial-advisor engagement.</b> The engagement terms for the external Financial Advisor named throughout Council minutes (McLeod Consulting): the scope of work, the fee or compensation basis, the term, and whether the engagement was sole-sourced or competitively procured.</li>
+  </ol>
+
+  <h3>Governance and conflict of interest</h3>
+  <ol class="rrl-list" start="10">
+    <li><b>The Freed financing vote.</b> The portion of the minutes recording the reasons given for the four abstentions, together with the written disclosures required of a councillor under Financial Administration Law section 22(3), the conflict-of-interest policy Council is required to maintain under section 21, and the annual written conflict-of-interest disclosures each councillor must file with the chief administrative officer under section 22(2).</li>
+    <li><b>The organizational meeting of August 26, 2024.</b> The minutes of the Chief and Council organizational meeting at which board and committee appointments were set. This meeting does not appear in the materials otherwise available to members.</li>
+    <li><b>The current organizational chart.</b> The most recent Council-approved organizational chart, which under the Nation's Personnel Policy and Procedure Manual (section A-1.5) and the Financial Administration Law (section 20) is to be prepared by the chief administrative officer, approved by Council, and kept current, and which under Financial Administration Law section 20(3) the chief administrative officer must provide to a member of the First Nation on request. Please include the date Council last approved it.</li>
+    <li><b>The Finance and Audit Committee.</b> The Committee's current membership and Chair; the independence criteria and the most recent signed annual independence statements required under Financial Administration Law section 11(4); and the Committee's reports to Council, including the annual report on the effectiveness of the whistleblowing and Code of Conduct policies. The Financial Administration Law requires the Committee's members to be independent; given the overlap shown in the table above, the Committee's composition and its independence statements are especially relevant.</li>
+    <li><b>Committees and working groups.</b> The current membership and terms of reference of all Council committees and working groups. The Nation's most recent posted list (January 2024) sets out nineteen committees and working groups, but only those on the Governance Department's page are described publicly, and committee members are appointed by Band Council Resolution (including BCR 2024-05-70) that is not posted. I would appreciate the membership and terms of reference of each, and the committee-appointment resolutions.</li>
+  </ol>
+
+  <h3>Member data and privacy</h3>
+  <ol class="rrl-list" start="15">
+    <li><b>Privacy and data governance.</b> Confirmation of whether the employee required under section B-3.3 of the Personnel Policy and Procedure Manual (in place since 2021) to manage privacy compliance was ever designated, and who currently performs that function; the terms of reference and reporting line for the new Privacy Officer position; the Nation's data-breach notification policy; and the Internal Disclosure (Whistleblowing) policy at section C-3.18, including confirmation that the confidential reporting procedure the chief administrative officer is required to establish is in place, and its current working contact points.</li>
+  </ol>
+
+  <h3>Process</h3>
+  <ol class="rrl-list" start="16">
+    <li><b>The records-access process itself.</b> The Nation's formal process for a member to request records of this kind, including the appropriate office or Privacy Officer to direct such requests to, the expected timelines, and any applicable fees.</li>
+  </ol>
+
+  <h3>Basis for this request</h3>
+  <p>This request draws on the Nation's own records and on public sources, so that each item can be verified rather than taken on faith:</p>
+  <ul class="rrl-basis">
+    <li>The <b>FY2025 audited consolidated financial statements</b> (including Note 14, loans to Government Business Enterprises; the consolidated-entities note; and the Robinson-Huron settlement reserve).</li>
+    <li>The <b>FNFTA Schedule of Remuneration and Expenses</b> of Chief and Council, published annually under the First Nations Financial Transparency Act.</li>
+    <li>The <b>Sagamok Anishnawbek Financial Administration Law, 2020</b>, including sections 11 and 12 (Finance and Audit Committee), 20 (organizational chart), 21 and 22 (conflict of interest), 36, 40 and 41 (borrowing, for-profit activity, and guarantees), and 72 and 73 (reporting breaches).</li>
+    <li>The <b>Personnel Policy and Procedure Manual, 2020</b>, including sections A-1.5 (organizational chart), B-3.3 (privacy), and C-3.18 (internal disclosure / whistleblowing).</li>
+    <li>The <b>Governance Department page</b> on the Nation's website (the accountability and transparency mandate quoted above).</li>
+    <li>The <b>Ontario Business Registry</b>, including the corporate profiles for 2262012 Ontario Limited (GR Truss) and 2344827 Ontario Inc. (Ritchie Falls).</li>
+    <li><b>Corporations Canada</b> profiles for Sagamok Development Corporation and 15558409 Canada Ltd.</li>
+    <li>The <b>Council motions and Band Council Resolutions</b> referenced above, including Motion 2024/10 #07 and Band Council Resolutions 2024-05-69, 2024-05-70, 2025-05-59, 2025-12-80, and 2023-11-40.</li>
+  </ul>
+
+  <p style="margin-top: var(--gap-5)">I have directed this request to Chief and Council through the Council Secretariat rather than to a single department. If any item is more appropriately handled elsewhere, please let me know and I will follow the process you advise. I am happy to receive these records electronically or to arrange supervised in-person viewing where that is the Nation's practice for sensitive documents, and I am glad to meet to discuss the request.</p>
+
+  <p>So that this does not sit unanswered, I would appreciate a response within 30 days, together with the Nation's own records-access timelines if they differ. If it is easier to respond in stages, I would welcome the first group, "Benefit to members, and the investments behind it," first.</p>
+
+  <p>Miigwech for your time and your attention to this. I look forward to your response.</p>
+
+  <div class="rrl-sig">
+    <p>Respectfully,</p>
+    <p style="margin-top: var(--gap-4)">A member of Sagamok Anishnawbek</p>
+  </div>
+
+  <div class="rrl-cta">
+    <h3>Add your voice</h3>
+    <p>If you are a member or a supporter, you can <a href="/get-involved">get involved with the Circle &rarr;</a></p>
+  </div>
+
+  <h3>Amendments and revision history</h3>
+  <p>This request was submitted to Chief and Council on June 10, 2026. This online version is kept current, and any change to it is logged here, with the date and reason, so members can see exactly what has changed.</p>
+  <ul class="rrl-basis">
+    <li><b>June 10, 2026</b> &middot; Submitted to Chief and Council via the Council Secretariat, by mail and email, with 28 member and 2 supporter signatures and a 30-day response requested.</li>
+    <li><b>June 10, 2026</b> &middot; This online version carries two items beyond the paper copy circulated for signature: "The off-reserve real-estate structure" and "Committees and working groups." Item 8 (the trust) and the board table's source note were also expanded with additional sourced detail. No item was removed or narrowed.</li>
+    <li><b>June 15, 2026</b> &middot; Items 10 and 12 also ask who currently performs the chief administrative officer function, as the Nation is advertising a Senior Administration Officer position and the office the Financial Administration Law routes the organizational chart (s.20(3)) and councillors' conflict-of-interest disclosures (s.22(2)) through appears to be vacant.</li>
+  </ul>
+</article>
+{% endblock %}
