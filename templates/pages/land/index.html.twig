@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'land' %}
+
+{% block title %}The land and its resources · RHT Members' Transparency Circle{% endblock %}
+{% block description %}The Robinson Huron Treaty is about the land and what it produces: decisions on the territory, energy and resource projects, consultation, and the environment, and how they reach members across the 21 nations.{% endblock %}
+{% block og_description %}The land section: energy and resource projects, consultation, and the environment across the Robinson Huron Treaty territory, and how members can understand and ask about them.{% endblock %}
+
+{% block hero %}
+<section class="hero">
+  <div class="wrap wrap--wide">
+    <p class="eyebrow">Across the territory</p>
+    <h1>The land and its resources.</h1>
+    <p class="lead">The Robinson Huron Treaty is about the land and what it produces. Decisions made on the territory, energy and resource projects, consultation, and the environment, reach every member, not only the community where they happen. This section helps members across the 21 nations understand those decisions and ask about them, the same way the shared standard helps with the money. Sources are linked throughout. We work from facts and we ask questions.</p>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+  <h2>Projects</h2>
+  <ul class="community-grid">
+    <li><a class="community-card" href="/land/massey-solar-project">
+      <p class="name">Massey Solar Project</p>
+      <p class="pillar-desc">A sourced guide to a utility-scale solar project proposed on the territory: what is settled, what is still being decided, and how to take part in the review.</p>
+    </a></li>
+  </ul>
+  <p class="muted">More projects as members raise them. As resource and energy decisions come up across the treaty, the Circle gathers the public record and the questions members can ask.</p>
+{% endblock %}

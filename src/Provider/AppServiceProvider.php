@@ -99,6 +99,12 @@ final class AppServiceProvider extends ServiceProvider
             'treaty-the-treaty' => ['/treaty-wide/the-treaty', 'pages/treaty-wide/the-treaty.html.twig'],
             'treaty-distribution-models' => ['/treaty-wide/distribution-models', 'pages/treaty-wide/distribution-models.html.twig'],
 
+            'land' => ['/land', 'pages/land/index.html.twig'],
+            'land-massey' => ['/land/massey-solar-project', 'pages/land/massey-solar-project.html.twig'],
+            'land-massey-what-youve-heard' => ['/land/massey-solar-project/what-youve-heard', 'pages/land/massey-solar-project/what-youve-heard.html.twig'],
+            'land-massey-voices' => ['/land/massey-solar-project/voices', 'pages/land/massey-solar-project/voices.html.twig'],
+            'land-massey-climate' => ['/land/massey-solar-project/climate', 'pages/land/massey-solar-project/climate.html.twig'],
+
             'standard' => ['/standard', 'pages/standard.html.twig'],
             'records-request' => ['/standard/records-request', 'pages/standard/records-request.html.twig'],
 
@@ -108,10 +114,6 @@ final class AppServiceProvider extends ServiceProvider
             'communities' => ['/communities', 'pages/communities/index.html.twig'],
             'community-sagamok' => ['/communities/sagamok', 'pages/communities/sagamok.html.twig'],
             'sagamok-how-organized' => ['/communities/sagamok/how-its-organized', 'pages/communities/sagamok/how-its-organized.html.twig'],
-            'sagamok-massey' => ['/communities/sagamok/massey', 'pages/communities/sagamok/massey.html.twig'],
-            'sagamok-massey-what-youve-heard' => ['/communities/sagamok/massey-what-youve-heard', 'pages/communities/sagamok/massey-what-youve-heard.html.twig'],
-            'sagamok-massey-voices' => ['/communities/sagamok/massey-voices', 'pages/communities/sagamok/massey-voices.html.twig'],
-            'sagamok-massey-climate' => ['/communities/sagamok/massey-climate', 'pages/communities/sagamok/massey-climate.html.twig'],
         ];
 
         foreach ($pages as $name => [$path, $template]) {
@@ -119,6 +121,26 @@ final class AppServiceProvider extends ServiceProvider
                 $name,
                 RouteBuilder::create($path)
                     ->controller(fn () => $controller->page($template))
+                    ->allowAll()
+                    ->methods('GET')
+                    ->build(),
+            );
+        }
+
+        // 301 redirects from the old Massey paths. Massey moved out of the
+        // Sagamok community bucket to the land section; no internal link relies
+        // on these, they only catch old/external inbound links.
+        $redirects = [
+            'redir-massey' => ['/communities/sagamok/massey', '/land/massey-solar-project'],
+            'redir-massey-what-youve-heard' => ['/communities/sagamok/massey-what-youve-heard', '/land/massey-solar-project/what-youve-heard'],
+            'redir-massey-voices' => ['/communities/sagamok/massey-voices', '/land/massey-solar-project/voices'],
+            'redir-massey-climate' => ['/communities/sagamok/massey-climate', '/land/massey-solar-project/climate'],
+        ];
+        foreach ($redirects as $name => [$from, $to]) {
+            $router->addRoute(
+                $name,
+                RouteBuilder::create($from)
+                    ->controller(fn () => $controller->redirect($to))
                     ->allowAll()
                     ->methods('GET')
                     ->build(),

@@ -198,6 +198,7 @@ li { margin: 0 0 9px; }
 }
 .community-card:hover { border-color: var(--violet); transform: translateY(-2px); color: var(--ink); }
 .community-card .name { font-family: var(--serif); font-weight: 600; font-size: 19px; color: var(--indigo-deep); margin: 0 0 4px; }
+.community-card .pillar-desc { font-size: 14px; line-height: 1.5; color: var(--ink-2); margin: 0; }
 .community-card .status { font-size: 13px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
 .community-card .status.is-live { color: var(--magenta); }
 .community-card .status.is-soon { color: var(--ink-3); }

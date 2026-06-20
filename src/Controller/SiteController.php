@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Support\View;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -20,5 +21,11 @@ final class SiteController
             200,
             ['Content-Type' => 'text/html; charset=UTF-8'],
         );
+    }
+
+    /** Permanent (301) redirect, for routes that have moved. */
+    public function redirect(string $to): Response
+    {
+        return new RedirectResponse($to, 301);
     }
 }
