@@ -29,7 +29,12 @@ final class View
         }
 
         $root = \dirname(__DIR__, 2);
-        $cacheDir = $root . '/storage/cache/twig';
+        // Ephemeral, per-container cache (NOT the persistent storage volume): a
+        // fresh container on each deploy starts with an empty cache, so a changed
+        // template always recompiles. A cache on the persistent volume, combined
+        // with the image's opcache validate_timestamps=0, would otherwise serve a
+        // stale compiled template after a deploy.
+        $cacheDir = $root . '/var/twig-cache';
         $cache = is_dir($cacheDir) || @mkdir($cacheDir, 0775, true) ? $cacheDir : false;
 
         self::$twig = new Environment(
