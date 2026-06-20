@@ -3,7 +3,7 @@
 {% block main_class %}{% endblock %}
 
 {% block title %}A member records request, the worked example · RHT Members' Transparency Circle{% endblock %}
-{% block description %}The full text of the member records request submitted to Sagamok Chief and Council: a plain ask, tied to the Nation's own records, for what the membership gains from its investments and who is being served.{% endblock %}
+{% block description %}The full text of the member records request submitted to Sagamok Chief and Council: a plain ask, tied to the Nation's own records, for what the membership gains from its investments and who is being served, reproduced as filed.{% endblock %}
 {% block body_class %}route-records-request-letter{% endblock %}
 {% block og_description %}The full member records request to Sagamok Chief and Council: what are the benefits of the Nation's investments, and who is being served?{% endblock %}
 
@@ -45,6 +45,11 @@
     .rrl-cta h3 { border: none; padding: 0; margin: 0 0 6px; color: var(--accent-deep); }
     .rrl-cta p { margin: 0; max-width: none; color: var(--ink); }
     .rrl-cta a { color: var(--accent-deep); font-weight: 700; }
+
+    /* "About this document" framing callout (neutral, existing page tokens). */
+    .rrl-about { background: var(--paper-2); border: 1px solid var(--rule); border-left: 4px solid var(--rule-strong); border-radius: var(--radius-md); padding: 16px 20px; margin: 0 0 var(--gap-5); max-width: 74ch; }
+    .rrl-about p { margin: 0; color: var(--ink-2); font-size: 14.5px; line-height: 1.6; max-width: none; }
+    .rrl-about strong { color: var(--ink); }
 
     /* Sign-on card (.rr-*), ported from the records-request support page. */
     .rr-card { background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--radius-lg); padding: 24px 24px 26px; margin: 0 0 var(--gap-6); }
@@ -170,6 +175,10 @@
   <div class="rr-supporters" data-rr-supporters hidden>
     <h3>Supporters who chose to be named</h3>
     <ul data-rr-supporters-list></ul>
+  </div>
+
+  <div class="rrl-about">
+    <p><strong>About this document.</strong> This is the full text of a records request that a member of Sagamok Anishnawbek filed with Chief and Council on June 10, 2026, reproduced here as it was filed. It is one member's request, carried by the Circle as a worked example of the shared standard in practice. We publish it as a primary record of what members asked for, not as the Circle's own characterization of any person. The names and the board table below appear exactly as they did in the filed request, drawn from public corporate registries and the Nation's own records. The Circle works from sourced facts and names no private individuals in the pages it writes in its own voice. This page is different in kind: it faithfully reproduces a civic document that a member chose to file and sign.</p>
   </div>
 
   <p class="rrl-meta">Submitted to Chief and Council, c/o the Council Secretariat, on June 10, 2026.</p>
