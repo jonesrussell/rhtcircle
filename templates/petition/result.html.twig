@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'standard' %}
+
+{% block title %}{% if kind == 'removed' %}Your name has been removed{% else %}Signature not found{% endif %} · RHT Members' Transparency Circle{% endblock %}
+{% block description %}Manage your sign-on to the member records request.{% endblock %}
+
+{% block hero %}
+<section class="hero">
+  <div class="wrap wrap--wide">
+    <p class="eyebrow">Records request</p>
+    {% if kind == 'removed' %}
+      <h1>Your name has been removed.</h1>
+      <p class="lead">Your signature has been taken off the records request. Miigwech for letting us know. You can add it again anytime.</p>
+    {% else %}
+      <h1>We could not find that signature.</h1>
+      <p class="lead">This removal link may have already been used, or it is not valid. If you think this is a mistake, please get in touch.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+  <div class="btn-row">
+    <a class="btn" href="/standard/records-request">Back to the records request</a>
+    <a class="btn btn--alt" href="/">Home</a>
+  </div>
+{% endblock %}
