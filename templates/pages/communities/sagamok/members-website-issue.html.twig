@@ -1,0 +1,117 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+{% block main_class %}{% endblock %}
+
+{#
+  SAFETY: this is a responsible-disclosure record of a now-RESOLVED issue.
+  Do NOT add URLs to any affected page, passwords, the reproduction method or
+  step-by-step mechanics, or any members-only document content. Keep it past tense.
+#}
+
+{% block title %}A members-only website issue at Sagamok, reported and resolved · RHT Members' Transparency Circle{% endblock %}
+{% block description %}A dated record for members: for a period, parts of the Sagamok members-only website loaded before the login appeared. It was reported to the Nation and has since been fixed.{% endblock %}
+{% block og_title %}A members-only website issue at Sagamok, reported and resolved{% endblock %}
+{% block og_description %}For a period, parts of the Sagamok members-only website loaded before the login appeared. It was reported to the Nation and has since been fixed. A dated record for members.{% endblock %}
+{% block body_class %}route-sagamok-members-website-issue{% endblock %}
+
+{% block head_styles %}
+<style>
+  .docwrap{
+    --muted:var(--ink-3); --panel:var(--paper-2); --panel-2:var(--paper-3);
+    --border:var(--rule); --warn:var(--accent-deep);
+    --maxw:680px;
+    background:var(--paper); color:var(--ink);
+    font:18px/1.7 var(--font-sans);
+    -webkit-font-smoothing:antialiased;
+  }
+  .docwrap *{box-sizing:border-box}
+  .docwrap .wrap{max-width:var(--maxw); margin:0 auto; padding:40px 22px 64px}
+  .docwrap a{color:var(--accent); text-decoration:none}
+  .docwrap a:hover{text-decoration:underline}
+  .docwrap .eyebrow{font-size:12.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin:0 0 16px; font-weight:600}
+  .docwrap h1{font-size:32px; line-height:1.18; font-weight:700; margin:0 0 16px; letter-spacing:-.01em; color:var(--indigo-deep); font-family:var(--serif)}
+  .docwrap .lede{font-size:19px; color:var(--ink-2); margin:0 0 8px}
+  .docwrap .byline{font-size:14px; color:var(--muted); margin:16px 0 0; padding-top:16px; border-top:1px solid var(--border)}
+  .docwrap h2{font-size:21px; line-height:1.25; font-weight:700; margin:42px 0 12px; letter-spacing:-.01em; color:var(--indigo-deep); font-family:var(--serif)}
+  .docwrap p{margin:0 0 16px}
+  .docwrap strong{color:var(--ink)}
+  .docwrap .hl{background:var(--accent-wash); color:var(--ink); padding:.03em .28em; border-radius:4px; font-weight:600; box-decoration-break:clone; -webkit-box-decoration-break:clone}
+  .docwrap .hlw{background:var(--accent-wash); color:var(--ink); padding:.03em .28em; border-radius:4px; font-weight:600; box-decoration-break:clone; -webkit-box-decoration-break:clone}
+  .docwrap .summary{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:8px 22px 12px; margin:26px 0 8px}
+  .docwrap .summary p.h{font-size:12.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:600; margin:16px 0 10px}
+  .docwrap ul{margin:0 0 18px; padding-left:0; list-style:none}
+  .docwrap li{position:relative; padding-left:22px; margin:0 0 11px}
+  .docwrap li::before{content:""; position:absolute; left:3px; top:12px; width:6px; height:6px; border-radius:50%; background:var(--accent)}
+  .docwrap .pull{font-size:21px; line-height:1.4; color:var(--ink); font-weight:600; border-left:3px solid var(--accent); padding:4px 0 4px 20px; margin:22px 0}
+  .docwrap .timeline{position:relative; margin:16px 0 18px; padding-left:36px}
+  .docwrap .timeline::before{content:""; position:absolute; left:9px; top:8px; bottom:12px; width:2px; background:linear-gradient(180deg,var(--accent),var(--border))}
+  .docwrap .tl{position:relative; padding:0 0 24px}
+  .docwrap .tl:last-child{padding-bottom:0}
+  .docwrap .tl::before{content:""; position:absolute; left:-36px; top:2px; width:20px; height:20px; border-radius:50%; background:var(--panel-2); border:3px solid var(--accent)}
+  .docwrap .tl .when{display:inline-block; font-size:13.5px; letter-spacing:.03em; color:var(--accent); font-weight:700; margin:0 0 5px}
+  .docwrap .tl p{margin:0; color:var(--ink-2); font-size:16px; line-height:1.55}
+  .docwrap .status{border-left:3px solid var(--warn); background:var(--panel-2); padding:14px 18px; border-radius:0 10px 10px 0; color:var(--ink-2); font-size:16.5px}
+  .docwrap .tech{font-size:14.5px; color:var(--muted); background:var(--panel-2); border:1px solid var(--border); border-radius:10px; padding:15px 18px; margin:20px 0 0; line-height:1.55}
+  .docwrap .tech b{color:var(--ink-2)}
+  .docwrap footer{margin-top:50px; padding-top:20px; border-top:1px solid var(--border); color:var(--muted); font-size:14px}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="docwrap">
+<div class="wrap">
+
+  <p class="eyebrow">Sagamok · A members' record</p>
+  <h1>A members-only website issue, reported and resolved</h1>
+  <p class="lede">For a period, our members-only pages <span class="hlw">loaded before the login screen appeared</span>, so some content could be reached without signing in. It was reported to the Nation and has since been fixed. Here is what happened, in plain terms.</p>
+  <p class="byline">From Russell Jones, a Sagamok Anishnawbek member. May 31, 2026.</p>
+
+  <p class="status"><strong>Status: resolved.</strong> This issue was reported to Sagamok Anishnawbek and has since been fixed (as of June 3, 2026). Nothing described on this page is currently exploitable. The page is kept as a dated record of a now-resolved issue.</p>
+
+  <div class="summary">
+    <p class="h">In short</p>
+    <ul>
+      <li>For a period, members-only pages <span class="hlw">loaded with no account and no password</span> required, because the login appeared only after the content had already loaded.</li>
+      <li>The check was in the browser rather than on the server, so the content had already been delivered by the time the login screen appeared.</li>
+      <li>This affected pages across the members-only area, not a single page.</li>
+      <li>I raised concerns through the proper channels before, and this time also brought it to members directly. It was reported to the Nation and has since been fixed.</li>
+    </ul>
+  </div>
+
+  <h2>Why the login did not protect the pages</h2>
+  <p>When a page was opened, the content was sent first, and a moment later a script in the browser covered it with a login screen. Because that check ran in the browser rather than on the server, the content had already been delivered by the time the login appeared. That is also how an automated system such as a search engine could receive a members-only page, and how I came across one in ordinary search results.</p>
+
+  <h2>It was not limited to one page</h2>
+  <p>The same behaviour affected pages across the members-only area, not a single page. The personal My Account page was built correctly: it showed a member's information only after an actual sign-in. To be clear about what I did: I confirmed the behaviour, but <strong>I did not download anyone's documents, and I have not shared any of this material.</strong></p>
+
+  <h2>Why a fix on the site is not the whole story</h2>
+  <p>While the pages were open, anything that reads the web could take a copy. Search engines had indexed some of them, which is how one surfaced in an ordinary search. Fixing the site stops new copies, but it does not guarantee that copies already taken are gone.</p>
+  <p class="pull">A search result can be taken down. Information already pulled into an AI model is far harder, often impossible, to take back.</p>
+  <p>For a community, this is the heart of it. <span class="hlw">While the pages were open, our information could flow into systems we do not own or control.</span> Keeping our community's information in our community's hands, and being able to check that ourselves, is part of our sovereignty.</p>
+
+  <h2>The timeline: I raised this years ago</h2>
+  <p>This is not a surprise I am springing on the community. I have raised concerns about this system before, with real dates on the record. I am naming offices and dates, not individuals.</p>
+  <div class="timeline">
+    <div class="tl"><p class="when">September 3, 2023</p><p>I wrote to the office of the Chief raising concerns about how member data was being collected and handled on the website, and offered to help move it to a safer setup.</p></div>
+    <div class="tl"><p class="when">September 7, 2023</p><p>The Council Secretariat replied, acknowledged the concern about the members-only portal, and said it would be brought to Council.</p></div>
+    <div class="tl"><p class="when">February 6, 2026</p><p>When all members were told to reset their portal passwords, I asked the IT office in writing whether there had been any breach or security problem. The same-day written reply stated there had been no security issues and no vulnerability to member accounts or personal data.</p></div>
+    <div class="tl"><p class="when">May 31, 2026</p><p>While building a community resource for members, I found that members-only pages were loading before the login appeared. Raising concerns quietly had not worked before, so this time I brought it to members directly. The full technical detail was documented and provided to the band to verify and fix.</p></div>
+    <div class="tl"><p class="when">June 3, 2026</p><p>After this was reported, the website was corrected so the login is enforced on the server before any content is sent. The issue described on this page is resolved.</p></div>
+  </div>
+
+  <h2>What was needed, and what has been done</h2>
+  <p>The fix needed the <span class="hl">login to be checked on the server, before any content is sent</span>, rather than painted over afterward in the browser. That change has been made. Because some pages had already been copied into search engines, removing those cached copies, and limiting the crawlers that can reach the site, were part of the cleanup, since some material may already sit in search caches and AI systems where it cannot simply be deleted.</p>
+  <p>The bigger lesson is the one that matters most. When the systems holding our information are run on outside platforms by people outside the community, and we do not have our own qualified people able to check them, we cannot answer a simple question: is our data safe, and who can see it. <strong>Our data is ours.</strong> Deciding how it is kept, and being able to check it ourselves, is part of our <span class="hl">sovereignty</span>.</p>
+
+  <h2>Where this stands now</h2>
+  <p class="status">I raised concerns about this system through the proper channels in 2023 and again in February 2026. This time I also brought it to members directly. The full technical detail was provided to Chief and Council and the IT office, and the issue has since been fixed. Members are welcome to ask Chief and Council and the IT office directly whether their information was affected.</p>
+
+  <p class="tech"><b>For the record:</b> no login was required and nothing was circumvented or bypassed; the content was delivered before any login appeared. No member documents were downloaded to establish this. The full technical detail was provided privately to Chief and Council and the IT office, and the issue has since been fixed.</p>
+
+  <footer>
+    <p>This is from Russell Jones, a Sagamok Anishnawbek member. It is independent of Sagamok Chief and Council and its administration. I have not shared any of the affected documents. Questions and corrections are welcome.</p>
+  </footer>
+
+</div>
+</div>
+{% endblock %}

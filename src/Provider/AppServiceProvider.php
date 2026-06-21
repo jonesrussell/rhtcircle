@@ -114,6 +114,7 @@ final class AppServiceProvider extends ServiceProvider
             'communities' => ['/communities', 'pages/communities/index.html.twig'],
             'community-sagamok' => ['/communities/sagamok', 'pages/communities/sagamok.html.twig'],
             'sagamok-how-organized' => ['/communities/sagamok/how-its-organized', 'pages/communities/sagamok/how-its-organized.html.twig'],
+            'sagamok-members-website-issue' => ['/communities/sagamok/members-website-issue', 'pages/communities/sagamok/members-website-issue.html.twig'],
         ];
 
         foreach ($pages as $name => [$path, $template]) {
