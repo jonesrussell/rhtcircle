@@ -1,0 +1,21 @@
+{# The standard profile facts. Expects `nation`. Population is shown with its
+   date and source because it is point-in-time. #}
+<dl class="nation-facts">
+  {% if nation.anishinaabemowin %}
+  <dt>Anishinaabemowin</dt>
+  <dd>{{ nation.anishinaabemowin }}</dd>
+  {% endif %}
+  <dt>Sub-region</dt>
+  <dd>{{ nation.sub_region }}</dd>
+  <dt>Location</dt>
+  <dd>{{ nation.nearest_town }}</dd>
+  <dt>Population</dt>
+  <dd>{{ nation.population_total }}{% if nation.population_on_reserve %}, {{ nation.population_on_reserve }} on-reserve{% endif %}.
+    <span class="muted">Source: {{ nation.population_source }}. This is a point-in-time figure; registered membership, on-reserve census counts, and band totals are not directly comparable. Re-verify before relying on it.</span></dd>
+  <dt>Governance</dt>
+  <dd>{{ nation.governance }}</dd>
+  <dt>Primary language</dt>
+  <dd>{{ nation.language }}</dd>
+  <dt>Tribal council</dt>
+  <dd>{{ nation.tribal_council }}</dd>
+</dl>

@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}{{ nation.name }} · Communities · Robinson Huron Treaty{% endblock %}
+{% block description %}{{ nation.name }}: a member-compiled, unofficial profile. {{ nation.sub_region }}, near {{ nation.nearest_town }}. Population, governance, the treaty relationship, the nation's own website, and sources.{% endblock %}
+{% block og_description %}A member-compiled, unofficial, sourced profile of {{ nation.name }}, one of the 21 Robinson Huron Treaty First Nations.{% endblock %}
+
+{% block hero %}
+<section class="hero">
+  <div class="wrap wrap--wide">
+    <p class="eyebrow">Communities · {{ nation.region_name }}</p>
+    <h1>{{ nation.name }}.</h1>
+    {% if nation.anishinaabemowin %}<p class="lead">{{ nation.anishinaabemowin }}</p>{% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+  {% include 'partials/nation_banner.html.twig' %}
+
+  <h2>Profile</h2>
+  {% include 'partials/nation_facts.html.twig' %}
+
+  <h2>History and treaty relationship</h2>
+  {{ nation.history|raw }}
+
+  {% if nation.note %}
+  <div class="card">
+    <p class="muted"><strong>A note on the figures.</strong> {{ nation.note }}</p>
+  </div>
+  {% endif %}
+
+  {% include 'partials/nation_official.html.twig' %}
+
+  <h2>Across the hub</h2>
+  <p>This page links out rather than repeating what lives elsewhere on the site.</p>
+  <ul class="community-grid">
+    <li><a class="community-card" href="/treaty">
+      <p class="name">The Treaty</p>
+      <p class="pillar-desc">What the 1850 treaty is, and what is happening with the settlement.</p>
+    </a></li>
+    <li><a class="community-card" href="/land">
+      <p class="name">The Land</p>
+      <p class="pillar-desc">Decisions on the territory across the 21 nations.</p>
+    </a></li>
+    <li><a class="community-card" href="/standard">
+      <p class="name">The shared standard</p>
+      <p class="pillar-desc">Questions any member can put to their own council.</p>
+    </a></li>
+    {% for link in nation.related %}
+    <li><a class="community-card" href="{{ link.href }}">
+      <p class="name">{{ link.label }}</p>
+      <p class="pillar-desc">{{ link.desc }}</p>
+    </a></li>
+    {% endfor %}
+  </ul>
+
+  <h2>Sources</h2>
+  {% include 'partials/nation_sources.html.twig' %}
+{% endblock %}

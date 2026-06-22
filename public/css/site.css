@@ -204,6 +204,28 @@ li { margin: 0 0 9px; }
 .community-card .status.is-soon { color: var(--ink-3); }
 .community-card.is-soon { background: var(--paper-2); }
 
+/* Per-nation profile facts (community pages) */
+.nation-facts { margin: 18px 0 8px; }
+.nation-facts dt {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--magenta);
+  margin-top: 16px;
+}
+.nation-facts dt:first-child { margin-top: 0; }
+.nation-facts dd { margin: 3px 0 0; color: var(--ink-2); }
+.nation-facts dd .muted { display: block; font-size: 13.5px; margin-top: 3px; }
+
+/* Sources lists (community + land/safety pages) */
+.src-links { margin: 16px 0 8px; padding-left: 22px; }
+.src-links li { margin: 0 0 10px; line-height: 1.5; }
+
+/* Banner spacing on per-nation pages */
+.nation-banner { margin-top: 0; }
+
 /* Footer + standing disclaimer */
 .site-foot { background: var(--paper-3); border-top: 1px solid var(--line); color: var(--ink-3); font-size: 14px; line-height: 1.6; }
 .site-foot .wrap { padding-top: 28px; padding-bottom: 34px; }

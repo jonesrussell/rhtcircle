@@ -1,0 +1,10 @@
+{# Official-website link with a "leaving our site" courtesy. Expects `nation`. #}
+<div class="card">
+  <h3>The nation's own website</h3>
+  {% if nation.website %}
+  <p>For current Chief and Council, membership, programs, and contacts, use the nation's own website, which is the authority: <a href="{{ nation.website }}" target="_blank" rel="noopener">{{ nation.website_label }}</a>.</p>
+  <p class="muted">You are leaving this member resource. That link opens {{ nation.name }}'s own website, which we do not run or control.</p>
+  {% else %}
+  <p>{{ nation.website_note }}</p>
+  {% endif %}
+</div>

@@ -1,20 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://rhtcircle.ca/</loc></url>
-  <url><loc>https://rhtcircle.ca/treaty-wide</loc></url>
-  <url><loc>https://rhtcircle.ca/treaty-wide/the-treaty</loc></url>
-  <url><loc>https://rhtcircle.ca/treaty-wide/distribution-models</loc></url>
+
+  <url><loc>https://rhtcircle.ca/treaty</loc></url>
+  <url><loc>https://rhtcircle.ca/treaty/distribution-models</loc></url>
+
+  <url><loc>https://rhtcircle.ca/communities</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/batchewana</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/garden-river</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/thessalon</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/mississauga</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/serpent-river</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/sagamok</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/atikameksheng</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/wahnapitae</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/nipissing</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/dokis</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/henvey-inlet</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/magnetawan</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/shawanaga</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/wasauksing</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/aundeck-omni-kaning</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/whitefish-river</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/mchigeeng</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/sheguiandah</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/sheshegwaning</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/wiikwemkoong</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/zhiibaahaasing</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/sagamok/how-its-organized</loc></url>
+  <url><loc>https://rhtcircle.ca/communities/sagamok/members-website-issue</loc></url>
+
   <url><loc>https://rhtcircle.ca/land</loc></url>
   <url><loc>https://rhtcircle.ca/land/massey-solar-project</loc></url>
   <url><loc>https://rhtcircle.ca/land/massey-solar-project/what-youve-heard</loc></url>
   <url><loc>https://rhtcircle.ca/land/massey-solar-project/voices</loc></url>
   <url><loc>https://rhtcircle.ca/land/massey-solar-project/climate</loc></url>
+  <url><loc>https://rhtcircle.ca/land/territory-and-safety</loc></url>
+
+  <url><loc>https://rhtcircle.ca/treaty-wide</loc></url>
   <url><loc>https://rhtcircle.ca/standard</loc></url>
   <url><loc>https://rhtcircle.ca/standard/records-request</loc></url>
+
+  <url><loc>https://rhtcircle.ca/circle</loc></url>
   <url><loc>https://rhtcircle.ca/about</loc></url>
   <url><loc>https://rhtcircle.ca/get-involved</loc></url>
-  <url><loc>https://rhtcircle.ca/communities</loc></url>
-  <url><loc>https://rhtcircle.ca/communities/sagamok</loc></url>
-  <url><loc>https://rhtcircle.ca/communities/sagamok/how-its-organized</loc></url>
-  <url><loc>https://rhtcircle.ca/communities/sagamok/members-website-issue</loc></url>
 </urlset>

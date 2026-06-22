@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Robinson Huron Treaty Members' Transparency Circle{% endblock %}</title>
-  <meta name="description" content="{% block description %}A member-led circle of beneficiaries across the Robinson Huron Treaty First Nations, asking clear, respectful questions about how our shared settlement is governed.{% endblock %}">
+  <title>{% block title %}Robinson Huron Treaty · A member resource for the treaty and its 21 nations{% endblock %}</title>
+  <meta name="description" content="{% block description %}A member-led resource for the Robinson Huron Treaty and its 21 First Nations: what the 1850 treaty is, the communities of the territory, what is happening on the land, and the member-led transparency work on the shared settlement.{% endblock %}">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Robinson Huron Treaty Members' Transparency Circle">
+  <meta property="og:site_name" content="Robinson Huron Treaty resource (rhtcircle.ca)">
   <meta property="og:title" content="{% block og_title %}{{ block('title') }}{% endblock %}">
   <meta property="og:description" content="{% block og_description %}{{ block('description') }}{% endblock %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,15 +22,15 @@
 <hr class="rainbow-rule">
 <header class="site-head">
   <div class="wrap wrap--wide">
-    <p class="site-title"><a href="/">Robinson Huron Treaty Members' Transparency Circle</a></p>
-    <p class="site-tag">Members and beneficiaries, asking together.</p>
+    <p class="site-title"><a href="/">Robinson Huron Treaty</a></p>
+    <p class="site-tag">A member resource for the treaty and its 21 nations.</p>
     <nav class="site-nav" aria-label="Primary">
-      <a href="/" {% if nav == 'home' %}aria-current="page"{% endif %}>Home</a>
-      <a href="/treaty-wide" {% if nav == 'treaty-wide' %}aria-current="page"{% endif %}>The treaty-wide ask</a>
-      <a href="/land" {% if nav == 'land' %}aria-current="page"{% endif %}>The land</a>
-      <a href="/standard" {% if nav == 'standard' %}aria-current="page"{% endif %}>The shared standard</a>
+      <a href="/treaty" {% if nav == 'treaty' %}aria-current="page"{% endif %}>The Treaty</a>
       <a href="/communities" {% if nav == 'communities' %}aria-current="page"{% endif %}>Communities</a>
-      <a href="/get-involved" {% if nav == 'get-involved' %}aria-current="page"{% endif %}>Get involved</a>
+      <a href="/land" {% if nav == 'land' %}aria-current="page"{% endif %}>The Land</a>
+      <a href="/standard" {% if nav == 'transparency' %}aria-current="page"{% endif %}>Transparency</a>
+      <a href="/circle" {% if nav == 'circle' %}aria-current="page"{% endif %}>The Circle</a>
+      <a href="/about" {% if nav == 'about' %}aria-current="page"{% endif %}>About</a>
     </nav>
   </div>
 </header>
@@ -46,14 +46,14 @@
 <footer class="site-foot">
   <div class="wrap wrap--wide">
     <nav class="foot-links" aria-label="Footer">
-      <a href="/">Home</a>
-      <a href="/treaty-wide">The treaty-wide ask</a>
-      <a href="/land">The land</a>
-      <a href="/standard">The shared standard</a>
+      <a href="/treaty">The Treaty</a>
       <a href="/communities">Communities</a>
-      <a href="/get-involved">Get involved</a>
+      <a href="/land">The Land</a>
+      <a href="/standard">Transparency</a>
+      <a href="/circle">The Circle</a>
+      <a href="/about">About</a>
     </nav>
-    <p class="disclaimer"><strong>Independent and member-led.</strong> The Robinson Huron Treaty Members' Transparency Circle is not the Robinson Huron Treaty Litigation Fund and is not affiliated with it. We are an independent group of members and beneficiaries. We are non-partisan. We work from sourced facts framed as questions, and we do not make accusations.</p>
+    <p class="disclaimer"><strong>Independent and member-led.</strong> This is an independent, member-led resource for the Robinson Huron Treaty and its 21 First Nations. It is not the Robinson Huron Treaty Litigation Fund and is not affiliated with it. The member-led Transparency Circle within it is non-partisan: it works from sourced facts framed as questions, and it does not make accusations.</p>
     <p class="muted">Prepared by members, for members.</p>
   </div>
 </footer>

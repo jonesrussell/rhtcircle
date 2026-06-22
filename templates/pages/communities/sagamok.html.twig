@@ -1,42 +1,44 @@
 {% extends 'base.html.twig' %}
 {% set nav = 'communities' %}
 
-{% block title %}Sagamok Anishnawbek · Communities · RHT Members' Transparency Circle{% endblock %}
-{% block description %}A member resource for Sagamok Anishnawbek beneficiaries: the shared transparency standard applied to our own community, with plain questions about how our settlement share is held and governed. Independent of Chief and Council.{% endblock %}
+{% block title %}Sagamok Anishnawbek · Communities · Robinson Huron Treaty{% endblock %}
+{% block description %}A member-compiled, unofficial profile of Sagamok Anishnawbek, and the hub for the member transparency work that touches the community: the shared standard, the records request, how Sagamok is organized, and the Massey solar project.{% endblock %}
+{% block og_description %}A member-compiled, unofficial profile of Sagamok Anishnawbek, with links to the transparency work and land decisions that touch the community.{% endblock %}
 
 {% block hero %}
 <section class="hero">
   <div class="wrap wrap--wide">
-    <p class="eyebrow">Communities · the first worked example</p>
-    <h1>Sagamok Anishnawbek.</h1>
-    <p class="lead">A member resource for Sagamok beneficiaries. This is where the shared standard becomes the questions we put to our own community about our settlement share, and where the public information that helps members understand it is gathered in one place.</p>
+    <p class="eyebrow">Communities · {{ nation.region_name }}</p>
+    <h1>{{ nation.name }}.</h1>
+    <p class="lead">A member-compiled profile of Sagamok, and the hub for the parts of this resource that touch the community: the shared transparency standard applied here, the records request, how the Nation is organized, and the land decisions on Sagamok territory.</p>
   </div>
 </section>
 {% endblock %}
 
 {% block content %}
-  <div class="card card--coral">
-    <p><strong>Independent member resource.</strong> This page is by and for members. It is independent of the Sagamok Chief and Council and of the Litigation Fund. It does not provide, decide, or reproduce any official record. It gathers public information and the questions members are entitled to ask.</p>
+  {% include 'partials/nation_banner.html.twig' %}
+
+  <h2>Profile</h2>
+  {% include 'partials/nation_facts.html.twig' %}
+
+  <h2>History and treaty relationship</h2>
+  {{ nation.history|raw }}
+
+  {% if nation.note %}
+  <div class="card">
+    <p class="muted"><strong>A note on the figures.</strong> {{ nation.note }}</p>
   </div>
+  {% endif %}
 
-  <h2>What members can ask here</h2>
-  <p>These are the community-level questions from the shared standard, put to our own Chief and Council about the settlement trust. They are questions, not accusations.</p>
-  <ol>
-    <li>Who holds the community's settlement funds (the institution and the trustee), and where they are kept.</li>
-    <li>The trust's governing rules: what the funds can be invested in, the conflict-of-interest rules binding anyone who can move money, and how the trustee is paid.</li>
-    <li>Who can authorize a withdrawal from the trust, and what approvals are required before money is released.</li>
-    <li>How the held funds reconcile to the community's audited financial statements.</li>
-    <li>What reporting members receive about the trust, and how often.</li>
-    <li>For any portion held for minors or for specific community purposes: the terms, and when and how it is released.</li>
-  </ol>
+  {% include 'partials/nation_official.html.twig' %}
 
-  <div class="btn-row">
-    <a class="btn" href="/standard">The full shared standard</a>
-    <a class="btn btn--alt" href="/get-involved">Be a local contact</a>
-  </div>
-
-  <h2>Resources for members</h2>
+  <h2>Member transparency resources for Sagamok</h2>
+  <p>Sagamok is where the shared standard became a worked example. The community-level questions any member can put to their own Chief and Council live in <a href="/standard">the shared standard</a>. The pages below are Sagamok members putting that standard into practice. They are independent of the Sagamok Chief and Council and of the Litigation Fund.</p>
   <ul class="community-grid">
+    <li><a class="community-card" href="/standard/records-request">
+      <p class="name">The records request</p>
+      <p class="status is-live">The standard, in practice</p>
+    </a></li>
     <li><a class="community-card" href="/communities/sagamok/how-its-organized">
       <p class="name">How Sagamok is organized</p>
       <p class="status is-live">A member's guide</p>
@@ -45,18 +47,26 @@
       <p class="name">The members website issue</p>
       <p class="status is-live">Reported and resolved</p>
     </a></li>
-    <li><a class="community-card" href="/standard/records-request">
-      <p class="name">The records request</p>
-      <p class="status is-live">The standard, in practice</p>
-    </a></li>
   </ul>
 
   <h2>On Sagamok territory</h2>
-  <p>Decisions about the land and its resources reach members here too. They live in <a href="/land">the land section</a>, which covers resource and energy decisions across the treaty, not under any one community.</p>
+  <p>Decisions about the land and its resources reach members here too. They live in <a href="/land">the land section</a>, which covers resource and energy decisions and member wellbeing across the treaty, not under any one community.</p>
   <ul class="community-grid">
     <li><a class="community-card" href="/land/massey-solar-project">
       <p class="name">The Massey solar project</p>
       <p class="status is-live">On Sagamok territory</p>
     </a></li>
+    <li><a class="community-card" href="/land/territory-and-safety">
+      <p class="name">Territory and member safety</p>
+      <p class="status is-live">A neutral, sourced note</p>
+    </a></li>
   </ul>
+
+  <div class="btn-row">
+    <a class="btn" href="/standard">The full shared standard</a>
+    <a class="btn btn--alt" href="/circle">Be a local contact</a>
+  </div>
+
+  <h2>Sources</h2>
+  {% include 'partials/nation_sources.html.twig' %}
 {% endblock %}

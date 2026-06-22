@@ -1,42 +1,39 @@
 {% extends 'base.html.twig' %}
 {% set nav = 'communities' %}
 
-{% block title %}Communities · RHT Members' Transparency Circle{% endblock %}
-{% block description %}Per-community resources for the 21 Robinson Huron Treaty signatory First Nations and their surrounding areas. Each runs the same shared standard. Sagamok Anishnawbek is the first worked example.{% endblock %}
+{% block title %}Communities · The 21 Robinson Huron Treaty First Nations{% endblock %}
+{% block description %}The 21 Robinson Huron Treaty signatory First Nations, grouped by sub-region: the north shore of Lake Huron, Lake Nipissing and Georgian Bay, and Manitoulin Island. Each has a member-compiled, unofficial profile page.{% endblock %}
+{% block og_description %}The 21 signatory Robinson Huron Treaty First Nations, grouped by region, each with a member-compiled, unofficial, sourced profile.{% endblock %}
 
 {% block hero %}
 <section class="hero">
   <div class="wrap wrap--wide">
     <p class="eyebrow">All 21 signatory nations</p>
     <h1>Communities.</h1>
-    <p class="lead">The Circle grows community by community. Each of the 21 Robinson Huron Treaty signatory nations, and its surrounding area, gets its own page that runs the same shared standard, so members everywhere can ask the same plain questions of their own council. Sagamok Anishnawbek is the first worked example.</p>
+    <p class="lead">The Robinson Huron Treaty was signed by 21 First Nations along the north shore of the upper Great Lakes. Each has a page here: a member-compiled, unofficial profile that gives the basics and links out to the nation's own website and to the parts of this resource that touch it. The pages are grouped by sub-region.</p>
   </div>
 </section>
 {% endblock %}
 
 {% block content %}
-  <ul class="community-grid">
-    <li>
-      <a class="community-card" href="/communities/sagamok">
-        <p class="name">Sagamok Anishnawbek</p>
-        <p class="status is-live">Worked example</p>
-      </a>
-    </li>
-    <li>
-      <span class="community-card is-soon">
-        <p class="name">The other 20 signatory nations</p>
-        <p class="status is-soon">Added as contacts join</p>
-      </span>
-    </li>
-  </ul>
-
-  <div class="card">
-    <h3>How a community page works</h3>
-    <p>Each page is a member resource, independent of that community's Chief and Council. It carries the same Part 2 of the shared standard, a plain map of how to ask, and links to public sources. The structure is the same everywhere, so once one community runs it, the next is a short step.</p>
+  <div class="card card--coral">
+    <p><strong>Member-compiled and unofficial.</strong> These pages are summaries drawn from public sources, not official communications of any nation. Each nation's own website is the authority for its membership, governance, and contacts. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.</p>
   </div>
 
+  {% for key, name in regions %}
+  <h2>{{ name }}</h2>
+  <ul class="community-grid">
+    {% for nation in byRegion[key] %}
+    <li><a class="community-card" href="/communities/{{ nation.slug }}">
+      <p class="name">{{ nation.name }}</p>
+      <p class="pillar-desc">{{ nation.sub_region }}</p>
+    </a></li>
+    {% endfor %}
+  </ul>
+  {% endfor %}
+
   <div class="card card--magenta">
-    <h3>Is this your community?</h3>
-    <p>If you are a beneficiary of one of the 21 Robinson Huron Treaty First Nations and would like a page for your community and its surrounding area, the Circle will help you stand it up. <a href="/get-involved">Get involved.</a></p>
+    <h3>See a mistake on your community's page?</h3>
+    <p>Getting a nation's facts wrong is worse than having no page. If something is wrong or out of date, please <a href="/about#corrections">send a correction</a>. If you are a member who would like to help keep your community's page accurate, the <a href="/circle">Circle</a> will help.</p>
   </div>
 {% endblock %}

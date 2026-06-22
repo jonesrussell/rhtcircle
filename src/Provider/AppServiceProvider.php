@@ -95,24 +95,29 @@ final class AppServiceProvider extends ServiceProvider
         $pages = [
             'home' => ['/', 'pages/home.html.twig'],
 
+            // The Treaty: orientation pillar. The four-part annuity explainer and
+            // its distribution-models companion migrated here from /treaty-wide
+            // (301s below); fixed-content pages, no context needed.
+            'treaty' => ['/treaty', 'pages/treaty/index.html.twig'],
+            'treaty-distribution-models' => ['/treaty/distribution-models', 'pages/treaty/distribution-models.html.twig'],
+
+            // Transparency: the settlement asks and the shared standard.
             'treaty-wide' => ['/treaty-wide', 'pages/treaty-wide.html.twig'],
-            'treaty-the-treaty' => ['/treaty-wide/the-treaty', 'pages/treaty-wide/the-treaty.html.twig'],
-            'treaty-distribution-models' => ['/treaty-wide/distribution-models', 'pages/treaty-wide/distribution-models.html.twig'],
+            'standard' => ['/standard', 'pages/standard.html.twig'],
+            'records-request' => ['/standard/records-request', 'pages/standard/records-request.html.twig'],
 
             'land' => ['/land', 'pages/land/index.html.twig'],
             'land-massey' => ['/land/massey-solar-project', 'pages/land/massey-solar-project.html.twig'],
             'land-massey-what-youve-heard' => ['/land/massey-solar-project/what-youve-heard', 'pages/land/massey-solar-project/what-youve-heard.html.twig'],
             'land-massey-voices' => ['/land/massey-solar-project/voices', 'pages/land/massey-solar-project/voices.html.twig'],
             'land-massey-climate' => ['/land/massey-solar-project/climate', 'pages/land/massey-solar-project/climate.html.twig'],
+            'land-territory-and-safety' => ['/land/territory-and-safety', 'pages/land/territory-and-safety.html.twig'],
 
-            'standard' => ['/standard', 'pages/standard.html.twig'],
-            'records-request' => ['/standard/records-request', 'pages/standard/records-request.html.twig'],
-
+            // The Circle: the member-led movement. About: what the hub is and is not.
+            'circle' => ['/circle', 'pages/circle/index.html.twig'],
             'about' => ['/about', 'pages/about.html.twig'],
             'get-involved' => ['/get-involved', 'pages/get-involved.html.twig'],
 
-            'communities' => ['/communities', 'pages/communities/index.html.twig'],
-            'community-sagamok' => ['/communities/sagamok', 'pages/communities/sagamok.html.twig'],
             'sagamok-how-organized' => ['/communities/sagamok/how-its-organized', 'pages/communities/sagamok/how-its-organized.html.twig'],
             'sagamok-members-website-issue' => ['/communities/sagamok/members-website-issue', 'pages/communities/sagamok/members-website-issue.html.twig'],
         ];
@@ -128,14 +133,39 @@ final class AppServiceProvider extends ServiceProvider
             );
         }
 
-        // 301 redirects from the old Massey paths. Massey moved out of the
-        // Sagamok community bucket to the land section; no internal link relies
-        // on these, they only catch old/external inbound links.
+        // Communities: the index and the 21 per-nation pages are data-driven from
+        // App\Content\Nations, so the controller passes context. The {slug} route
+        // matches a single segment, so it never shadows /communities or the deeper
+        // /communities/sagamok/* pages registered above.
+        $router->addRoute(
+            'communities',
+            RouteBuilder::create('/communities')
+                ->controller(fn () => $controller->communitiesIndex())
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+        $router->addRoute(
+            'community-profile',
+            RouteBuilder::create('/communities/{slug}')
+                ->controller(fn (Request $request, string $slug) => $controller->community($slug))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+
+        // 301 redirects from old paths. Each lands in one hop on a live page, so
+        // no chains. The Massey set catches old/external inbound links from when
+        // Massey lived under the Sagamok community bucket. The treaty set catches
+        // the explainer's old /treaty-wide home after it moved to /treaty; all
+        // internal links were repointed in the same change.
         $redirects = [
             'redir-massey' => ['/communities/sagamok/massey', '/land/massey-solar-project'],
             'redir-massey-what-youve-heard' => ['/communities/sagamok/massey-what-youve-heard', '/land/massey-solar-project/what-youve-heard'],
             'redir-massey-voices' => ['/communities/sagamok/massey-voices', '/land/massey-solar-project/voices'],
             'redir-massey-climate' => ['/communities/sagamok/massey-climate', '/land/massey-solar-project/climate'],
+            'redir-treaty-the-treaty' => ['/treaty-wide/the-treaty', '/treaty'],
+            'redir-treaty-distribution-models' => ['/treaty-wide/distribution-models', '/treaty/distribution-models'],
         ];
         foreach ($redirects as $name => [$from, $to]) {
             $router->addRoute(

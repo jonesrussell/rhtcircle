@@ -1,0 +1,6 @@
+{# Sources list. Expects `nation.sources` (each: label, url). #}
+<ul class="src-links">
+  {% for s in nation.sources %}
+  <li>{% if s.url %}<a href="{{ s.url }}" target="_blank" rel="noopener">{{ s.label }}</a>{% else %}{{ s.label }}{% endif %}</li>
+  {% endfor %}
+</ul>
