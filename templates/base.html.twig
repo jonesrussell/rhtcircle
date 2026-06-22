@@ -16,6 +16,9 @@
   {# First-party, self-hosted analytics. Same-origin beacon to /api/collect, no
      third party, no cookies, respects Do Not Track. #}
   <script defer src="/js/rht-analytics.js"></script>
+  {# Public Co-Intelligence launcher (the nav backbone). Streams from our own
+     /api/chat; the model key stays server-side. Injects its own UI into body. #}
+  <script defer src="/js/rht-anokii-chat.js"></script>
   {% block head_styles %}{% endblock %}
   {% block head_extra %}{% endblock %}
 </head>

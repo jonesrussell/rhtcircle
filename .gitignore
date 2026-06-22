@@ -7,6 +7,7 @@
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+/storage/*.lock
 .env
 .phpunit.cache/
 composer.local.json

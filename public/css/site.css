@@ -204,6 +204,22 @@ li { margin: 0 0 9px; }
 .community-card .status.is-soon { color: var(--ink-3); }
 .community-card.is-soon { background: var(--paper-2); }
 
+/* Home hero ask box (the Co-Intelligence launcher entry) */
+.hero-ask { margin: 22px 0 0; max-width: 40rem; }
+.hero-ask__label { display: block; font-size: 14px; font-weight: 600; color: var(--magenta); margin: 0 0 8px; }
+.hero-ask__row { display: flex; gap: 10px; }
+.hero-ask__row input {
+  flex: 1; min-width: 0; padding: 13px 16px; font-size: 16px;
+  border: 1px solid var(--rule-strong); border-radius: 999px; background: #fff; color: var(--ink);
+}
+.hero-ask__row input:focus { outline: 3px solid var(--violet); outline-offset: 1px; border-color: var(--indigo); }
+.hero-ask__row button {
+  flex: none; border: none; background: var(--indigo); color: #fff; font-weight: 600; font-size: 16px;
+  padding: 13px 24px; border-radius: 999px; cursor: pointer;
+}
+.hero-ask__row button:hover { background: var(--indigo-deep); }
+.hero-ask__note { margin: 8px 0 0; font-size: 13px; color: var(--ink-3); }
+
 /* Per-nation profile facts (community pages) */
 .nation-facts { margin: 18px 0 8px; }
 .nation-facts dt {

@@ -1,0 +1,55 @@
+# Anokii distribution config for rhtcircle.ca.
+#
+# rhtcircle is a public Anokii deployment: the shared-graph tier (one install,
+# the 21 RHT nations as vantage views over a shared public graph). It holds only
+# public-sourced data and no member data. This selects the public graph-chat
+# surface (POST /api/chat) and the lean /admin/anokii admin; the gated workspace
+# tier is not used here.
+#
+# Read by Anokii\Config\DistributionConfig and the CoIntelligenceServiceProvider.
+
+tenancy_mode: shared-graph
+
+data_residency:
+  ownership: shared
+  default_classification: public
+  cross_tenant_reads: true
+
+modules:
+  enabled:
+    - public-graph-chat
+    - anokii-admin
+  preview: []
+
+# The Co-Intelligence engine config for the public chat.
+chat:
+  # Empty default = treaty-wide vantage (general content answerable). A member
+  # can switch to their nation's vantage via the launcher.
+  default_vantage: ""
+  # The 21 signatory nations, selectable as a vantage (the canonical slugs).
+  vantages:
+    - batchewana
+    - garden-river
+    - thessalon
+    - mississauga
+    - serpent-river
+    - sagamok
+    - atikameksheng
+    - wahnapitae
+    - nipissing
+    - dokis
+    - henvey-inlet
+    - magnetawan
+    - shawanaga
+    - wasauksing
+    - aundeck-omni-kaning
+    - whitefish-river
+    - mchigeeng
+    - sheguiandah
+    - sheshegwaning
+    - wiikwemkoong
+    - zhiibaahaasing
+  voice:
+    intro: "You are the community assistant for the Robinson Huron Treaty resource hub, an independent, member-led resource for the treaty and its 21 First Nations. It is not the Robinson Huron Treaty Litigation Fund."
+    refusal: "I do not know that from the hub's published pages. For this, please contact the relevant nation or office directly, or check the official source linked on the page. For emergencies, call 911."
+    community_refusals: {}
