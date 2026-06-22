@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'safety' %}
+
+{% block title %}Protecting our Elders · Community safety · Robinson Huron Treaty{% endblock %}
+{% block description %}Our Elders are deliberately targeted by scammers and abusers. Plain rules against fraud, online-safety basics, and where to turn for elder abuse. Report fraud to the Canadian Anti-Fraud Centre.{% endblock %}
+{% block og_description %}Protecting our Elders: scams and online safety, the plain rules, and elder-abuse supports. Looking out for them is everyone's responsibility.{% endblock %}
+
+{% block hero %}
+<section class="hero">
+  <div class="wrap wrap--wide">
+    <p class="eyebrow">Community safety</p>
+    <h1>Protecting our Elders.</h1>
+    <p class="lead">Our Elders carry the language, the teachings, and the memory of the community. They are also deliberately targeted by scammers and abusers. Looking out for them is everyone's responsibility.</p>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+  <h2>Scams and online safety</h2>
+  <p>Common scams target Elders by phone, text, email, and social media: fake calls from a bank or government, the grandparent scam, romance scams, and demands for payment in gift cards, crypto, or wire transfers. The plain rules: never share your SIN, banking details, passwords, or codes; no real government agency demands gift cards, crypto, or a wire transfer; and talk to a trusted person before sending money to anyone. Report fraud to the Canadian Anti-Fraud Centre at 1-888-495-8501.</p>
+
+  <h2>Elder abuse</h2>
+  <p>Elder abuse can be financial, physical, emotional, or neglect, often by someone in a position of trust. If you see the signs, you can reach out. Elder Abuse Prevention Ontario offers fact sheets and a seniors safety line, and the family-safety supports in this section can help. If an Elder is in immediate danger, call 911.</p>
+
+  <h2>Sources</h2>
+  <ul class="src-links">
+    <li><a href="https://www.justice.gc.ca/eng/rp-pr/cj-jp/fv-vf/eldfr-ainfr/eldfr-ainfr.html" target="_blank" rel="noopener">Justice Canada, elder financial-fraud fact sheet</a></li>
+    <li><a href="https://eapon.ca/factsheets/" target="_blank" rel="noopener">Elder Abuse Prevention Ontario</a></li>
+    <li><a href="https://antifraudcentre-centreantifraude.ca/" target="_blank" rel="noopener">Canadian Anti-Fraud Centre</a></li>
+  </ul>
+
+  <div class="card card--coral">
+    <p class="muted">A community resource, not the Nation. Tell us what we got wrong.</p>
+  </div>
+{% endblock %}

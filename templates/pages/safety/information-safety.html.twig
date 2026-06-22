@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'safety' %}
+
+{% block title %}Information safety and disinformation · Community safety · Robinson Huron Treaty{% endblock %}
+{% block description %}How disinformation targets communities without a trusted local source of truth, the common tactics to watch for, and how to resist them. Prebunking: name the move before it lands.{% endblock %}
+{% block og_description %}Information safety: how disinformation targets our communities, the tactics to watch for, and prebunking. Adapted from OIATC's counter-disinformation work; OIATC is independent of this hub.{% endblock %}
+
+{% block hero %}
+<section class="hero">
+  <div class="wrap wrap--wide">
+    <p class="eyebrow">Community safety</p>
+    <h1>Information safety and disinformation.</h1>
+    <p class="lead">Disinformation targets communities that do not have a trusted, local source of truth. When a rumour or a manipulated claim spreads, and there is no calm, sourced place to turn, the loudest voice fills the gap. Indigenous communities are deliberately targeted, and the harm lands hardest where local, trusted information is thin. This whole hub is one answer to that. This page is the other: helping members recognize the tactic before it lands.</p>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+  <h2>You do not beat it by chasing every lie</h2>
+  <p>By the time a lie is debunked, it has already traveled. The two things that actually work are a trusted source of truth that fills the gap first, and a community that can spot the tactic. That is prebunking: knowing the moves in advance so you recognize them when you meet them.</p>
+
+  <h2>Common tactics to watch for</h2>
+  <ul>
+    <li>A claim built to make you angry or afraid fast, with no source you can check.</li>
+    <li>A real local grievance (the settlement, highway deaths, the drug crisis) bent toward blaming a group of people.</li>
+    <li>A screenshot, quote, or video with no link, no date, and no way to verify it.</li>
+    <li>An account that is new, anonymous, or far from the community, pushing hard on a divisive message.</li>
+    <li>Edited footage that makes someone appear to say or agree with something they did not.</li>
+  </ul>
+
+  <h2>What to do</h2>
+  <p>Pause before you share. Check whether a trusted, named source carries the same claim. Look for the original, with a date and a link. Ask who benefits from you believing it. When something is being pushed at the community, this hub's "what you have heard, and what the record says" entries are here to give the sourced version.</p>
+
+  <h2>The format in action</h2>
+  <p>Here is one current example of the sourced version, in the same format the hub uses across the site.</p>
+  {% include 'partials/myth_versus_record.html.twig' with { myth_entries: myth(['hate-group']) } %}
+  <p>See the full set of <a href="/myth-versus-record">what you have heard, and what the record says</a>.</p>
+
+  <p>This page is adapted from the Ontario Indigenous AI and Technical Council's counter-disinformation work; OIATC is independent of this hub.</p>
+
+  <h2>Sources</h2>
+  <ul class="src-links">
+    <li><a href="https://publichealthcollaborative.org/resources/" target="_blank" rel="noopener">Public Health Communicators Guide to Misinformation (prebunking and the truth-sandwich method)</a></li>
+    <li><a href="https://www.antihate.ca/" target="_blank" rel="noopener">Canadian Anti-Hate Network</a></li>
+  </ul>
+
+  <div class="card card--coral">
+    <p class="muted">A community resource, not the Nation. Tell us what we got wrong.</p>
+  </div>
+{% endblock %}

@@ -6,6 +6,7 @@ namespace App\Command;
 
 use Anokii\Entity\DocChunk;
 use App\Anokii\GraphSeedData;
+use App\Content\LandProjects;
 use App\Content\Nations;
 use App\Support\ChunkData;
 use App\Support\DocChunker;
@@ -38,6 +39,9 @@ final class IngestCommand
     private const PAGES = [
         '/treaty' => 'pages/treaty/index.html.twig',
         '/treaty/distribution-models' => 'pages/treaty/distribution-models.html.twig',
+        '/treaty/language' => 'pages/treaty/language.html.twig',
+        '/treaty/settlement-where-it-goes' => 'pages/treaty/settlement-where-it-goes.html.twig',
+        '/myth-versus-record' => 'pages/myth-versus-record.html.twig',
         '/treaty-wide' => 'pages/treaty-wide.html.twig',
         '/standard' => 'pages/standard.html.twig',
         '/standard/records-request' => 'pages/standard/records-request.html.twig',
@@ -46,7 +50,15 @@ final class IngestCommand
         '/land/massey-solar-project/what-youve-heard' => 'pages/land/massey-solar-project/what-youve-heard.html.twig',
         '/land/massey-solar-project/voices' => 'pages/land/massey-solar-project/voices.html.twig',
         '/land/massey-solar-project/climate' => 'pages/land/massey-solar-project/climate.html.twig',
-        '/land/territory-and-safety' => 'pages/land/territory-and-safety.html.twig',
+        '/safety' => 'pages/safety/index.html.twig',
+        '/safety/get-help-now' => 'pages/safety/get-help-now.html.twig',
+        '/safety/emergency-preparedness' => 'pages/safety/emergency-preparedness.html.twig',
+        '/safety/missing-persons-and-mmiwg' => 'pages/safety/missing-persons-and-mmiwg.html.twig',
+        '/safety/harm-reduction' => 'pages/safety/harm-reduction.html.twig',
+        '/safety/protecting-elders' => 'pages/safety/protecting-elders.html.twig',
+        '/safety/information-safety' => 'pages/safety/information-safety.html.twig',
+        '/safety/hate-and-extremism' => 'pages/safety/hate-and-extremism.html.twig',
+        '/resources' => 'pages/resources/index.html.twig',
         '/communities/sagamok/how-its-organized' => 'pages/communities/sagamok/how-its-organized.html.twig',
         '/communities/sagamok/members-website-issue' => 'pages/communities/sagamok/members-website-issue.html.twig',
         '/circle' => 'pages/circle/index.html.twig',
@@ -112,6 +124,12 @@ final class IngestCommand
 
         foreach (self::PAGES as $sourceUrl => $template) {
             $render($sourceUrl, $template, []);
+        }
+
+        // The Land project pages are data-driven: render each profile through the
+        // shared template. (Massey keeps its own templates, ingested via PAGES above.)
+        foreach (LandProjects::all() as $project) {
+            $render('/land/' . (string) $project['slug'], 'pages/land/project.html.twig', ['project' => $project]);
         }
 
         // The 21 community pages are data-driven: render each nation's profile.

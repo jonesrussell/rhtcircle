@@ -1,0 +1,26 @@
+{#
+  Reusable "What you have heard, and what the record says" component.
+  Pass `myth_entries` (a list from App\Content\MythEntries). Built to the
+  fact-check standard: lead with the fact, never amplify the false claim, a clear
+  answer, the sources, and a shareable takeaway. Used on the myth page, the
+  settlement page, and the information-safety page.
+#}
+{% if myth_entries is not empty %}
+<div class="myth">
+  {% for e in myth_entries %}
+  <article class="myth__entry">
+    <p class="myth__q">{{ e.question }}</p>
+    <p class="myth__a">{{ e.answer }}</p>
+    {% if e.record %}<p class="myth__record">{{ e.record }}</p>{% endif %}
+    <p class="myth__take"><span class="myth__take-lab">Takeaway</span> {{ e.takeaway }}</p>
+    {% if e.sources is not empty %}
+    <ul class="myth__src">
+      {% for s in e.sources %}
+      <li><a href="{{ s.url }}" target="_blank" rel="noopener">{{ s.label }}</a></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </article>
+  {% endfor %}
+</div>
+{% endif %}

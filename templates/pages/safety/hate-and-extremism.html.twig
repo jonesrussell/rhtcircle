@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-{% set nav = 'land' %}
+{% set nav = 'safety' %}
 
 {#
   SAFETY / METHOD: this page relays only what credible public bodies (CBC News,
@@ -11,22 +11,18 @@
   closing note about distress. Name no private community members.
 #}
 
-{% block title %}Territory and member safety · The Land · Robinson Huron Treaty{% endblock %}
-{% block description %}A neutral, sourced note on groups organizing in or visiting Robinson Huron Treaty territory in ways that affect members. First entry: what credible public bodies have documented about the white-nationalist group Second Sons Canada.{% endblock %}
-{% block og_description %}A neutral, sourced note on groups organizing in Robinson Huron Treaty territory in ways that affect members. First entry: Second Sons Canada, relayed from CBC, the Canadian Anti-Hate Network, and Public Safety Canada.{% endblock %}
-
-{% block hero %}
-<section class="hero">
-  <div class="wrap wrap--wide">
-    <p class="eyebrow">The Land · member safety</p>
-    <h1>Territory and member safety.</h1>
-    <p class="lead">The treaty is a relationship to the land. Part of that is knowing who is organizing in the territory in ways that touch the people who live here. This page gathers what credible, public bodies have documented about such groups, with a source for every claim. It relays reporting; it does not make accusations, and it names no private community members. Where the record is thin, it says so.</p>
-  </div>
-</section>
-{% endblock %}
+{% block title %}Hate and extremism in the territory · Community safety · Robinson Huron Treaty{% endblock %}
+{% block description %}A neutral, sourced note on groups organizing in or visiting Robinson Huron Treaty territory in ways that affect members. First subject: what credible public bodies have documented about the white-nationalist group Second Sons Canada.{% endblock %}
+{% block og_description %}A neutral, sourced note on groups organizing in Robinson Huron Treaty territory in ways that affect members. First subject: Second Sons Canada, relayed from CBC, the Canadian Anti-Hate Network, and Public Safety Canada.{% endblock %}
 
 {% block content %}
-  <h2>First entry: Second Sons Canada</h2>
+  {% include 'partials/quick_exit.html.twig' %}
+  {% include 'partials/crisis_strip.html.twig' %}
+
+  <h1>Hate and extremism in the territory</h1>
+  <p class="lead">Keeping our communities safe includes knowing who is organizing in the territory in ways that touch the people who live here. This page gathers what credible, public bodies have documented about such groups, with a source for every claim. It relays reporting; it does not make accusations, and it names no private community members. Where the record is thin, it says so. It is one part of the Community safety section.</p>
+
+  <h2>First subject: Second Sons Canada</h2>
 
   <h3>What the reporting establishes about the group</h3>
   <p>Second Sons Canada is a men's-only, members-only organization founded in 2024. The Canadian Anti-Hate Network, CBC News, and an internal Public Safety Canada briefing describe it as a white-nationalist group and the militant arm of the network founded by Jeremy MacKenzie, who also founded Diagolon (CBC, December 2025; Canadian Anti-Hate Network, October 2025). Public Safety Canada's briefing, obtained by CBC, warns the broader "active club" movement poses a risk for "extreme violence" and states Second Sons has more than 15 chapters across Canada (CBC, on the Public Safety Canada brief).</p>

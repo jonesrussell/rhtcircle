@@ -128,8 +128,29 @@ final class GraphSeedData
     public static function topics(): array
     {
         $rows = [];
+        $seen = [];
         foreach (new TopicVocabulary()->all() as $slug => $topic) {
             $rows[] = ['slug' => $slug, 'name' => $topic['name'], 'keywords' => implode(' ', $topic['keywords'])];
+            $seen[$slug] = true;
+        }
+
+        // Land and content themes the profiles introduce that are not yet first-class
+        // inferred vocabulary topics, added as graph nodes so projects and pages can
+        // link to them. Appended only if the vocabulary does not already define them.
+        $custom = [
+            ['slug' => 'energy-solar', 'name' => 'Solar energy', 'keywords' => 'solar photovoltaic panel farm energy'],
+            ['slug' => 'energy-wind', 'name' => 'Wind energy', 'keywords' => 'wind turbine nigig pattern energy'],
+            ['slug' => 'energy-hydro', 'name' => 'Hydroelectric', 'keywords' => 'hydro river dam run-of-river energy'],
+            ['slug' => 'transmission', 'name' => 'Transmission lines', 'keywords' => 'transmission line hydro one waasmoowin power equity partnership'],
+            ['slug' => 'environment-legacy', 'name' => 'Environment and legacy', 'keywords' => 'uranium tailings nuclear waste contamination environment watershed'],
+            ['slug' => 'land-claim', 'name' => 'Land claims', 'keywords' => 'land claim boundary treaty reserve litigation'],
+            ['slug' => 'language', 'name' => 'Language and revival', 'keywords' => 'anishinaabemowin language ojibwe revival reclamation dialect'],
+        ];
+        foreach ($custom as $topic) {
+            if (!isset($seen[$topic['slug']])) {
+                $rows[] = $topic;
+                $seen[$topic['slug']] = true;
+            }
         }
 
         return $rows;
@@ -154,8 +175,64 @@ final class GraphSeedData
                 'name' => 'Henvey Inlet Wind',
                 'relates_to' => json_encode(['henvey-inlet'], JSON_THROW_ON_ERROR),
                 'located_at' => 'henvey-inlet',
+                'has_topic' => 'energy-wind',
+                'source_url' => '/land/henvey-inlet-wind',
+            ],
+            [
+                'slug' => 'dunns-valley-solar',
+                'name' => 'Dunns Valley Solar',
+                'relates_to' => json_encode(['garden-river'], JSON_THROW_ON_ERROR),
+                'located_at' => '',
                 'has_topic' => 'energy-solar',
-                'source_url' => '/communities/henvey-inlet',
+                'source_url' => '/land/dunns-valley-solar',
+            ],
+            [
+                'slug' => 'okikendawt-hydro',
+                'name' => 'Okikendawt Hydro (French River)',
+                'relates_to' => json_encode(['dokis'], JSON_THROW_ON_ERROR),
+                'located_at' => '',
+                'has_topic' => 'energy-hydro',
+                'source_url' => '/land/okikendawt-hydro',
+            ],
+            [
+                'slug' => 'north-shore-link-northeast-power-line',
+                'name' => 'North Shore Link and Northeast Power Line',
+                'relates_to' => json_encode(['atikameksheng', 'batchewana', 'mississauga', 'sagamok', 'serpent-river', 'thessalon', 'wahnapitae', 'whitefish-river'], JSON_THROW_ON_ERROR),
+                'located_at' => 'sault-ste-marie',
+                'has_topic' => 'transmission',
+                'source_url' => '/land/north-shore-link-northeast-power-line',
+            ],
+            [
+                'slug' => 'elliot-lake-uranium',
+                'name' => 'Elliot Lake uranium legacy',
+                'relates_to' => json_encode(['serpent-river'], JSON_THROW_ON_ERROR),
+                'located_at' => 'elliot-lake',
+                'has_topic' => 'environment-legacy',
+                'source_url' => '/land/elliot-lake-uranium',
+            ],
+            [
+                'slug' => 'nwmo-nuclear-waste',
+                'name' => 'Nuclear waste repository and transport concern',
+                'relates_to' => json_encode([], JSON_THROW_ON_ERROR),
+                'located_at' => '',
+                'has_topic' => 'environment-legacy',
+                'source_url' => '/land/nwmo-nuclear-waste',
+            ],
+            [
+                'slug' => 'atikameksheng-land-claim',
+                'name' => 'Atikameksheng land claim',
+                'relates_to' => json_encode(['atikameksheng'], JSON_THROW_ON_ERROR),
+                'located_at' => 'greater-sudbury',
+                'has_topic' => 'land-claim',
+                'source_url' => '/land/atikameksheng-land-claim',
+            ],
+            [
+                'slug' => 'wiikwemkoong-islands-claim',
+                'name' => 'Wiikwemkoong islands boundary claim',
+                'relates_to' => json_encode(['wiikwemkoong'], JSON_THROW_ON_ERROR),
+                'located_at' => '',
+                'has_topic' => 'land-claim',
+                'source_url' => '/land/wiikwemkoong-islands-claim',
             ],
         ];
     }
@@ -193,6 +270,12 @@ final class GraphSeedData
             ['kenjgewin-teg', 'Kenjgewin Teg', 'https://kenjgewinteg.ca/'],
             ['ssmifc', 'Indian Friendship Centre (Sault Ste. Marie)', 'https://www.ssmifc.ca/'],
             ['nswakamok', "N'Swakamok Native Friendship Centre", 'https://www.nfcsudbury.org/'],
+            // Front doors introduced by the new safety, resources, and language pages.
+            ['thunderbird-pf', 'Thunderbird Partnership Foundation', 'https://thunderbirdpf.org/'],
+            ['connexontario', 'ConnexOntario', 'https://www.connexontario.ca/'],
+            ['isac', 'Income Security Advocacy Centre', 'https://incomesecurity.org/'],
+            ['gwekwaadziwin', 'Gwekwaadziwin Miikan', 'https://gwek.ca/'],
+            ['ojibwe-cultural-foundation', 'Ojibwe Cultural Foundation', 'http://www.uccmm.ca/ojibwe-cultural-foundation.html'],
         ];
         $rows = [];
         foreach ($defs as [$slug, $name, $url]) {
@@ -247,6 +330,12 @@ final class GraphSeedData
             ['nswakamok-frontdoor', "N'Swakamok Native Friendship Centre, Sudbury", 'nswakamok', 'greater-sudbury', '', 'https://www.nfcsudbury.org/'],
             // Off-reserve income support (number flagged unverified: website only)
             ['niigaaniin-income', 'Niigaaniin social assistance (Mamaweswen)', 'mamaweswen', 'serpent-river', 'income-support', 'https://niigaaniin.com/'],
+            // Front doors introduced by the new safety, resources, and language pages.
+            ['thunderbird-harm-reduction', 'Thunderbird Partnership Foundation harm reduction', 'thunderbird-pf', '', 'mental-health-addictions', 'https://thunderbirdpf.org/'],
+            ['connexontario-referral', 'ConnexOntario mental health and addictions referral', 'connexontario', '', 'mental-health-addictions', 'https://www.connexontario.ca/'],
+            ['isac-income', 'Income Security Advocacy Centre', 'isac', '', 'income-support', 'https://incomesecurity.org/'],
+            ['gwekwaadziwin-treatment', 'Gwekwaadziwin Miikan land-based treatment', 'gwekwaadziwin', '', 'mental-health-addictions', 'https://gwek.ca/'],
+            ['ocf-language', 'Ojibwe Cultural Foundation language and culture', 'ojibwe-cultural-foundation', 'mchigeeng', 'language', 'http://www.uccmm.ca/ojibwe-cultural-foundation.html'],
         ];
         $rows = [];
         foreach ($defs as [$slug, $name, $providedBy, $locatedAt, $topic, $sourceUrl]) {
@@ -296,6 +385,11 @@ final class GraphSeedData
             ['ssmifc-frontdoor', 'Indian Friendship Centre (Sault Ste. Marie)', 'Urban Indigenous front door, Sault Ste. Marie', 'The Indian Friendship Centre in Sault Ste. Marie is an urban front door for Indigenous people, with programs and referrals. Call 705-256-5634 or see ssmifc.ca.'],
             ['nswakamok-frontdoor', "N'Swakamok Native Friendship Centre", 'Urban Indigenous front door, Sudbury', "The N'Swakamok Native Friendship Centre in Sudbury is an urban front door for Indigenous people, with programs and referrals. Call 705-674-2128 or see nfcsudbury.org."],
             ['niigaaniin-income', 'Mamaweswen, The North Shore Tribal Council', 'Social assistance (Niigaaniin)', 'Niigaaniin is the social assistance and Ontario Works delivery for North Shore First Nation members through Mamaweswen. See niigaaniin.com to find the office for your community.'],
+            ['thunderbird-harm-reduction', 'Thunderbird Partnership Foundation', 'First Nations harm reduction and wellness', 'The Thunderbird Partnership Foundation leads First Nations substance-use and harm-reduction work in a wholistic, culturally grounded, non-stigmatizing way, with naloxone and harm-reduction resources. See thunderbirdpf.org. For an emergency, call 911.'],
+            ['connexontario-referral', 'ConnexOntario', 'Find mental health and addictions services, 24/7', 'ConnexOntario provides free, confidential information and referral to mental health, addictions, and problem-gambling services across Ontario, 24 hours a day, at 1-866-531-2600 or connexontario.ca. For an emergency, call 911.'],
+            ['isac-income', 'Income Security Advocacy Centre', 'Income support and a settlement payment', 'The Income Security Advocacy Centre provides advocacy and legal information on income support such as Ontario Works and ODSP. A large settlement payment can affect eligibility, so it is worth getting advice before you spend or bank it. See incomesecurity.org. This is general information, not legal or financial advice.'],
+            ['gwekwaadziwin-treatment', 'Gwekwaadziwin Miikan', 'Land-based youth treatment, Manitoulin', 'Gwekwaadziwin Miikan offers land-based mental health and addictions treatment for Indigenous youth and young adults on Manitoulin Island, including withdrawal management and a land-based program. Call 705-370-5307 or see gwek.ca. For an emergency, call 911.'],
+            ['ocf-language', 'Ojibwe Cultural Foundation', 'Anishinaabemowin language and culture', "The Ojibwe Cultural Foundation in M'Chigeeng has been an Anishinaabe language and culture hub since 1974 and runs its own Ojibwe-language radio. It supports Anishinaabemowin reclamation across the territory. See the Ojibwe Cultural Foundation through uccmm.ca."],
         ];
 
         $byServiceSlug = [];

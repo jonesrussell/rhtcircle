@@ -250,6 +250,91 @@ li { margin: 0 0 9px; }
 .site-foot .disclaimer { color: var(--ink-2); max-width: 70ch; }
 .site-foot .disclaimer strong { color: var(--ink); }
 
+/* Myth-versus-record component ("what you have heard, and what the record says") */
+.myth { margin: 18px 0 8px; display: grid; gap: 16px; }
+.myth__entry {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--violet);
+  border-radius: 0 12px 12px 0;
+  padding: 20px 24px;
+}
+.myth__q {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.25;
+  color: var(--indigo-deep);
+  margin: 0 0 10px;
+}
+.myth__a { font-weight: 600; color: var(--ink); margin: 0 0 10px; }
+.myth__record { color: var(--ink-2); margin: 0 0 12px; }
+.myth__take {
+  font-size: 14.5px;
+  color: var(--ink-2);
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  background: var(--accent-wash);
+  border-radius: 8px;
+}
+.myth__take-lab {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--magenta);
+  margin-right: 6px;
+}
+.myth__src { list-style: none; margin: 0; padding: 0; font-size: 14px; }
+.myth__src li { margin: 0 0 5px; }
+
+/* Crisis-line strip (top of sensitive safety pages) */
+.crisis-strip {
+  background: var(--statement-bg);
+  color: var(--statement-fg);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 0 0 24px;
+}
+.crisis-strip h2, .crisis-strip h3 { color: #fff; margin: 0 0 8px; font-size: 16px; }
+.crisis-strip ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.crisis-strip li { margin: 0; font-size: 15px; line-height: 1.4; }
+.crisis-strip strong { color: #fff; }
+.crisis-strip a { color: #ffd7ef; font-weight: 600; }
+.crisis-strip a:hover { color: #fff; }
+.crisis-strip .crisis-emerg { font-weight: 700; color: #ffd7ef; }
+
+/* Content note (heads up at the top of a sensitive page) */
+.content-note {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--coral);
+  border-radius: 0 12px 12px 0;
+  padding: 12px 18px;
+  margin: 0 0 20px;
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+
+/* Quick Exit button (fixed; leaves the page fast and replaces history) */
+.quick-exit {
+  position: fixed;
+  top: 10px;
+  right: 12px;
+  z-index: 50;
+  display: inline-block;
+  background: var(--magenta);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  padding: 9px 16px;
+  border-radius: 999px;
+  box-shadow: 0 2px 10px rgba(34,29,51,0.25);
+}
+.quick-exit:hover { background: var(--magenta-deep); color: #fff; }
+.quick-exit:focus-visible { outline: 3px solid var(--violet); outline-offset: 2px; }
+
 /* Skip link + a11y */
 .skip { position: absolute; left: -9999px; top: auto; }
 .skip:focus { left: 12px; top: 12px; z-index: 10; background: #fff; color: var(--indigo-deep); padding: 8px 14px; border-radius: 6px; }

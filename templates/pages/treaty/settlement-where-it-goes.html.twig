@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'treaty' %}
+
+{% block title %}The settlement: where it goes · The Treaty · Robinson Huron Treaty{% endblock %}
+{% block description %}Plain, neutral answers on the 2023 annuities settlement, how it is being shared community by community, the legal fees, the off-list and general-list members still waiting, and the interaction with income support.{% endblock %}
+{% block og_description %}Where the settlement goes: what it covers, how each nation shares it, and the questions members are asking, with sources. Takes no side; points to what the documents say.{% endblock %}
+
+{% block hero %}
+<section class="hero">
+  <div class="wrap wrap--wide">
+    <p class="eyebrow">The Treaty · the settlement</p>
+    <h1>The settlement: where it goes.</h1>
+    <p class="lead">In 2023 the 21 Robinson Huron Treaty nations reached a settlement of about $10 billion for past annuities, paid half by Canada and half by Ontario, after the courts found the Crown had failed for generations to raise the $4 annuity with the wealth taken from the land. The money has flowed to the communities. This page lays out, in plain terms and from public sources, what is settled and what members are still asking. It takes no side; it points you to what the documents say.</p>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+  <h2>What the settlement covers</h2>
+  <p>This settlement is for past compensation, the annuities that should have been paid and were not. The separate question of the go-forward annuity, what the yearly payment should be from here on, is still being negotiated between the nations and the Crown and is not yet set. For the fuller picture of all the moving parts, see <a href="/treaty">what the treaty is and what is happening now</a>.</p>
+
+  <h2>How it is being shared</h2>
+  <p>Each nation decides how its share is held and distributed, so the details differ community by community. The treaty-wide and community transparency questions on this site (in the <a href="/standard">Transparency</a> section) are the plain questions any member can ask their own council about how their nation's share is governed. For the per-capita versus collective question laid out neutrally, see <a href="/treaty/distribution-models">distribution models</a>.</p>
+
+  <h2>Questions members are asking</h2>
+  <p>These are common, fair questions. Where the public record gives an answer, we point to it; where it does not, we say so.</p>
+
+  <h3>The legal fees</h3>
+  <p>The fees charged to the litigation were challenged in court, and a judge ordered them reduced substantially, by reporting around $487 million. The disbursement and fee records are part of what members can ask the litigation fund to share.</p>
+
+  <h3>The off-list and general-list members</h3>
+  <p>Members who are not on a community's list, sometimes called the general list or the Sudbury 817, have reported still waiting on their share. This remains a live concern and is worth asking about directly.</p>
+
+  <h3>Income assistance</h3>
+  <p>A settlement payment can interact with income support like Ontario Works and ODSP. Before spending or banking a large payment, it is worth getting advice on how it may affect eligibility. The Income Security Advocacy Centre and Indigenous legal services can help. We do not give legal or financial advice; confirm your own situation with someone qualified.</p>
+
+  <h2>What you have heard, and what the record says</h2>
+  <p>Three claims circulate often. Here is the sourced version of each.</p>
+  {% include 'partials/myth_versus_record.html.twig' with { myth_entries: myth(['legal-fees', 'end-of-payments', 'income-support']) } %}
+
+  <h2>Sources</h2>
+  <ul class="src-links">
+    <li><a href="https://www.cbc.ca/news/canada/sudbury/money-first-nations-resources-debt-promise-crown-1.7290747" target="_blank" rel="noopener">CBC, on the settlement, distribution, legal fees, and general-list members</a></li>
+    <li><a href="https://www.cbc.ca/news/canada/sudbury/annual-payments-crown-ontario-canada-sudbury-1.7318824" target="_blank" rel="noopener">CBC, on the go-forward annuity negotiations</a></li>
+    <li><a href="https://incomesecurity.org/" target="_blank" rel="noopener">Income Security Advocacy Centre</a></li>
+  </ul>
+
+  <div class="card card--coral">
+    <p class="muted">A member-compiled summary of public reporting, not legal or financial advice. Figures are point-in-time; verify before relying on them. Tell us what we got wrong.</p>
+  </div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'safety' %}
+
+{% block title %}Get help now · Community safety · Robinson Huron Treaty{% endblock %}
+{% block description %}Every crisis line in one place: emergency, suicide crisis, Indigenous crisis support, MMIWG, residential school, Kids Help Phone, anti-fraud, and 211. Call or text any time.{% endblock %}
+{% block og_description %}Crisis lines for the Robinson Huron Treaty communities, in one place. Call or text any time. If you are in immediate danger, call 911.{% endblock %}
+
+{% block content %}
+  {% include 'partials/quick_exit.html.twig' %}
+
+  <h1>Get help now</h1>
+  <p class="lead">If you are in immediate danger, call 911. You do not have to wait, and you do not have to face it alone.</p>
+
+  <h2>Crisis lines, any time</h2>
+  <ul>
+    <li><strong>Emergency:</strong> 911</li>
+    <li><strong>Suicide Crisis Helpline</strong> (anyone, 24/7, call or text): 988</li>
+    <li><strong>Hope for Wellness</strong> (Indigenous, 24/7, languages on request): 1-855-242-3310</li>
+    <li><strong>Talk4Healing</strong> (Indigenous women, 24/7): 1-855-554-4325</li>
+    <li><strong>Missing and Murdered Indigenous Women and Girls / 2SLGBTQQIA+ crisis line</strong> (24/7): 1-844-413-6649</li>
+    <li><strong>National Indian Residential School Crisis Line</strong> (24/7): 1-866-925-4419</li>
+    <li><strong>Kids Help Phone:</strong> 1-800-668-6868, or text FIRSTNATIONS, INUIT, or METIS to 686868</li>
+    <li><strong>Canadian Anti-Fraud Centre</strong> (scams): 1-888-495-8501</li>
+    <li><strong>Ontario 211 North</strong> (find a service): 2-1-1 or 1-866-624-1729</li>
+  </ul>
+
+  <h2>Reporting harm</h2>
+  <p>A hate crime or a threat goes to your local police or the OPP at 1-888-310-1122, or 911 if it is urgent. If someone is missing, report it right away. There is no 24-hour waiting period in Ontario.</p>
+
+  <div class="card">
+    <p>For services beyond the crisis lines, health centres, tribal councils, policing, legal and family supports, see the <a href="/resources">Resources directory</a>.</p>
+  </div>
+
+  <div class="card card--coral">
+    <p class="muted">This is a community resource, not the Nation and not a crisis service itself. The numbers above are the services to call. If a number has changed, tell us.</p>
+  </div>
+{% endblock %}

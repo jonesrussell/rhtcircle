@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'safety' %}
+
+{% block title %}Missing persons and MMIWG · Community safety · Robinson Huron Treaty{% endblock %}
+{% block description %}If someone is missing, report it now: there is no 24-hour waiting period in Ontario. Support, family liaison, and the national MMIWG2S+ crisis line, with help listed first.{% endblock %}
+{% block og_description %}Missing persons and MMIWG: how to report, family supports, and the MMIWG2S+ crisis line. This page leads with help and honours the relatives taken from our communities.{% endblock %}
+
+{% block content %}
+  {% include 'partials/quick_exit.html.twig' %}
+  {% include 'partials/crisis_strip.html.twig' %}
+
+  <h1>Missing persons and MMIWG</h1>
+
+  <div class="content-note">This page discusses missing and murdered Indigenous women, girls, and 2SLGBTQQIA+ people. Support is listed first.</div>
+
+  <p class="lead">If you need support right now, the Missing and Murdered Indigenous Women and Girls and 2SLGBTQQIA+ crisis line is 1-844-413-6649, available 24/7 in English, French, Anishinaabemowin, Cree, and Inuktitut. If someone is in danger, call 911.</p>
+  <p>This page leads with help, and it honours the women, girls, and relatives who have been taken from our communities.</p>
+
+  <h2>If someone is missing, report it now</h2>
+  <p>There is no 24-hour waiting period in Ontario. Report to the police right away if you are concerned, by 911 if urgent or the local line otherwise. Anyone can report. Have a recent photo, a description, and where and when the person was last seen. Keep contacting family and checking known places while police act.</p>
+
+  <h2>Family supports</h2>
+  <p>Ontario's Family Information Liaison Unit helps families get information about a missing or lost loved one in a trauma-informed, culturally grounded way. The national crisis line above supports families day or night.</p>
+
+  <h2>Honouring and acting</h2>
+  <p>Red Dress Day, May 5, and the Moose Hide Campaign are community-led ways to honour relatives and stand against violence. The National Inquiry's final report and its Calls for Justice set out what governments and all of us are called to do, framed around the rights to culture, health, security, and justice.</p>
+
+  <h2>Sources</h2>
+  <ul class="src-links">
+    <li><a href="https://www.mmiwg-ffada.ca/final-report/" target="_blank" rel="noopener">MMIWG2S+ crisis line and the National Inquiry final report</a></li>
+    <li><a href="https://www.ontario.ca/page/pathways-safety-ontarios-strategy-response-final-report-national-inquiry-missing-and-murdered" target="_blank" rel="noopener">Ontario, Pathways to Safety (family supports and the Family Information Liaison Unit)</a></li>
+  </ul>
+
+  <div class="card card--coral">
+    <p class="muted">A community resource, not the Nation or a crisis service. If this is distressing, the support line above is there for you. Tell us what we got wrong.</p>
+  </div>
+{% endblock %}

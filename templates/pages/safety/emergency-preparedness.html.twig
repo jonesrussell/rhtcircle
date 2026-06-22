@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'safety' %}
+
+{% block title %}Emergency preparedness · Community safety · Robinson Huron Treaty{% endblock %}
+{% block description %}Preparing for the north: wildfire and evacuation, winter and highway safety, outages, and a 72-hour household kit. If an emergency is happening now, call 911.{% endblock %}
+{% block og_description %}Emergency preparedness for the Robinson Huron Treaty communities: wildfire and evacuation, winter driving, outages, and a household kit. Follow your community's official plan.{% endblock %}
+
+{% block hero %}
+<section class="hero">
+  <div class="wrap wrap--wide">
+    <p class="eyebrow">Community safety</p>
+    <h1>Emergency preparedness.</h1>
+    <p class="lead">The north brings wildfire, long winters, remote highways, and outages. A little preparation goes a long way. If an emergency is happening now, call 911.</p>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+  <h2>Wildfire and evacuation</h2>
+  <p>First Nations wildfire response in Ontario now runs on an Indigenous-led evacuation model, with communities leading the call and the province and Canada supporting. Know your community's emergency plan and where to register if an evacuation is called. Indigenous Services Canada funds wildfire prevention and emergency management for First Nations.</p>
+
+  <h2>Winter and highway safety</h2>
+  <p>Distances are long and help can be far on northern highways. Keep your gas tank above half. Carry a winter vehicle kit: a flashlight, reflective triangles or flares and a vest, a small shovel, a scraper, sand or grit for traction, a first-aid kit, food and water, and warm layers and blankets for everyone. Tell someone your route and arrival time before remote travel. If you are stranded, stay with the vehicle.</p>
+
+  <h2>Outages and a household kit</h2>
+  <p>Build a 72-hour household kit: water, non-perishable food, medications, a hand-crank or battery radio and flashlight, batteries, warmth, and copies of important documents. Check on Elders and neighbours during outages and cold snaps.</p>
+
+  <h2>Sources</h2>
+  <ul class="src-links">
+    <li><a href="https://www.sac-isc.gc.ca/eng/1309369889599/1535119888656" target="_blank" rel="noopener">Indigenous Services Canada, emergency management and wildfire</a></li>
+    <li><a href="https://tc.canada.ca/en/winter-driving-emergency-kit" target="_blank" rel="noopener">Transport Canada, winter driving emergency kit</a></li>
+  </ul>
+
+  <div class="card card--coral">
+    <p class="muted">A community resource, not the Nation. Follow your community's official emergency plan. Tell us what we got wrong.</p>
+  </div>
+{% endblock %}

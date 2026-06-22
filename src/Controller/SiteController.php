@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Content\LandProjects;
 use App\Content\Nations;
 use App\Support\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -51,6 +52,21 @@ final class SiteController
             : 'pages/communities/nation.html.twig';
 
         return $this->html(View::render($template, ['nation' => $nation]));
+    }
+
+    /**
+     * A per-project Land page, rendered from the LandProjects content layer through
+     * one shared template. Unknown slug renders the 404 page. Massey keeps its own
+     * richer cluster at /land/massey-solar-project and is not served here.
+     */
+    public function landProject(string $slug): Response
+    {
+        $project = LandProjects::find($slug);
+        if ($project === null) {
+            return $this->html(View::render('404.html.twig', ['path' => '/land/' . $slug]), 404);
+        }
+
+        return $this->html(View::render('pages/land/project.html.twig', ['project' => $project]));
     }
 
     /** Permanent (301) redirect, for routes that have moved. */

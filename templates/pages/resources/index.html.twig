@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'resources' %}
+
+{#
+  RESOURCES / SCOPE: this directory is RHT-scoped. Hard data-hygiene rules from the
+  research (research/resources-directory.md): link the Sault friendship centre only
+  at ssmifc.ca (the .com is a hijacked spam domain); do NOT present NAN Hope,
+  Nishnawbe-Aski Legal Services, or AETS as RHT (Treaty 9 / Robinson-Superior);
+  label Anishinabek Nation and Chiefs of Ontario as Ontario-wide. Phone numbers
+  here are the verified set; re-verify at publish. No private individuals.
+#}
+
+{% block title %}Resources: get help · Robinson Huron Treaty{% endblock %}
+{% block description %}A member-facing directory of front doors across the territory: Indigenous health authorities, tribal councils and the treaty body, crisis lines, policing, mental health and addictions, legal and family supports, education and training, and housing.{% endblock %}
+{% block og_description %}Get help: a directory of Indigenous health, tribal councils, crisis lines, policing, legal and family, education, and housing front doors across the Robinson Huron Treaty territory.{% endblock %}
+
+{% block hero %}
+<section class="hero">
+  <div class="wrap wrap--wide">
+    <p class="eyebrow">Resources</p>
+    <h1>Get help.</h1>
+    <p class="lead">A directory of front doors across the territory: who to call and where to start. We link to each service's own site as the authority, and we re-verify the details over time. If you need help right now, the crisis lines are at the top.</p>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+  {% include 'partials/crisis_strip.html.twig' %}
+
+  <p class="muted">Tagged by the practical service sub-regions: North Shore (Algoma to Sudbury), Manitoulin / Mnidoo Mnising, Nipissing / North Bay, and Georgian Bay / Parry Sound. Numbers are point-in-time; confirm with the service before relying on them.</p>
+
+  <h2>Regional Indigenous health authorities</h2>
+  <ul>
+    <li><strong>Maamwesying North Shore Community Health Services</strong> (North Shore): primary care, mental wellness, the Minobimaadizing addictions program, traditional health. 705-844-2021, <a href="https://maamwesying.ca/" target="_blank" rel="noopener">maamwesying.ca</a></li>
+    <li><strong>Noojmowin Teg Health Centre</strong> (Manitoulin): primary care, diabetes, mental health and addictions, traditional health, Espanola satellite. 705-368-0083, <a href="https://www.noojmowin-teg.ca/" target="_blank" rel="noopener">noojmowin-teg.ca</a></li>
+    <li><strong>Shkagamik-Kwe Health Centre</strong> (Sudbury, urban Aboriginal Health Access Centre). 705-675-1596, <a href="https://www.shkagamik-kwe.org/" target="_blank" rel="noopener">shkagamik-kwe.org</a></li>
+    <li><strong>North Bay Indigenous Hub</strong> (Nipissing / North Bay). 705-995-0060, <a href="https://www.northbayindigenoushub.ca/" target="_blank" rel="noopener">northbayindigenoushub.ca</a></li>
+  </ul>
+
+  <h2>Tribal councils and the treaty body</h2>
+  <ul>
+    <li><strong>Robinson Huron Waawiindamaagewin</strong> (RHT-wide, all 21 nations): treaty governance and the 1850 annuities case. 1-877-633-7558, <a href="https://www.waawiindamaagewin.com/" target="_blank" rel="noopener">waawiindamaagewin.com</a></li>
+    <li><strong>Mamaweswen, The North Shore Tribal Council</strong> (North Shore): education, training, social services. 705-844-2340 or 1-877-633-7558, <a href="https://mamaweswen.com/" target="_blank" rel="noopener">mamaweswen.com</a></li>
+    <li><strong>United Chiefs and Councils of Mnidoo Mnising (UCCMM)</strong> (Manitoulin): justice, lands, language, employment and training. <a href="http://www.uccmm.ca/" target="_blank" rel="noopener">uccmm.ca</a></li>
+  </ul>
+  <p class="muted">The Anishinabek Nation (Union of Ontario Indians) and the Chiefs of Ontario are Ontario-wide bodies, not Robinson Huron Treaty organizations.</p>
+
+  <h2>Crisis lines</h2>
+  <p>The full list, with the residential-school, MMIWG, and Kids Help Phone lines, is on the <a href="/safety/get-help-now">Get help now</a> page. For an emergency, always call 911.</p>
+
+  <h2>Policing and emergency</h2>
+  <ul>
+    <li><strong>Anishinabek Police Service</strong>: non-emergency 1-888-310-1122. Polices Garden River, Sagamok, Nipissing, Wahnapitae, Dokis, Wasauksing, Shawanaga, and Magnetawan. <a href="https://www.anishinabekpolice.ca/" target="_blank" rel="noopener">anishinabekpolice.ca</a></li>
+    <li><strong>UCCM Anishnaabe Police</strong>: non-emergency 705-377-7135 or 1-888-377-7135. Polices the six Manitoulin UCCMM nations. <a href="https://www.uccmpolice.com/" target="_blank" rel="noopener">uccmpolice.com</a></li>
+    <li><strong>Wikwemikong Tribal Police Service</strong>: Wiikwemkoong Unceded Territory.</li>
+    <li><strong>OPP</strong> (where APS or UCCM does not police): non-emergency 1-888-310-1122. For an emergency, always call 911.</li>
+  </ul>
+
+  <h2>Mental health and addictions</h2>
+  <ul>
+    <li><strong>Maamwesying Minobimaadizing</strong>: outpatient addictions, same-day treatment options, naloxone (North Shore). <a href="https://maamwesying.ca/" target="_blank" rel="noopener">maamwesying.ca</a></li>
+    <li><strong>Gwekwaadziwin Miikan</strong> (Manitoulin): land-based youth and young-adult treatment.</li>
+    <li><strong>Hope for Wellness</strong> 1-855-242-3310 and <strong>Talk4Healing</strong> 1-855-554-4325, 24/7. <strong>ConnexOntario</strong> 1-866-531-2600 to find services.</li>
+  </ul>
+  <p>See also <a href="/safety/harm-reduction">Health and harm reduction</a> for naloxone and overdose response.</p>
+
+  <h2>Legal, family, and MMIWG</h2>
+  <ul>
+    <li><strong>Legal Aid Ontario</strong>, Indigenous services: 1-800-668-8258, <a href="https://www.legalaid.on.ca/" target="_blank" rel="noopener">legalaid.on.ca</a></li>
+    <li><strong>Aboriginal Legal Services</strong> (Gladue, province-wide): 1-844-633-2886, <a href="https://www.aboriginallegal.ca/" target="_blank" rel="noopener">aboriginallegal.ca</a></li>
+    <li><strong>Nogdawindamin Family and Community Services</strong> (Indigenous child and family, North Shore): 1-800-465-0999, <a href="https://www.nog.ca/" target="_blank" rel="noopener">nog.ca</a></li>
+    <li><strong>Kina Gbezhgomi Child and Family Services</strong> (Manitoulin, UCCMM, and Wiikwemkoong): 1-800-268-1899, <a href="https://www.kgcfs.org/" target="_blank" rel="noopener">kgcfs.org</a></li>
+    <li>For missing persons and family supports, see <a href="/safety/missing-persons-and-mmiwg">Missing persons and MMIWG</a>.</li>
+  </ul>
+
+  <h2>Education, training, and employment</h2>
+  <ul>
+    <li><strong>Kenjgewin Teg</strong> (M'Chigeeng): post-secondary, training, lifelong learning. 705-370-4342, <a href="https://kenjgewinteg.ca/" target="_blank" rel="noopener">kenjgewinteg.ca</a></li>
+    <li><strong>Mamaweswen ISETP</strong> (North Shore) and <strong>UCCMM Mnidoo Mnising Employment and Training</strong> (Manitoulin) deliver Indigenous skills, employment, and training.</li>
+  </ul>
+
+  <h2>Housing and income support</h2>
+  <ul>
+    <li><strong>Ontario Aboriginal Housing Services</strong> (off-reserve, province-wide, head office in Sault Ste. Marie). <a href="https://www.ontarioaboriginalhousing.ca/" target="_blank" rel="noopener">ontarioaboriginalhousing.ca</a></li>
+    <li><strong>Niigaaniin</strong> (Mamaweswen): social assistance and Ontario Works for North Shore members. <a href="https://niigaaniin.com/" target="_blank" rel="noopener">niigaaniin.com</a></li>
+    <li><strong>Urban friendship centres</strong>: Indian Friendship Centre, Sault Ste. Marie (705-256-5634, <a href="https://www.ssmifc.ca/" target="_blank" rel="noopener">ssmifc.ca</a>); N'Swakamok Native Friendship Centre, Sudbury (705-674-2128, <a href="https://www.nfcsudbury.org/" target="_blank" rel="noopener">nfcsudbury.org</a>).</li>
+  </ul>
+
+  <div class="card card--coral">
+    <p class="muted">A community resource, not the Nation. We link to each service's own site as the authority. Numbers and links are point-in-time; if something is wrong or out of date, tell us.</p>
+  </div>
+{% endblock %}

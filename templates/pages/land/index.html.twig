@@ -2,35 +2,77 @@
 {% set nav = 'land' %}
 
 {% block title %}The land and its resources · Robinson Huron Treaty{% endblock %}
-{% block description %}The Robinson Huron Treaty is about the land and what it produces: decisions on the territory, energy and resource projects, consultation, and the environment, and how they reach members across the 21 nations.{% endblock %}
-{% block og_description %}The land section: energy and resource projects, consultation, and the environment across the Robinson Huron Treaty territory, and how members can understand and ask about them.{% endblock %}
+{% block description %}The Robinson Huron Treaty is about the land and what it produces: energy and resource projects, transmission, the environment, and land claims across the territory, and how they reach members across the 21 nations.{% endblock %}
+{% block og_description %}The land section: energy, transmission, environment, and land claims across the Robinson Huron Treaty territory, and how members can understand and ask about them.{% endblock %}
 
 {% block hero %}
 <section class="hero">
   <div class="wrap wrap--wide">
     <p class="eyebrow">Across the territory</p>
     <h1>The land and its resources.</h1>
-    <p class="lead">The Robinson Huron Treaty is about the land and what it produces. Decisions made on the territory, energy and resource projects, consultation, and the environment, reach every member, not only the community where they happen. This section helps members across the 21 nations understand those decisions and ask about them, the same way the shared standard helps with the money. Sources are linked throughout. We work from facts and we ask questions.</p>
+    <p class="lead">The Robinson Huron Treaty is about the land and what it produces. Decisions made on the territory, energy and resource projects, transmission, the environment, and land claims, reach every member, not only the community where they happen. This section helps members across the 21 nations understand those decisions and ask about them, the same way the shared standard helps with the money. Sources are linked throughout. We work from facts and we ask questions.</p>
   </div>
 </section>
 {% endblock %}
 
 {% block content %}
-  <h2>Projects</h2>
+  <p>Each profile is neutral and sourced. It presents what is happening on the territory and where the 21 nations have a stake; it never promotes a company, consultant, or product. Capacities, costs, ownership splits, and dates are point-in-time and shown with their source.</p>
+
+  <h2>Energy</h2>
   <ul class="community-grid">
     <li><a class="community-card" href="/land/massey-solar-project">
       <p class="name">Massey Solar Project</p>
       <p class="pillar-desc">A sourced guide to a utility-scale solar project proposed on the territory: what is settled, what is still being decided, and how to take part in the review.</p>
     </a></li>
-  </ul>
-  <p class="muted">More projects as members raise them. As resource and energy decisions come up across the treaty, the Circle gathers the public record and the questions members can ask.</p>
-
-  <h2>Territory and member safety</h2>
-  <p>The land is also about the people on it. This is a neutral, sourced note on groups organizing in or visiting the territory in ways that affect members. It relays what credible public bodies have documented, with a source for every claim, and frames the member-facing part as questions rather than alarm.</p>
-  <ul class="community-grid">
-    <li><a class="community-card" href="/land/territory-and-safety">
-      <p class="name">Territory and member safety</p>
-      <p class="pillar-desc">What credible public bodies have documented about groups active in the territory. First entry: Second Sons Canada.</p>
+    <li><a class="community-card" href="/land/dunns-valley-solar">
+      <p class="name">Dunns Valley Solar</p>
+      <p class="pillar-desc">A proposed solar farm on Garden River land, one of Ontario's largest, with the nation holding 50 percent equity.</p>
+    </a></li>
+    <li><a class="community-card" href="/land/henvey-inlet-wind">
+      <p class="name">Henvey Inlet Wind</p>
+      <p class="pillar-desc">A 300 MW wind facility on Henvey Inlet land, the largest First Nation wind partnership in Canada, operating since 2019.</p>
+    </a></li>
+    <li><a class="community-card" href="/land/okikendawt-hydro">
+      <p class="name">Okikendawt Hydro</p>
+      <p class="pillar-desc">A run-of-river hydro station on the French River, with Dokis First Nation holding 40 percent equity, operating since 2015.</p>
     </a></li>
   </ul>
+
+  <h2>Transmission</h2>
+  <ul class="community-grid">
+    <li><a class="community-card" href="/land/north-shore-link-northeast-power-line">
+      <p class="name">North Shore Link and Northeast Power Line</p>
+      <p class="pillar-desc">Two new Hydro One lines across the north shore, with eight RHT nations participating together as equity partners through Waasmoowin.</p>
+    </a></li>
+  </ul>
+
+  <h2>Environment</h2>
+  <ul class="community-grid">
+    <li><a class="community-card" href="/land/elliot-lake-uranium">
+      <p class="name">Elliot Lake uranium legacy</p>
+      <p class="pillar-desc">Radioactive tailings across the Serpent River watershed, under perpetual care, with reported impacts on land, water, and harvesting.</p>
+    </a></li>
+    <li><a class="community-card" href="/land/nwmo-nuclear-waste">
+      <p class="name">Nuclear waste repository and transport concern</p>
+      <p class="pillar-desc">The repository is in northwestern Ontario, but transport of used fuel across the province is a north-shore concern.</p>
+    </a></li>
+  </ul>
+
+  <h2>Land claims</h2>
+  <ul class="community-grid">
+    <li><a class="community-card" href="/land/atikameksheng-land-claim">
+      <p class="name">Atikameksheng land claim</p>
+      <p class="pillar-desc">A claim to the reserve area set out in the 1850 treaty, many times the land occupied today, cleared to trial in 2024.</p>
+    </a></li>
+    <li><a class="community-card" href="/land/wiikwemkoong-islands-claim">
+      <p class="name">Wiikwemkoong islands boundary claim</p>
+      <p class="pillar-desc">Negotiations toward the return of islands off the Wiikwemkoong coast said to have been promised in 1836.</p>
+    </a></li>
+  </ul>
+
+  <p class="muted">More projects as members raise them. As resource and energy decisions come up across the treaty, the Circle gathers the public record and the questions members can ask.</p>
+
+  <div class="card">
+    <p>The land is also about the people on it. For keeping our communities safe, including who is organizing in the territory in ways that affect members, see <a href="/safety">Community safety</a>.</p>
+  </div>
 {% endblock %}

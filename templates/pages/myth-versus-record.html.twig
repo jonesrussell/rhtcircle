@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'treaty' %}
+
+{% block title %}What you have heard, and what the record says · Robinson Huron Treaty{% endblock %}
+{% block description %}Rumour met with sourced facts, framed as plain questions: the lawyers' fees, whether the settlement ends the payments, how a payment affects income support, and the white-nationalist group in the news. Lead with the fact, show the sources.{% endblock %}
+{% block og_description %}A sourced, fact-check format that meets rumour with the record: the legal fees, the future annuity, income support, and the group in the news. Framed as questions, no private individuals named.{% endblock %}
+
+{% block hero %}
+<section class="hero">
+  <div class="wrap wrap--wide">
+    <p class="eyebrow">The record</p>
+    <h1>What you have heard, and what the record says.</h1>
+    <p class="lead">The founding job of this hub is to fill the information vacuum, so rumour and social media are not the only place members can turn. Each entry leads with the fact, never repeats a false claim loudly, gives a clear answer, and shows the sources. Framed as questions, sourced, no private individuals named.</p>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+  <h2>The entries</h2>
+  {% include 'partials/myth_versus_record.html.twig' with { myth_entries: myth_all() } %}
+
+  <div class="card">
+    <p class="muted">Member-compiled summaries of public reporting. Where the record is incomplete, we say so rather than guessing. Figures are point-in-time. If you see an error, tell us and we will correct it.</p>
+  </div>
+
+  <p>Related: <a href="/treaty/settlement-where-it-goes">the settlement and where it goes</a>, and <a href="/safety/information-safety">information safety and disinformation</a>.</p>
+{% endblock %}

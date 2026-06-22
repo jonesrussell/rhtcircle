@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+use App\Content\MythEntries;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+use Twig\TwigFunction;
 
 /**
  * Minimal Twig view layer for the marketing site. The framework's SSR package
@@ -45,6 +47,12 @@ final class View
                 'strict_variables' => false,
             ],
         );
+
+        // Myth-versus-record entries, so the cross-cutting component is available
+        // to any template (and to app:ingest's render) without per-route context.
+        // myth(['key', ...]) selects entries by key; myth_all() returns them all.
+        self::$twig->addFunction(new TwigFunction('myth', static fn (array $keys): array => MythEntries::select($keys)));
+        self::$twig->addFunction(new TwigFunction('myth_all', static fn (): array => MythEntries::ordered()));
 
         return self::$twig;
     }

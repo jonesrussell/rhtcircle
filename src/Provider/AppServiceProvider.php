@@ -11,6 +11,7 @@ use App\Controller\AnalyticsDashboardController;
 use App\Controller\CollectController;
 use App\Controller\PageStatsController;
 use App\Controller\PetitionController;
+use App\Content\LandProjects;
 use App\Controller\SiteController;
 use App\Petition\PetitionRepository;
 use App\Petition\PetitionSchema;
@@ -110,6 +111,11 @@ final class AppServiceProvider extends ServiceProvider
             // (301s below); fixed-content pages, no context needed.
             'treaty' => ['/treaty', 'pages/treaty/index.html.twig'],
             'treaty-distribution-models' => ['/treaty/distribution-models', 'pages/treaty/distribution-models.html.twig'],
+            'treaty-language' => ['/treaty/language', 'pages/treaty/language.html.twig'],
+            'treaty-settlement' => ['/treaty/settlement-where-it-goes', 'pages/treaty/settlement-where-it-goes.html.twig'],
+
+            // The myth-versus-record component, surfaced as its own page.
+            'myth-versus-record' => ['/myth-versus-record', 'pages/myth-versus-record.html.twig'],
 
             // Transparency: the settlement asks and the shared standard.
             'treaty-wide' => ['/treaty-wide', 'pages/treaty-wide.html.twig'],
@@ -121,7 +127,21 @@ final class AppServiceProvider extends ServiceProvider
             'land-massey-what-youve-heard' => ['/land/massey-solar-project/what-youve-heard', 'pages/land/massey-solar-project/what-youve-heard.html.twig'],
             'land-massey-voices' => ['/land/massey-solar-project/voices', 'pages/land/massey-solar-project/voices.html.twig'],
             'land-massey-climate' => ['/land/massey-solar-project/climate', 'pages/land/massey-solar-project/climate.html.twig'],
-            'land-territory-and-safety' => ['/land/territory-and-safety', 'pages/land/territory-and-safety.html.twig'],
+
+            // Community safety: its own section. Sensitive pages carry a crisis-line
+            // strip and a Quick Exit button; the hate-and-extremism page moved here
+            // from /land/territory-and-safety (301 below).
+            'safety' => ['/safety', 'pages/safety/index.html.twig'],
+            'safety-get-help-now' => ['/safety/get-help-now', 'pages/safety/get-help-now.html.twig'],
+            'safety-emergency-preparedness' => ['/safety/emergency-preparedness', 'pages/safety/emergency-preparedness.html.twig'],
+            'safety-missing-persons-and-mmiwg' => ['/safety/missing-persons-and-mmiwg', 'pages/safety/missing-persons-and-mmiwg.html.twig'],
+            'safety-harm-reduction' => ['/safety/harm-reduction', 'pages/safety/harm-reduction.html.twig'],
+            'safety-protecting-elders' => ['/safety/protecting-elders', 'pages/safety/protecting-elders.html.twig'],
+            'safety-information-safety' => ['/safety/information-safety', 'pages/safety/information-safety.html.twig'],
+            'safety-hate-and-extremism' => ['/safety/hate-and-extremism', 'pages/safety/hate-and-extremism.html.twig'],
+
+            // Resources: the member-facing get-help directory (the 8th section).
+            'resources' => ['/resources', 'pages/resources/index.html.twig'],
 
             // The Circle: the member-led movement. About: what the hub is and is not.
             'circle' => ['/circle', 'pages/circle/index.html.twig'],
@@ -137,6 +157,21 @@ final class AppServiceProvider extends ServiceProvider
                 $name,
                 RouteBuilder::create($path)
                     ->controller(fn () => $controller->page($template))
+                    ->allowAll()
+                    ->methods('GET')
+                    ->build(),
+            );
+        }
+
+        // The Land: each new project profile is data-driven from App\Content\LandProjects
+        // through one shared template. Registered as explicit paths (not a /land/{slug}
+        // param route) so they never shadow the Massey cluster registered above.
+        foreach (LandProjects::all() as $project) {
+            $slug = (string) $project['slug'];
+            $router->addRoute(
+                'land-project-' . $slug,
+                RouteBuilder::create('/land/' . $slug)
+                    ->controller(fn () => $controller->landProject($slug))
                     ->allowAll()
                     ->methods('GET')
                     ->build(),
@@ -176,6 +211,8 @@ final class AppServiceProvider extends ServiceProvider
             'redir-massey-climate' => ['/communities/sagamok/massey-climate', '/land/massey-solar-project/climate'],
             'redir-treaty-the-treaty' => ['/treaty-wide/the-treaty', '/treaty'],
             'redir-treaty-distribution-models' => ['/treaty-wide/distribution-models', '/treaty/distribution-models'],
+            // Community safety moved out of The Land into its own section.
+            'redir-territory-and-safety' => ['/land/territory-and-safety', '/safety/hate-and-extremism'],
         ];
         foreach ($redirects as $name => [$from, $to]) {
             $router->addRoute(

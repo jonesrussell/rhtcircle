@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'safety' %}
+
+{% block title %}Community safety · Keeping each other safe · Robinson Huron Treaty{% endblock %}
+{% block description %}Keeping our communities safe: get help now, emergency preparedness, missing persons and MMIWG, health and harm reduction, protecting Elders, information safety, and hate and extremism in the territory. Plain, sourced, member-facing.{% endblock %}
+{% block og_description %}Community safety for the Robinson Huron Treaty: crisis lines, emergency preparedness, MMIWG, harm reduction, protecting Elders, information safety, and hate and extremism. We lead with help, not fear.{% endblock %}
+
+{% block hero %}
+<section class="hero">
+  <div class="wrap wrap--wide">
+    <p class="eyebrow">Community safety</p>
+    <h1>Keeping each other safe.</h1>
+    <p class="lead">Safety in our communities is about well-being, not just emergencies. It is prevention, culture, and looking out for one another, with help close at hand when it is needed. This section gathers plain, trusted information and points you to the people and services who can help. If you need help right now, go to Get help now.</p>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+  {% include 'partials/crisis_strip.html.twig' %}
+
+  <h2>In this section</h2>
+  <ul class="community-grid">
+    <li><a class="community-card" href="/safety/get-help-now">
+      <p class="name">Get help now</p>
+      <p class="pillar-desc">Every crisis line in one place. Call or text any time.</p>
+    </a></li>
+    <li><a class="community-card" href="/safety/emergency-preparedness">
+      <p class="name">Emergency preparedness</p>
+      <p class="pillar-desc">Wildfire and evacuation, winter and highway, outages, a household kit.</p>
+    </a></li>
+    <li><a class="community-card" href="/safety/missing-persons-and-mmiwg">
+      <p class="name">Missing persons and MMIWG</p>
+      <p class="pillar-desc">What to do, who to call, and the families' supports.</p>
+    </a></li>
+    <li><a class="community-card" href="/safety/harm-reduction">
+      <p class="name">Health and harm reduction</p>
+      <p class="pillar-desc">Naloxone, where to get it, and how to help in an overdose.</p>
+    </a></li>
+    <li><a class="community-card" href="/safety/protecting-elders">
+      <p class="name">Protecting our Elders</p>
+      <p class="pillar-desc">Scams, online safety, and elder abuse.</p>
+    </a></li>
+    <li><a class="community-card" href="/safety/information-safety">
+      <p class="name">Information safety</p>
+      <p class="pillar-desc">How to spot and resist disinformation aimed at our communities.</p>
+    </a></li>
+    <li><a class="community-card" href="/safety/hate-and-extremism">
+      <p class="name">Hate and extremism</p>
+      <p class="pillar-desc">What is active in the territory, and what to do if approached.</p>
+    </a></li>
+  </ul>
+
+  <p class="muted">We curate and link to the authoritative sources rather than restate sensitive material, and we lead with help, not fear.</p>
+
+  <div class="card">
+    <p>Looking for a service or a front door? See the <a href="/resources">Resources directory</a>: Indigenous health authorities, tribal councils, crisis lines, policing, legal and family supports, education, and housing across the territory.</p>
+  </div>
+
+  <div class="card card--coral">
+    <p class="muted">A community resource, not the Nation. If something here is wrong or out of date, tell us.</p>
+  </div>
+{% endblock %}

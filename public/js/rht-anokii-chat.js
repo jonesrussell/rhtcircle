@@ -28,7 +28,8 @@
 
   function suggestionsFor(path) {
     if (path.indexOf('/treaty') === 0) return ['What is the 2023 settlement?', 'Why was the annuity stuck at $4?', 'What did the Supreme Court decide?'];
-    if (path.indexOf('/land/territory-and-safety') === 0) return ['What did Second Sons do here?', 'Who do I contact about community safety?'];
+    if (path.indexOf('/safety') === 0) return ['What crisis lines can I call?', 'What did Second Sons do here?', 'Where do I get naloxone?'];
+    if (path.indexOf('/resources') === 0) return ['Where do I find Indigenous health care?', 'Who can help with legal aid?'];
     if (path.indexOf('/land') === 0) return ['What is the Massey Solar project?', 'What energy projects are on the territory?'];
     if (path.indexOf('/standard') === 0 || path.indexOf('/treaty-wide') === 0) return ['What can I ask my council?', 'What is the records request?'];
     if (path.indexOf('/communities') === 0) return ['Find help near my nation', 'A crisis line right now'];

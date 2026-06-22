@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'land' %}
+
+{% block title %}{{ project.name }} · The Land · Robinson Huron Treaty{% endblock %}
+{% block description %}{{ project.lead }} A member-compiled, sourced profile of a development on Robinson Huron Treaty territory.{% endblock %}
+{% block og_description %}{{ project.lead }}{% endblock %}
+
+{% block hero %}
+<section class="hero">
+  <div class="wrap wrap--wide">
+    <p class="eyebrow">The Land · {{ project.type_label }}</p>
+    <h1>{{ project.name }}.</h1>
+    <p class="lead">{{ project.lead }}</p>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+  <p class="muted"><a href="/land">The Land</a> · a neutral, sourced profile. We work from facts and we ask questions.</p>
+
+  <h2>The facts</h2>
+  <dl class="nation-facts">
+    <dt>Type</dt>
+    <dd>{{ project.type_label }}</dd>
+    <dt>Status</dt>
+    <dd>{{ project.status }}</dd>
+    <dt>Location</dt>
+    <dd>{{ project.location }}</dd>
+    <dt>Nations involved</dt>
+    <dd>{{ project.nations }}</dd>
+  </dl>
+
+  {{ project.body|raw }}
+
+  {% if project.caveat %}
+  <div class="card card--coral">
+    <p class="muted"><strong>Verify before relying on figures.</strong> {{ project.caveat }}</p>
+  </div>
+  {% endif %}
+
+  {% if project.related is not empty %}
+  <h2>The communities this touches</h2>
+  <ul class="community-grid">
+    {% for link in project.related %}
+    <li><a class="community-card" href="/communities/{{ link.slug }}">
+      <p class="name">{{ link.name }}</p>
+      <p class="pillar-desc">The nation's profile, with its governance, treaty relationship, and official site.</p>
+    </a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <h2>Sources</h2>
+  <ul class="src-links">
+    {% for src in project.sources %}
+    <li><a href="{{ src.url }}" target="_blank" rel="noopener">{{ src.label }}</a></li>
+    {% endfor %}
+  </ul>
+
+  <div class="card">
+    <p class="muted">A member-compiled summary of public reporting, not an official communication of any nation or developer. Figures are point-in-time. If you see an error, tell us and we will correct it.</p>
+  </div>
+{% endblock %}

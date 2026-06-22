@@ -1,0 +1,7 @@
+{#
+  Quick Exit button for sensitive pages. Leaves the site immediately and uses
+  location.replace so the page does not stay in browser history. Inline handler so
+  it works without the deferred site scripts.
+#}
+<a class="quick-exit" href="https://www.weather.gc.ca/canada_e.html" rel="noopener noreferrer"
+   onclick="window.location.replace('https://www.weather.gc.ca/canada_e.html');return false;">Quick exit &#10005;</a>
