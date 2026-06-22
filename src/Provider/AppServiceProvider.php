@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace App\Provider;
 
+use Anokii\CoIntelligence\SqliteChatQueryLog;
+use Anokii\Controller\AnokiiAdminController;
+use App\Admin\AdminController;
+use App\Admin\AdminRoles;
 use App\Analytics\AnalyticsRecorder;
 use App\Analytics\AnalyticsReport;
 use App\Analytics\AnalyticsSchema;
+use App\Command\CreateAdminCommand;
 use App\Controller\AnalyticsDashboardController;
 use App\Controller\CollectController;
 use App\Controller\PageStatsController;
@@ -16,13 +21,22 @@ use App\Controller\SiteController;
 use App\Petition\PetitionRepository;
 use App\Petition\PetitionSchema;
 use Symfony\Component\HttpFoundation\Request;
+use Waaseyaa\CLI\Command\HandlerArgument;
+use Waaseyaa\CLI\Command\HandlerArgumentMode;
+use Waaseyaa\CLI\Command\HandlerCommand;
+use Waaseyaa\CLI\Command\HandlerOption;
+use Waaseyaa\CLI\Command\HandlerOptionMode;
+use Waaseyaa\CLI\Command\SymfonyCommandIO;
 use Waaseyaa\Database\DatabaseInterface;
 use Waaseyaa\Database\DBALDatabase;
+use Waaseyaa\Entity\EntityTypeManager;
+use Waaseyaa\Foundation\ServiceProvider\Capability\ProvidesConsoleCommandsInterface;
+use Waaseyaa\Foundation\ServiceProvider\Capability\ProvidesRolesInterface;
 use Waaseyaa\Foundation\ServiceProvider\ServiceProvider;
 use Waaseyaa\Routing\RouteBuilder;
 use Waaseyaa\Routing\WaaseyaaRouter;
 
-final class AppServiceProvider extends ServiceProvider
+final class AppServiceProvider extends ServiceProvider implements ProvidesRolesInterface, ProvidesConsoleCommandsInterface
 {
     private ?DatabaseInterface $persistentDatabase = null;
     private ?PetitionRepository $petitionRepository = null;
@@ -284,19 +298,85 @@ final class AppServiceProvider extends ServiceProvider
                 ->methods('GET')
                 ->build(),
         );
-        // Public at the app layer; gated in production by Caddy basic auth on
-        // /admin/* (see waaseyaa-infra). Carries a noindex meta tag regardless.
-        // priority(10) is required so this exact route wins over the framework
-        // admin SPA's catch-all (/admin/{path}, priority 0), which would
-        // otherwise serve its bundled Nuxt app here and shadow the dashboard.
-        $router->addRoute(
-            'admin.analytics',
-            RouteBuilder::create('/admin/analytics')
-                ->controller(fn (Request $request) => $analytics->index($request))
-                ->allowAll()
-                ->methods('GET')
-                ->priority(10)
-                ->build(),
+        // Admin dashboards, gated by the framework's own auth (NOT Caddy basic
+        // auth, which has been removed). The routes are allowAll() at the framework
+        // layer and the AdminController enforces the session + the admin permission
+        // itself (reusing the Anokii package's DashboardGate / Support\Auth /
+        // AbstractWorkspaceRoles): an unauthenticated request redirects to
+        // /admin/login, a non-admin account gets 403, an admin sees the dashboard.
+        //
+        // /admin/anokii is registered HERE now (the package's anokii-admin module is
+        // disabled in config/anokii.yaml) so it goes through the same gate as
+        // /admin/analytics. priority(100) beats the framework admin SPA catch-all
+        // at /admin/{path} (priority 0).
+        $anokiiAdmin = new AnokiiAdminController($database, new SqliteChatQueryLog($database));
+        $admin = new AdminController($entityTypeManager, $anokiiAdmin, $analytics);
+
+        $adminGet = static fn (string $name, string $path, callable $c) => $router->addRoute(
+            $name,
+            RouteBuilder::create($path)->controller($c)->allowAll()->methods('GET')->priority(100)->build(),
         );
+        $adminPost = static fn (string $name, string $path, callable $c) => $router->addRoute(
+            $name,
+            RouteBuilder::create($path)->controller($c)->allowAll()->methods('POST')->priority(100)->build(),
+        );
+
+        $adminGet('admin.login', '/admin/login', fn (Request $request) => $admin->loginForm($request));
+        $adminPost('admin.login.post', '/admin/login', fn (Request $request) => $admin->loginSubmit($request));
+        $adminGet('admin.logout', '/admin/logout', fn (Request $request) => $admin->logout($request));
+        $adminGet('admin.anokii', '/admin/anokii', fn (Request $request) => $admin->anokii($request));
+        $adminGet('admin.analytics', '/admin/analytics', fn (Request $request) => $admin->analytics($request));
+    }
+
+    /**
+     * Contribute the rht admin roles to the framework RoleRepository so
+     * `user:assign-role` can resolve them and stamp ACCESS_ADMIN. The single
+     * operator account is given the framework `administrator` role by
+     * app:create-admin; this also makes the dashboard-only operator role available.
+     *
+     * @return iterable<\Waaseyaa\User\Role>
+     */
+    public function roles(): iterable
+    {
+        yield from new AdminRoles()->roles();
+    }
+
+    /**
+     * @return iterable<HandlerCommand>
+     */
+    public function consoleCommands(): iterable
+    {
+        yield new HandlerCommand(
+            name: 'app:create-admin',
+            description: 'Create or update the administrator account for the gated /admin dashboards. Password from --password or RHTCIRCLE_ADMIN_PASSWORD (never hardcoded).',
+            arguments: [
+                new HandlerArgument(name: 'email', mode: HandlerArgumentMode::Required, description: 'Email address of the admin account.'),
+            ],
+            options: [
+                new HandlerOption(name: 'name', mode: HandlerOptionMode::Required, description: 'Display name for the account.'),
+                new HandlerOption(name: 'password', mode: HandlerOptionMode::Required, description: 'Password (else read from RHTCIRCLE_ADMIN_PASSWORD). At least 12 characters.'),
+            ],
+            handler: function (SymfonyCommandIO $io): int {
+                $etm = $this->adminEntityTypeManager();
+                if ($etm === null) {
+                    $io->error('app:create-admin requires a booted kernel (EntityTypeManager).');
+
+                    return 1;
+                }
+
+                return new CreateAdminCommand($etm)->run($io);
+            },
+        );
+    }
+
+    private function adminEntityTypeManager(): ?EntityTypeManager
+    {
+        try {
+            $resolved = $this->resolve(EntityTypeManager::class);
+
+            return $resolved instanceof EntityTypeManager ? $resolved : null;
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }

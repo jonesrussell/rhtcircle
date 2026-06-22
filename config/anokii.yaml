@@ -17,8 +17,12 @@ data_residency:
 
 modules:
   enabled:
+    # public-graph-chat mounts POST /api/chat (the public, ungated chat surface).
     - public-graph-chat
-    - anokii-admin
+    # anokii-admin (the package's /admin/anokii route) is intentionally NOT enabled:
+    # rhtcircle registers /admin/anokii itself in AppServiceProvider so it goes
+    # through the framework-auth AdminController gate instead of the package's
+    # ungated route (which relied on the now-removed Caddy basic_auth).
   preview: []
 
 # The Co-Intelligence engine config for the public chat.
