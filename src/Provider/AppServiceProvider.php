@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Provider;
 
-use Anokii\CoIntelligence\SqliteChatQueryLog;
-use Anokii\Controller\AnokiiAdminController;
 use App\Admin\AdminController;
 use App\Admin\AdminRoles;
 use App\Analytics\AnalyticsRecorder;
@@ -279,7 +277,6 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-analytics');
         $report = new AnalyticsReport($database);
         $collect = new CollectController(new AnalyticsRecorder($database, $secret));
-        $analytics = new AnalyticsDashboardController($report);
         $pageStats = new PageStatsController($report);
 
         $router->addRoute(
@@ -309,8 +306,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         // disabled in config/anokii.yaml) so it goes through the same gate as
         // /admin/analytics. priority(100) beats the framework admin SPA catch-all
         // at /admin/{path} (priority 0).
-        $anokiiAdmin = new AnokiiAdminController($database, new SqliteChatQueryLog($database));
-        $admin = new AdminController($entityTypeManager, $anokiiAdmin, $analytics);
+        $admin = new AdminController($entityTypeManager, $database, $report);
 
         $adminGet = static fn (string $name, string $path, callable $c) => $router->addRoute(
             $name,
@@ -324,8 +320,14 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         $adminGet('admin.login', '/admin/login', fn (Request $request) => $admin->loginForm($request));
         $adminPost('admin.login.post', '/admin/login', fn (Request $request) => $admin->loginSubmit($request));
         $adminGet('admin.logout', '/admin/logout', fn (Request $request) => $admin->logout($request));
-        $adminGet('admin.anokii', '/admin/anokii', fn (Request $request) => $admin->anokii($request));
-        $adminGet('admin.analytics', '/admin/analytics', fn (Request $request) => $admin->analytics($request));
+        // Anokii admin, rendered through the shared package shell. All under
+        // /admin/anokii so the canonical module paths match Anokii\Admin\AdminModules.
+        $adminGet('admin.anokii', '/admin/anokii', fn (Request $request) => $admin->home($request));
+        $adminGet('admin.anokii.cointelligence', '/admin/anokii/cointelligence', fn (Request $request) => $admin->cointelligence($request));
+        $adminGet('admin.anokii.analytics', '/admin/anokii/analytics', fn (Request $request) => $admin->analytics($request));
+        $adminGet('admin.anokii.module', '/admin/anokii/m/{module}', fn (Request $request, string $module) => $admin->comingSoon($request, $module));
+        // The analytics dashboard moved under /admin/anokii; one-hop 301 the old path.
+        $adminGet('admin.analytics.redirect', '/admin/analytics', fn (Request $request) => new \Symfony\Component\HttpFoundation\RedirectResponse('/admin/anokii/analytics', 301));
     }
 
     /**

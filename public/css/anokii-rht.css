@@ -1,0 +1,51 @@
+/* Robinson Huron Treaty theme for the shared Anokii admin shell.
+   Maps rhtcircle's brand onto the shell's token contract (the same way an Anokii
+   install rebrands: override the --color-* / --anokii-* variables, never fork the
+   templates). Generic-clean, in rhtcircle's colours: deep indigo-violet, magenta,
+   the full-spectrum rainbow rule motif, Fraunces headings + Inter body, on
+   near-white paper. */
+
+:root {
+  /* Shell surface tokens (light content area). */
+  --color-bg: #fbfaff;
+  --color-card: #ffffff;
+  --color-ink: #221d33;
+  --color-line: #e4def2;
+  --color-muted: #6f6688;
+
+  /* Dark sidebar, in rhtcircle's deep indigo-violet (not FNPI's teal). */
+  --color-side-bg: #2b2147;
+  --color-side-line: #3d3163;
+  --color-side-muted: #b6abd9;
+
+  /* Accent: indigo for active nav and grid icons, on white ink. */
+  --color-primary: #4f2fb0;
+  --color-primary-ink: #ffffff;
+
+  /* Fonts. */
+  --anokii-shell-font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --anokii-serif: "Fraunces", Georgia, "Iowan Old Style", serif;
+  --anokii-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* The signature full-spectrum rainbow rule (all 21 nations together). */
+  --anokii-rule-h: 5px;
+  --anokii-rule-bg: linear-gradient(90deg,
+    #cc2484 0%, #a824a8 14%, #6c30d8 28%, #4854cc 40%,
+    #2f80c4 52%, #17a8ba 64%, #5bb87a 74%, #f6d05e 84%,
+    #f9781f 93%, #e0452a 100%);
+  --anokii-brand-mark: radial-gradient(circle at 35% 32%, #f4795a, #c41d8f 62%, #4f2fb0 100%);
+
+  /* Hero: warm near-white with a soft coral/magenta glow; indigo heading. */
+  --anokii-hero-bg:
+    radial-gradient(420px 220px at 88% -40%, rgba(244,121,90,0.20), transparent 70%),
+    radial-gradient(520px 260px at 100% 0%, rgba(196,29,143,0.10), transparent 72%),
+    #f4f1fb;
+  --anokii-hero-ink: #38217f;
+  --anokii-hero-accent: #c41d8f;
+  --anokii-hero-muted: #4a4361;
+
+  /* Hero chips. */
+  --anokii-chip-bg: #ffffff;
+  --anokii-chip-line: #e4def2;
+  --anokii-chip-ink: #4a4361;
+}

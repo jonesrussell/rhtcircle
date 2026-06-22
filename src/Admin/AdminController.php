@@ -4,48 +4,50 @@ declare(strict_types=1);
 
 namespace App\Admin;
 
-use Anokii\Controller\AnokiiAdminController;
+use Anokii\Admin\AdminData;
+use Anokii\Admin\AdminModules;
+use Anokii\Admin\AdminShell;
 use Anokii\Dashboard\DashboardGate;
 use Anokii\Support\Auth;
-use App\Controller\AnalyticsDashboardController;
+use App\Analytics\AnalyticsReport;
+use App\Support\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Waaseyaa\Database\DatabaseInterface;
 use Waaseyaa\Entity\EntityTypeManager;
 use Waaseyaa\User\Middleware\CsrfMiddleware;
 
 /**
- * Framework-auth gate for rhtcircle's admin dashboards.
+ * Framework-auth gate + presentation for rhtcircle's Anokii admin, rendered
+ * through the shared Anokii package shell (anokii/_shell.html.twig + the
+ * anokii/admin/* templates and Anokii\Admin\AdminModules / AdminShell), so the
+ * workspace looks like the same product as every other Anokii install. rhtcircle
+ * supplies only the live/preview split (the shared-graph tier), its brand, and
+ * its theme stylesheet.
  *
- * Replaces the Caddy basic_auth that previously sat in front of /admin/*. The
- * dashboard routes are registered allowAll() at the framework layer (so the
- * framework AccessChecker does not gate them), and this controller enforces the
- * session itself, reusing the Anokii package primitives rather than inventing a
- * new check:
+ * Auth: the dashboard routes are registered allowAll() at the framework layer and
+ * this controller enforces the session itself, reusing the package's DashboardGate
+ * (redirect helpers), Support\Auth (session), and the ACCESS_ADMIN permission
+ * ({@see AdminRoles}). Anonymous page request -> /admin/login; signed-in without
+ * the permission -> 403; admin -> the shell.
  *
- *   - {@see DashboardGate} for the page redirect helpers (login path is app-owned,
- *     never the framework default /login);
- *   - {@see Auth} for the session-backed login / logout / current account, which
- *     ignores the framework dev-fallback account so only a genuine login opens
- *     the gate;
- *   - {@see AdminRoles}::ACCESS_ADMIN for authorization (administrator passes by
- *     short-circuit; a dashboard-only operator passes via the stamped permission).
- *
- * An unauthenticated page request is redirected to /admin/login; an authenticated
- * account that lacks the admin permission gets a 403. After the gate passes, the
- * request is delegated to the underlying dashboard controller (the lean Anokii
- * admin from the package, or the rhtcircle analytics dashboard).
- *
- * NOTE (package follow-up, alpha.4): this gate belongs in the Anokii package's
- * admin surface so oiatc and fnpi share it. Lifting it requires a package release,
- * so it is wired here for rhtcircle now and flagged for the package line.
+ * Co-Intelligence (graph counts + the no-PII question log) and Analytics are the
+ * live modules for this public tier; the internal-workspace modules render as
+ * disabled product-preview cards via the package coming-soon page.
  */
 final class AdminController extends DashboardGate
 {
+    /** rhtcircle brand + theme passed to the shared shell. */
+    private const BRAND_TITLE = 'Robinson Huron Treaty';
+    private const BRAND_TAG = 'Anokii admin';
+    private const THEME_HREF = '/css/anokii-rht.css';
+    private const HOME_PATH = '/admin/anokii';
+
     public function __construct(
         ?EntityTypeManager $entityTypeManager,
-        private readonly AnokiiAdminController $anokiiAdmin,
-        private readonly AnalyticsDashboardController $analyticsDashboard,
+        private readonly DatabaseInterface $db,
+        private readonly AnalyticsReport $report,
     ) {
         parent::__construct($entityTypeManager);
     }
@@ -55,23 +57,77 @@ final class AdminController extends DashboardGate
         return '/admin/login';
     }
 
-    /** Gated: the lean Anokii admin (graph counts + the no-PII content-gap log). */
-    public function anokii(Request $request): Response
+    // --- shell pages (live modules) ----------------------------------------
+
+    /** Dashboard home: the "Aanii" hero and the module grid. */
+    public function home(Request $request): Response
     {
         $gate = $this->guard($request);
+        if ($gate !== null) {
+            return $gate;
+        }
 
-        return $gate ?? $this->anokiiAdmin->index($request);
+        return $this->html(View::render('anokii/admin/home.html.twig', $this->shell('dashboard', [
+            'page_title' => 'Anokii admin · Robinson Huron Treaty',
+            'hero_lead' => 'The Robinson Huron Treaty resource hub workspace, running on Anokii. This public install holds only the shared, public graph: the 21 nations, the land and safety pages, and the corpus the chat answers from. No member data lives here.',
+            'hero_chips' => ['Shared public graph', 'Co-Intelligence live', 'Member-led', 'More tools coming'],
+        ])));
     }
 
-    /** Gated: the first-party analytics dashboard. */
+    /** Co-Intelligence: graph counts + the no-PII recent-questions log. */
+    public function cointelligence(Request $request): Response
+    {
+        $gate = $this->guard($request);
+        if ($gate !== null) {
+            return $gate;
+        }
+        $data = new AdminData($this->db);
+
+        return $this->html(View::render('anokii/admin/cointelligence.html.twig', $this->shell('cointelligence', [
+            'page_title' => 'Co-Intelligence · Anokii admin',
+            'counts' => $data->graphCounts(),
+            'log_rows' => $data->recentQuestions(200),
+        ])));
+    }
+
+    /** Analytics: the first-party analytics dashboard, in the shared shell. */
     public function analytics(Request $request): Response
     {
         $gate = $this->guard($request);
+        if ($gate !== null) {
+            return $gate;
+        }
+        $today = gmdate('Y-m-d');
+        $from = $this->cleanDate($request->query->get('from'), gmdate('Y-m-d', strtotime('-29 days')));
+        $to = $this->cleanDate($request->query->get('to'), $today);
 
-        return $gate ?? $this->analyticsDashboard->index($request);
+        return $this->html(View::render('admin/analytics.html.twig', $this->shell('analytics', [
+            'page_title' => 'Analytics · Anokii admin',
+            'report' => $this->report->summary($from, $to),
+            'range' => ['from' => $from, 'to' => $to],
+        ])));
     }
 
-    /** The login form. An already-signed-in admin is sent on to the dashboard. */
+    /** Product-preview placeholder for a not-yet-live module. */
+    public function comingSoon(Request $request, string $module): Response
+    {
+        $gate = $this->guard($request);
+        if ($gate !== null) {
+            return $gate;
+        }
+        $m = AdminModules::find($module);
+        if ($m === null || in_array($module, ['dashboard', 'cointelligence', 'analytics'], true)) {
+            return new RedirectResponse(self::HOME_PATH);
+        }
+
+        return $this->html(View::render('anokii/admin/coming_soon.html.twig', $this->shell($module, [
+            'page_title' => $m['label'] . ' · Anokii admin',
+            'module' => $m,
+        ])));
+    }
+
+    // --- login / logout ----------------------------------------------------
+
     public function loginForm(Request $request): Response
     {
         $already = $this->redirectIfAuthenticated($this->safeNext($request));
@@ -82,7 +138,6 @@ final class AdminController extends DashboardGate
         return $this->loginPage($this->safeNext($request), $request->query->get('error') !== null);
     }
 
-    /** Validate credentials and open a session, then redirect to the dashboard. */
     public function loginSubmit(Request $request): Response
     {
         $email = (string) $request->request->get('email', '');
@@ -91,7 +146,6 @@ final class AdminController extends DashboardGate
 
         $user = Auth::login($this->entityTypeManager, $email, $password);
         if ($user === null || !$user->hasPermission(AdminRoles::ACCESS_ADMIN)) {
-            // Do not leave a half-open session for a real account without access.
             if ($user !== null) {
                 Auth::logout();
             }
@@ -99,18 +153,58 @@ final class AdminController extends DashboardGate
             return $this->loginPage($next, true);
         }
 
-        // Rotate the CSRF token across the auth boundary (login fixation hygiene).
         CsrfMiddleware::regenerate();
 
         return new RedirectResponse($next);
     }
 
-    /** Clear the session and return to the login form. */
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
 
         return new RedirectResponse($this->loginPath());
+    }
+
+    // --- helpers -----------------------------------------------------------
+
+    /**
+     * Build the shared shell context for a page: the resolved shared-graph module
+     * set, rhtcircle brand + theme, and the page-specific extras merged on top.
+     *
+     * @param array<string, mixed> $extra
+     *
+     * @return array<string, mixed>
+     */
+    private function shell(string $active, array $extra = []): array
+    {
+        $user = $this->currentUser();
+
+        return AdminShell::context(
+            $user,
+            $active,
+            AdminModules::sharedGraph(),
+            [
+                'brand_title' => self::BRAND_TITLE,
+                'brand_tag' => self::BRAND_TAG,
+                'theme_href' => self::THEME_HREF,
+                'home_path' => self::HOME_PATH,
+                'logout_path' => '/admin/logout',
+            ] + $extra,
+            ['administrator' => 'Administrator', AdminRoles::ROLE_OPERATOR => 'Operator'],
+        );
+    }
+
+    private function html(string $body, int $status = 200): Response
+    {
+        return new Response($body, $status, [
+            'Content-Type' => 'text/html; charset=UTF-8',
+            'X-Robots-Tag' => 'noindex, nofollow',
+        ]);
+    }
+
+    private function cleanDate(mixed $value, string $fallback): string
+    {
+        return is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $value) === 1 ? $value : $fallback;
     }
 
     /**
@@ -149,7 +243,7 @@ final class AdminController extends DashboardGate
             return $next;
         }
 
-        return '/admin/anokii';
+        return self::HOME_PATH;
     }
 
     private function loginPage(string $next, bool $error): Response

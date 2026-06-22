@@ -1,398 +1,97 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Analytics · Robinson Huron Treaty</title>
-  <meta name="robots" content="noindex, nofollow">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #fbfaff;
-      --surface: #ffffff;
-      --ink: #221d33;
-      --ink-soft: #4a4361;
-      --ink-mute: #6f6688;
-      --rule: #e4def2;
-      --rule-soft: #ece7f7;
-      --accent: #4f2fb0;
-      --accent-soft: #c9b8ee;
-      --magenta: #c41d8f;
-      --serif: "Fraunces", Georgia, serif;
-      --sans: "Inter", system-ui, sans-serif;
-      --mono: "JetBrains Mono", ui-monospace, monospace;
-      --content: 880px;
-      --gap-3: 12px;
-      --gap-4: 20px;
-      --gap-5: 32px;
-    }
-    * { box-sizing: border-box; }
-    html { -webkit-text-size-adjust: 100%; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--ink);
-      font-family: var(--serif);
-      font-size: 18px;
-      line-height: 1.65;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
-    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
-    a:hover { color: var(--magenta); }
+{#
+  Analytics module, rendered inside the shared Anokii shell. Instance-specific
+  data (App\Analytics\AnalyticsReport) presented with the shell's chrome and
+  rhtcircle theme. Context: report (totals/pages/referrers/devices), range, plus
+  the AdminShell context.
+#}
+{% extends "anokii/admin/_base.html.twig" %}
 
-    .rainbow-rule {
-      height: 6px; border: 0; margin: 0;
-      background: linear-gradient(90deg, #cc2484 0%, #a824a8 14%, #6c30d8 28%, #4854cc 40%,
-        #2f80c4 52%, #17a8ba 64%, #5bb87a 74%, #f6d05e 84%, #f9781f 93%, #e0452a 100%);
-    }
+{% block admin_styles %}
+  .rng{ display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap; margin:0 0 8px; }
+  .rng .field{ display:flex; flex-direction:column; gap:6px; }
+  .rng label{ font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--anokii-shell-muted); }
+  .rng input[type=date]{ font-family:var(--anokii-mono,monospace); font-size:14px; color:var(--anokii-shell-ink); background:var(--anokii-shell-card); border:1px solid var(--anokii-shell-line); border-radius:8px; padding:8px 10px; }
+  .rng input[type=date]:focus{ outline:none; border-color:var(--anokii-shell-accent); }
+  .rng button{ font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--anokii-shell-accent-ink); background:var(--anokii-shell-accent); border:none; border-radius:999px; padding:10px 22px; cursor:pointer; }
+  .big{ grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); }
+  .big .anokii-stat span{ font-size:clamp(30px,6vw,46px); line-height:1; }
+  .panels{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media(max-width:640px){ .panels{ grid-template-columns:1fr; } }
+  .bar{ padding:9px 0; border-bottom:1px solid var(--anokii-shell-line); }
+  .bar:last-child{ border-bottom:none; }
+  .bar .h{ display:flex; justify-content:space-between; gap:14px; margin-bottom:7px; }
+  .bar .n{ font-size:14px; color:var(--anokii-shell-muted); text-transform:capitalize; }
+  .bar .c{ font-family:var(--anokii-mono,monospace); font-size:13px; color:var(--anokii-shell-ink); }
+  .track{ height:6px; background:var(--anokii-shell-line); border-radius:3px; overflow:hidden; }
+  .fill{ display:block; height:100%; background:var(--anokii-shell-accent); border-radius:3px; }
+  .li{ display:flex; justify-content:space-between; gap:14px; padding:9px 0; border-bottom:1px solid var(--anokii-shell-line); }
+  .li:last-child{ border-bottom:none; }
+  .li .n{ font-size:14px; color:var(--anokii-shell-muted); word-break:break-all; }
+  .li .c{ font-family:var(--anokii-mono,monospace); font-size:13px; color:var(--anokii-shell-ink); }
+  .muted-i{ color:var(--anokii-shell-muted); font-style:italic; font-size:14px; }
+{% endblock %}
 
-    .top {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      padding: 18px 32px;
-      max-width: var(--content);
-      margin: 0 auto;
-      border-bottom: 1px solid var(--rule);
-      font-family: var(--sans);
-      font-size: 12px;
-      color: var(--ink-mute);
-      letter-spacing: 0.04em;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .top__brand {
-      font-weight: 600;
-      color: var(--ink);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .top__brand a { color: var(--ink); border-bottom: none; }
-    .top__brand a:hover { color: var(--accent); }
-    .top__meta { font-family: var(--mono); font-variant-numeric: tabular-nums; }
-
-    .page {
-      max-width: var(--content);
-      margin: 0 auto;
-      padding: 40px 28px 72px;
-    }
-    @media (min-width: 700px) {
-      .page { padding: 48px 40px 96px; }
-    }
-
-    .eyebrow {
-      font-family: var(--sans);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--magenta);
-      margin: 0 0 16px;
-    }
-
-    section { padding: 36px 0; border-bottom: 1px solid var(--rule-soft); }
-    section:last-of-type { border-bottom: none; }
-    h2 {
-      font-family: var(--sans);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--magenta);
-      margin: 0 0 var(--gap-4);
-    }
-
-    .range-form {
-      display: flex;
-      align-items: flex-end;
-      gap: var(--gap-3);
-      flex-wrap: wrap;
-    }
-    .range-form .field { display: flex; flex-direction: column; gap: 6px; }
-    .range-form label {
-      font-family: var(--sans);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--ink-mute);
-    }
-    .range-form input[type="date"] {
-      font-family: var(--mono);
-      font-size: 14px;
-      color: var(--ink);
-      background: var(--surface);
-      border: 1px solid var(--rule);
-      border-radius: 6px;
-      padding: 8px 10px;
-      font-variant-numeric: tabular-nums;
-    }
-    .range-form input[type="date"]:focus { outline: none; border-color: var(--accent); }
-    .range-form button {
-      font-family: var(--sans);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #fff;
-      background: var(--accent);
-      border: 1px solid var(--accent);
-      border-radius: 999px;
-      padding: 10px 22px;
-      cursor: pointer;
-    }
-    .range-form button:hover { background: var(--magenta); border-color: var(--magenta); }
-
-    .totals { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-4); }
-    .stat {
-      background: var(--surface);
-      border: 1px solid var(--rule);
-      border-radius: 12px;
-      padding: 24px 26px;
-    }
-    .stat__label {
-      font-family: var(--sans);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-mute);
-      margin: 0 0 10px;
-    }
-    .stat__value {
-      font-family: var(--mono);
-      font-size: clamp(34px, 7vw, 52px);
-      font-weight: 500;
-      line-height: 1;
-      letter-spacing: -0.01em;
-      color: var(--ink);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table { width: 100%; border-collapse: collapse; font-size: 15px; }
-    thead th {
-      font-family: var(--sans);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--ink-mute);
-      text-align: left;
-      padding: 0 14px 10px;
-      border-bottom: 1px solid var(--rule);
-      white-space: nowrap;
-    }
-    thead th.num { text-align: right; }
-    tbody td {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--rule-soft);
-      color: var(--ink-soft);
-      vertical-align: baseline;
-    }
-    tbody tr:last-child td { border-bottom: none; }
-    td.path { font-family: var(--mono); font-size: 13px; color: var(--ink); word-break: break-all; }
-    td.num {
-      text-align: right;
-      font-family: var(--mono);
-      font-size: 14px;
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
-    }
-    td.empty { text-align: center; color: var(--ink-mute); font-style: italic; padding: 24px 14px; }
-
-    .panels { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-4); }
-    @media (max-width: 640px) {
-      .totals { grid-template-columns: 1fr; }
-      .panels { grid-template-columns: 1fr; }
-    }
-    .panel {
-      background: var(--surface);
-      border: 1px solid var(--rule);
-      border-radius: 12px;
-      padding: 22px 24px;
-    }
-    .panel h3 {
-      font-family: var(--sans);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin: 0 0 16px;
-    }
-    .list { margin: 0; padding: 0; list-style: none; }
-    .list li {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 9px 0;
-      border-bottom: 1px solid var(--rule-soft);
-    }
-    .list li:last-child { border-bottom: none; }
-    .list__name { font-size: 15px; color: var(--ink-soft); word-break: break-all; }
-    .list__count {
-      font-family: var(--mono);
-      font-size: 14px;
-      color: var(--ink);
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
-    }
-    .list__empty { color: var(--ink-mute); font-style: italic; font-size: 15px; }
-
-    .bar-row { display: block; padding: 9px 0; border-bottom: 1px solid var(--rule-soft); }
-    .bar-row:last-child { border-bottom: none; }
-    .bar-row__head {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 7px;
-    }
-    .bar-row__name { font-size: 15px; color: var(--ink-soft); text-transform: capitalize; }
-    .bar-row__count { font-family: var(--mono); font-size: 14px; color: var(--ink); font-variant-numeric: tabular-nums; }
-    .bar-track { height: 6px; background: var(--rule-soft); border-radius: 3px; overflow: hidden; }
-    .bar-fill { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
-
-    footer {
-      max-width: var(--content);
-      margin: 0 auto;
-      padding: 28px 28px 56px;
-      border-top: 1px solid var(--rule);
-      font-family: var(--sans);
-      font-size: 12px;
-      color: var(--ink-mute);
-      line-height: 1.6;
-    }
-    @media (min-width: 700px) { footer { padding: 28px 40px 64px; } }
-    footer p { margin: 0; }
-  </style>
-</head>
-<body>
-
-<hr class="rainbow-rule">
-<header class="top">
-  <span class="top__brand"><a href="/">Robinson Huron Treaty</a> · Analytics</span>
-  <span class="top__meta">{{ range.from }} to {{ range.to }}</span>
-</header>
-
-<main class="page">
-
-  <section>
-    <p class="eyebrow">Date range</p>
-    <form method="get" class="range-form">
-      <div class="field">
-        <label for="from">From</label>
-        <input type="date" id="from" name="from" value="{{ range.from }}">
-      </div>
-      <div class="field">
-        <label for="to">To</label>
-        <input type="date" id="to" name="to" value="{{ range.to }}">
-      </div>
-      <button type="submit">Apply</button>
-    </form>
+{% block admin_content %}
+  <section class="anokii-hero">
+    <h1>Analytics</h1>
+    <div class="mean">{{ range.from }} to {{ range.to }}</div>
+    <p>First-party, cookie-less analytics. No personal data stored; visitors are counted by a daily-rotating salted hash. No third party, no ad-tech.</p>
   </section>
 
-  <section>
-    <h2>Totals</h2>
-    <div class="totals">
-      <div class="stat">
-        <p class="stat__label">Pageviews</p>
-        <div class="stat__value">{{ report.totals.views }}</div>
-      </div>
-      <div class="stat">
-        <p class="stat__label">Visitors</p>
-        <div class="stat__value">{{ report.totals.visitors }}</div>
-      </div>
-    </div>
-  </section>
+  <form method="get" class="rng">
+    <div class="field"><label for="from">From</label><input type="date" id="from" name="from" value="{{ range.from }}"></div>
+    <div class="field"><label for="to">To</label><input type="date" id="to" name="to" value="{{ range.to }}"></div>
+    <button type="submit">Apply</button>
+  </form>
 
-  <section>
-    <h2>Pages</h2>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Path</th>
-            <th class="num">Views</th>
-            <th class="num">Visitors</th>
-            <th class="num">Avg scroll</th>
-            <th class="num">Avg time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in report.pages %}
-            <tr>
-              <td class="path">{{ row.path }}</td>
-              <td class="num">{{ row.views }}</td>
-              <td class="num">{{ row.visitors }}</td>
-              <td class="num">{{ row.avg_scroll }}%</td>
-              <td class="num">{{ (row.avg_dwell_ms / 1000)|round(1) }}s</td>
-            </tr>
-          {% else %}
-            <tr>
-              <td class="empty" colspan="5">No data for this range yet.</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </section>
+  <h2 class="anokii-h2">Totals</h2>
+  <div class="anokii-stats big">
+    <div class="anokii-stat"><b>Pageviews</b><span>{{ report.totals.views }}</span></div>
+    <div class="anokii-stat"><b>Visitors</b><span>{{ report.totals.visitors }}</span></div>
+  </div>
 
-  <section>
-    <div class="panels">
-
-      <div class="panel">
-        <h3>Top referrers</h3>
-        {% if report.referrers is empty %}
-          <p class="list__empty">Direct / none recorded</p>
+  <h2 class="anokii-h2">Pages</h2>
+  <div class="anokii-scroll anokii-card" style="padding:8px 14px">
+    <table class="anokii-table">
+      <thead><tr><th>Path</th><th>Views</th><th>Visitors</th></tr></thead>
+      <tbody>
+        {% for row in report.pages %}
+          <tr><td class="mono">{{ row.path }}</td><td>{{ row.views }}</td><td>{{ row.visitors }}</td></tr>
         {% else %}
-          <ul class="list">
-            {% for ref in report.referrers %}
-              <li>
-                <span class="list__name">{{ ref.host }}</span>
-                <span class="list__count">{{ ref.count }}</span>
-              </li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </div>
+          <tr><td class="empty" colspan="3">No data for this range yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
-      <div class="panel">
-        <h3>Devices</h3>
-        {% if report.devices is empty %}
-          <p class="list__empty">None recorded</p>
-        {% else %}
-          {% set device_max = 0 %}
+  <h2 class="anokii-h2">Referrers and devices</h2>
+  <div class="panels">
+    <div class="anokii-card">
+      <b style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--anokii-shell-accent)">Top referrers</b>
+      {% if report.referrers is empty %}
+        <p class="muted-i" style="margin-top:12px">Direct / none recorded</p>
+      {% else %}
+        <div style="margin-top:10px">
+          {% for ref in report.referrers %}<div class="li"><span class="n">{{ ref.host }}</span><span class="c">{{ ref.count }}</span></div>{% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <div class="anokii-card">
+      <b style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--anokii-shell-accent)">Devices</b>
+      {% if report.devices is empty %}
+        <p class="muted-i" style="margin-top:12px">None recorded</p>
+      {% else %}
+        {% set device_max = 0 %}
+        {% for d in report.devices %}{% if d.count > device_max %}{% set device_max = d.count %}{% endif %}{% endfor %}
+        <div style="margin-top:10px">
           {% for d in report.devices %}
-            {% if d.count > device_max %}{% set device_max = d.count %}{% endif %}
-          {% endfor %}
-          {% for d in report.devices %}
-            <div class="bar-row">
-              <div class="bar-row__head">
-                <span class="bar-row__name">{{ d.device }}</span>
-                <span class="bar-row__count">{{ d.count }}</span>
-              </div>
-              <div class="bar-track">
-                <span class="bar-fill" style="width: {{ device_max > 0 ? (d.count / device_max * 100)|round(1) : 0 }}%"></span>
-              </div>
+            <div class="bar">
+              <div class="h"><span class="n">{{ d.device }}</span><span class="c">{{ d.count }}</span></div>
+              <div class="track"><span class="fill" style="width: {{ device_max > 0 ? (d.count / device_max * 100)|round(1) : 0 }}%"></span></div>
             </div>
           {% endfor %}
-        {% endif %}
-      </div>
-
+        </div>
+      {% endif %}
     </div>
-  </section>
-
-</main>
-
-<footer>
-  <p>First-party, cookie-less analytics. No personal data stored; visitors are counted by a daily-rotating salted hash. No third party, no ad-tech.</p>
-</footer>
-
-</body>
-</html>
+  </div>
+{% endblock %}

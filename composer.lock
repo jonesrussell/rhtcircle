@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6f9d5cce00a7852d19a5549a9c420777",
+    "content-hash": "8d1bb82d6b91ada02e9f43aa4c696c83",
     "packages": [
         {
             "name": "defuse/php-encryption",
@@ -4214,16 +4214,16 @@
         },
         {
             "name": "waaseyaa/anokii",
-            "version": "v0.1.0-alpha.3",
+            "version": "v0.1.0-alpha.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/waaseyaa/anokii.git",
-                "reference": "1da5db07d61e7d778bbcef23e9ab429651e5df6d"
+                "reference": "358834ad607936cdb727c8e3dcbbf7aec754deca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/waaseyaa/anokii/zipball/1da5db07d61e7d778bbcef23e9ab429651e5df6d",
-                "reference": "1da5db07d61e7d778bbcef23e9ab429651e5df6d",
+                "url": "https://api.github.com/repos/waaseyaa/anokii/zipball/358834ad607936cdb727c8e3dcbbf7aec754deca",
+                "reference": "358834ad607936cdb727c8e3dcbbf7aec754deca",
                 "shasum": ""
             },
             "require": {
@@ -4252,9 +4252,9 @@
             "description": "Anokii, the first opinionated distribution built on Waaseyaa. Sovereign workspace for First Nations. OCAP-by-architecture. Working name pending language-keeper verification.",
             "support": {
                 "issues": "https://github.com/waaseyaa/anokii/issues",
-                "source": "https://github.com/waaseyaa/anokii/tree/v0.1.0-alpha.3"
+                "source": "https://github.com/waaseyaa/anokii/tree/v0.1.0-alpha.4"
             },
-            "time": "2026-06-22T17:52:59+00:00"
+            "time": "2026-06-22T20:45:32+00:00"
         },
         {
             "name": "waaseyaa/api",

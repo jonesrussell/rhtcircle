@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+use Anokii\Admin\AdminTemplates;
 use App\Content\MythEntries;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -53,6 +54,10 @@ final class View
         // myth(['key', ...]) selects entries by key; myth_all() returns them all.
         self::$twig->addFunction(new TwigFunction('myth', static fn (array $keys): array => MythEntries::select($keys)));
         self::$twig->addFunction(new TwigFunction('myth_all', static fn (): array => MythEntries::ordered()));
+
+        // Make the shared Anokii admin shell + templates (anokii/_shell.html.twig,
+        // anokii/admin/*.html.twig) resolvable. Appended, so app templates win.
+        AdminTemplates::register(self::$twig);
 
         return self::$twig;
     }
