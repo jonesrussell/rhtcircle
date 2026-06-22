@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace App\Provider;
 
+use App\Analytics\AnalyticsRecorder;
+use App\Analytics\AnalyticsReport;
+use App\Analytics\AnalyticsSchema;
+use App\Controller\AnalyticsDashboardController;
+use App\Controller\CollectController;
+use App\Controller\PageStatsController;
 use App\Controller\PetitionController;
 use App\Controller\SiteController;
 use App\Petition\PetitionRepository;
@@ -31,6 +37,10 @@ final class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         try {
+            // First-party analytics: ensure the append-only event table on the
+            // persistent file (same pin-to-file rationale as the petition below).
+            new AnalyticsSchema($this->persistentDatabase())->ensure();
+
             new PetitionSchema($this->persistentDatabase())->ensure();
             $repo = $this->petitionRepository();
             $repo->ensureCampaign(
@@ -203,6 +213,52 @@ final class AppServiceProvider extends ServiceProvider
                 ->controller(fn (Request $request, string $token) => $petition->remove($token))
                 ->allowAll()
                 ->methods('GET')
+                ->build(),
+        );
+
+        // First-party, self-hosted analytics. Fully first-party: a same-origin
+        // JSON beacon (wired site-wide in base.html.twig) writes to our own
+        // SQLite; the dashboard reads it back. No third party, no ad-tech, no
+        // cookies. Pinned to the persistent file for the same reason as the
+        // petition: resolve(DatabaseInterface) at route-build time can hand back
+        // an ephemeral connection, so beacon writes wired to it would never reach
+        // storage/waaseyaa.sqlite and the dashboard would read an empty DB.
+        $database = $this->persistentDatabase();
+        $secret = getenv('WAASEYAA_ANALYTICS_SECRET')
+            ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-analytics');
+        $report = new AnalyticsReport($database);
+        $collect = new CollectController(new AnalyticsRecorder($database, $secret));
+        $analytics = new AnalyticsDashboardController($report);
+        $pageStats = new PageStatsController($report);
+
+        $router->addRoute(
+            'analytics.collect',
+            RouteBuilder::create('/api/collect')
+                ->controller(fn (Request $request) => $collect->collect($request))
+                ->allowAll()
+                ->methods('POST')
+                ->build(),
+        );
+        $router->addRoute(
+            'analytics.page-stats',
+            RouteBuilder::create('/api/page-stats')
+                ->controller(fn (Request $request) => $pageStats->stats($request))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+        // Public at the app layer; gated in production by Caddy basic auth on
+        // /admin/* (see waaseyaa-infra). Carries a noindex meta tag regardless.
+        // priority(10) is required so this exact route wins over the framework
+        // admin SPA's catch-all (/admin/{path}, priority 0), which would
+        // otherwise serve its bundled Nuxt app here and shadow the dashboard.
+        $router->addRoute(
+            'admin.analytics',
+            RouteBuilder::create('/admin/analytics')
+                ->controller(fn (Request $request) => $analytics->index($request))
+                ->allowAll()
+                ->methods('GET')
+                ->priority(10)
                 ->build(),
         );
     }
