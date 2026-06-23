@@ -17,8 +17,11 @@
      third party, no cookies, respects Do Not Track. #}
   <script defer src="/js/rht-analytics.js"></script>
   {# Public Co-Intelligence launcher (the nav backbone). Streams from our own
-     /api/chat; the model key stays server-side. Injects its own UI into body. #}
-  <script defer src="/js/rht-anokii-chat.js"></script>
+     /api/chat; the model key stays server-side. Injects its own UI into body.
+     The ?v= cache-buster is bumped when the widget changes, so Cloudflare's
+     edge cache (static assets, max-age 4h) serves the new file immediately
+     instead of the stale one. The HTML page itself is uncached (DYNAMIC). #}
+  <script defer src="/js/rht-anokii-chat.js?v=20260623"></script>
   {% block head_styles %}{% endblock %}
   {% block head_extra %}{% endblock %}
 </head>
