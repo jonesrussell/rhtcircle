@@ -70,8 +70,8 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             $repo->setOnlineBase('records-request-support', 0);
             $repo->setPaperCount(
                 'records-request-support',
-                16,
-                'Includes signatures collected on paper and handed to the Sagamok band office (political office) on June 15, 2026.',
+                26,
+                'Includes signatures collected on paper and handed to the Sagamok band office (political office), most recently on June 22, 2026.',
             );
         } catch (\Throwable) {
             // Additive feature; never let it break page rendering.
