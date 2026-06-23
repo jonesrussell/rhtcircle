@@ -37,7 +37,7 @@
     return ['What is the Robinson Huron Treaty?', 'Mental health help near me', 'Find my nation'];
   }
 
-  var panel, log, input, vantageSel, sending = false;
+  var panel, log, input, vantageSel, backdrop, sending = false;
 
   function el(tag, attrs, text) {
     var e = document.createElement(tag);
@@ -54,12 +54,18 @@
     launch.addEventListener('click', toggle);
     document.body.appendChild(launch);
 
+    // Backdrop behind the mobile bottom-sheet; tap to dismiss. Hidden on desktop
+    // via CSS (display:none above the 520px breakpoint), so desktop is unaffected.
+    backdrop = el('div', { id: 'rht-chat-backdrop', hidden: 'hidden' });
+    backdrop.addEventListener('click', closePanel);
+    document.body.appendChild(backdrop);
+
     panel = el('section', { id: 'rht-chat', class: 'rht-chat', role: 'dialog', 'aria-label': 'Ask the Robinson Huron Treaty assistant', hidden: 'hidden' });
 
     var head = el('div', { class: 'rht-chat__head' });
     head.appendChild(el('p', { class: 'rht-chat__title' }, 'Aanii. Ask about the treaty and its 21 nations.'));
     var close = el('button', { type: 'button', class: 'rht-chat__close', 'aria-label': 'Close' }, '×');
-    close.addEventListener('click', toggle);
+    close.addEventListener('click', closePanel);
     head.appendChild(close);
     panel.appendChild(head);
 
@@ -100,15 +106,30 @@
     log.appendChild(wrap);
   }
 
-  function toggle() {
-    var open = panel.hasAttribute('hidden');
-    if (open) { panel.removeAttribute('hidden'); input && input.focus(); }
-    else { panel.setAttribute('hidden', 'hidden'); }
+  function openPanel() {
+    if (!panel.hasAttribute('hidden')) return;
+    panel.removeAttribute('hidden');
+    if (backdrop) backdrop.removeAttribute('hidden'); // only visible on mobile (CSS)
     var l = document.getElementById('rht-chat-launch');
-    if (l) l.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (l) l.setAttribute('aria-expanded', 'true');
+    if (input) input.focus();
+    document.addEventListener('keydown', onKeydown);
   }
 
-  function open() { if (panel.hasAttribute('hidden')) toggle(); }
+  function closePanel() {
+    if (panel.hasAttribute('hidden')) return;
+    panel.setAttribute('hidden', 'hidden');
+    if (backdrop) backdrop.setAttribute('hidden', 'hidden');
+    document.removeEventListener('keydown', onKeydown);
+    var l = document.getElementById('rht-chat-launch');
+    if (l) { l.setAttribute('aria-expanded', 'false'); l.focus(); }
+  }
+
+  function onKeydown(e) { if (e.key === 'Escape' || e.key === 'Esc') closePanel(); }
+
+  function toggle() { if (panel.hasAttribute('hidden')) openPanel(); else closePanel(); }
+
+  function open() { openPanel(); }
 
   function bubble(cls, text) {
     var b = el('div', { class: 'rht-chat__msg rht-chat__msg--' + cls }, text || '');
@@ -217,7 +238,18 @@
       '.rht-chat__form input{flex:1;padding:10px 12px;border:1px solid var(--rule-strong,#d6cdea);border-radius:999px;font:inherit;color:var(--ink,#221d33)}' +
       '.rht-chat__send{border:none;background:var(--magenta,#c41d8f);color:#fff;border-radius:999px;padding:10px 18px;font:600 14px/1 inherit;cursor:pointer}' +
       '.rht-chat__note{margin:0;padding:0 16px 14px;font-size:11.5px;line-height:1.45;color:var(--ink-3,#6f6688)}' +
-      '@media (max-width:520px){.rht-chat{right:0;bottom:0;width:100vw;max-height:85vh;border-radius:16px 16px 0 0}}';
+      // The panel sets display:flex, which overrides the [hidden] attribute's UA
+      // display:none. Restore it so hidden actually hides (fixes open-by-default
+      // and the close button) at every width.
+      '.rht-chat[hidden]{display:none}' +
+      // Dimming backdrop for the mobile bottom-sheet only; tap it to dismiss.
+      // Never shown on desktop (the corner panel needs no full-page dim).
+      '#rht-chat-backdrop{display:none}' +
+      '@media (max-width:520px){' +
+        '.rht-chat{right:0;bottom:0;width:100vw;max-height:85vh;border-radius:16px 16px 0 0}' +
+        '#rht-chat-backdrop{display:block;position:fixed;inset:0;z-index:50;background:rgba(34,29,51,.45)}' +
+        '#rht-chat-backdrop[hidden]{display:none}' +
+      '}';
     var style = el('style', { id: 'rht-chat-style' });
     style.textContent = css;
     document.head.appendChild(style);
