@@ -26,6 +26,19 @@
     ['sheshegwaning', 'Sheshegwaning'], ['wiikwemkoong', 'Wiikwemkoong'], ['zhiibaahaasing', 'Zhiibaahaasing']
   ];
 
+  // A shared link can preselect a vantage with ?ask=<slug> (slugs match NATIONS),
+  // so a corridor link lands the visitor on that nation's vantage. Unknown or
+  // missing values fall back to the default (treaty-wide). Read-only: it never
+  // sends a request or opens the panel on its own.
+  function vantageFromUrl() {
+    try {
+      var slug = (new URLSearchParams(location.search).get('ask') || '').toLowerCase().trim();
+      if (slug === '') return '';
+      for (var i = 0; i < NATIONS.length; i++) { if (NATIONS[i][0] === slug) return slug; }
+    } catch (e) { /* no URLSearchParams: keep the default */ }
+    return '';
+  }
+
   function suggestionsFor(path) {
     if (path.indexOf('/treaty') === 0) return ['What is the 2023 settlement?', 'Why was the annuity stuck at $4?', 'What did the Supreme Court decide?'];
     if (path.indexOf('/safety') === 0) return ['What crisis lines can I call?', 'What did Second Sons do here?', 'Where do I get naloxone?'];
@@ -73,6 +86,8 @@
     var vlabel = el('label', { for: 'rht-chat-vantage' }, 'Find your nation');
     vantageSel = el('select', { id: 'rht-chat-vantage' });
     NATIONS.forEach(function (n) { var o = el('option', { value: n[0] }, n[1]); vantageSel.appendChild(o); });
+    var preVantage = vantageFromUrl();
+    if (preVantage) vantageSel.value = preVantage;
     vrow.appendChild(vlabel);
     vrow.appendChild(vantageSel);
     panel.appendChild(vrow);
