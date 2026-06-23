@@ -68,9 +68,16 @@ final class GraphSeedData
             'massey' => 'Massey',
             'henvey-inlet' => 'Henvey Inlet',
         ];
+        $coords = TerritorySeedData::placeCoordinates();
         $rows = [];
         foreach ($names as $slug => $name) {
-            $rows[] = ['slug' => $slug, 'name' => $name, 'lat' => '', 'lng' => '', 'travel_note' => ''];
+            $c = $coords[$slug] ?? ['lat' => '', 'lng' => '', 'travel_note' => ''];
+            $rows[] = ['slug' => $slug, 'name' => $name] + $c;
+        }
+        // Corridor towns the territory seed introduces (Webbwood, Spanish), with
+        // their geocoded coordinates.
+        foreach (TerritorySeedData::newPlaces() as $row) {
+            $rows[] = $row;
         }
 
         return $rows;
@@ -83,7 +90,10 @@ final class GraphSeedData
      */
     public static function communities(): array
     {
-        $ns = self::REGION_NORTH_SHORE;
+        // The corridor towns (Massey, Webbwood, Spanish) join the North Shore
+        // catchment so the territory resources answer from Sagamok and the other
+        // North Shore nations' vantages.
+        $ns = array_values(array_unique([...self::REGION_NORTH_SHORE, ...TerritorySeedData::regionAdditions()]));
         $mn = self::REGION_MANITOULIN;
         $ng = self::REGION_NIPISSING_GB;
         $defs = [
@@ -282,7 +292,8 @@ final class GraphSeedData
             $rows[] = ['slug' => $slug, 'name' => $name, 'source_url' => $url];
         }
 
-        return $rows;
+        // The territory resource front doors (commerce and everyday life).
+        return array_merge($rows, TerritorySeedData::organizations());
     }
 
     /**
@@ -342,7 +353,9 @@ final class GraphSeedData
             $rows[] = ['slug' => $slug, 'name' => $name, 'provided_by' => $providedBy, 'located_at' => $locatedAt, 'has_topic' => $topic, 'source_url' => $sourceUrl];
         }
 
-        return $rows;
+        // The territory resources (commerce and everyday life) and the corridor
+        // banking gap, modelled as services so they place- and topic-rank.
+        return array_merge($rows, TerritorySeedData::services());
     }
 
     /**
@@ -414,6 +427,7 @@ final class GraphSeedData
             ];
         }
 
-        return $rows;
+        // The territory resource grounding chunks and the community-reported gaps.
+        return array_merge($rows, TerritorySeedData::curatedChunks());
     }
 }
