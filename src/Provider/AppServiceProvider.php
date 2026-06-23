@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Provider;
 
+use Anokii\Access\AdminRoles;
+use Anokii\Admin\CreateAdminHandler;
+use Anokii\Dashboard\AdminLoginController;
+use Anokii\Dashboard\LoginBrand;
 use App\Admin\AdminController;
-use App\Admin\AdminRoles;
 use App\Analytics\AnalyticsRecorder;
 use App\Analytics\AnalyticsReport;
 use App\Analytics\AnalyticsSchema;
-use App\Command\CreateAdminCommand;
 use App\Controller\AnalyticsDashboardController;
 use App\Controller\CollectController;
 use App\Controller\PageStatsController;
@@ -308,6 +310,26 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         // at /admin/{path} (priority 0).
         $admin = new AdminController($entityTypeManager, $database, $report);
 
+        // Login surface from the shared package (Anokii\Dashboard\AdminLoginController),
+        // branded for rhtcircle and gating on the package admin permission. Replaces
+        // the per-app login flow that used to live in AdminController.
+        $login = new AdminLoginController(
+            $entityTypeManager,
+            '/admin/login',
+            '/admin/anokii',
+            AdminRoles::DEFAULT_PERMISSION,
+            new LoginBrand(
+                title: 'Admin sign in · Robinson Huron Treaty',
+                subtitle: 'Administrator access for the Robinson Huron Treaty hub.',
+                accent: '#4f2fb0',
+                accentDeep: '#38217f',
+                link: '#c41d8f',
+                backHref: '/',
+                backLabel: 'Back to the public site',
+            ),
+            '/admin',
+        );
+
         $adminGet = static fn (string $name, string $path, callable $c) => $router->addRoute(
             $name,
             RouteBuilder::create($path)->controller($c)->allowAll()->methods('GET')->priority(100)->build(),
@@ -317,9 +339,9 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             RouteBuilder::create($path)->controller($c)->allowAll()->methods('POST')->priority(100)->build(),
         );
 
-        $adminGet('admin.login', '/admin/login', fn (Request $request) => $admin->loginForm($request));
-        $adminPost('admin.login.post', '/admin/login', fn (Request $request) => $admin->loginSubmit($request));
-        $adminGet('admin.logout', '/admin/logout', fn (Request $request) => $admin->logout($request));
+        $adminGet('admin.login', '/admin/login', fn (Request $request) => $login->loginForm($request));
+        $adminPost('admin.login.post', '/admin/login', fn (Request $request) => $login->loginSubmit($request));
+        $adminGet('admin.logout', '/admin/logout', fn (Request $request) => $login->logout($request));
         // Anokii admin, rendered through the shared package shell. All under
         // /admin/anokii so the canonical module paths match Anokii\Admin\AdminModules.
         $adminGet('admin.anokii', '/admin/anokii', fn (Request $request) => $admin->home($request));
@@ -366,7 +388,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                     return 1;
                 }
 
-                return new CreateAdminCommand($etm)->run($io);
+                return new CreateAdminHandler($etm, new AdminRoles(), 'RHTCIRCLE_ADMIN_PASSWORD', AdminRoles::ROLE_ADMIN, '/admin/login')->run($io);
             },
         );
     }
