@@ -1,0 +1,15 @@
+{#
+  key_facts: an at-a-glance facts grid. Context: { facts } where each is
+    { label, value, note (optional) }
+  Items with an empty value are skipped. value/note are plain text (escaped).
+#}
+<dl class="kfacts">
+  {% for f in facts %}
+    {% if f.value %}
+      <div class="kfacts__item">
+        <dt class="kfacts__label">{{ f.label }}</dt>
+        <dd class="kfacts__value">{{ f.value }}{% if f.note is defined and f.note %}<span class="kfacts__note">{{ f.note }}</span>{% endif %}</dd>
+      </div>
+    {% endif %}
+  {% endfor %}
+</dl>

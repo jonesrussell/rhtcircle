@@ -1,6 +1,7 @@
-{# Member-compiled / unofficial banner + correction link. Rendered by the shared
-   community template AND the bespoke Sagamok page, so every per-nation page
-   carries it from one place. Expects `nation`. #}
-<div class="card card--coral nation-banner">
-  <p><strong>Member-compiled and unofficial.</strong> This page is a member-compiled summary drawn from public sources. It is not an official communication of {{ nation.name }} or its Chief and Council. Membership, governance, and population details change over time, so the nation's own website is the authority. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.</p>
-</div>
+{# Member-compiled / unofficial banner + correction link, as a caveat notice.
+   Rendered by the shared community template AND the bespoke Sagamok page, so
+   every per-nation page carries it from one place. Expects `nation`. #}
+{% set banner_body %}
+  <strong>Member-compiled and unofficial.</strong> This page is a member-compiled summary drawn from public sources. It is not an official communication of {{ nation.name }} or its Chief and Council. Membership, governance, and population details change over time, so the nation's own website is the authority. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.
+{% endset %}
+{% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'About this page' } only %}

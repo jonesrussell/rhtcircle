@@ -10,5 +10,5 @@
     <h2 class="cta__h" id="{{ cid }}-h">{{ heading }}</h2>
     <p class="cta__line">{{ line }}</p>
   </div>
-  <a class="cta__btn" href="{{ href }}">{{ button_label }}</a>
+  <a class="cta__btn" href="{{ href }}"{% if external is defined and external %} target="_blank" rel="noopener"{% endif %}>{{ button_label }}</a>
 </aside>

@@ -375,3 +375,37 @@ li { margin: 0 0 9px; }
   --statement-bg: #2b2147;
   --statement-fg: #f7f4ff;
 }
+
+/* ==========================================================================
+   Reusable components (templates/components/*). Shared across pages so the
+   nation, land, and resources templates render them consistently.
+   ========================================================================== */
+
+/* region_chip */
+.rc-chip { display: inline-block; flex: none; font-size: 11px; font-weight: 600; letter-spacing: 0.03em; color: var(--indigo); background: var(--paper-3, #ece7f7); border-radius: 999px; padding: 3px 9px; white-space: nowrap; }
+.nation-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+
+/* cta_callout */
+.cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; background: var(--paper-2); border: 1px solid var(--rule); border-left: 5px solid var(--magenta); border-radius: 14px; padding: 20px 24px; margin: 0 0 var(--gap-5, 20px); }
+.cta__body { flex: 1 1 320px; }
+.cta__h { font-family: var(--serif); font-size: clamp(20px, 3vw, 26px); font-weight: 600; line-height: 1.15; color: var(--indigo-deep); margin: 0 0 6px; }
+.cta__line { font-size: 15px; line-height: 1.5; color: var(--ink-2); margin: 0; max-width: 70ch; }
+.cta__btn { flex: none; font-family: var(--sans); font-size: 15px; font-weight: 700; color: #fff; background: var(--indigo); border-radius: 999px; padding: 12px 24px; text-decoration: none; white-space: nowrap; }
+.cta__btn:hover { background: var(--indigo-deep); }
+.cta__btn:focus-visible { outline: 3px solid var(--magenta); outline-offset: 2px; }
+
+/* key_facts (at-a-glance grid) */
+.kfacts { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 0 0 var(--gap-5, 20px); padding: 0; }
+@media (min-width: 560px) { .kfacts { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 920px) { .kfacts { grid-template-columns: repeat(3, 1fr); } }
+.kfacts__item { background: var(--paper-2); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; }
+.kfacts__label { margin: 0 0 4px; font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+.kfacts__value { margin: 0; font-size: 15px; line-height: 1.45; color: var(--ink); }
+.kfacts__note { display: block; margin-top: 6px; font-size: 12.5px; line-height: 1.45; color: var(--ink-3); }
+
+/* notice (note / caveat) */
+.notice { margin: 0 0 var(--gap-5, 20px); max-width: 74ch; border: 1px solid var(--rule); border-radius: 12px; padding: 14px 18px; font-size: 14.5px; line-height: 1.6; color: var(--ink-2); background: var(--paper-2); }
+.notice p { margin: 0; }
+.notice strong { color: var(--ink); }
+.notice--caveat { border-left: 4px solid var(--coral); }
+

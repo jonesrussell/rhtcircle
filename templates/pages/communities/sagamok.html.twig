@@ -11,6 +11,10 @@
     <p class="eyebrow">Communities · {{ nation.region_name }}</p>
     <h1>{{ nation.name }}.</h1>
     <p class="lead">A member-compiled profile of Sagamok, and the hub for the parts of this resource that touch the community: the shared transparency standard applied here, the records request, how the Nation is organized, and the land decisions on Sagamok territory.</p>
+    <p class="nation-chips">
+      {% include 'components/region_chip.html.twig' with { region: nation.sub_region } only %}
+      {% include 'components/region_chip.html.twig' with { region: 'Near ' ~ nation.nearest_town } only %}
+    </p>
   </div>
 </section>
 {% endblock %}
@@ -18,22 +22,20 @@
 {% block content %}
   {% include 'partials/nation_banner.html.twig' %}
 
-  <h2>Profile</h2>
+  {% include 'components/section_heading.html.twig' with { title: 'Profile' } only %}
   {% include 'partials/nation_facts.html.twig' %}
 
-  <h2>History and treaty relationship</h2>
+  {% include 'components/section_heading.html.twig' with { title: 'History and treaty relationship' } only %}
   {{ nation.history|raw }}
 
   {% if nation.note %}
-  <div class="card">
-    <p class="muted"><strong>A note on the figures.</strong> {{ nation.note }}</p>
-  </div>
+    {% set note_body %}<strong>A note on the figures.</strong> {{ nation.note }}{% endset %}
+    {% include 'components/notice.html.twig' with { body: note_body } only %}
   {% endif %}
 
   {% include 'partials/nation_official.html.twig' %}
 
-  <h2>Member transparency resources for Sagamok</h2>
-  <p>Sagamok is where the shared standard became a worked example. The community-level questions any member can put to their own Chief and Council live in <a href="/standard">the shared standard</a>. The pages below are Sagamok members putting that standard into practice. They are the work of members, not of Chief and Council.</p>
+  {% include 'components/section_heading.html.twig' with { title: 'Member transparency resources for Sagamok', note: 'Sagamok is where the shared standard became a worked example. The community-level questions any member can put to their own Chief and Council live in the shared standard. The pages below are Sagamok members putting that standard into practice. They are the work of members, not of Chief and Council.' } only %}
   <ul class="community-grid">
     <li><a class="community-card" href="/standard/records-request">
       <p class="name">The records request</p>
@@ -49,8 +51,7 @@
     </a></li>
   </ul>
 
-  <h2>On Sagamok territory</h2>
-  <p>Decisions about the land and its resources reach members here too. They live in <a href="/land">the land section</a>, which covers resource and energy decisions and member wellbeing across the treaty, not under any one community.</p>
+  {% include 'components/section_heading.html.twig' with { title: 'On Sagamok territory', note: 'Decisions about the land and its resources reach members here too. They live in the land section, which covers resource and energy decisions and member wellbeing across the treaty, not under any one community.' } only %}
   <ul class="community-grid">
     <li><a class="community-card" href="/land/massey-solar-project">
       <p class="name">The Massey solar project</p>
@@ -71,6 +72,6 @@
     <a class="btn btn--alt" href="/circle">Be a local contact</a>
   </div>
 
-  <h2>Sources</h2>
+  {% include 'components/section_heading.html.twig' with { title: 'Sources' } only %}
   {% include 'partials/nation_sources.html.twig' %}
 {% endblock %}

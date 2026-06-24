@@ -1,10 +1,17 @@
-{# Official-website link with a "leaving our site" courtesy. Expects `nation`. #}
-<div class="card">
-  <h3>The nation's own website</h3>
-  {% if nation.website %}
-  <p>For current Chief and Council, membership, programs, and contacts, use the nation's own website, which is the authority: <a href="{{ nation.website }}" target="_blank" rel="noopener">{{ nation.website_label }}</a>.</p>
+{# The nation's own website, as a clear link-out CTA (or a note when there is
+   no site yet). Expects `nation`. The "leaving our site" courtesy is kept. #}
+{% if nation.website %}
+  {% set line %}For current Chief and Council, membership, programs, and contacts, use the nation's own website, which is the authority.{% endset %}
+  {% include 'components/cta_callout.html.twig' with {
+    id: 'nation-site',
+    heading: "The nation's own website",
+    line: line,
+    button_label: 'Visit ' ~ nation.website_label,
+    href: nation.website,
+    external: true,
+  } only %}
   <p class="muted">You are leaving this member resource. That link opens {{ nation.name }}'s own website, which we do not run or control.</p>
-  {% else %}
-  <p>{{ nation.website_note }}</p>
-  {% endif %}
-</div>
+{% else %}
+  {% set body %}<strong>The nation's own website.</strong> {{ nation.website_note }}{% endset %}
+  {% include 'components/notice.html.twig' with { body: body } only %}
+{% endif %}

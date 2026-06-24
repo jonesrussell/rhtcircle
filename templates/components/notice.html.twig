@@ -1,0 +1,9 @@
+{#
+  notice: a set-off note or caveat. Context:
+    { body (raw HTML, usually captured with {% set %}), variant ('note'|'caveat'),
+      label (optional accessible label) }
+  Use 'caveat' for the coral, attention-drawing variant; 'note' is neutral.
+#}
+<div class="notice notice--{{ variant|default('note') }}"{% if label is defined and label %} role="note" aria-label="{{ label }}"{% endif %}>
+  {{ body|raw }}
+</div>
