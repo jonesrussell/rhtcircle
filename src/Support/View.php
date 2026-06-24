@@ -97,8 +97,13 @@ final class View
         // template always recompiles. A cache on the persistent volume, combined
         // with the image's opcache validate_timestamps=0, would otherwise serve a
         // stale compiled template after a deploy.
+        // Require the dir to be writable, not merely present: a maintenance task
+        // run as a different user (e.g. app:ingest under root) can leave a cache
+        // dir the php-fpm worker cannot write into, which would otherwise turn
+        // every page into a 500. When it is not writable we render uncached.
         $cacheDir = $root . '/var/twig-cache';
-        $cache = is_dir($cacheDir) || @mkdir($cacheDir, 0775, true) ? $cacheDir : false;
+        $cacheReady = is_dir($cacheDir) || @mkdir($cacheDir, 0775, true);
+        $cache = $cacheReady && is_writable($cacheDir) ? $cacheDir : false;
 
         self::$twig = new Environment(
             new FilesystemLoader($root . '/templates'),
