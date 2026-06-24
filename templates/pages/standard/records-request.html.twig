@@ -94,6 +94,13 @@
     .rr-supporters h3 { font-family: var(--font-sans); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 10px; border: none; padding: 0; }
     .rr-supporters ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
     .rr-supporters li { font-size: 13px; color: var(--ink-2); background: var(--paper-2); border: 1px solid var(--rule); border-radius: 999px; padding: 4px 12px; }
+
+    /* Campaign illustration (an AI illustration standing in for the signature
+       count, not a photograph). Responsive with no layout shift: the img's
+       width/height attributes reserve the aspect ratio while it scales. */
+    .rr-illus { margin: var(--gap-5) 0; text-align: center; }
+    .rr-illus img { display: block; width: 100%; max-width: 760px; height: auto; margin: 0 auto; border-radius: var(--radius-lg); border: 1px solid var(--rule); }
+    .rr-illus figcaption { margin: 10px auto 0; max-width: 640px; font-family: var(--font-sans); font-size: 13px; line-height: 1.5; color: var(--ink-3); }
   </style>
 {% endblock %}
 
@@ -105,6 +112,12 @@
   <p style="margin: 0 0 var(--gap-5); font-family: var(--font-sans); font-size: 14px; font-weight: 600; color: var(--accent-deep);">Status: open and growing. The records request was submitted to Chief and Council, through the Council Secretariat, on June 10, 2026, with a response requested within 30 days. It stays open: members and supporters can still add their names, and updated signature lists will continue to be provided to Council.</p>
 
   <p class="rr-statement">We, the undersigned members of Sagamok Anishnawbek, support the records request submitted to Chief and Council. We want clear answers, on the record, to one question: when the Nation invests in businesses and ventures, what are the benefits to the membership, and who is being served? We ask Council to provide the records and respond to the membership.</p>
+
+  <figure class="rr-illus">
+    <img src="/images/records-request-illustration.png" width="1264" height="842" loading="lazy" decoding="async"
+         alt="Illustration of community members outside the Sagamok Anishnawbek Multi-Educational Centre holding Release Our Records signs, one figure for each signature collected.">
+    <figcaption>Illustration: 61 people, one for every member who has signed so far.</figcaption>
+  </figure>
 
   <section class="rr-card" data-rr aria-labelledby="rr-h">
     <h2 id="rr-h">Add your name</h2>
