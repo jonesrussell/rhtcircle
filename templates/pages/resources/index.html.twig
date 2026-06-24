@@ -52,6 +52,19 @@
     .rc-chip { flex: none; font-size: 11px; font-weight: 600; letter-spacing: 0.03em; color: var(--indigo); background: var(--paper-3, #ece7f7); border-radius: 999px; padding: 3px 9px; white-space: nowrap; }
 
     .rnote { max-width: 70ch; }
+
+    /* Featured call-to-action callout (above the grid). */
+    .cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px;
+      background: var(--paper-2); border: 1px solid var(--rule); border-left: 5px solid var(--magenta);
+      border-radius: 14px; padding: 20px 24px; margin: 0 0 var(--gap-5, 20px); }
+    .cta__body { flex: 1 1 320px; }
+    .cta__h { font-family: var(--serif); font-size: clamp(20px, 3vw, 26px); font-weight: 600; line-height: 1.15; color: var(--indigo-deep); margin: 0 0 6px; }
+    .cta__line { font-size: 15px; line-height: 1.5; color: var(--ink-2); margin: 0; max-width: 70ch; }
+    .cta__btn { flex: none; font-family: var(--sans); font-size: 15px; font-weight: 700; color: #fff; background: var(--indigo);
+      border-radius: 999px; padding: 12px 24px; text-decoration: none; white-space: nowrap; }
+    .cta__btn:hover { background: var(--indigo-deep); }
+    .cta__btn:focus-visible { outline: 3px solid var(--magenta); outline-offset: 2px; }
+    .rsection__note { max-width: 70ch; margin: 12px 0 0; }
   </style>
 {% endblock %}
 
@@ -68,16 +81,25 @@
 {% block content %}
   {% include 'components/crisis_banner.html.twig' %}
 
+  {% include 'components/cta_callout.html.twig' with {
+    id: 'paying-for-school',
+    heading: 'Paying for school',
+    line: 'Funding for college, university, and the trades: band funding, OSAP, Indspire, ISET training, apprenticeship supports, and the federal bursary search. Most can be combined.',
+    button_label: 'See the funding paths',
+    href: '/resources/paying-for-school',
+  } only %}
+
   {% include 'components/region_filter.html.twig' with { regions: regions, categories: categories } only %}
 
   {% for g in groups %}
     <section class="rsection" data-topic="{{ g.topic != '' ? g.topic : 'friendship-centres' }}">
       {% include 'components/section_heading.html.twig' with { title: g.label } only %}
       {% include 'components/resource_grid.html.twig' with { cards: g.cards } only %}
+      {% if g.topic == 'education-youth' %}
+        <p class="muted rsection__note">For the full list of ways to pay for college, university, and the trades, see <a href="/resources/paying-for-school">Paying for school</a>.</p>
+      {% endif %}
     </section>
   {% endfor %}
-
-  <p class="muted rnote">For how to pay for college, university, or the trades, see <a href="/resources/paying-for-school">Paying for school</a>.</p>
 
   <div class="card card--coral rnote">
     <p class="muted">Where the Anishinabek Police Service or UCCM Anishnaabe Police do not serve, the OPP non-emergency line is 1-888-310-1122. For an emergency, always call 911. The Anishinabek Nation and the Chiefs of Ontario are Ontario-wide bodies, not Robinson Huron Treaty organizations.</p>

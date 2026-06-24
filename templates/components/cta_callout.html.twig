@@ -1,0 +1,14 @@
+{#
+  cta_callout: a visually distinct call to action. Context:
+    { heading, line, button_label, href, id (optional, for the label association) }
+  Renders a real link styled as a button, with the region/aside labelled by its
+  heading for assistive tech.
+#}
+{% set cid = 'cta-' ~ (id|default('x')) %}
+<aside class="cta" aria-labelledby="{{ cid }}-h">
+  <div class="cta__body">
+    <h2 class="cta__h" id="{{ cid }}-h">{{ heading }}</h2>
+    <p class="cta__line">{{ line }}</p>
+  </div>
+  <a class="cta__btn" href="{{ href }}">{{ button_label }}</a>
+</aside>
