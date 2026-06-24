@@ -116,6 +116,11 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
     {
         $controller = new SiteController();
         $petition = new PetitionController($this->petitionRepository());
+        // Machine-readable Markdown layer (advertised in /llms.txt): pages honor
+        // ?format=md / Accept: text/markdown, and the graph entities are fetchable
+        // as Markdown. Reads the persistent file (route-build resolve() can be
+        // ephemeral), same rationale as the petition/analytics wiring below.
+        $md = new \App\Support\MarkdownExporter($this->persistentDatabase());
 
         $pages = [
             'home' => ['/', 'pages/home.html.twig'],
@@ -170,7 +175,9 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             $router->addRoute(
                 $name,
                 RouteBuilder::create($path)
-                    ->controller(fn () => $controller->page($template))
+                    ->controller(fn (Request $request) => $md->wantsMarkdown($request)
+                        ? $md->pageResponse($path)
+                        : $controller->page($template))
                     ->allowAll()
                     ->methods('GET')
                     ->build(),
@@ -185,7 +192,9 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             $router->addRoute(
                 'land-project-' . $slug,
                 RouteBuilder::create('/land/' . $slug)
-                    ->controller(fn () => $controller->landProject($slug))
+                    ->controller(fn (Request $request) => $md->wantsMarkdown($request)
+                        ? $md->pageResponse('/land/' . $slug)
+                        : $controller->landProject($slug))
                     ->allowAll()
                     ->methods('GET')
                     ->build(),
@@ -199,7 +208,9 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         $router->addRoute(
             'communities',
             RouteBuilder::create('/communities')
-                ->controller(fn () => $controller->communitiesIndex())
+                ->controller(fn (Request $request) => $md->wantsMarkdown($request)
+                    ? $md->pageResponse('/communities')
+                    : $controller->communitiesIndex())
                 ->allowAll()
                 ->methods('GET')
                 ->build(),
@@ -207,9 +218,38 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         $router->addRoute(
             'community-profile',
             RouteBuilder::create('/communities/{slug}')
-                ->controller(fn (Request $request, string $slug) => $controller->community($slug))
+                ->controller(fn (Request $request, string $slug) => $md->wantsMarkdown($request)
+                    ? $md->pageResponse('/communities/' . $slug)
+                    : $controller->community($slug))
                 ->allowAll()
                 ->methods('GET')
+                ->build(),
+        );
+
+        // Machine-readable entity surface: /{type}/{slug-or-id} returns Markdown
+        // for the graph entities the chat and llms.txt reference. These paths have
+        // no HTML page in this app, so they serve Markdown regardless of format.
+        foreach (['place', 'community', 'organization', 'service', 'project', 'topic', 'doc_chunk'] as $etype) {
+            $router->addRoute(
+                'md.entity.' . $etype,
+                RouteBuilder::create('/' . $etype . '/{key}')
+                    ->controller(fn (Request $request, string $key) => $md->entityResponse($etype, $key))
+                    ->allowAll()
+                    ->methods('GET')
+                    ->build(),
+            );
+        }
+
+        // Real /llms.txt, generated from this site's pages and primary entities.
+        // priority(20) beats the framework's generic seo.llms_txt (priority 10),
+        // whose placeholder topics ("place 1") linked to unrouted /{type}/{id}.
+        $router->addRoute(
+            'app.llms_txt',
+            RouteBuilder::create('/llms.txt')
+                ->controller(fn () => $md->llmsTxtResponse())
+                ->allowAll()
+                ->methods('GET')
+                ->priority(20)
                 ->build(),
         );
 
