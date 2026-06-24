@@ -1,0 +1,16 @@
+{#
+  service_card: one front-door service. Context: { card } with
+  name, region, region_slug, blurb, phone, website, lat, lng.
+  data-* attributes drive the region filter and the "Show nearest" sort.
+#}
+<article class="rcard" data-region="{{ card.region_slug }}" data-lat="{{ card.lat }}" data-lng="{{ card.lng }}">
+  <div class="rcard__top">
+    <h3 class="rcard__name">{{ card.name }}</h3>
+    {% include 'components/region_chip.html.twig' with { region: card.region } only %}
+  </div>
+  {% if card.blurb %}<p class="rcard__blurb">{{ card.blurb }}</p>{% endif %}
+  <p class="rcard__links">
+    {% if card.phone %}<a class="rcard__tel" href="tel:{{ card.phone|replace({' ': ''}) }}">Call {{ card.phone }}</a>{% endif %}
+    {% if card.website %}<a class="rcard__site" href="{{ card.website }}" target="_blank" rel="noopener">Visit website</a>{% endif %}
+  </p>
+</article>

@@ -1,0 +1,5 @@
+{# section_heading: Context: { title, id (optional), note (optional) }. #}
+<div class="rsection__head">
+  <h2{% if id is defined and id %} id="{{ id }}"{% endif %}>{{ title }}</h2>
+  {% if note is defined and note %}<p class="muted">{{ note }}</p>{% endif %}
+</div>

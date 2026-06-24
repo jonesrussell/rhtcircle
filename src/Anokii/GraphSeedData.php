@@ -68,7 +68,16 @@ final class GraphSeedData
             'massey' => 'Massey',
             'henvey-inlet' => 'Henvey Inlet',
         ];
-        $coords = TerritorySeedData::placeCoordinates();
+        // Public community centroids for the front-door service places, geocoded
+        // from the community's location. Distance-ranking signal only (used by the
+        // resources directory's "Show nearest"), never shown as a travel figure.
+        $frontDoorCoords = [
+            'serpent-river' => ['lat' => '46.1983', 'lng' => '-82.5534', 'travel_note' => ''],
+            'aundeck-omni-kaning' => ['lat' => '45.9181', 'lng' => '-81.9978', 'travel_note' => ''],
+            'mchigeeng' => ['lat' => '45.7931', 'lng' => '-82.1303', 'travel_note' => ''],
+            'north-bay' => ['lat' => '46.3091', 'lng' => '-79.4608', 'travel_note' => ''],
+        ];
+        $coords = TerritorySeedData::placeCoordinates() + $frontDoorCoords;
         $rows = [];
         foreach ($names as $slug => $name) {
             $c = $coords[$slug] ?? ['lat' => '', 'lng' => '', 'travel_note' => ''];
@@ -265,7 +274,7 @@ final class GraphSeedData
             ['waawiindamaagewin', 'Robinson Huron Waawiindamaagewin', 'https://www.waawiindamaagewin.com/'],
             ['anishinabek-police', 'Anishinabek Police Service', 'https://www.anishinabekpolice.ca/'],
             ['uccm-police', 'UCCM Anishnaabe Police Service', 'https://www.uccmpolice.com/'],
-            ['wikwemikong-police', 'Wikwemikong Tribal Police Service', ''],
+            ['wikwemikong-police', 'Wikwemikong Tribal Police Service', 'https://wtps.ca/'],
             ['hope-for-wellness', 'Hope for Wellness Help Line', 'https://www.hopeforwellness.ca/'],
             ['talk4healing', 'Talk4Healing', 'https://www.talk4healing.com/'],
             ['crisis-988', '988 Suicide Crisis Helpline', 'https://988.ca/'],
@@ -328,7 +337,7 @@ final class GraphSeedData
             // Policing
             ['anishinabek-police-svc', 'Anishinabek Police Service', 'anishinabek-police', '', 'community-safety', 'https://www.anishinabekpolice.ca/'],
             ['uccm-police-svc', 'UCCM Anishnaabe Police Service', 'uccm-police', 'mchigeeng', 'community-safety', 'https://www.uccmpolice.com/'],
-            ['wikwemikong-police-svc', 'Wikwemikong Tribal Police Service', 'wikwemikong-police', 'wiikwemkoong', 'community-safety', ''],
+            ['wikwemikong-police-svc', 'Wikwemikong Tribal Police Service', 'wikwemikong-police', 'wiikwemkoong', 'community-safety', 'https://wtps.ca/'],
             // Legal and family
             ['legal-aid-indigenous', 'Legal Aid Ontario Indigenous services', 'legal-aid-ontario', '', 'legal-aid', 'https://www.legalaid.on.ca/'],
             ['aboriginal-legal', 'Aboriginal Legal Services (Gladue)', 'aboriginal-legal-services', '', 'legal-aid', 'https://www.aboriginallegal.ca/'],
@@ -390,7 +399,7 @@ final class GraphSeedData
             ['uccmm-employment', 'United Chiefs and Councils of Mnidoo Mnising', 'Employment and training, Manitoulin', 'UCCMM delivers Mnidoo Mnising Employment and Training for its member Manitoulin communities. See uccmm.ca for the employment and training office.'],
             ['anishinabek-police-svc', 'Anishinabek Police Service', 'First Nations policing (non-emergency)', 'The Anishinabek Police Service polices several Robinson Huron Treaty communities, including Garden River, Sagamok, Nipissing, Wahnapitae, Dokis, Wasauksing, Shawanaga, and Magnetawan. The non-emergency line is 1-888-310-1122, and the service is at anishinabekpolice.ca. For an emergency, always call 911.'],
             ['uccm-police-svc', 'UCCM Anishnaabe Police Service', 'First Nations policing, Manitoulin (non-emergency)', 'The UCCM Anishnaabe Police Service polices the Manitoulin UCCMM First Nations. The non-emergency line is 705-377-7135 or 1-888-377-7135, and the service is at uccmpolice.com. For an emergency, always call 911.'],
-            ['wikwemikong-police-svc', 'Wikwemikong Tribal Police Service', 'First Nations policing, Wiikwemkoong', 'The Wikwemikong Tribal Police Service serves Wiikwemkoong Unceded Territory. For an emergency, always call 911.'],
+            ['wikwemikong-police-svc', 'Wikwemikong Tribal Police Service', 'First Nations policing, Wiikwemkoong', 'The Wikwemikong Tribal Police Service serves Wiikwemkoong Unceded Territory. The non-emergency line is 705-370-3141 or toll-free 1-866-684-1136, and the service is at wtps.ca. For an emergency, always call 911.'],
             ['legal-aid-indigenous', 'Legal Aid Ontario', 'Legal aid, Indigenous services', 'Legal Aid Ontario provides legal help to people with low incomes and runs Indigenous services. Call 1-800-668-8258 or see legalaid.on.ca.'],
             ['aboriginal-legal', 'Aboriginal Legal Services', 'Gladue and legal support', 'Aboriginal Legal Services provides Gladue services and legal support to Indigenous people across Ontario. Call 1-844-633-2886 or see aboriginallegal.ca.'],
             ['nogdawindamin-svc', 'Nogdawindamin Family and Community Services', 'Indigenous child and family services, North Shore', 'Nogdawindamin Family and Community Services is the Indigenous child and family services agency for the North Shore First Nations, focused on prevention and keeping children connected to family and community. Call 1-800-465-0999 or see nog.ca.'],

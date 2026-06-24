@@ -1,0 +1,24 @@
+{#
+  region_filter: sticky filter bar. Context: { regions, categories } (each a list
+  of { slug, label }). Labelled controls; the "Show nearest" button requests
+  geolocation only when tapped (handled by the page script).
+#}
+<form class="rfilter" aria-label="Filter the directory" data-rfilter onsubmit="return false">
+  <div class="rfilter__group">
+    <label class="rfilter__label" for="rf-region">Your area</label>
+    <select class="rfilter__select" id="rf-region" data-rf-region>
+      <option value="">All areas</option>
+      {% for r in regions %}<option value="{{ r.slug }}">{{ r.label }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="rfilter__group">
+    <label class="rfilter__label" for="rf-cat">Category</label>
+    <select class="rfilter__select" id="rf-cat" data-rf-cat>
+      <option value="">All categories</option>
+      {% for c in categories %}<option value="{{ c.slug }}">{{ c.label }}</option>{% endfor %}
+    </select>
+  </div>
+  <button class="rfilter__near" type="button" data-rf-near aria-describedby="rf-near-note">Show nearest</button>
+  <p class="rfilter__note" id="rf-near-note">Optional. This asks your device for your location once, ranks services by distance in your browser, and stores nothing.</p>
+  <p class="rfilter__status" data-rf-status role="status" aria-live="polite"></p>
+</form>

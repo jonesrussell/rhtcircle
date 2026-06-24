@@ -2,92 +2,148 @@
 {% set nav = 'resources' %}
 
 {#
-  RESOURCES / SCOPE: this directory is RHT-scoped. Hard data-hygiene rules from the
-  research (research/resources-directory.md): link the Sault friendship centre only
-  at ssmifc.ca (the .com is a hijacked spam domain); do NOT present NAN Hope,
-  Nishnawbe-Aski Legal Services, or AETS as RHT (Treaty 9 / Robinson-Superior);
-  label Anishinabek Nation and Chiefs of Ontario as Ontario-wide. Phone numbers
-  here are the verified set; re-verify at publish. No private individuals.
+  RESOURCES / SCOPE: this directory is RHT-scoped and renders from the Anokii
+  graph (front-door services only), so it stays in sync with the Ask box and
+  inherits Place coordinates. Data hygiene from research/resources-directory.md
+  is carried in the graph: the Sault friendship centre links to ssmifc.ca only;
+  NAN Hope / Nishnawbe-Aski Legal Services / AETS are not presented as RHT;
+  Anishinabek Nation and Chiefs of Ontario are Ontario-wide, noted below. Phone
+  numbers come from each service's curated chunk; websites are its source_url.
 #}
 
 {% block title %}Resources: get help · Robinson Huron Treaty{% endblock %}
-{% block description %}A member-facing directory of front doors across the territory: Indigenous health authorities, tribal councils and the treaty body, crisis lines, policing, mental health and addictions, legal and family supports, education and training, and housing.{% endblock %}
+{% block description %}A member-facing directory of front doors across the territory: Indigenous health authorities, tribal councils and the treaty body, crisis lines, policing, mental health and addictions, legal and family supports, education and training, and housing. Filter by area, or show the nearest.{% endblock %}
 {% block og_description %}Get help: a directory of Indigenous health, tribal councils, crisis lines, policing, legal and family, education, and housing front doors across the Robinson Huron Treaty territory.{% endblock %}
+
+{% block main_class %}wrap wrap--wide{% endblock %}
+
+{% block head_styles %}
+  <style>
+    .rintro { max-width: 70ch; }
+    /* Sticky filter bar. */
+    .rfilter { position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px;
+      background: var(--paper); border-bottom: 1px solid var(--rule); padding: 12px 0; margin: 0 0 var(--gap-5, 20px); }
+    .rfilter__group { display: flex; flex-direction: column; gap: 4px; }
+    .rfilter__label { font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
+    .rfilter__select { font: inherit; color: var(--ink); background: #fff; border: 1px solid var(--rule-strong, #d6cdea); border-radius: 8px; padding: 8px 10px; min-width: 200px; }
+    .rfilter__near { font: inherit; font-weight: 600; color: #fff; background: var(--indigo); border: 0; border-radius: 999px; padding: 9px 18px; cursor: pointer; align-self: flex-end; }
+    .rfilter__near:hover { background: var(--indigo-deep); }
+    .rfilter__select:focus-visible, .rfilter__near:focus-visible { outline: 3px solid var(--magenta); outline-offset: 2px; }
+    .rfilter__note { flex: 1 1 100%; margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--ink-3); }
+    .rfilter__status { flex: 1 1 100%; margin: 0; font-size: 13px; color: var(--ink-2); min-height: 1em; }
+
+    .rsection { margin: 0 0 var(--gap-6, 32px); }
+    .rsection__head h2 { margin: 0 0 4px; }
+    .rsection[hidden] { display: none; }
+
+    /* Responsive card grid: 1 / 2 / 3 columns. */
+    .rgrid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 560px) { .rgrid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 920px) { .rgrid { grid-template-columns: repeat(3, 1fr); } }
+
+    .rcard { display: flex; flex-direction: column; gap: 8px; background: var(--paper-2); border: 1px solid var(--rule); border-radius: 12px; padding: 16px 18px; }
+    .rcard[hidden] { display: none; }
+    .rcard__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .rcard__name { font-family: var(--serif); font-size: 18px; font-weight: 600; line-height: 1.2; color: var(--ink); margin: 0; }
+    .rcard__blurb { font-size: 14px; line-height: 1.5; color: var(--ink-2); margin: 0; }
+    .rcard__links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: auto 0 0; padding-top: 6px; font-size: 14px; }
+    .rcard__tel { font-weight: 600; color: var(--indigo); }
+    .rcard__site { color: var(--magenta-deep, #98146d); }
+    .rc-chip { flex: none; font-size: 11px; font-weight: 600; letter-spacing: 0.03em; color: var(--indigo); background: var(--paper-3, #ece7f7); border-radius: 999px; padding: 3px 9px; white-space: nowrap; }
+
+    .rnote { max-width: 70ch; }
+  </style>
+{% endblock %}
 
 {% block hero %}
 <section class="hero">
   <div class="wrap wrap--wide">
     <p class="eyebrow">Resources</p>
     <h1>Get help.</h1>
-    <p class="lead">A directory of front doors across the territory: who to call and where to start. We link to each service's own site as the authority, and we re-verify the details over time. If you need help right now, the crisis lines are at the top.</p>
+    <p class="lead rintro">Front doors across the territory: who to call and where to start. Each card links to the service's own site as the authority. If you need help right now, the crisis lines are at the top. Filter by your area, or show the nearest.</p>
   </div>
 </section>
 {% endblock %}
 
 {% block content %}
-  {% include 'partials/crisis_strip.html.twig' %}
+  {% include 'components/crisis_banner.html.twig' %}
 
-  <p class="muted">Tagged by the practical service sub-regions: North Shore (Algoma to Sudbury), Manitoulin / Mnidoo Mnising, Nipissing / North Bay, and Georgian Bay / Parry Sound. Numbers are point-in-time; confirm with the service before relying on them.</p>
+  {% include 'components/region_filter.html.twig' with { regions: regions, categories: categories } only %}
 
-  <h2>Regional Indigenous health authorities</h2>
-  <ul>
-    <li><strong>Maamwesying North Shore Community Health Services</strong> (North Shore): primary care, mental wellness, the Minobimaadizing addictions program, traditional health. 705-844-2021, <a href="https://maamwesying.ca/" target="_blank" rel="noopener">maamwesying.ca</a></li>
-    <li><strong>Noojmowin Teg Health Centre</strong> (Manitoulin): primary care, diabetes, mental health and addictions, traditional health, Espanola satellite. 705-368-0083, <a href="https://www.noojmowin-teg.ca/" target="_blank" rel="noopener">noojmowin-teg.ca</a></li>
-    <li><strong>Shkagamik-Kwe Health Centre</strong> (Sudbury, urban Aboriginal Health Access Centre). 705-675-1596, <a href="https://www.shkagamik-kwe.org/" target="_blank" rel="noopener">shkagamik-kwe.org</a></li>
-    <li><strong>North Bay Indigenous Hub</strong> (Nipissing / North Bay). 705-995-0060, <a href="https://www.northbayindigenoushub.ca/" target="_blank" rel="noopener">northbayindigenoushub.ca</a></li>
-  </ul>
+  {% for g in groups %}
+    <section class="rsection" data-topic="{{ g.topic != '' ? g.topic : 'friendship-centres' }}">
+      {% include 'components/section_heading.html.twig' with { title: g.label } only %}
+      {% include 'components/resource_grid.html.twig' with { cards: g.cards } only %}
+    </section>
+  {% endfor %}
 
-  <h2>Tribal councils and the treaty body</h2>
-  <ul>
-    <li><strong>Robinson Huron Waawiindamaagewin</strong> (RHT-wide, all 21 nations): treaty governance and the 1850 annuities case. 1-877-633-7558, <a href="https://www.waawiindamaagewin.com/" target="_blank" rel="noopener">waawiindamaagewin.com</a></li>
-    <li><strong>Mamaweswen, The North Shore Tribal Council</strong> (North Shore): education, training, social services. 705-844-2340 or 1-877-633-7558, <a href="https://mamaweswen.com/" target="_blank" rel="noopener">mamaweswen.com</a></li>
-    <li><strong>United Chiefs and Councils of Mnidoo Mnising (UCCMM)</strong> (Manitoulin): justice, lands, language, employment and training. <a href="http://www.uccmm.ca/" target="_blank" rel="noopener">uccmm.ca</a></li>
-  </ul>
-  <p class="muted">The Anishinabek Nation (Union of Ontario Indians) and the Chiefs of Ontario are Ontario-wide bodies, not Robinson Huron Treaty organizations.</p>
+  <p class="muted rnote">For how to pay for college, university, or the trades, see <a href="/resources/paying-for-school">Paying for school</a>.</p>
 
-  <h2>Crisis lines</h2>
-  <p>The full list, with the residential-school, MMIWG, and Kids Help Phone lines, is on the <a href="/safety/get-help-now">Get help now</a> page. For an emergency, always call 911.</p>
-
-  <h2>Policing and emergency</h2>
-  <ul>
-    <li><strong>Anishinabek Police Service</strong>: non-emergency 1-888-310-1122. Polices Garden River, Sagamok, Nipissing, Wahnapitae, Dokis, Wasauksing, Shawanaga, and Magnetawan. <a href="https://www.anishinabekpolice.ca/" target="_blank" rel="noopener">anishinabekpolice.ca</a></li>
-    <li><strong>UCCM Anishnaabe Police</strong>: non-emergency 705-377-7135 or 1-888-377-7135. Polices the six Manitoulin UCCMM nations. <a href="https://www.uccmpolice.com/" target="_blank" rel="noopener">uccmpolice.com</a></li>
-    <li><strong>Wikwemikong Tribal Police Service</strong>: Wiikwemkoong Unceded Territory.</li>
-    <li><strong>OPP</strong> (where APS or UCCM does not police): non-emergency 1-888-310-1122. For an emergency, always call 911.</li>
-  </ul>
-
-  <h2>Mental health and addictions</h2>
-  <ul>
-    <li><strong>Maamwesying Minobimaadizing</strong>: outpatient addictions, same-day treatment options, naloxone (North Shore). <a href="https://maamwesying.ca/" target="_blank" rel="noopener">maamwesying.ca</a></li>
-    <li><strong>Gwekwaadziwin Miikan</strong> (Manitoulin): land-based youth and young-adult treatment.</li>
-    <li><strong>Hope for Wellness</strong> 1-855-242-3310 and <strong>Talk4Healing</strong> 1-855-554-4325, 24/7. <strong>ConnexOntario</strong> 1-866-531-2600 to find services.</li>
-  </ul>
-  <p>See also <a href="/safety/harm-reduction">Health and harm reduction</a> for naloxone and overdose response.</p>
-
-  <h2>Legal, family, and MMIWG</h2>
-  <ul>
-    <li><strong>Legal Aid Ontario</strong>, Indigenous services: 1-800-668-8258, <a href="https://www.legalaid.on.ca/" target="_blank" rel="noopener">legalaid.on.ca</a></li>
-    <li><strong>Aboriginal Legal Services</strong> (Gladue, province-wide): 1-844-633-2886, <a href="https://www.aboriginallegal.ca/" target="_blank" rel="noopener">aboriginallegal.ca</a></li>
-    <li><strong>Nogdawindamin Family and Community Services</strong> (Indigenous child and family, North Shore): 1-800-465-0999, <a href="https://www.nog.ca/" target="_blank" rel="noopener">nog.ca</a></li>
-    <li><strong>Kina Gbezhgomi Child and Family Services</strong> (Manitoulin, UCCMM, and Wiikwemkoong): 1-800-268-1899, <a href="https://www.kgcfs.org/" target="_blank" rel="noopener">kgcfs.org</a></li>
-    <li>For missing persons and family supports, see <a href="/safety/missing-persons-and-mmiwg">Missing persons and MMIWG</a>.</li>
-  </ul>
-
-  <h2>Education, training, and employment</h2>
-  <ul>
-    <li><strong>Kenjgewin Teg</strong> (M'Chigeeng): post-secondary, training, lifelong learning. 705-370-4342, <a href="https://kenjgewinteg.ca/" target="_blank" rel="noopener">kenjgewinteg.ca</a></li>
-    <li><strong>Mamaweswen ISETP</strong> (North Shore) and <strong>UCCMM Mnidoo Mnising Employment and Training</strong> (Manitoulin) deliver Indigenous skills, employment, and training.</li>
-  </ul>
-  <p><strong><a href="/resources/paying-for-school">Paying for school</a></strong>: the funding paths an RHT member can use for college, university, and the trades. Band post-secondary funding, OSAP, Indspire, ISET training, apprenticeship supports, and the federal bursary search. Most can be combined.</p>
-
-  <h2>Housing and income support</h2>
-  <ul>
-    <li><strong>Ontario Aboriginal Housing Services</strong> (off-reserve, province-wide, head office in Sault Ste. Marie). <a href="https://www.ontarioaboriginalhousing.ca/" target="_blank" rel="noopener">ontarioaboriginalhousing.ca</a></li>
-    <li><strong>Niigaaniin</strong> (Mamaweswen): social assistance and Ontario Works for North Shore members. <a href="https://niigaaniin.com/" target="_blank" rel="noopener">niigaaniin.com</a></li>
-    <li><strong>Urban friendship centres</strong>: Indian Friendship Centre, Sault Ste. Marie (705-256-5634, <a href="https://www.ssmifc.ca/" target="_blank" rel="noopener">ssmifc.ca</a>); N'Swakamok Native Friendship Centre, Sudbury (705-674-2128, <a href="https://www.nfcsudbury.org/" target="_blank" rel="noopener">nfcsudbury.org</a>).</li>
-  </ul>
-
-  <div class="card card--coral">
-    <p class="muted">A community resource, not the Nation. We link to each service's own site as the authority. Numbers and links are point-in-time; if something is wrong or out of date, tell us.</p>
+  <div class="card card--coral rnote">
+    <p class="muted">Where the Anishinabek Police Service or UCCM Anishnaabe Police do not serve, the OPP non-emergency line is 1-888-310-1122. For an emergency, always call 911. The Anishinabek Nation and the Chiefs of Ontario are Ontario-wide bodies, not Robinson Huron Treaty organizations.</p>
+    <p class="muted">A community resource. We link to each service's own site as the authority, and details are point-in-time. If something is wrong or out of date, tell us through the <a href="/contact">contact form</a>.</p>
   </div>
+
+  <script>
+    (function () {
+      var root = document;
+      var regionSel = root.querySelector('[data-rf-region]');
+      var catSel = root.querySelector('[data-rf-cat]');
+      var nearBtn = root.querySelector('[data-rf-near]');
+      var status = root.querySelector('[data-rf-status]');
+      var sections = Array.prototype.slice.call(root.querySelectorAll('.rsection'));
+      if (!sections.length) return;
+
+      function applyFilters() {
+        var region = regionSel ? regionSel.value : '';
+        var cat = catSel ? catSel.value : '';
+        sections.forEach(function (sec) {
+          var catMatch = !cat || sec.getAttribute('data-topic') === cat;
+          var anyVisible = false;
+          sec.querySelectorAll('.rcard').forEach(function (card) {
+            var show = catMatch && (!region || card.getAttribute('data-region') === region);
+            card.hidden = !show;
+            if (show) anyVisible = true;
+          });
+          sec.hidden = !anyVisible;
+        });
+      }
+
+      if (regionSel) regionSel.addEventListener('change', applyFilters);
+      if (catSel) catSel.addEventListener('change', applyFilters);
+
+      function haversine(la1, lo1, la2, lo2) {
+        function r(d) { return d * Math.PI / 180; }
+        var dLa = r(la2 - la1), dLo = r(lo2 - lo1);
+        var a = Math.sin(dLa / 2) * Math.sin(dLa / 2) +
+          Math.cos(r(la1)) * Math.cos(r(la2)) * Math.sin(dLo / 2) * Math.sin(dLo / 2);
+        return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      }
+
+      if (nearBtn && navigator.geolocation) {
+        nearBtn.addEventListener('click', function () {
+          status.textContent = 'Asking your device for your location...';
+          navigator.geolocation.getCurrentPosition(function (pos) {
+            var myLat = pos.coords.latitude, myLng = pos.coords.longitude;
+            sections.forEach(function (sec) {
+              var grid = sec.querySelector('[data-rgrid]');
+              if (!grid) return;
+              var cards = Array.prototype.slice.call(grid.querySelectorAll('.rcard'));
+              cards.forEach(function (c) {
+                var la = parseFloat(c.getAttribute('data-lat')), lo = parseFloat(c.getAttribute('data-lng'));
+                c._dist = (isFinite(la) && isFinite(lo) && (la || lo)) ? haversine(myLat, myLng, la, lo) : Infinity;
+              });
+              cards.sort(function (a, b) { return a._dist - b._dist; });
+              cards.forEach(function (c) { grid.appendChild(c); });
+            });
+            status.textContent = 'Sorted by distance from you. Nothing was stored or sent.';
+          }, function () {
+            status.textContent = 'Could not get your location. You can still filter by area above.';
+          }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 });
+        });
+      } else if (nearBtn) {
+        nearBtn.hidden = true;
+      }
+    })();
+  </script>
 {% endblock %}

@@ -135,6 +135,8 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         // as Markdown. Reads the persistent file (route-build resolve() can be
         // ephemeral), same rationale as the petition/analytics wiring below.
         $md = new \App\Support\MarkdownExporter($this->persistentDatabase());
+        // The Get-help directory renders from the graph (front-door services).
+        $directory = new \App\Content\ResourcesDirectory($this->persistentDatabase());
 
         $pages = [
             'home' => ['/', 'pages/home.html.twig'],
@@ -174,7 +176,8 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'safety-hate-and-extremism' => ['/safety/hate-and-extremism', 'pages/safety/hate-and-extremism.html.twig'],
 
             // Resources: the member-facing get-help directory (the 8th section).
-            'resources' => ['/resources', 'pages/resources/index.html.twig'],
+            // /resources itself is registered explicitly below (graph-driven), not
+            // here; this is its child page.
             'resources-paying-for-school' => ['/resources/paying-for-school', 'pages/resources/paying-for-school.html.twig'],
 
             // The Circle: the member-led movement. About: what the hub is and is not.
@@ -215,6 +218,20 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                     ->build(),
             );
         }
+
+        // Resources "Get help": graph-driven directory (front-door services
+        // grouped by category, with sub-region + coordinates). Honors ?format=md
+        // like the other content pages.
+        $router->addRoute(
+            'resources',
+            RouteBuilder::create('/resources')
+                ->controller(fn (Request $request) => $md->wantsMarkdown($request)
+                    ? $md->pageResponse('/resources')
+                    : $controller->resourcesIndex($directory->groups(), $directory->regions(), $directory->categories()))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
 
         // Communities: the index and the 21 per-nation pages are data-driven from
         // App\Content\Nations, so the controller passes context. The {slug} route

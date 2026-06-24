@@ -69,6 +69,25 @@ final class SiteController
         return $this->html(View::render('pages/land/project.html.twig', ['project' => $project]));
     }
 
+    /**
+     * The /resources "Get help" directory, rendered from the Anokii graph. The
+     * grouped front-door cards, sub-regions, and categories are built by
+     * App\Content\ResourcesDirectory (which reads the persistent graph) and passed
+     * in by the route, so the page stays in sync with the Ask box.
+     *
+     * @param list<array<string, mixed>> $groups
+     * @param list<array{slug: string, label: string}> $regions
+     * @param list<array{slug: string, label: string}> $categories
+     */
+    public function resourcesIndex(array $groups, array $regions, array $categories): Response
+    {
+        return $this->html(View::render('pages/resources/index.html.twig', [
+            'groups' => $groups,
+            'regions' => $regions,
+            'categories' => $categories,
+        ]));
+    }
+
     /** Permanent (301) redirect, for routes that have moved. */
     public function redirect(string $to): Response
     {
