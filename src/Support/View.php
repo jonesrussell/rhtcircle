@@ -93,6 +93,15 @@ final class View
         self::$twig->addFunction(new TwigFunction('myth', static fn (array $keys): array => MythEntries::select($keys)));
         self::$twig->addFunction(new TwigFunction('myth_all', static fn (): array => MythEntries::ordered()));
 
+        // Content-hash cache-buster for /css/site.css (base.html.twig appends it
+        // as ?v=). The CSS file is edge-cached for hours with no version in the
+        // URL, so a deploy that changes site.css must change the URL or the stale
+        // sheet keeps serving. Hashing the file rebusts automatically on change
+        // and stays stable otherwise.
+        $cssFile = $root . '/public/css/site.css';
+        $cssVersion = is_file($cssFile) ? substr((string) hash_file('crc32b', $cssFile), 0, 8) : '1';
+        self::$twig->addGlobal('css_version', $cssVersion);
+
         // Make the shared Anokii admin shell + templates (anokii/_shell.html.twig,
         // anokii/admin/*.html.twig) resolvable. Appended, so app templates win.
         AdminTemplates::register(self::$twig);

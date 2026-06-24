@@ -13,7 +13,6 @@
     {% if nation.anishinaabemowin %}<p class="lead">{{ nation.anishinaabemowin }}</p>{% endif %}
     <p class="nation-chips">
       {% include 'components/region_chip.html.twig' with { region: nation.sub_region } only %}
-      {% include 'components/region_chip.html.twig' with { region: 'Near ' ~ nation.nearest_town } only %}
     </p>
   </div>
 </section>

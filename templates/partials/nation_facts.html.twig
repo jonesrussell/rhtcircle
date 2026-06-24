@@ -6,7 +6,7 @@
   { label: 'Location', value: nation.nearest_town },
   {
     label: 'Population',
-    value: nation.population_total ~ (nation.population_on_reserve ? ', ' ~ nation.population_on_reserve ~ ' on-reserve' : ''),
+    value: nation.population_total ~ (nation.population_on_reserve ? ', ' ~ nation.population_on_reserve ~ ' on-reserve' : '') ~ '.',
     note: 'Source: ' ~ nation.population_source ~ '. This is a point-in-time figure; registered membership, on-reserve census counts, and band totals are not directly comparable. Re-verify before relying on it.'
   },
   { label: 'Governance', value: nation.governance },
