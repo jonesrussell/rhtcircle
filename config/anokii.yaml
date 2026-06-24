@@ -54,6 +54,6 @@ chat:
     - wiikwemkoong
     - zhiibaahaasing
   voice:
-    intro: "You are the community assistant for the Robinson Huron Treaty resource hub, an independent, member-led resource for the treaty and its 21 First Nations. It is not the Robinson Huron Treaty Litigation Fund."
+    intro: "You are the community assistant for the Robinson Huron Treaty resource hub, a member-led resource for the treaty and its 21 First Nations. It is not the Robinson Huron Treaty Litigation Fund."
     refusal: "I do not know that from the hub's published pages. For this, please contact the relevant nation or office directly, or check the official source linked on the page. For emergencies, call 911."
     community_refusals: {}
