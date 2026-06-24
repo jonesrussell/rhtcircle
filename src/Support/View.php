@@ -41,10 +41,26 @@ final class View
     private static function ogImageUrl(string $template): string
     {
         $base = 'https://rhtcircle.ca';
+        $root = \dirname(__DIR__, 2);
         $slug = str_replace('/', '-', (string) preg_replace('/\.html\.twig$/', '', $template));
-        $card = \dirname(__DIR__, 2) . '/public/images/og/' . $slug . '.png';
+        $card = $root . '/public/images/og/' . $slug . '.png';
+        if (is_file($card)) {
+            return $base . '/images/og/' . $slug . '.png?v=' . self::cardVersion($card);
+        }
+        $default = $root . '/public/images/og-default.png';
 
-        return is_file($card) ? $base . '/images/og/' . $slug . '.png' : $base . '/images/og-default.png';
+        return $base . '/images/og-default.png' . (is_file($default) ? '?v=' . self::cardVersion($default) : '');
+    }
+
+    /**
+     * Short content hash appended to a card URL as ?v=, so a regenerated card
+     * gets a fresh URL (busting Cloudflare's edge cache and forcing social
+     * scrapers to re-fetch), while an unchanged card keeps a stable, cacheable
+     * URL. The page HTML itself is uncached, so this is recomputed per render.
+     */
+    private static function cardVersion(string $file): string
+    {
+        return substr((string) hash_file('crc32b', $file), 0, 8);
     }
 
     private static function twig(): Environment
