@@ -354,8 +354,10 @@ final class GraphSeedData
         }
 
         // The territory resources (commerce and everyday life) and the corridor
-        // banking gap, modelled as services so they place- and topic-rank.
-        return array_merge($rows, TerritorySeedData::services());
+        // banking gap, modelled as services so they place- and topic-rank; plus
+        // the treaty-wide "paying for school" funding resources (empty place, so
+        // they surface from the default vantage).
+        return array_merge($rows, TerritorySeedData::services(), PayingForSchoolSeedData::services());
     }
 
     /**
@@ -427,7 +429,8 @@ final class GraphSeedData
             ];
         }
 
-        // The territory resource grounding chunks and the community-reported gaps.
-        return array_merge($rows, TerritorySeedData::curatedChunks());
+        // The territory resource grounding chunks and the community-reported gaps,
+        // plus the treaty-wide "paying for school" funding chunks.
+        return array_merge($rows, TerritorySeedData::curatedChunks(), PayingForSchoolSeedData::curatedChunks());
     }
 }

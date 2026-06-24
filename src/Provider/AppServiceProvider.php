@@ -175,6 +175,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
 
             // Resources: the member-facing get-help directory (the 8th section).
             'resources' => ['/resources', 'pages/resources/index.html.twig'],
+            'resources-paying-for-school' => ['/resources/paying-for-school', 'pages/resources/paying-for-school.html.twig'],
 
             // The Circle: the member-led movement. About: what the hub is and is not.
             'circle' => ['/circle', 'pages/circle/index.html.twig'],

@@ -59,6 +59,7 @@ final class IngestCommand
         '/safety/information-safety' => 'pages/safety/information-safety.html.twig',
         '/safety/hate-and-extremism' => 'pages/safety/hate-and-extremism.html.twig',
         '/resources' => 'pages/resources/index.html.twig',
+        '/resources/paying-for-school' => 'pages/resources/paying-for-school.html.twig',
         '/communities/sagamok/how-its-organized' => 'pages/communities/sagamok/how-its-organized.html.twig',
         '/communities/sagamok/members-website-issue' => 'pages/communities/sagamok/members-website-issue.html.twig',
         '/circle' => 'pages/circle/index.html.twig',
