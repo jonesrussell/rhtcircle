@@ -63,6 +63,28 @@ final class View
         return substr((string) hash_file('crc32b', $file), 0, 8);
     }
 
+    /**
+     * The freshness manifest (page-type key => 'YYYY-MM-DD'), loaded once. See
+     * data/freshness.json and scripts/gen-freshness.php. Missing or malformed
+     * file yields an empty map, so last_updated() returns null and the stamp is
+     * simply omitted.
+     *
+     * @return array<string, string>
+     */
+    private static function freshness(): array
+    {
+        static $map = null;
+        if ($map !== null) {
+            return $map;
+        }
+
+        $file = \dirname(__DIR__, 2) . '/data/freshness.json';
+        $decoded = is_file($file) ? json_decode((string) file_get_contents($file), true) : null;
+        $map = is_array($decoded) ? $decoded : [];
+
+        return $map;
+    }
+
     private static function twig(): Environment
     {
         if (self::$twig instanceof Environment) {
@@ -92,6 +114,14 @@ final class View
         // myth(['key', ...]) selects entries by key; myth_all() returns them all.
         self::$twig->addFunction(new TwigFunction('myth', static fn (array $keys): array => MythEntries::select($keys)));
         self::$twig->addFunction(new TwigFunction('myth_all', static fn (): array => MythEntries::ordered()));
+
+        // last_updated('nations'|'land'|'resources'|...): the real "last updated"
+        // date for a page type, read from data/freshness.json (generated from the
+        // git history of each content source by scripts/gen-freshness.php). Returns
+        // null when no date is recorded, so the freshness component renders nothing
+        // rather than a fabricated date. The runtime image has no git, hence the
+        // committed manifest.
+        self::$twig->addFunction(new TwigFunction('last_updated', static fn (string $key): ?string => self::freshness()[$key] ?? null));
 
         // Content-hash cache-buster for /css/site.css (base.html.twig appends it
         // as ?v=). The CSS file is edge-cached for hours with no version in the

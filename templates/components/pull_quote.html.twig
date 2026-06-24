@@ -1,0 +1,10 @@
+{#
+  pull_quote: a set-off quotation, lifted out for emphasis. Context:
+    { quote (trusted HTML, may carry <em>), cite (optional attribution) }
+  Semantic figure/blockquote so assistive tech and search read it as a quote.
+  Styled globally (.pquote) and re-skinned inside the bespoke .docwrap pages.
+#}
+<figure class="pquote">
+  <blockquote class="pquote__q">{{ quote|raw }}</blockquote>
+  {% if cite is defined and cite %}<figcaption class="pquote__cite">{{ cite }}</figcaption>{% endif %}
+</figure>

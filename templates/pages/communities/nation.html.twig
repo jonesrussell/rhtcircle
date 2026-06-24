@@ -58,4 +58,6 @@
 
   {% include 'components/section_heading.html.twig' with { title: 'Sources' } only %}
   {% include 'partials/nation_sources.html.twig' %}
+
+  {% include 'components/freshness.html.twig' with { datetime: last_updated('nations') } only %}
 {% endblock %}

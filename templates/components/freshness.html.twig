@@ -1,0 +1,11 @@
+{#
+  freshness: an honest "last updated" stamp. Context:
+    { datetime (ISO 'YYYY-MM-DD' string), label (optional, default 'Last updated') }
+  Renders a real <time> only when a date is supplied; with no date it outputs
+  nothing, so a page type without a real date source stays blank rather than
+  carrying a fabricated one. There is no maintained human-verification date for
+  these pages, so this never claims "Last verified".
+#}
+{% if datetime %}
+<p class="freshness">{{ label|default('Last updated') }} <time datetime="{{ datetime }}">{{ datetime|date('F Y') }}</time></p>
+{% endif %}

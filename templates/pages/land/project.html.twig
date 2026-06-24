@@ -11,6 +11,10 @@
     <p class="eyebrow">The Land · {{ project.type_label }}</p>
     <h1>{{ project.name }}.</h1>
     <p class="lead">{{ project.lead }}</p>
+    <p class="nation-chips">
+      {% include 'components/region_chip.html.twig' with { region: project.type_label } only %}
+      {% if project.status %}{% include 'components/region_chip.html.twig' with { region: project.status } only %}{% endif %}
+    </p>
   </div>
 </section>
 {% endblock %}
@@ -18,28 +22,24 @@
 {% block content %}
   <p class="muted"><a href="/land">The Land</a> · a neutral, sourced profile. We work from facts and we ask questions.</p>
 
-  <h2>The facts</h2>
-  <dl class="nation-facts">
-    <dt>Type</dt>
-    <dd>{{ project.type_label }}</dd>
-    <dt>Status</dt>
-    <dd>{{ project.status }}</dd>
-    <dt>Location</dt>
-    <dd>{{ project.location }}</dd>
-    <dt>Nations involved</dt>
-    <dd>{{ project.nations }}</dd>
-  </dl>
+  {% include 'components/section_heading.html.twig' with { title: 'The facts' } only %}
+  {% set facts = [
+    { label: 'Type', value: project.type_label },
+    { label: 'Status', value: project.status },
+    { label: 'Location', value: project.location },
+    { label: 'Nations involved', value: project.nations },
+  ] %}
+  {% include 'components/key_facts.html.twig' with { facts: facts } only %}
 
   {{ project.body|raw }}
 
   {% if project.caveat %}
-  <div class="card card--coral">
-    <p class="muted"><strong>Verify before relying on figures.</strong> {{ project.caveat }}</p>
-  </div>
+    {% set caveat_body %}<strong>Verify before relying on figures.</strong> {{ project.caveat }}{% endset %}
+    {% include 'components/notice.html.twig' with { body: caveat_body, variant: 'caveat' } only %}
   {% endif %}
 
   {% if project.related is not empty %}
-  <h2>The communities this touches</h2>
+  {% include 'components/section_heading.html.twig' with { title: 'The communities this touches' } only %}
   <ul class="community-grid">
     {% for link in project.related %}
     <li><a class="community-card" href="/communities/{{ link.slug }}">
@@ -50,7 +50,7 @@
   </ul>
   {% endif %}
 
-  <h2>Sources</h2>
+  {% include 'components/section_heading.html.twig' with { title: 'Sources' } only %}
   <ul class="src-links">
     {% for src in project.sources %}
     <li><a href="{{ src.url }}" target="_blank" rel="noopener">{{ src.label }}</a></li>
@@ -59,5 +59,6 @@
 
   <div class="card">
     <p class="muted">A member-compiled summary of public reporting, not an official communication of any nation or developer. Figures are point-in-time. If you see an error, tell us and we will correct it.</p>
+    {% include 'components/freshness.html.twig' with { datetime: last_updated('land') } only %}
   </div>
 {% endblock %}

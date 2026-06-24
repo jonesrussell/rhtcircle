@@ -409,3 +409,17 @@ li { margin: 0 0 9px; }
 .notice strong { color: var(--ink); }
 .notice--caveat { border-left: 4px solid var(--coral); }
 
+/* pull_quote: a set-off quotation, lifted out of long-form land pages. The
+   .docwrap rule re-skins it inside the bespoke Massey documents so it inherits
+   their serif and accent rather than the site shell's. */
+.pquote { margin: var(--gap-5, 24px) 0; padding: 2px 0 2px 22px; border-left: 4px solid var(--magenta); }
+.pquote__q { font-family: var(--serif); font-style: italic; font-size: clamp(20px, 3vw, 26px); line-height: 1.35; font-weight: 500; color: var(--indigo-deep); margin: 0; }
+.pquote__cite { font-family: var(--font-sans, var(--sans)); font-size: 13px; font-weight: 600; letter-spacing: 0.03em; color: var(--ink-3); margin-top: 12px; }
+.docwrap .pquote { border-left-color: var(--accent); margin: var(--gap-4, 20px) 0; }
+.docwrap .pquote__q { color: var(--accent); }
+.docwrap .pquote__cite { color: var(--ink-mute, var(--ink-3)); }
+
+/* freshness: an honest, machine-readable "last updated" stamp. */
+.freshness { font-family: var(--font-sans, var(--sans)); font-size: 13px; color: var(--ink-3); margin: 12px 0 0; }
+.freshness time { font-variant-numeric: tabular-nums; }
+

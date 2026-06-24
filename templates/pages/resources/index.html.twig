@@ -104,6 +104,7 @@
   <div class="card card--coral rnote">
     <p class="muted">Where the Anishinabek Police Service or UCCM Anishnaabe Police do not serve, the OPP non-emergency line is 1-888-310-1122. For an emergency, always call 911. The Anishinabek Nation and the Chiefs of Ontario are Ontario-wide bodies, not Robinson Huron Treaty organizations.</p>
     <p class="muted">A community resource. We link to each service's own site as the authority, and details are point-in-time. If something is wrong or out of date, tell us through the <a href="/contact">contact form</a>.</p>
+    {% include 'components/freshness.html.twig' with { datetime: last_updated('resources') } only %}
   </div>
 
   <script>

@@ -120,5 +120,6 @@ Miigwech for your time and your help.
 
   <div class="card card--coral">
     <p class="muted">A community resource. We link to each program's own site as the authority. Amounts and deadlines change year to year, so confirm the current year on the official page before relying on it. See more in the <a href="/resources">resources directory</a>.</p>
+    {% include 'components/freshness.html.twig' with { datetime: last_updated('paying-for-school') } only %}
   </div>
 {% endblock %}
