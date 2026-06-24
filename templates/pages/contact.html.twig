@@ -1,0 +1,145 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'circle' %}
+
+{% block title %}Contact the Circle · Robinson Huron Treaty{% endblock %}
+{% block description %}Contact the Robinson Huron Treaty Members' Transparency Circle. Send a message and a member will reply. Stored on the Circle's own servers in Canada, no trackers.{% endblock %}
+{% block og_description %}Send a message to the Robinson Huron Treaty Members' Transparency Circle and a member will reply.{% endblock %}
+
+{% block head_styles %}
+  <style>
+    .c-wrap { max-width: 640px; margin: 0 auto; padding: var(--gap-6, 32px) var(--gap-5, 20px) var(--gap-9, 64px); }
+    .c-wrap h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(28px, 5vw, 40px); line-height: 1.1; letter-spacing: -0.02em; color: var(--indigo-deep); margin: 0 0 12px; }
+    .c-lead { font-size: 18px; line-height: 1.5; color: var(--ink-2); margin: 0 0 28px; max-width: 60ch; }
+
+    .c-form { display: flex; flex-direction: column; gap: 18px; }
+    .c-field { display: flex; flex-direction: column; gap: 6px; }
+    .c-label { font-family: var(--sans); font-weight: 600; font-size: 15px; color: var(--ink); }
+    .c-label .opt { font-weight: 400; color: var(--ink-3); }
+    .c-input, .c-select, .c-textarea {
+      font: inherit; color: var(--ink); background: #fff;
+      border: 1px solid var(--rule-strong, #d6cdea); border-radius: 10px; padding: 11px 13px; width: 100%;
+    }
+    .c-textarea { min-height: 150px; resize: vertical; }
+    .c-input:focus-visible, .c-select:focus-visible, .c-textarea:focus-visible, .c-send:focus-visible {
+      outline: 3px solid var(--magenta); outline-offset: 2px; border-color: var(--magenta);
+    }
+    .c-send {
+      font: inherit; font-weight: 600; color: #fff; background: var(--indigo); border: 0;
+      border-radius: 999px; padding: 13px 28px; cursor: pointer; align-self: flex-start;
+    }
+    .c-send:hover { background: var(--indigo-deep); }
+    .c-send[disabled] { opacity: 0.6; cursor: default; }
+
+    .c-privacy { font-size: 14px; line-height: 1.55; color: var(--ink-3); margin: 4px 0 0; max-width: 62ch; }
+
+    /* Status region: success and error states. */
+    .c-status { margin: 0; border-radius: 10px; padding: 0; }
+    .c-status[data-state="ok"] { padding: 16px 18px; background: var(--paper-2); border: 1px solid var(--rule); color: var(--ink); }
+    .c-status[data-state="error"] { padding: 12px 14px; background: #fdeaf3; border: 1px solid var(--magenta); color: var(--magenta-deep, #98146d); font-weight: 600; }
+    .c-status h2 { font-family: var(--serif); font-size: 22px; margin: 0 0 6px; color: var(--indigo-deep); }
+    .c-status p { margin: 0; }
+
+    /* Honeypot: visually hidden, off-screen, not announced. */
+    .c-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="c-wrap">
+  <h1>Contact the Circle</h1>
+  <p class="c-lead">Send a message and a member will reply. Use this for questions, to fix something on a community page, or to become a local contact for your nation.</p>
+
+  <div class="c-status" data-contact-status role="status" aria-live="polite"></div>
+
+  <form class="c-form" data-contact-form novalidate>
+    <div class="c-hp" aria-hidden="true">
+      <label>Leave this blank<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+    </div>
+
+    <div class="c-field">
+      <label class="c-label" for="c-name">Your name</label>
+      <input class="c-input" id="c-name" name="name" type="text" autocomplete="name" maxlength="120" required>
+    </div>
+
+    <div class="c-field">
+      <label class="c-label" for="c-email">Email</label>
+      <input class="c-input" id="c-email" name="email" type="email" autocomplete="email" maxlength="255" required aria-describedby="c-email-hint">
+      <span id="c-email-hint" class="c-privacy">So a member can reply to you.</span>
+    </div>
+
+    <div class="c-field">
+      <label class="c-label" for="c-kind">I am a <span class="opt">(optional)</span></label>
+      <select class="c-select" id="c-kind" name="kind">
+        <option value="other">Prefer not to say</option>
+        <option value="member">Member of a Robinson Huron Treaty First Nation</option>
+        <option value="supporter">Supporter</option>
+      </select>
+    </div>
+
+    <div class="c-field">
+      <label class="c-label" for="c-message">Message</label>
+      <textarea class="c-textarea" id="c-message" name="message" maxlength="4000" required></textarea>
+    </div>
+
+    <button class="c-send" type="submit" data-contact-send>Send message</button>
+
+    <p class="c-privacy">What you send is stored on the Circle's own servers in Canada so a member can reply. We do not use trackers. You can ask us to remove your message any time.</p>
+  </form>
+</div>
+
+<script>
+  (function () {
+    var form = document.querySelector('[data-contact-form]');
+    var statusBox = document.querySelector('[data-contact-status]');
+    var sendBtn = document.querySelector('[data-contact-send]');
+    if (!form || !statusBox) return;
+
+    function show(state, html) {
+      statusBox.setAttribute('data-state', state);
+      statusBox.innerHTML = html;
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      show('', '');
+
+      var payload = {
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        kind: form.kind.value,
+        message: form.message.value.trim(),
+        website: form.website.value
+      };
+      if (!payload.name) { show('error', 'Please enter your name.'); form.name.focus(); return; }
+      if (!payload.email) { show('error', 'Please enter your email so we can reply.'); form.email.focus(); return; }
+      if (!payload.message) { show('error', 'Please enter a message.'); form.message.focus(); return; }
+
+      sendBtn.disabled = true;
+      var label = sendBtn.textContent;
+      sendBtn.textContent = 'Sending...';
+
+      fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function (r) {
+        return r.json().catch(function () { return { ok: false }; });
+      }).then(function (data) {
+        if (data && data.ok) {
+          form.style.display = 'none';
+          show('ok', '<h2>Miigwech, your message has been sent.</h2><p>A member will reply to the email you gave. You can ask us to remove your message any time.</p>');
+          statusBox.focus && statusBox.setAttribute('tabindex', '-1');
+        } else {
+          sendBtn.disabled = false;
+          sendBtn.textContent = label;
+          show('error', (data && data.error) ? data.error : 'Something went wrong. Please try again.');
+        }
+      }).catch(function () {
+        sendBtn.disabled = false;
+        sendBtn.textContent = label;
+        show('error', 'Could not reach the server. Please check your connection and try again.');
+      });
+    });
+  })();
+</script>
+{% endblock %}

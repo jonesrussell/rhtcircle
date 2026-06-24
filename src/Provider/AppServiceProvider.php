@@ -14,6 +14,7 @@ use App\Analytics\AnalyticsReport;
 use App\Analytics\AnalyticsSchema;
 use App\Controller\AnalyticsDashboardController;
 use App\Controller\CollectController;
+use App\Controller\ContactController;
 use App\Controller\PageStatsController;
 use App\Controller\PetitionController;
 use App\Content\LandProjects;
@@ -57,6 +58,8 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             new AnalyticsSchema($this->persistentDatabase())->ensure();
 
             new PetitionSchema($this->persistentDatabase())->ensure();
+            // Public contact form: ensure its table on the same persistent file.
+            new \App\Contact\ContactSchema($this->persistentDatabase())->ensure();
             $repo = $this->petitionRepository();
             $repo->ensureCampaign(
                 'records-request-support',
@@ -88,6 +91,16 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         );
     }
 
+    private ?\App\Contact\ContactRepository $contactRepository = null;
+
+    private function contactRepository(): \App\Contact\ContactRepository
+    {
+        return $this->contactRepository ??= new \App\Contact\ContactRepository(
+            $this->persistentDatabase(),
+            getenv('WAASEYAA_CONTACT_SECRET') ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-contact'),
+        );
+    }
+
     /**
      * A DatabaseInterface pinned to the persistent SQLite file. resolve() at
      * boot/route-build time can hand back an ephemeral connection (controllers
@@ -116,6 +129,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
     {
         $controller = new SiteController();
         $petition = new PetitionController($this->petitionRepository());
+        $contact = new ContactController($this->contactRepository());
         // Machine-readable Markdown layer (advertised in /llms.txt): pages honor
         // ?format=md / Accept: text/markdown, and the graph entities are fetchable
         // as Markdown. Reads the persistent file (route-build resolve() can be
@@ -307,6 +321,26 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 ->build(),
         );
 
+        // Contact form: the public page and a JSON submit endpoint (CSRF-exempt
+        // like the petition/analytics beacons). Stored on the Circle's database;
+        // listed in the gated admin (no mailer wired yet).
+        $router->addRoute(
+            'contact',
+            RouteBuilder::create('/contact')
+                ->controller(fn () => $contact->page())
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+        $router->addRoute(
+            'contact.submit',
+            RouteBuilder::create('/api/contact')
+                ->controller(fn (Request $request) => $contact->submit($request))
+                ->allowAll()
+                ->methods('POST')
+                ->build(),
+        );
+
         // First-party, self-hosted analytics. Fully first-party: a same-origin
         // JSON beacon (wired site-wide in base.html.twig) writes to our own
         // SQLite; the dashboard reads it back. No third party, no ad-tech, no
@@ -387,6 +421,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         $adminGet('admin.anokii', '/admin/anokii', fn (Request $request) => $admin->home($request));
         $adminGet('admin.anokii.cointelligence', '/admin/anokii/cointelligence', fn (Request $request) => $admin->cointelligence($request));
         $adminGet('admin.anokii.analytics', '/admin/anokii/analytics', fn (Request $request) => $admin->analytics($request));
+        $adminGet('admin.anokii.contact', '/admin/anokii/contact', fn (Request $request) => $admin->contact($request, $this->contactRepository()));
         $adminGet('admin.anokii.module', '/admin/anokii/m/{module}', fn (Request $request, string $module) => $admin->comingSoon($request, $module));
         // The analytics dashboard moved under /admin/anokii; one-hop 301 the old path.
         $adminGet('admin.analytics.redirect', '/admin/analytics', fn (Request $request) => new \Symfony\Component\HttpFoundation\RedirectResponse('/admin/anokii/analytics', 301));

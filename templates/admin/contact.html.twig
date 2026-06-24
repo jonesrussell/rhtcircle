@@ -1,0 +1,44 @@
+{#
+  Contact messages, rendered inside the shared Anokii shell. No mailer is wired
+  yet, so messages submitted at /contact are stored on the Circle's database and
+  listed here for a member to act on. Context: messages (recent rows), total,
+  plus the AdminShell context.
+#}
+{% extends "anokii/admin/_base.html.twig" %}
+
+{% block admin_styles %}
+  .cm-note{ font-size:13px; line-height:1.5; color:var(--anokii-shell-muted); background:var(--anokii-shell-card); border:1px solid var(--anokii-shell-line); border-radius:10px; padding:12px 14px; margin:0 0 18px; }
+  .cm-table{ width:100%; border-collapse:collapse; font-size:14px; }
+  .cm-table th{ text-align:left; font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--anokii-shell-muted); border-bottom:1px solid var(--anokii-shell-line); padding:8px 10px; }
+  .cm-table td{ border-bottom:1px solid var(--anokii-shell-line); padding:10px; color:var(--anokii-shell-ink); vertical-align:top; }
+  .cm-table tr:last-child td{ border-bottom:none; }
+  .cm-when{ font-family:var(--anokii-mono,monospace); font-size:12px; color:var(--anokii-shell-muted); white-space:nowrap; }
+  .cm-kind{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--anokii-shell-muted); }
+  .cm-msg{ white-space:pre-wrap; word-break:break-word; max-width:48ch; }
+  .cm-empty{ color:var(--anokii-shell-muted); padding:18px 0; }
+{% endblock %}
+
+{% block admin_content %}
+  <h1>Contact messages</h1>
+  <p class="cm-note">No email notifications are wired yet (the Circle has no mailer configured). Messages from the public contact form are stored here, newest first. Reply from the email shown. Showing the {{ messages|length }} most recent of {{ total }} total.</p>
+
+  {% if messages is empty %}
+    <p class="cm-empty">No messages yet.</p>
+  {% else %}
+    <table class="cm-table">
+      <thead>
+        <tr><th>When</th><th>From</th><th>I am a</th><th>Message</th></tr>
+      </thead>
+      <tbody>
+        {% for m in messages %}
+          <tr>
+            <td class="cm-when">{{ m.created_at }}</td>
+            <td>{{ m.name }}<br><a href="mailto:{{ m.email }}">{{ m.email }}</a></td>
+            <td class="cm-kind">{{ m.kind }}</td>
+            <td class="cm-msg">{{ m.message }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endblock %}

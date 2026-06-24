@@ -106,6 +106,21 @@ final class AdminController extends DashboardGate
         ])));
     }
 
+    /** Contact messages from the public /contact form (no mailer wired yet). */
+    public function contact(Request $request, \App\Contact\ContactRepository $contact): Response
+    {
+        $gate = $this->guard($request);
+        if ($gate !== null) {
+            return $gate;
+        }
+
+        return $this->html(View::render('admin/contact.html.twig', $this->shell('contact', [
+            'page_title' => 'Contact messages · Anokii admin',
+            'messages' => $contact->recent(200),
+            'total' => $contact->count(),
+        ])));
+    }
+
     /** Product-preview placeholder for a not-yet-live module. */
     public function comingSoon(Request $request, string $module): Response
     {
