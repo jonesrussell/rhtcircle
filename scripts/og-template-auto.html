@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Generic per-page OG card for rhtcircle.ca. Auto-rendered by
+       scripts/generate-og.js for any template that {% extends 'base.html.twig' %}
+       and has no hand-crafted card. Placeholders are substituted by the generator.
+       Brand: near-white paper, the rainbow rule (all 21 nations together), an
+       indigo-violet headline and a warm coral accent. Fraunces + Inter. */
+    :root {
+      --paper: #fbfaff;
+      --indigo: #4f2fb0;
+      --indigo-deep: #38217f;
+      --magenta: #c41d8f;
+      --coral: #f4795a;
+      --ink: #221d33;
+      --ink-2: #4a4361;
+      --ink-3: #6f6688;
+      --rainbow: linear-gradient(90deg,
+        #cc2484 0%, #a824a8 14%, #6c30d8 28%, #4854cc 40%,
+        #2f80c4 52%, #17a8ba 64%, #5bb87a 74%, #f6d05e 84%,
+        #f9781f 93%, #e0452a 100%);
+      --serif: "Fraunces", Georgia, "Iowan Old Style", serif;
+      --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+      background: var(--paper);
+      font-family: var(--sans);
+      color: var(--ink);
+      position: relative;
+    }
+
+    /* The signature rainbow rule across the top. */
+    .rainbow { position: absolute; top: 0; left: 0; right: 0; height: 12px; background: var(--rainbow); z-index: 3; }
+
+    /* Warm coral circle, partly off the right edge, behind the text. */
+    .coral {
+      position: absolute;
+      top: -150px;
+      right: -150px;
+      width: 520px;
+      height: 520px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(244,121,90,0.30) 0%, rgba(244,121,90,0.16) 55%, transparent 72%);
+      z-index: 0;
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      padding: 70px 84px 60px 84px;
+    }
+
+    .top { display: flex; align-items: center; justify-content: space-between; }
+
+    .brand-mark {
+      font-family: var(--serif);
+      font-size: 27px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--indigo-deep);
+    }
+    .brand-mark .dot { color: var(--magenta); }
+
+    .eyebrow {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      border: 1px solid rgba(79, 47, 176, 0.28);
+      padding: 7px 15px;
+      border-radius: 999px;
+    }
+
+    .headline { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 30px 0 24px; }
+
+    /* Fits ~4 lines at 56px within 630h; clamps gracefully past that. */
+    .headline h1 {
+      font-family: var(--serif);
+      font-size: 56px;
+      font-weight: 600;
+      line-height: 1.07;
+      letter-spacing: -0.02em;
+      color: var(--indigo-deep);
+      margin-bottom: 22px;
+      max-width: 1000px;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .subline {
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--ink-2);
+      letter-spacing: -0.005em;
+      max-width: 900px;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .foot { display: flex; align-items: center; justify-content: space-between; }
+    .tagline { font-size: 15px; font-weight: 500; color: var(--ink-3); }
+    .url { font-size: 15px; font-weight: 600; letter-spacing: 0.01em; color: var(--magenta); }
+  </style>
+</head>
+<body>
+  <div class="rainbow"></div>
+  <div class="coral"></div>
+
+  <div class="content">
+    <div class="top">
+      <div class="brand-mark">Robinson Huron Treaty<span class="dot">.</span></div>
+      <div class="eyebrow">A member resource</div>
+    </div>
+
+    <div class="headline">
+      <h1>{{TITLE}}</h1>
+      <p class="subline">{{DESCRIPTION}}</p>
+    </div>
+
+    <div class="foot">
+      <div class="tagline">Members and beneficiaries, asking together.</div>
+      <div class="url">{{URL}}</div>
+    </div>
+  </div>
+</body>
+</html>

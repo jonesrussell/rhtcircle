@@ -1,0 +1,63 @@
+name: OG cards
+
+# Keeps every page's Open Graph social card in the repo automatically.
+#
+# scripts/generate-og.js auto-discovers any base-extending page and renders a
+# 1200x630 card to public/images/og/. The app serves the per-page card if it
+# exists, else falls back to og-default.png, so a new page with no card silently
+# loses its social preview. This workflow closes that gap: on any template or
+# generator change it renders ONLY the missing cards (no churn to existing ones)
+# on a hosted Linux runner and commits them back, so the next image build bakes
+# them in. Chromium never runs on the Pi.
+#
+# Note: this runs in --only-missing mode, so it never refreshes an existing card
+# after a title/description edit. To refresh one, delete its PNG (the next run
+# regenerates it) or run `node scripts/generate-og.js` locally.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'templates/**'
+      - 'scripts/generate-og.js'
+      - 'scripts/og-template*.html'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: og-cards-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cards:
+    name: Generate missing OG cards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright + Chromium
+        run: |
+          npm install playwright@^1.60.0 --no-save
+          npx playwright install --with-deps chromium
+
+      - name: Generate any missing cards
+        run: node scripts/generate-og.js --only-missing
+
+      - name: Commit new cards
+        run: |
+          if [ -n "$(git status --porcelain public/images)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add public/images
+            git commit -m "Auto-generate missing OG cards [skip ci]"
+            git push
+            echo "Committed new OG cards."
+          else
+            echo "All pages already have an OG card; nothing to do."
+          fi
