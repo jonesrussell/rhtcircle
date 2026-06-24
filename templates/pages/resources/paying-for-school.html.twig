@@ -5,6 +5,20 @@
 {% block description %}How a Robinson Huron Treaty member can pay for school: band post-secondary funding (PSSSP and UCEP), OSAP, Indspire, the ISET training stream, apprenticeship supports, and the federal bursary search. Most can be combined. Every link is the official source.{% endblock %}
 {% block og_description %}Funding for school for Robinson Huron Treaty members: band post-secondary funding, OSAP, Indspire, ISET training, apprenticeship, and the federal bursary search. Most can be combined.{% endblock %}
 
+{% block head_styles %}
+  <style>
+    /* Copy-paste email template box. Scoped .pfs-*. */
+    .pfs-tpl { border: 1px solid var(--rule-strong, #d6cdea); border-radius: 12px; background: var(--paper-2); margin: 0 0 var(--gap-5, 20px); overflow: hidden; max-width: 74ch; }
+    .pfs-tpl__bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--rule, #e4def2); }
+    .pfs-tpl__label { font-family: var(--sans); font-size: 13px; font-weight: 600; color: var(--ink-2); }
+    .pfs-copy { font: inherit; font-size: 13px; font-weight: 600; color: #fff; background: var(--indigo); border: 0; border-radius: 999px; padding: 7px 16px; cursor: pointer; }
+    .pfs-copy:hover { background: var(--indigo-deep); }
+    .pfs-copy:focus-visible { outline: 3px solid var(--magenta); outline-offset: 2px; }
+    .pfs-tpl pre { margin: 0; padding: 16px 18px; white-space: pre-wrap; word-break: break-word; font-family: var(--sans); font-size: 15px; line-height: 1.55; color: var(--ink); }
+    .pfs-status { margin: 0; padding: 0 14px 12px; font-size: 13px; color: var(--ink-3); }
+  </style>
+{% endblock %}
+
 {% block hero %}
 <section class="hero">
   <div class="wrap wrap--wide">
@@ -48,6 +62,61 @@
 
   <h2>If your nation turns you down</h2>
   <p>Band post-secondary funding is capped, so a no is often about the cap, not about you. Fair questions to ask your education office: how the selection formula works, how many seats there are this year, when the deadline is, whether you can reapply next intake, and whether partial funding is possible. While you wait, OSAP, Indspire, ISET, and the bursary search above do not depend on the band's decision.</p>
+
+  <p>You can copy the template below, fill in the brackets, and send it to your nation's education office. It is plain and respectful, and it asks for the facts you are entitled to know.</p>
+
+  <figure class="pfs-tpl">
+    <figcaption class="pfs-tpl__bar">
+      <span class="pfs-tpl__label" id="pfs-tpl-label">Email template</span>
+      <button type="button" class="pfs-copy" data-pfs-copy aria-label="Copy the email template" aria-describedby="pfs-tpl-label">Copy</button>
+    </figcaption>
+    <pre data-pfs-text>Subject: My post-secondary funding application, a few questions
+
+Aanii [name / Education Officer],
+
+My name is [your name], a member of [your nation]. I applied for post-secondary funding for [program] at [school], starting [term, year]. [Or: I am planning to apply for funding for the coming year.]
+
+So I can plan ahead, I would appreciate your help understanding the process:
+
+- How are funding decisions made? Is there a selection formula or set of criteria?
+- How many students can the nation fund this year, and how many have applied?
+- What is the application deadline, and is anything still missing from my file?
+- If I am not funded this round, can I reapply next intake, and is there a waitlist?
+- Is partial funding (tuition or books only) possible?
+- Is there an appeal or reconsideration process?
+
+Miigwech for your time and your help.
+
+[Your name]
+[Phone or email]</pre>
+    <p class="pfs-status" data-pfs-status role="status" aria-live="polite"></p>
+  </figure>
+
+  <script>
+    (function () {
+      var btn = document.querySelector('[data-pfs-copy]');
+      var pre = document.querySelector('[data-pfs-text]');
+      var status = document.querySelector('[data-pfs-status]');
+      if (!btn || !pre) return;
+      function done() {
+        if (status) status.textContent = 'Copied to your clipboard.';
+        var label = btn.textContent; btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = label; }, 2000);
+      }
+      function fallback() {
+        var range = document.createRange(); range.selectNodeContents(pre);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+        try { document.execCommand('copy'); done(); }
+        catch (e) { if (status) status.textContent = 'Select the text and press Ctrl+C or Cmd+C to copy.'; }
+      }
+      btn.addEventListener('click', function () {
+        var text = pre.innerText;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done).catch(fallback);
+        } else { fallback(); }
+      });
+    })();
+  </script>
 
   <div class="card card--coral">
     <p class="muted">A community resource. We link to each program's own site as the authority. Amounts and deadlines change year to year, so confirm the current year on the official page before relying on it. See more in the <a href="/resources">resources directory</a>.</p>
