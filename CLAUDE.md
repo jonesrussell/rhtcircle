@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-The public home of the **Robinson Huron Treaty Members' Transparency Circle** (rhtcircle.ca):
+The public home of **the Circle**, the Robinson Huron Treaty resource hub (rhtcircle.ca):
 an independent, member-led, treaty-wide transparency movement across all 21 Robinson Huron
 Treaty signatory First Nations. A Waaseyaa application built on the
 [Waaseyaa framework](https://github.com/waaseyaa/framework).

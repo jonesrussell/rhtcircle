@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * House-style guardrail for the RHT Members' Transparency Circle.
+ * House-style guardrail for the Circle (the Robinson Huron Treaty resource hub).
  *
  * Hard rule: NO em dashes (U+2014) anywhere in published copy. Run before every
  * commit/deploy:  php bin/lint-copy.php
