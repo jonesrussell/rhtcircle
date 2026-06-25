@@ -17,7 +17,7 @@
 
 {% block content %}
   <h2>The entries</h2>
-  {% include 'partials/myth_versus_record.html.twig' with { myth_entries: myth_all() } %}
+  {% include 'partials/myth_versus_record.html.twig' with { myth_entries: myth_entries } %}
 
   <div class="card">
     <p class="muted">Member-compiled summaries of public reporting. Where the record is incomplete, we say so rather than guessing. Figures are point-in-time. If you see an error, tell us and we will correct it.</p>

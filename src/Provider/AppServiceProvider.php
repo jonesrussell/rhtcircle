@@ -149,8 +149,8 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'treaty-language' => ['/treaty/language', 'pages/treaty/language.html.twig'],
             'treaty-settlement' => ['/treaty/settlement-where-it-goes', 'pages/treaty/settlement-where-it-goes.html.twig'],
 
-            // The myth-versus-record component, surfaced as its own page.
-            'myth-versus-record' => ['/myth-versus-record', 'pages/myth-versus-record.html.twig'],
+            // (/myth-versus-record is registered explicitly below: it renders from
+            // the managed myth_entry content type, not a static template.)
 
             // Transparency: the settlement asks and the shared standard.
             'treaty-wide' => ['/treaty-wide', 'pages/treaty-wide.html.twig'],
@@ -228,6 +228,24 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 ->controller(fn (Request $request) => $md->wantsMarkdown($request)
                     ? $md->pageResponse('/resources')
                     : $controller->resourcesIndex($directory->groups(), $directory->regions(), $directory->categories()))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+
+        // Myth versus record: the first managed content type. Renders from the
+        // myth_entry + source_link entities (App\Cms\MythRepository), falling back
+        // to the MythEntries array only if the entity system is unavailable at
+        // route-build, so the page never breaks. Honors ?format=md like the others.
+        $mythEntries = static fn (): array => $entityTypeManager !== null
+            ? new \App\Cms\MythRepository($entityTypeManager)->ordered()
+            : \App\Content\MythEntries::ordered();
+        $router->addRoute(
+            'myth-versus-record',
+            RouteBuilder::create('/myth-versus-record')
+                ->controller(fn (Request $request) => $md->wantsMarkdown($request)
+                    ? $md->pageResponse('/myth-versus-record')
+                    : $controller->mythVersusRecord($mythEntries()))
                 ->allowAll()
                 ->methods('GET')
                 ->build(),

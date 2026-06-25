@@ -88,6 +88,19 @@ final class SiteController
         ]));
     }
 
+    /**
+     * The /myth-versus-record page, rendered from the managed myth_entry content
+     * type. The route resolves the entries (App\Cms\MythRepository over the
+     * entities) and passes them in, in the same array shape the component used
+     * when it read App\Content\MythEntries.
+     *
+     * @param list<array<string, mixed>> $entries
+     */
+    public function mythVersusRecord(array $entries): Response
+    {
+        return $this->html(View::render('pages/myth-versus-record.html.twig', ['myth_entries' => $entries]));
+    }
+
     /** Permanent (301) redirect, for routes that have moved. */
     public function redirect(string $to): Response
     {

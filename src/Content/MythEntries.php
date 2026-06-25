@@ -45,6 +45,17 @@ final class MythEntries
         return array_values(self::all());
     }
 
+    /**
+     * All entries keyed by their stable slug, in display order. The seed source
+     * for the managed myth_entry content type (the slug is the array key).
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public static function keyed(): array
+    {
+        return self::all();
+    }
+
     /** @return array<string, array<string, mixed>> entries keyed for selection */
     private static function all(): array
     {

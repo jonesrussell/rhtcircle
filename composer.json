@@ -54,6 +54,7 @@
         "waaseyaa": {
             "providers": [
                 "App\\Provider\\AppServiceProvider",
+                "App\\Provider\\CmsContentServiceProvider",
                 "App\\Provider\\AnokiiContentServiceProvider",
                 "Anokii\\Provider\\CoIntelligenceServiceProvider"
             ]

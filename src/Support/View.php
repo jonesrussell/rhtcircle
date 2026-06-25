@@ -114,11 +114,11 @@ final class View
             ],
         );
 
-        // Myth-versus-record entries, so the cross-cutting component is available
-        // to any template (and to app:ingest's render) without per-route context.
-        // myth(['key', ...]) selects entries by key; myth_all() returns them all.
+        // myth(['key', ...]) selects entries by key for the settlement and
+        // information-safety pages. The /myth-versus-record page no longer uses a
+        // Twig function: it renders from the managed myth_entry content type via
+        // App\Cms\MythRepository (passed in as myth_entries by the route).
         self::$twig->addFunction(new TwigFunction('myth', static fn (array $keys): array => MythEntries::select($keys)));
-        self::$twig->addFunction(new TwigFunction('myth_all', static fn (): array => MythEntries::ordered()));
 
         // last_updated('nations'|'land'|'resources'|...): the real "last updated"
         // date for a page type, read from data/freshness.json (generated from the
