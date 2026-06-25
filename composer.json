@@ -9,7 +9,7 @@
         "ext-sqlite3": "*",
         "symfony/dotenv": "^8.0",
         "waaseyaa/anokii": "^0.1.0-alpha.10",
-        "waaseyaa/framework": "0.1.0-alpha.247"
+        "waaseyaa/framework": "0.1.0-alpha.249"
     },
     "autoload": {
         "psr-4": {
