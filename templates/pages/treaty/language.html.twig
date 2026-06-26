@@ -5,6 +5,32 @@
 {% block description %}Where Anishinaabemowin stands across the Robinson Huron Treaty territory, and the 21 nations' shared work to bring it back, funded by interest from the annuities settlement.{% endblock %}
 {% block og_description %}Anishinaabemowin in RHT territory: the 2021 speaker figures, and the 21-nation reclamation strategy funded by settlement interest. The flagship positive story from the settlement.{% endblock %}
 
+{% block head_styles %}
+<style>
+  .lex { margin: 8px 0 4px; max-width: 44rem; }
+  .lex__label { display: block; font-size: 14px; font-weight: 600; color: var(--magenta); margin: 0 0 8px; }
+  .lex__row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .lex__row input {
+    flex: 1; min-width: 12rem; padding: 13px 16px; font-size: 16px;
+    border: 1px solid var(--rule-strong); border-radius: 999px; background: #fff; color: var(--ink);
+  }
+  .lex__row input:focus { outline: 3px solid var(--violet); outline-offset: 1px; border-color: var(--indigo); }
+  .lex__row button {
+    flex: none; border: none; background: var(--indigo); color: #fff; font-weight: 600; font-size: 16px;
+    padding: 13px 24px; border-radius: 999px; cursor: pointer;
+  }
+  .lex__row button:hover { background: var(--indigo-deep); }
+  .lex__note { margin: 8px 0 0; font-size: 13px; color: var(--ink-3); }
+  .lex-entry { margin: 18px 0 0; border: 1px solid var(--rule); border-left: 4px solid var(--magenta); border-radius: 12px; padding: 16px 20px; background: #fff; }
+  .lex-entry__word { margin: 0; font-family: var(--serif, var(--sans)); font-size: 22px; color: var(--indigo-deep); }
+  .lex-entry__def { margin: 6px 0 10px; font-size: 17px; color: var(--ink); }
+  .lex-entry__meta { margin: 0; font-size: 13.5px; color: var(--ink-2); }
+  .lex-entry__meta dt { font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.03em; font-size: 11px; margin-top: 8px; }
+  .lex-entry__meta dd { margin: 2px 0 0; }
+  .lex-usage { margin: 18px 0 0; font-size: 13px; color: var(--ink-3); }
+</style>
+{% endblock %}
+
 {% block hero %}
 <section class="hero">
   <div class="wrap wrap--wide">
@@ -24,6 +50,61 @@
 
   <h2>On this site</h2>
   <p>We use Anishinaabemowin in our own dialect where we can, drawing first on local and community sources and on the Nishnaabemwin Online Dictionary of the Lake Huron and Manitoulin language. Our word list grows over time, and Elders and language keepers guide it. We never invent or machine-translate a word; where nothing sourced exists, we leave the English. If you see something we can say better, tell us.</p>
+
+  <h2>Look up a word</h2>
+  <p>Search a word in English or Anishinaabemowin. Results come from the Sagamok community corpus, with the source and community attribution shown. This is a small, growing word list, so a search may find nothing yet.</p>
+
+  <form class="lex" method="get" action="/treaty/language" role="search">
+    <label class="lex__label" for="lex-q">Look up a word in Anishinaabemowin</label>
+    <div class="lex__row">
+      <input type="text" id="lex-q" name="q" value="{{ lookup.q|default('') }}"
+             placeholder="e.g. spoon" autocomplete="off" maxlength="120" aria-label="Word to look up">
+      <button type="submit">Look up</button>
+    </div>
+    <p class="lex__note">Words are served from the Sagamok community corpus. We never machine-translate or invent a word.</p>
+  </form>
+
+  {% if lookup.performed %}
+    {% set result = lookup.result %}
+    {% if not result.available %}
+      <div class="notice notice--caveat" role="status">
+        <p>The word lookup is temporarily unavailable. Please try again in a little while.</p>
+      </div>
+    {% elseif not result.hasMatches %}
+      <div class="notice" role="status">
+        <p>No sourced word found for <strong>{{ lookup.q }}</strong> yet. Our community word list is small and grows over time, so it may be added later.</p>
+      </div>
+    {% else %}
+      <p class="muted">Found {{ result.count }} {{ result.count == 1 ? 'entry' : 'entries' }} for <strong>{{ lookup.q }}</strong>.</p>
+      {% for match in result.matches %}
+        <div class="lex-entry">
+          <p class="lex-entry__word" lang="oj">{{ match.word }}</p>
+          {% if match.definitions is not empty %}
+            <p class="lex-entry__def">{{ match.definitions|join('; ') }}</p>
+          {% endif %}
+          <dl class="lex-entry__meta">
+            {% if match.label %}
+              <dt>Dialect</dt>
+              <dd>{{ match.label }}{% if match.dialect and match.dialect not in match.label %} ({{ match.dialect }}){% endif %}</dd>
+            {% endif %}
+            {% if match.attribution %}
+              <dt>Attribution</dt>
+              <dd>{{ match.attribution }}{% if match.attributionSource %} ({{ match.attributionSource }}){% endif %}</dd>
+            {% endif %}
+            {% if match.sourceUrl %}
+              <dt>Source</dt>
+              <dd><a href="{{ match.sourceUrl }}" target="_blank" rel="noopener">View the community source</a></dd>
+            {% endif %}
+          </dl>
+        </div>
+      {% endfor %}
+      {% if result.usage %}
+        <p class="lex-usage">
+          This content is community-governed{% if result.usage.governance %} under {{ result.usage.governance }}{% endif %} and shared on noncommercial terms. It is provided by the Sagamok community and shown here with attribution; its appearance here does not imply any endorsement.{% if result.usage.referenceUrl %} <a href="{{ result.usage.referenceUrl }}" target="_blank" rel="noopener">Reference</a>.{% endif %}
+        </p>
+      {% endif %}
+    {% endif %}
+  {% endif %}
 
   <h2>Sources</h2>
   <ul class="src-links">

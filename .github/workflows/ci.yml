@@ -1,0 +1,53 @@
+name: CI
+
+# Build gate for the Circle: install dependencies, enforce the no-em-dash copy
+# rule, and run the PHPUnit suite (unit + integration). Runs on every push to
+# main and on every pull request.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Lint and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: pdo_sqlite, sqlite3, mbstring
+          coverage: none
+
+      # --no-check-lock: this project's lock is maintained through the
+      # composer-merge-plugin (composer.local.json), so the content hash can
+      # legitimately differ from a plain composer.json; the install step below is
+      # the real gate.
+      - name: Validate composer.json
+        run: composer validate --no-check-publish --no-check-all --no-check-lock
+
+      # The waaseyaa packages live on public GitHub repos; authenticating the
+      # GitHub API with the Actions token avoids the unauthenticated rate limit
+      # while resolving the many framework packages.
+      - name: Authenticate composer to GitHub
+        run: composer config -g github-oauth.github.com "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Copy lint (no em dashes in templates)
+        run: php bin/lint-copy.php
+
+      - name: PHPUnit
+        run: ./vendor/bin/phpunit

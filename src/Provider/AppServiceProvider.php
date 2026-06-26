@@ -18,10 +18,15 @@ use App\Controller\ContactController;
 use App\Controller\PageStatsController;
 use App\Controller\PetitionController;
 use App\Content\LandProjects;
+use App\Controller\LexiconController;
 use App\Controller\SiteController;
+use App\Lexicon\LexiconCacheSchema;
+use App\Lexicon\LexiconClient;
+use App\Lexicon\SqlLexiconCache;
 use App\Petition\PetitionRepository;
 use App\Petition\PetitionSchema;
 use Symfony\Component\HttpFoundation\Request;
+use Waaseyaa\HttpClient\StreamHttpClient;
 use Waaseyaa\CLI\Command\HandlerArgument;
 use Waaseyaa\CLI\Command\HandlerArgumentMode;
 use Waaseyaa\CLI\Command\HandlerCommand;
@@ -60,6 +65,9 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             new PetitionSchema($this->persistentDatabase())->ensure();
             // Public contact form: ensure its table on the same persistent file.
             new \App\Contact\ContactSchema($this->persistentDatabase())->ensure();
+            // Anishinaabemowin lookup cache (Minoo language API). Ensured here on
+            // the persistent file for the same reason as the petition below.
+            new LexiconCacheSchema($this->persistentDatabase())->ensure();
             $repo = $this->petitionRepository();
             $repo->ensureCampaign(
                 'records-request-support',
@@ -98,6 +106,24 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         return $this->contactRepository ??= new \App\Contact\ContactRepository(
             $this->persistentDatabase(),
             getenv('WAASEYAA_CONTACT_SECRET') ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-contact'),
+        );
+    }
+
+    private ?LexiconClient $lexiconClient = null;
+
+    /**
+     * The Anishinaabemowin lookup client (Minoo language API), server-to-server.
+     * A short HTTP timeout keeps a slow Minoo from stalling the page, and the
+     * cache is pinned to the persistent SQLite file (route-build resolve() can be
+     * ephemeral, same rationale as the petition/analytics wiring). Base URL from
+     * MINOO_LANG_API_URL, else the client's default (https://minoo.live/api/lang).
+     */
+    private function lexiconClient(): LexiconClient
+    {
+        return $this->lexiconClient ??= new LexiconClient(
+            new StreamHttpClient(2.5),
+            new SqlLexiconCache($this->persistentDatabase()),
+            getenv('MINOO_LANG_API_URL') ?: null,
         );
     }
 
@@ -146,7 +172,8 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             // (301s below); fixed-content pages, no context needed.
             'treaty' => ['/treaty', 'pages/treaty/index.html.twig'],
             'treaty-distribution-models' => ['/treaty/distribution-models', 'pages/treaty/distribution-models.html.twig'],
-            'treaty-language' => ['/treaty/language', 'pages/treaty/language.html.twig'],
+            // (/treaty/language is registered explicitly below: it renders a
+            // server-side Anishinaabemowin lookup against Minoo's language API.)
             'treaty-settlement' => ['/treaty/settlement-where-it-goes', 'pages/treaty/settlement-where-it-goes.html.twig'],
 
             // (/myth-versus-record is registered explicitly below: it renders from
@@ -228,6 +255,23 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 ->controller(fn (Request $request) => $md->wantsMarkdown($request)
                     ? $md->pageResponse('/resources')
                     : $controller->resourcesIndex($directory->groups(), $directory->regions(), $directory->categories()))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+
+        // The Treaty: our language. Registered explicitly (not in the static
+        // $pages table) because it carries a server-side Anishinaabemowin lookup:
+        // the controller reads ?q= and calls Minoo's language API server-to-server
+        // (Minoo has no CORS), fail-soft, with attribution rendered. Still honors
+        // ?format=md for the base page, like the other content pages.
+        $lexicon = new LexiconController($this->lexiconClient());
+        $router->addRoute(
+            'treaty-language',
+            RouteBuilder::create('/treaty/language')
+                ->controller(fn (Request $request) => $md->wantsMarkdown($request)
+                    ? $md->pageResponse('/treaty/language')
+                    : $lexicon->page($request))
                 ->allowAll()
                 ->methods('GET')
                 ->build(),
