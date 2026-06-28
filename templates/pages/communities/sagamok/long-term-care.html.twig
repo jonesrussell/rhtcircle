@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+{% block main_class %}{% endblock %}
+
+{% block title %}Long-term care: the Espanola MOU and Sagamok{% endblock %}
+{% block description %}A member-compiled summary of the June 2026 long-term care MOU involving Sagamok, and the questions members are putting to Chief and Council about consultation and authorization.{% endblock %}
+{% block body_class %}route-sagamok-long-term-care{% endblock %}
+
+{% block head_styles %}
+<style>
+  .ltc{ --maxw:680px; color:var(--ink); font:18px/1.7 var(--sans); -webkit-font-smoothing:antialiased }
+  .ltc *{box-sizing:border-box}
+  .ltc .wrap{max-width:var(--maxw); margin:0 auto; padding:40px 22px 64px}
+  .ltc a{color:var(--accent); text-decoration:none}
+  .ltc a:hover{text-decoration:underline}
+  .ltc .crumb{font-size:12.5px; color:var(--ink-3); margin:0 0 16px}
+  .ltc .crumb a{color:var(--accent)}
+  .ltc h1{font-size:32px; line-height:1.18; font-weight:700; margin:0 0 12px; letter-spacing:-.01em; color:var(--indigo-deep); font-family:var(--serif)}
+  .ltc .lede{font-size:19px; color:var(--ink-2); margin:0 0 18px}
+  .ltc h2{font-size:21px; line-height:1.25; font-weight:700; margin:40px 0 12px; letter-spacing:-.01em; color:var(--indigo-deep); font-family:var(--serif)}
+  .ltc p{margin:0 0 16px}
+  .ltc strong{color:var(--ink)}
+  .ltc ul{margin:0 0 18px; padding-left:0; list-style:none}
+  .ltc li{position:relative; padding-left:22px; margin:0 0 12px}
+  .ltc li::before{content:""; position:absolute; left:3px; top:12px; width:7px; height:7px; border-radius:50%; background:var(--accent)}
+  .ltc .ql li::before{background:var(--indigo)}
+  .ltc .src li{font-size:14.5px; color:var(--ink-2)}
+  .ltc .src li::before{width:5px; height:5px; top:11px; background:var(--ink-3)}
+  .ltc .byline{font-size:14px; color:var(--ink-3); margin:34px 0 0; padding-top:16px; border-top:1px solid var(--rule)}
+
+  /* email action box, rhtcircle theme */
+  .ltc-action{background:#fff; border:1px solid var(--line); border-left:4px solid var(--accent);
+    border-radius:0 14px 14px 0; padding:20px 22px; margin:28px 0; box-shadow:0 6px 24px rgba(31,29,26,.06)}
+  .ltc-action h3{font-family:var(--serif); font-size:20px; color:var(--indigo-deep); margin:0 0 6px}
+  .ltc-action .s{font-size:15px; color:var(--ink-2); margin:0 0 14px}
+  .ltc-action .or{font-size:13.5px; color:var(--ink-3); margin:16px 0 8px}
+  .ltc-action .copy{background:var(--paper-2); border:1px dashed var(--rule-strong); border-radius:9px;
+    padding:14px; font-size:13.5px; font-family:var(--font-mono); white-space:pre-wrap; color:var(--ink); line-height:1.5}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ltc">
+<div class="wrap">
+
+  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › Long-term care</p>
+
+  <h1>Long-term care: the Espanola MOU and Sagamok</h1>
+  <p class="lede">In June 2026 Sagamok joined a regional partnership to explore building a long-term care home near Espanola. The need is real, and so are the questions members have about how the Nation committed to it.</p>
+
+  {% set banner_body %}<strong>Member-compiled and unofficial.</strong> This is a member-compiled summary, not an official communication of Sagamok Anishnawbek or any partner. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.{% endset %}
+  {% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'About this page' } only %}
+
+  <h2>What was announced</h2>
+  <ul>
+    <li>On June 26, 2026, Sagamok Anishnawbek, Whitefish River First Nation, the Town of Espanola, and the Espanola Regional Hospital and Health Centre signed a Memorandum of Understanding to explore building a long-term care home for the Espanola and Manitoulin region.</li>
+    <li>It is reported as up to 128 beds. The Town of Espanola has committed 19 acres next to the hospital. The hospital would operate the home.</li>
+    <li>It is a Memorandum of Understanding to "explore the possibility." The partners say they will now seek provincial and federal support. No timeline has been given.</li>
+    <li>The need is real: in Espanola, more than 130 people are waiting for 32 long-term care beds, and families across the region often have to seek care far from home.</li>
+  </ul>
+
+  <h2>Why members are asking questions</h2>
+  <p>Putting the Nation's name to an agreement is a significant step. Members are asking whether they were informed and had a say before it was signed, and whether the agreement was properly authorized. The public release says members "can expect opportunities to provide input as the project progresses", which raises a fair question about why input would come after the signing rather than before.</p>
+
+  <h2>Questions members are putting to Chief and Council</h2>
+  <ul class="ql">
+    <li>Who signed the MOU on Sagamok's behalf?</li>
+    <li>Did Chief and Council authorize it by resolution, and on what date?</li>
+    <li>Were members given full information and a chance to decide before the Nation committed its name?</li>
+    <li>What does the MOU guarantee for Sagamok members, in beds, jobs, or a say in the design?</li>
+    <li>Why is member input described as coming after the signing instead of before?</li>
+  </ul>
+
+  <div class="ltc-action">
+    <h3>Ask these questions yourself</h3>
+    <p class="s">You can send the questions to the Sagamok Political Office. It opens an email you can edit before sending.</p>
+    <a class="btn" href="mailto:political_office@sagamok.ca?subject=Questions%20about%20the%20long-term%20care%20MOU&amp;body=Aanii%2C%0A%0AI%20am%20a%20Sagamok%20member%20writing%20about%20the%20June%2026%20Memorandum%20of%20Understanding%20to%20explore%20a%20regional%20long-term%20care%20home%20%28Sagamok%2C%20Whitefish%20River%20First%20Nation%2C%20the%20Town%20of%20Espanola%2C%20and%20the%20Espanola%20Regional%20Hospital%29.%20I%20am%20asking%3A%0A%0A1.%20Who%20signed%20the%20MOU%20on%20Sagamok%27s%20behalf%3F%0A2.%20Did%20Chief%20and%20Council%20authorize%20it%20by%20resolution%2C%20and%20on%20what%20date%3F%0A3.%20Were%20members%20given%20full%20information%20and%20a%20chance%20to%20decide%20before%20the%20Nation%20committed%20its%20name%3F%0A4.%20What%20does%20the%20MOU%20guarantee%20for%20Sagamok%20members%2C%20in%20beds%2C%20jobs%2C%20or%20a%20say%20in%20the%20design%3F%0A5.%20Why%20is%20member%20input%20described%20as%20coming%20after%20the%20signing%20instead%20of%20before%3F%0A%0APlease%20reply%20in%20writing.%0A%0AMiigwetch%2C%0A">Email the Political Office</a>
+    <p class="or">Or copy and paste this (to political_office@sagamok.ca, subject: Questions about the long-term care MOU):</p>
+    <div class="copy">Aanii,
+
+I am a Sagamok member writing about the June 26 Memorandum of Understanding to explore a regional long-term care home (Sagamok, Whitefish River First Nation, the Town of Espanola, and the Espanola Regional Hospital). I am asking:
+
+1. Who signed the MOU on Sagamok's behalf?
+2. Did Chief and Council authorize it by resolution, and on what date?
+3. Were members given full information and a chance to decide before the Nation committed its name?
+4. What does the MOU guarantee for Sagamok members, in beds, jobs, or a say in the design?
+5. Why is member input described as coming after the signing instead of before?
+
+Please reply in writing.
+
+Miigwetch,
+[your name]</div>
+  </div>
+
+  <h2>The principle</h2>
+  <p>A commitment made in the members' name should follow from members being informed and deciding for themselves, not come before it. This is the same standard the Circle asks every council to meet: members see the information, members decide, and only then is the Nation's name committed. See the <a href="/standard">shared transparency standard and records request</a>.</p>
+
+  <h2>Sources</h2>
+  <ul class="src">
+    <li>Whitefish River First Nation, news release, "First-of-its-kind partnership to transform long-term care in Northern Ontario," June 26, 2026.</li>
+    <li>CTV News Northern Ontario, June 26, 2026.</li>
+    <li>Local coverage (Espanola / Manitoulin), June 26, 2026.</li>
+  </ul>
+
+  <p class="byline">A community resource from the Robinson Huron Treaty hub, member-led and independent. Facts are from public sources; the questions are for our leadership. Corrections welcome.</p>
+
+</div>
+</div>
+{% endblock %}
