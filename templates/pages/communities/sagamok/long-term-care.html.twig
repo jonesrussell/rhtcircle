@@ -71,6 +71,10 @@
     <li>Why is member input described as coming after the signing instead of before?</li>
   </ul>
 
+  {# Cloudflare Scrape Shield obfuscates email addresses and mailto: links by
+     default, which would require JS to decode and would mangle the plain-text
+     address in the copy-paste fallback. email_off keeps this block verbatim. #}
+  <!--email_off-->
   <div class="ltc-action">
     <h3>Ask these questions yourself</h3>
     <p class="s">You can send the questions to the Sagamok Political Office. It opens an email you can edit before sending.</p>
@@ -91,6 +95,7 @@ Please reply in writing.
 Miigwetch,
 [your name]</div>
   </div>
+  <!--/email_off-->
 
   <h2>The principle</h2>
   <p>A commitment made in the members' name should follow from members being informed and deciding for themselves, not come before it. This is the same standard the Circle asks every council to meet: members see the information, members decide, and only then is the Nation's name committed. See the <a href="/standard">shared transparency standard and records request</a>.</p>
