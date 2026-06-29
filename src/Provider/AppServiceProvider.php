@@ -216,6 +216,11 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'sagamok-how-organized' => ['/communities/sagamok/how-its-organized', 'pages/communities/sagamok/how-its-organized.html.twig'],
             'sagamok-members-website-issue' => ['/communities/sagamok/members-website-issue', 'pages/communities/sagamok/members-website-issue.html.twig'],
             'sagamok-long-term-care' => ['/communities/sagamok/long-term-care', 'pages/communities/sagamok/long-term-care.html.twig'],
+
+            // Community life: events shared across the treaty nations. The youth
+            // baseball league spans Sagamok, Serpent River, and Atikameksheng and
+            // is featured from each of their community pages.
+            'community-life-baseball' => ['/community-life/indigenous-baseball-league', 'pages/community-life/indigenous-baseball-league.html.twig'],
         ];
 
         foreach ($pages as $name => [$path, $template]) {

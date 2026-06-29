@@ -120,6 +120,16 @@
       {{ nation.history|raw }}
     </section>
 
+    {% if community_life is not empty %}
+    <section>
+      <h2 class="nh-sec">Community life</h2>
+      <p class="nh-sub">A shared event across the treaty nations, posted here so it is easier to find and use.</p>
+      <div class="nh-cards">
+        {% for t in community_life %}{{ cards.tile(t) }}{% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
     <section>
       <h2 class="nh-sec">Member transparency resources</h2>
       <p class="nh-sub">{{ tsub }}</p>

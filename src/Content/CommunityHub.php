@@ -28,7 +28,7 @@ final class CommunityHub
     /**
      * @param array<string, mixed> $nation
      *
-     * @return array{transparency: list<array<string, string|bool>>, territory: list<array<string, string|bool>>, lede: string, tsub: string}
+     * @return array{transparency: list<array<string, string|bool>>, territory: list<array<string, string|bool>>, community_life: list<array<string, string|bool>>, lede: string, tsub: string}
      */
     public static function context(string $slug, array $nation): array
     {
@@ -37,6 +37,7 @@ final class CommunityHub
         return [
             'transparency' => $transparency,
             'territory' => self::territoryCards($slug),
+            'community_life' => self::communityLife($slug),
             'lede' => self::lede((string) $nation['name'], $transparency !== []),
             'tsub' => $slug === 'sagamok'
                 ? 'Sagamok is where the shared standard became a worked example. These pages are members putting that standard into practice. They are the work of members, not of Chief and Council.'
@@ -137,6 +138,31 @@ final class CommunityHub
         }
 
         return $cards;
+    }
+
+    /**
+     * Community-life features shared across nations. The Maamwesying and Jays Care
+     * youth baseball league spans Sagamok, Serpent River, and Atikameksheng, so it
+     * is featured on each of their pages and nowhere else.
+     *
+     * @return list<array<string, string|bool>>
+     */
+    private static function communityLife(string $slug): array
+    {
+        if (!in_array($slug, ['sagamok', 'serpent-river', 'atikameksheng'], true)) {
+            return [];
+        }
+
+        return [
+            [
+                'feature' => true,
+                'tag' => 'Community life, summer 2026',
+                'title' => 'Indigenous Baseball League 2026',
+                'desc' => 'A summer youth baseball season run by Maamwesying and the Jays Care Foundation, played across Sagamok, Serpent River, and Atikameksheng. The home schedule, how kids earn points, and who to ask.',
+                'go' => 'See the league page',
+                'href' => '/community-life/indigenous-baseball-league',
+            ],
+        ];
     }
 
     private static function lede(string $name, bool $hasTransparency): string
