@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Content\CommunityHub;
 use App\Content\LandProjects;
 use App\Content\Nations;
 use App\Support\View;
@@ -35,10 +36,13 @@ final class SiteController
     }
 
     /**
-     * A per-nation community page. The unofficial banner, profile facts, and
-     * correction link are carried by the shared template; Sagamok keeps its
-     * richer hub template but receives the same profile context. Unknown slug
-     * renders the 404 page.
+     * A per-nation community page. All 21 nations render through one data-driven
+     * hub template: a wide two-column layout with a profile sidebar, the treaty
+     * history, and two card grids (member transparency resources, on the
+     * territory). Nations with no transparency work yet show an invitation card
+     * instead, and the territory grid is built from the land projects that touch
+     * the nation. The unofficial banner and correction link are carried by the
+     * template. Unknown slug renders the 404 page.
      */
     public function community(string $slug): Response
     {
@@ -47,11 +51,10 @@ final class SiteController
             return $this->html(View::render('404.html.twig', ['path' => '/communities/' . $slug]), 404);
         }
 
-        $template = $slug === 'sagamok'
-            ? 'pages/communities/sagamok.html.twig'
-            : 'pages/communities/nation.html.twig';
-
-        return $this->html(View::render($template, ['nation' => $nation]));
+        return $this->html(View::render('pages/communities/nation.html.twig', [
+            'nation' => $nation,
+            ...CommunityHub::context($slug, $nation),
+        ]));
     }
 
     /**

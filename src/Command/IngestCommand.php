@@ -6,6 +6,7 @@ namespace App\Command;
 
 use Anokii\Entity\DocChunk;
 use App\Anokii\GraphSeedData;
+use App\Content\CommunityHub;
 use App\Content\LandProjects;
 use App\Content\Nations;
 use App\Support\ChunkData;
@@ -60,8 +61,10 @@ final class IngestCommand
         '/safety/hate-and-extremism' => 'pages/safety/hate-and-extremism.html.twig',
         '/resources' => 'pages/resources/index.html.twig',
         '/resources/paying-for-school' => 'pages/resources/paying-for-school.html.twig',
+        '/communities/sagamok/awaiting-council' => 'pages/communities/sagamok/awaiting-council.html.twig',
         '/communities/sagamok/how-its-organized' => 'pages/communities/sagamok/how-its-organized.html.twig',
         '/communities/sagamok/members-website-issue' => 'pages/communities/sagamok/members-website-issue.html.twig',
+        '/communities/sagamok/long-term-care' => 'pages/communities/sagamok/long-term-care.html.twig',
         '/circle' => 'pages/circle/index.html.twig',
         '/about' => 'pages/about.html.twig',
     ];
@@ -133,13 +136,15 @@ final class IngestCommand
             $render('/land/' . (string) $project['slug'], 'pages/land/project.html.twig', ['project' => $project]);
         }
 
-        // The 21 community pages are data-driven: render each nation's profile.
+        // The 21 community pages are data-driven: render each nation's profile
+        // through the one shared hub template, with the same context the live
+        // page uses so the index matches what members see.
         foreach (Nations::all() as $nation) {
             $slug = (string) $nation['slug'];
-            $template = $slug === 'sagamok'
-                ? 'pages/communities/sagamok.html.twig'
-                : 'pages/communities/nation.html.twig';
-            $render('/communities/' . $slug, $template, ['nation' => $nation]);
+            $render('/communities/' . $slug, 'pages/communities/nation.html.twig', [
+                'nation' => $nation,
+                ...CommunityHub::context($slug, $nation),
+            ]);
         }
 
         return [$chunks, $sources];

@@ -1,4 +1,5 @@
 /vendor/
+/var/
 /storage/framework/
 /storage/cache/
 /storage/*.log
