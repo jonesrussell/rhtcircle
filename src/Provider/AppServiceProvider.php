@@ -215,6 +215,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'sagamok-awaiting-council' => ['/communities/sagamok/awaiting-council', 'pages/communities/sagamok/awaiting-council.html.twig'],
             'sagamok-how-organized' => ['/communities/sagamok/how-its-organized', 'pages/communities/sagamok/how-its-organized.html.twig'],
             'sagamok-members-website-issue' => ['/communities/sagamok/members-website-issue', 'pages/communities/sagamok/members-website-issue.html.twig'],
+            'sagamok-where-your-data-lives' => ['/communities/sagamok/where-your-data-lives', 'pages/communities/sagamok/where-your-data-lives.html.twig'],
             'sagamok-long-term-care' => ['/communities/sagamok/long-term-care', 'pages/communities/sagamok/long-term-care.html.twig'],
 
             // Community life: events shared across the treaty nations. The youth

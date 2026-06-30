@@ -83,6 +83,13 @@ final class CommunityHub
                 'href' => '/communities/sagamok/members-website-issue',
             ],
             [
+                'tag' => 'A member explainer',
+                'title' => 'Where your data actually lives',
+                'desc' => 'In plain terms: the US platforms the Nation\'s site runs on, where member data goes, which laws can reach it, and what data sovereignty really means.',
+                'go' => 'Read the explainer',
+                'href' => '/communities/sagamok/where-your-data-lives',
+            ],
+            [
                 'tag' => 'Questions for Chief and Council',
                 'title' => 'The long-term care MOU',
                 'desc' => 'Member questions about the Espanola long-term care MOU: what was authorized, by whom, and on what terms.',
