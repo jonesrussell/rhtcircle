@@ -64,6 +64,7 @@ final class IngestCommand
         '/communities/sagamok/awaiting-council' => 'pages/communities/sagamok/awaiting-council.html.twig',
         '/communities/sagamok/how-its-organized' => 'pages/communities/sagamok/how-its-organized.html.twig',
         '/communities/sagamok/members-website-issue' => 'pages/communities/sagamok/members-website-issue.html.twig',
+        '/communities/sagamok/where-your-data-lives' => 'pages/communities/sagamok/where-your-data-lives.html.twig',
         '/communities/sagamok/long-term-care' => 'pages/communities/sagamok/long-term-care.html.twig',
         '/circle' => 'pages/circle/index.html.twig',
         '/about' => 'pages/about.html.twig',
