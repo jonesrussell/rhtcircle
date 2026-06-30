@@ -216,6 +216,12 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'sagamok-how-organized' => ['/communities/sagamok/how-its-organized', 'pages/communities/sagamok/how-its-organized.html.twig'],
             'sagamok-members-website-issue' => ['/communities/sagamok/members-website-issue', 'pages/communities/sagamok/members-website-issue.html.twig'],
             'sagamok-where-your-data-lives' => ['/communities/sagamok/where-your-data-lives', 'pages/communities/sagamok/where-your-data-lives.html.twig'],
+            // HOLD FOR APPROVAL: the public IT-accountability statement. Scaffolded
+            // and routed so it can go live in one step, but kept out of the nav, the
+            // Sagamok hub cards, the sitemap, and the chat ingest corpus until
+            // Russell approves the locked statement copy. The page carries a visible
+            // draft banner. Do not surface or deploy this until then.
+            'sagamok-it-accountability' => ['/communities/sagamok/it-accountability', 'pages/communities/sagamok/it-accountability.html.twig'],
             'sagamok-long-term-care' => ['/communities/sagamok/long-term-care', 'pages/communities/sagamok/long-term-care.html.twig'],
 
             // Community life: events shared across the treaty nations. The youth

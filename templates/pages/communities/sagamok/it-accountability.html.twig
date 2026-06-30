@@ -1,0 +1,113 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+{% block main_class %}{% endblock %}
+
+{#
+  ============================================================================
+  HOLD FOR APPROVAL. DO NOT PUBLISH, LINK PUBLICLY, OR DEPLOY.
+  ============================================================================
+  Scaffold for the public IT-accountability statement. The final statement copy
+  (Russell's public statement, which includes the call for accountability) is
+  being locked separately and will be dropped into the STATEMENT block below on
+  Russell's explicit go-ahead. Until then:
+    - this page is NOT in the nav, the Sagamok hub cards, the sitemap, or the
+      chat ingest corpus, so nothing surfaces it;
+    - the visible draft banner stays until the copy is approved;
+    - the route exists only so the page is ready to go live in one step.
+  GUARDRAILS (CLAUDE.md): name no private individuals; sourced facts framed as
+  questions, not accusations; no em dashes. The statement copy must clear these
+  before it is placed and published.
+  ============================================================================
+#}
+
+{% block title %}A members' call for accountability on data and IT · Robinson Huron Treaty{% endblock %}
+{% block description %}A member statement on how Sagamok's member data and IT are handled, and what members are entitled to ask for. Draft, not yet published.{% endblock %}
+{% block og_title %}A members' call for accountability on data and IT{% endblock %}
+{% block og_description %}A member statement on how Sagamok's member data and IT are handled, and what members are entitled to ask for.{% endblock %}
+{% block body_class %}route-sagamok-it-accountability{% endblock %}
+
+{% block head_styles %}
+<style>
+  .stmtwrap{
+    --muted:var(--ink-3); --panel:var(--paper-2); --panel-2:var(--paper-3);
+    --border:var(--rule);
+    --maxw:720px;
+    background:var(--paper); color:var(--ink);
+    font:18px/1.7 var(--sans);
+    -webkit-font-smoothing:antialiased;
+  }
+  .stmtwrap *{box-sizing:border-box}
+  .stmtwrap .wrap{max-width:var(--maxw); margin:0 auto; padding:40px 22px 64px}
+  .stmtwrap a{color:var(--accent); text-decoration:none}
+  .stmtwrap a:hover{text-decoration:underline}
+  .stmtwrap .eyebrow{font-size:12.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin:0 0 16px; font-weight:600}
+  .stmtwrap h1{font-size:32px; line-height:1.18; font-weight:700; margin:0 0 16px; letter-spacing:-.01em; color:var(--indigo-deep); font-family:var(--serif)}
+  .stmtwrap .lede{font-size:19px; color:var(--ink-2); margin:0 0 8px}
+  .stmtwrap .byline{font-size:14px; color:var(--muted); margin:16px 0 0; padding-top:16px; border-top:1px solid var(--border)}
+  .stmtwrap h2{font-size:21px; line-height:1.25; font-weight:700; margin:42px 0 12px; letter-spacing:-.01em; color:var(--indigo-deep); font-family:var(--serif)}
+  .stmtwrap p{margin:0 0 16px}
+  .stmtwrap strong{color:var(--ink)}
+
+  /* The statement body placeholder, dropped in on approval. */
+  .stmt-pending{border:1px dashed var(--rule-strong); border-radius:14px; background:var(--panel); padding:26px 24px; margin:26px 0; color:var(--muted)}
+  .stmt-pending p{margin:0 0 10px}
+  .stmt-pending p:last-child{margin:0}
+
+  /* Prominent link to the data explainer (the factual backdrop). */
+  .read-first{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px 24px;
+    background:var(--panel); border:1px solid var(--rule); border-left:5px solid var(--magenta);
+    border-radius:14px; padding:20px 24px; margin:26px 0}
+  .read-first__h{font-family:var(--serif); font-size:clamp(20px,3vw,24px); font-weight:600; line-height:1.15; color:var(--indigo-deep); margin:0 0 6px}
+  .read-first__line{font-size:15px; line-height:1.5; color:var(--ink-2); margin:0; max-width:60ch}
+  .read-first__btn{flex:none; font-family:var(--sans); font-size:15px; font-weight:700; color:#fff; background:var(--indigo); border-radius:999px; padding:12px 24px; text-decoration:none; white-space:nowrap}
+  .read-first__btn:hover{background:var(--indigo-deep); text-decoration:none}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="stmtwrap">
+<div class="wrap">
+
+  {# Visible draft marker: stays until the copy is approved and this page is published. #}
+  <div class="notice notice--caveat" role="note">
+    <strong>Draft, not yet published.</strong> This page is a placeholder. The statement copy is
+    being finalized and will appear here once approved. It is not linked from the rest of the site.
+  </div>
+
+  <p class="eyebrow">Sagamok · A member statement</p>
+  <h1>A members' call for accountability on data and IT</h1>
+  <p class="lede">A member statement on how the Nation's member data and IT are handled, what the public record shows, and what members are entitled to ask of Chief and Council and the offices that answer to them.</p>
+  <p class="byline">From Russell Jones, a Sagamok Anishnawbek member.</p>
+
+  {# ----------------------------------------------------------------------
+     STATEMENT. Russell's locked copy goes here on his go-ahead. Keep it
+     within the guardrails: sourced facts as questions, name no private
+     individuals, no accusations, no em dashes.
+     ---------------------------------------------------------------------- #}
+  <div class="stmt-pending">
+    <p><strong>[ Statement copy pending. ]</strong></p>
+    <p>The final wording of the public statement, including the call for accountability, is being locked and will be placed here once Russell gives the go-ahead.</p>
+  </div>
+
+  <h2>Start with where the data lives</h2>
+  <p>This statement rests on a plain-language explainer of how the Nation's website and member data actually work: the US platforms it runs on, where member information goes, and which laws can reach it. Read that first.</p>
+
+  <div class="read-first">
+    <div>
+      <p class="read-first__h">Where does your community's data actually live?</p>
+      <p class="read-first__line">The platforms behind the Nation's site, where member data goes, which laws reach it, and what data sovereignty really means, in plain terms.</p>
+    </div>
+    <a class="read-first__btn" href="/communities/sagamok/where-your-data-lives">Read the explainer</a>
+  </div>
+
+  <p>For the record of the members-only website issue that was reported and has since been fixed, see <a href="/communities/sagamok/members-website-issue">the members-only website issue</a>.</p>
+
+  <footer class="byline">
+    From Russell Jones, a Sagamok Anishnawbek member. This is a member-led statement, independent of
+    Sagamok Chief and Council and its administration. It works from the public record and asks
+    questions. Corrections are welcome.
+  </footer>
+
+</div>
+</div>
+{% endblock %}
