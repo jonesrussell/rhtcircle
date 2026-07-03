@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 {% set nav = 'communities' %}
-{% block main_class %}{% endblock %}
+{% block main_class %}wrap{% endblock %}
 
 {#
   Plain-language data-sovereignty explainer for members, restored to the Circle
@@ -21,22 +21,13 @@
 
 {% block head_styles %}
   <style>
-    /* Data-sovereignty explainer. Light editorial page on the Circle's tokens,
-       with two custom "specimen" visuals (the CDN URL anatomy and the data map)
+    /* Data-sovereignty explainer. Reading template (shared shell): the plain
+       .wrap container (720px measure) from base.html.twig; h1/h2/eyebrow/lead
+       all come from the global type scale, no page-local overrides. Two
+       custom "specimen" visuals (the CDN URL anatomy and the data map)
        rendered on the site's dark statement surface so they read clearly.
-       Namespaced .dsv-* so nothing collides with site.css. */
-    .dsv-wrap { max-width: var(--max-wide); margin: 0 auto; padding: var(--gap-7) var(--gap-5) var(--gap-9); }
-    /* Wide explainer frame: the dark specimens and the embedded CTA use the full
-       width; running prose stays at a readable measure. */
-    .dsv-wrap > h1, .dsv-wrap > h2, .dsv-wrap > p, .dsv-wrap > ul { max-width: 74ch; }
-    .dsv-wrap .eyebrow { font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 16px; font-weight: 600; }
-    .dsv-wrap h1 { font-family: var(--serif); font-size: clamp(28px, 4.2vw, 38px); line-height: 1.15; letter-spacing: -0.01em; font-weight: 600; color: var(--indigo-deep); margin: 0 0 var(--gap-3); }
-    .dsv-wrap .lede { font-size: 19px; color: var(--ink-2); margin: 0 0 8px; }
-    .dsv-wrap h2 { font-family: var(--serif); font-size: 22px; line-height: 1.25; font-weight: 600; letter-spacing: -0.01em; color: var(--indigo-deep); margin: var(--gap-7) 0 var(--gap-3); }
-    .dsv-wrap p { margin: 0 0 var(--gap-3); }
-    .dsv-wrap strong { color: var(--ink); font-weight: 600; }
-
-    .dsv-byline { font-size: 14px; color: var(--ink-3); margin: var(--gap-4) 0 0; padding-top: var(--gap-4); border-top: 1px solid var(--rule); }
+       Namespaced .dsv-* for what's unique to this page only. */
+    main .wrap { padding-top: var(--gap-7); padding-bottom: var(--gap-9); }
 
     .dsv-wrap ul { list-style: none; padding-left: 0; margin: 0 0 var(--gap-4); }
     .dsv-wrap li { position: relative; padding-left: 20px; margin: 0 0 10px; }
@@ -72,8 +63,8 @@
 
   <p class="eyebrow">Sagamok · A member explainer</p>
   <h1>Where does your community's data actually live?</h1>
-  <p class="lede">Most First Nations and small municipal websites run on the same few tools, owned by companies in another country, on clouds the community does not control. So a simple question turns out to be hard: when you put your information into your community's website, where does it go, who can reach it, and whose laws decide? Here it is in plain terms, using the Sagamok members portal as the example.</p>
-  <p class="dsv-byline">From Russell Jones, a Sagamok Anishnawbek member. This explains how the technology works and is not legal advice. June 2026.</p>
+  <p class="lead">Most First Nations and small municipal websites run on the same few tools, owned by companies in another country, on clouds the community does not control. So a simple question turns out to be hard: when you put your information into your community's website, where does it go, who can reach it, and whose laws decide? Here it is in plain terms, using the Sagamok members portal as the example.</p>
+  <p class="cover__byline">From Russell Jones, a Sagamok Anishnawbek member. This explains how the technology works and is not legal advice. June 2026.</p>
 
   <h2>The pieces, in plain words</h2>
   <p>A site like this is not one thing. It is a stack of services, each owned by a different company:</p>
@@ -180,13 +171,13 @@
     <li>What would it take to move the most sensitive data onto infrastructure we control?</li>
   </ul>
 
-  <div class="cta">
-    <div>
-      <p class="cta__h">These are the records members are asking for</p>
-      <p class="cta__line">The same questions, put on the record: when the Nation invests in businesses and ventures, what are the benefits to the membership, and who is being served? Members are signing on to ask Council for clear answers.</p>
-    </div>
-    <a class="cta__btn" href="/standard/records-request">Read the records request</a>
-  </div>
+  {% include 'components/cta_callout.html.twig' with {
+    id: 'dsv-records',
+    heading: 'These are the records members are asking for',
+    line: 'The same questions, put on the record: when the Nation invests in businesses and ventures, what are the benefits to the membership, and who is being served? Members are signing on to ask Council for clear answers.',
+    button_label: 'Read the records request',
+    href: '/standard/records-request',
+  } only %}
 
   <h2>Sources</h2>
   <ul>
@@ -197,13 +188,13 @@
     <li>The <a href="/communities/sagamok/members-website-issue">Sagamok members-only website issue, reported and resolved</a>, the live case study this explainer accompanies.</li>
   </ul>
 
-  <nav class="dsv-byline" aria-label="Related on this hub">
+  <nav class="cover__byline" aria-label="Related on this hub">
     Related: <a href="/communities/sagamok/members-website-issue">the members-only website issue</a> ·
     <a href="/communities/sagamok/how-its-organized">how Sagamok is organized</a> ·
     <a href="/standard/records-request">the records request</a>
   </nav>
 
-  <p class="dsv-note">From Russell Jones, a Sagamok Anishnawbek member. It explains how this technology works and what it means for community data. It is general information, not legal advice; for decisions that rely on the legal points, confirm with a privacy lawyer. Independent of Sagamok Chief and Council, and of Webflow, Memberstack, and the other companies named. Corrections welcome.</p>
+  <p class="muted" style="margin-top: var(--gap-4);">From Russell Jones, a Sagamok Anishnawbek member. It explains how this technology works and what it means for community data. It is general information, not legal advice; for decisions that rely on the legal points, confirm with a privacy lawyer. Independent of Sagamok Chief and Council, and of Webflow, Memberstack, and the other companies named. Corrections welcome.</p>
 
 </div>
 {% endblock %}

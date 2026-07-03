@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 {% set nav = 'communities' %}
-{% block main_class %}{% endblock %}
+{% block main_class %}wrap{% endblock %}
 
 {% block title %}Questions awaiting an answer: Sagamok Chief and Council · Robinson Huron Treaty{% endblock %}
 {% block description %}A member-compiled, growing record of questions members have put to Sagamok Chief and Council that are still awaiting a reply, each tied to a public source or an as-filed document, with the date asked and the status.{% endblock %}
@@ -9,18 +9,7 @@
 
 {% block head_styles %}
 <style>
-  .awc{ --maxw:720px; color:var(--ink); font:18px/1.7 var(--sans); -webkit-font-smoothing:antialiased }
-  .awc *{box-sizing:border-box}
-  .awc .wrap{max-width:var(--maxw); margin:0 auto; padding:40px 22px 64px}
-  .awc a{color:var(--accent); text-decoration:none}
-  .awc a:hover{text-decoration:underline}
-  .awc .crumb{font-size:12.5px; color:var(--ink-3); margin:0 0 16px}
-  .awc .crumb a{color:var(--accent)}
-  .awc h1{font-size:32px; line-height:1.18; font-weight:700; margin:0 0 12px; letter-spacing:-.01em; color:var(--indigo-deep); font-family:var(--serif)}
-  .awc .lede{font-size:19px; color:var(--ink-2); margin:0 0 18px}
-  .awc h2{font-size:21px; line-height:1.25; font-weight:700; margin:40px 0 14px; letter-spacing:-.01em; color:var(--indigo-deep); font-family:var(--serif)}
-  .awc p{margin:0 0 16px}
-  .awc strong{color:var(--ink)}
+  main .wrap { padding-top: 40px; padding-bottom: 64px; }
 
   /* question entries */
   .awc-item{background:#fff; border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:18px 22px; margin:0 0 16px}
@@ -32,18 +21,14 @@
   .awc-empty{background:var(--paper-2); border:1px dashed var(--rule-strong); border-radius:12px; padding:16px 20px; color:var(--ink-3); font-size:15px}
   .awc-how{margin:0 0 14px; padding-left:22px}
   .awc-how li{margin:0 0 10px; line-height:1.6; color:var(--ink-2)}
-  .awc-byline{font-size:14px; color:var(--ink-3); margin:34px 0 0; padding-top:16px; border-top:1px solid var(--rule)}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="awc">
-<div class="wrap">
-
   <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › Questions awaiting an answer</p>
 
   <h1>Questions awaiting an answer</h1>
-  <p class="lede">A growing record of questions members have put to Sagamok Chief and Council, and to the Nation's offices, that are still awaiting a reply. Each entry is tied to a public source or an as-filed document, framed as a question, not an accusation. We post the date asked and the status, and we update it as answers come in. Where there is no reply, that is recorded too. Silence is its own kind of answer.</p>
+  <p class="lead">A growing record of questions members have put to Sagamok Chief and Council, and to the Nation's offices, that are still awaiting a reply. Each entry is tied to a public source or an as-filed document, framed as a question, not an accusation. We post the date asked and the status, and we update it as answers come in. Where there is no reply, that is recorded too. Silence is its own kind of answer.</p>
 
   {% set banner_body %}<strong>Member-compiled and unofficial.</strong> This is independent and member-led. It is not the Robinson Huron Treaty Litigation Fund and is not affiliated with it. It takes no side; it points to what the documents say. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.{% endset %}
   {% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'About this page' } only %}
@@ -110,8 +95,5 @@
     <li>This is a member resource. If you have asked Council something and are still waiting, or if you think we have a detail wrong, <a href="/about#corrections">tell the Circle</a> and we will record it or correct it.</li>
   </ul>
 
-  <p class="awc-byline">A community resource from the Robinson Huron Treaty hub, member-led and independent. Facts are from public sources; the questions are for our leadership. Corrections welcome.</p>
-
-</div>
-</div>
+  <p class="cover__byline">A community resource from the Robinson Huron Treaty hub, member-led and independent. Facts are from public sources; the questions are for our leadership. Corrections welcome.</p>
 {% endblock %}

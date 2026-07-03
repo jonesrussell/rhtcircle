@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 {% set nav = 'communities' %}
-{% block main_class %}{% endblock %}
+{% block main_class %}wrap{% endblock %}
 
 {#
   SAFETY: this is a responsible-disclosure record of a now-RESOLVED issue.
@@ -16,55 +16,39 @@
 
 {% block head_styles %}
 <style>
-  .docwrap{
+  .mwi{
     --muted:var(--ink-3); --panel:var(--paper-2); --panel-2:var(--paper-3);
     --border:var(--rule); --warn:var(--accent-deep);
-    --maxw:680px;
-    background:var(--paper); color:var(--ink);
-    font:18px/1.7 var(--font-sans);
-    -webkit-font-smoothing:antialiased;
   }
-  .docwrap *{box-sizing:border-box}
-  .docwrap .wrap{max-width:var(--maxw); margin:0 auto; padding:40px 22px 64px}
-  .docwrap a{color:var(--accent); text-decoration:none}
-  .docwrap a:hover{text-decoration:underline}
-  .docwrap .eyebrow{font-size:12.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin:0 0 16px; font-weight:600}
-  .docwrap h1{font-size:32px; line-height:1.18; font-weight:700; margin:0 0 16px; letter-spacing:-.01em; color:var(--indigo-deep); font-family:var(--serif)}
-  .docwrap .lede{font-size:19px; color:var(--ink-2); margin:0 0 8px}
-  .docwrap .byline{font-size:14px; color:var(--muted); margin:16px 0 0; padding-top:16px; border-top:1px solid var(--border)}
-  .docwrap h2{font-size:21px; line-height:1.25; font-weight:700; margin:42px 0 12px; letter-spacing:-.01em; color:var(--indigo-deep); font-family:var(--serif)}
-  .docwrap p{margin:0 0 16px}
-  .docwrap strong{color:var(--ink)}
-  .docwrap .hl{background:var(--accent-wash); color:var(--ink); padding:.03em .28em; border-radius:4px; font-weight:600; box-decoration-break:clone; -webkit-box-decoration-break:clone}
-  .docwrap .hlw{background:var(--accent-wash); color:var(--ink); padding:.03em .28em; border-radius:4px; font-weight:600; box-decoration-break:clone; -webkit-box-decoration-break:clone}
-  .docwrap .summary{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:8px 22px 12px; margin:26px 0 8px}
-  .docwrap .summary p.h{font-size:12.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:600; margin:16px 0 10px}
-  .docwrap ul{margin:0 0 18px; padding-left:0; list-style:none}
-  .docwrap li{position:relative; padding-left:22px; margin:0 0 11px}
-  .docwrap li::before{content:""; position:absolute; left:3px; top:12px; width:6px; height:6px; border-radius:50%; background:var(--accent)}
-  .docwrap .pull{font-size:21px; line-height:1.4; color:var(--ink); font-weight:600; border-left:3px solid var(--accent); padding:4px 0 4px 20px; margin:22px 0}
-  .docwrap .timeline{position:relative; margin:16px 0 18px; padding-left:36px}
-  .docwrap .timeline::before{content:""; position:absolute; left:9px; top:8px; bottom:12px; width:2px; background:linear-gradient(180deg,var(--accent),var(--border))}
-  .docwrap .tl{position:relative; padding:0 0 24px}
-  .docwrap .tl:last-child{padding-bottom:0}
-  .docwrap .tl::before{content:""; position:absolute; left:-36px; top:2px; width:20px; height:20px; border-radius:50%; background:var(--panel-2); border:3px solid var(--accent)}
-  .docwrap .tl .when{display:inline-block; font-size:13.5px; letter-spacing:.03em; color:var(--accent); font-weight:700; margin:0 0 5px}
-  .docwrap .tl p{margin:0; color:var(--ink-2); font-size:16px; line-height:1.55}
-  .docwrap .status{border-left:3px solid var(--warn); background:var(--panel-2); padding:14px 18px; border-radius:0 10px 10px 0; color:var(--ink-2); font-size:16.5px}
-  .docwrap .tech{font-size:14.5px; color:var(--muted); background:var(--panel-2); border:1px solid var(--border); border-radius:10px; padding:15px 18px; margin:20px 0 0; line-height:1.55}
-  .docwrap .tech b{color:var(--ink-2)}
-  .docwrap footer{margin-top:50px; padding-top:20px; border-top:1px solid var(--border); color:var(--muted); font-size:14px}
+  main .wrap { padding-top: 40px; padding-bottom: 64px; }
+  .mwi .hl{background:var(--accent-wash); color:var(--ink); padding:.03em .28em; border-radius:4px; font-weight:600; box-decoration-break:clone; -webkit-box-decoration-break:clone}
+  .mwi .hlw{background:var(--accent-wash); color:var(--ink); padding:.03em .28em; border-radius:4px; font-weight:600; box-decoration-break:clone; -webkit-box-decoration-break:clone}
+  .mwi .summary{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:8px 22px 12px; margin:26px 0 8px}
+  .mwi .summary p.h{font-size:12.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:600; margin:16px 0 10px}
+  .mwi ul{margin:0 0 18px; padding-left:0; list-style:none}
+  .mwi li{position:relative; padding-left:22px; margin:0 0 11px}
+  .mwi li::before{content:""; position:absolute; left:3px; top:12px; width:6px; height:6px; border-radius:50%; background:var(--accent)}
+  .mwi .pull{font-size:21px; line-height:1.4; color:var(--ink); font-weight:600; border-left:3px solid var(--accent); padding:4px 0 4px 20px; margin:22px 0}
+  .mwi .timeline{position:relative; margin:16px 0 18px; padding-left:36px}
+  .mwi .timeline::before{content:""; position:absolute; left:9px; top:8px; bottom:12px; width:2px; background:linear-gradient(180deg,var(--accent),var(--border))}
+  .mwi .tl{position:relative; padding:0 0 24px}
+  .mwi .tl:last-child{padding-bottom:0}
+  .mwi .tl::before{content:""; position:absolute; left:-36px; top:2px; width:20px; height:20px; border-radius:50%; background:var(--panel-2); border:3px solid var(--accent)}
+  .mwi .tl .when{display:inline-block; font-size:13.5px; letter-spacing:.03em; color:var(--accent); font-weight:700; margin:0 0 5px}
+  .mwi .tl p{margin:0; color:var(--ink-2); font-size:16px; line-height:1.55}
+  .mwi .status{border-left:3px solid var(--warn); background:var(--panel-2); padding:14px 18px; border-radius:0 10px 10px 0; color:var(--ink-2); font-size:16.5px}
+  .mwi .tech{font-size:14.5px; color:var(--muted); background:var(--panel-2); border:1px solid var(--border); border-radius:10px; padding:15px 18px; margin:20px 0 0; line-height:1.55}
+  .mwi .tech b{color:var(--ink-2)}
+  .mwi footer{margin-top:50px; padding-top:20px; border-top:1px solid var(--border); color:var(--muted); font-size:14px}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="docwrap">
-<div class="wrap">
-
+<div class="mwi">
   <p class="eyebrow">Sagamok · A members' record</p>
   <h1>A members-only website issue, reported and resolved</h1>
-  <p class="lede">For a period, our members-only pages <span class="hlw">loaded before the login screen appeared</span>, so some content could be reached without signing in. It was reported to the Nation and has since been fixed. Here is what happened, in plain terms.</p>
-  <p class="byline">From Russell Jones, a Sagamok Anishnawbek member. May 31, 2026.</p>
+  <p class="lead">For a period, our members-only pages <span class="hlw">loaded before the login screen appeared</span>, so some content could be reached without signing in. It was reported to the Nation and has since been fixed. Here is what happened, in plain terms.</p>
+  <p class="cover__byline">From Russell Jones, a Sagamok Anishnawbek member. May 31, 2026.</p>
 
   <p class="status"><strong>Status: resolved.</strong> This issue was reported to Sagamok Anishnawbek and has since been fixed (as of June 3, 2026). Nothing described on this page is currently exploitable. The page is kept as a dated record of a now-resolved issue.</p>
 

@@ -62,6 +62,14 @@ final class CommunityHub
             ],
             [
                 'feature' => true,
+                'tag' => "A member's public statement",
+                'title' => 'A call for the resignation of the Director of IT and Communications',
+                'desc' => 'Two serious IT and data failures, raised properly and privately first, met with silence. A member is now asking publicly.',
+                'go' => 'Read the statement',
+                'href' => '/communities/sagamok/it-accountability',
+            ],
+            [
+                'feature' => true,
                 'tag' => 'New, growing list',
                 'title' => 'Questions awaiting an answer',
                 'desc' => 'A living record of member questions to Chief and Council and the offices, still awaiting a reply, with the date asked and the status. Silence is its own answer.',

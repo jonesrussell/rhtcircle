@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+{% block main_class %}wrap{% endblock %}
+
+{#
+  A Sagamok member's public statement calling for the resignation of the
+  Director of IT and Communications. Content is Russell Jones's own public
+  statement, already posted publicly; refers to the office by title, names no
+  individual. Reading/statement template (shared shell).
+#}
+
+{% block title %}A call for the resignation of the Director of IT and Communications · Robinson Huron Treaty{% endblock %}
+{% block description %}A Sagamok member's public statement: a call for the resignation of the Director of IT and Communications, over the Child and Family Advocacy Unit's insecure systems and the members-only portal exposure.{% endblock %}
+{% block og_title %}A call for the resignation of the Director of IT and Communications{% endblock %}
+{% block og_description %}A Sagamok member's public statement, shared in good faith.{% endblock %}
+{% block body_class %}route-sagamok-it-accountability{% endblock %}
+
+{% block head_styles %}
+  <style>
+    main .wrap { padding-top: var(--gap-7); padding-bottom: var(--gap-9); }
+  </style>
+{% endblock %}
+
+{% block content %}
+<p class="eyebrow">A Sagamok member's public statement</p>
+<h1>A call for the resignation of the Director of IT and Communications</h1>
+
+<p>I am calling, publicly, for the resignation of the Director of IT and Communications. I do not do this lightly, and I did not start here. I raised these concerns properly, in good faith, and privately first. I was met with silence.</p>
+
+<p>Two serious failures sit with this office. In 2023 I raised that the systems holding case information for the unit that serves our most vulnerable children and families, the Child and Family Advocacy Unit, were inadequate and insecure. Three years later I am still waiting for an answer. This year, the entire members-only portal, every protected page and document inside it, was left open to the public through a misconfigured site. That is not my opinion. Two independent IT firms reviewed it and confirmed the same thing.</p>
+
+<p>And it runs deeper than one exposure. Our members' names, registration numbers, and contact details do not sit in our community, or even only in Canada. They sit with a handful of United States companies, on United States controlled infrastructure, reachable under United States law without our consent and without a Canadian court. This is the opposite of OCAP, the data sovereignty standard our own people fought to establish. <a href="/communities/sagamok/where-your-data-lives">See where our data actually sits</a>.</p>
+
+<p>I already asked Chief and Council, in writing, for the resignation of the Director of IT and Communications. I received no response. So I am asking publicly now.</p>
+
+<p>When the office responsible for protecting members' information presides over failures this serious, and our leadership will not even respond, it has forfeited the trust that role requires. The Director of IT and Communications should resign, and Chief and Council should answer for their silence.</p>
+
+<p>Our members' information, and above all the children and families the CFAU exists to protect, deserve better than this.</p>
+
+<p class="cover__byline">Russell Jones, Sagamok Anishnawbek member.</p>
+
+<p class="notice">A member's public statement, shared in good faith. Refers to offices and roles by title, not to any individual by name.</p>
+{% endblock %}

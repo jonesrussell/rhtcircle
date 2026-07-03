@@ -2,6 +2,15 @@
 {% set nav = 'communities' %}
 {% block main_class %}{% endblock %}
 
+{#
+  Hub template (shared shell): the reference layout per the design brief.
+  Uses the shared wrap--wide container (matches the header exactly) for both
+  the hero and the hub-grid, and the shared component library (tile-card,
+  side-panel, sources-band) instead of page-local classes. main_class is
+  blanked only so the sources band below can be full-bleed; every other
+  section explicitly applies wrap/wrap--wide itself.
+#}
+
 {% block title %}{{ nation.name }} · Communities · Robinson Huron Treaty{% endblock %}
 {% block description %}{{ nation.name }}: a member-compiled, unofficial profile. {{ nation.sub_region }}, near {{ nation.nearest_town }}. Population, governance, the treaty relationship, the nation's own website, and sources.{% endblock %}
 {% block og_description %}A member-compiled, unofficial, sourced profile of {{ nation.name }}, one of the 21 Robinson Huron Treaty First Nations.{% endblock %}
@@ -9,79 +18,23 @@
 
 {% block head_styles %}
 <style>
-  /* Community hub: a wide two-column layout on the site shell + site.css tokens
-     (follows the light/dark toggle). Scoped .nh-*. Layout per the redesign
-     reference; palette is the rht brand, not the mockup's teal. */
-  .nh-wrap{ max-width:1240px; margin:0 auto; padding:0 28px }
-  .nh-hero{ background:linear-gradient(180deg, var(--paper-2), var(--paper)); border-bottom:1px solid var(--line) }
-  .nh-hero .nh-wrap{ padding-top:34px; padding-bottom:36px }
-  .nh-crumb{ font-family:var(--sans); font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent-deep); margin:0 0 14px; font-weight:600 }
-  .nh-hero h1{ font-family:var(--serif); font-size:clamp(32px,5vw,50px); line-height:1.06; margin:0 0 14px; color:var(--indigo-deep); font-weight:600 }
-  .nh-lede{ font-size:clamp(16px,1.5vw,19px); color:var(--ink); max-width:760px; margin:0; line-height:1.6 }
-  .nh-loc{ display:inline-flex; align-items:center; gap:8px; margin-top:18px; font-family:var(--sans); font-size:14px; color:var(--ink-2); background:var(--paper); border:1px solid var(--line); padding:7px 14px; border-radius:30px }
-  .nh-loc::before{ content:""; width:8px; height:8px; border-radius:50%; background:var(--accent) }
+  /* Hero band: full-bleed gradient background, shared wrap--wide inside it.
+     Decorative only (brand look, not structure), kept per the brief's
+     "keep the existing visual brand" instruction. */
+  .nh-hero { background: linear-gradient(180deg, var(--paper-2), var(--paper)); border-bottom: 1px solid var(--line); }
+  .nh-hero .wrap { padding-top: 34px; padding-bottom: 36px; }
+  .nh-crumb { font-family: var(--sans); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--magenta-deep); margin: 0 0 14px; font-weight: 600; }
+  .nh-hero h1 { max-width: none; }
+  .nh-lede { font-size: clamp(16px, 1.5vw, 19px); color: var(--ink); max-width: 760px; margin: 0; line-height: 1.6; }
+  .nh-loc { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; font-family: var(--sans); font-size: 14px; color: var(--ink-2); background: var(--paper); border: 1px solid var(--line); padding: 7px 14px; border-radius: 30px; }
+  .nh-loc::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--magenta); }
 
-  .nh-main{ padding:40px 0 10px }
-  .nh-grid{ display:grid; grid-template-columns:320px 1fr; gap:44px; align-items:start }
-  @media(max-width:900px){ .nh-grid{ grid-template-columns:1fr; gap:30px } }
-
-  .nh-side{ position:sticky; top:18px; display:flex; flex-direction:column; gap:18px }
-  @media(max-width:900px){ .nh-side{ position:static } }
-  .nh-card{ background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:22px 24px }
-  .nh-card h2{ font-family:var(--serif); font-size:18px; margin:0 0 14px; color:var(--indigo-deep); font-weight:600 }
-  .nh-facts div{ padding:11px 0; border-top:1px solid var(--line) }
-  .nh-facts div:first-child{ border-top:none; padding-top:0 }
-  .nh-facts dt{ font-family:var(--sans); font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-3); margin-bottom:3px }
-  .nh-facts dd{ margin:0; font-size:14.5px; color:var(--ink) }
-  .nh-extlink{ display:block; background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:14px 18px; font-size:14.5px; color:var(--indigo-deep); font-weight:600 }
-  .nh-extlink:hover{ border-color:var(--accent); text-decoration:none }
-  .nh-extlink span{ display:block; font-size:11.5px; color:var(--ink-3); font-weight:400; margin-top:2px }
-  .nh-disc{ background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:18px 20px; font-size:13px; color:var(--ink-2); line-height:1.55 }
-  .nh-disc b{ color:var(--ink) }
-  .nh-disc a{ color:var(--accent-deep) }
-
-  .nh-content > section{ margin-bottom:40px }
-  .nh-sec{ font-family:var(--serif); font-size:26px; color:var(--indigo-deep); margin:0 0 6px; font-weight:600 }
-  .nh-sub{ color:var(--ink-2); font-size:15px; margin:0 0 20px; max-width:720px }
-  .nh-prose p{ font-size:16px; color:var(--ink); max-width:720px; margin:0 0 14px; line-height:1.7 }
-  .nh-prose h3{ font-family:var(--serif); font-size:18px; color:var(--indigo-deep); margin:22px 0 8px }
-  .nh-prose ul{ max-width:720px; color:var(--ink) }
-
-  .nh-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(248px,1fr)); gap:16px }
-  .nh-tile{ display:flex; flex-direction:column; background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:20px 22px; transition:transform .15s, border-color .15s, box-shadow .15s }
-  .nh-tile:hover{ transform:translateY(-3px); border-color:var(--accent); box-shadow:0 8px 24px rgba(79,47,176,.10); text-decoration:none }
-  .nh-tile .nh-tag{ font-family:var(--sans); font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--accent-deep); margin-bottom:9px; font-weight:700 }
-  .nh-tile h3{ font-family:var(--serif); font-size:19px; color:var(--indigo-deep); margin:0 0 7px; font-weight:600 }
-  .nh-tile p{ font-size:14px; color:var(--ink-2); margin:0 0 16px; line-height:1.5; flex:1 }
-  .nh-tile .nh-go{ font-size:13.5px; color:var(--accent-deep); font-weight:600 }
-  .nh-tile.feature{ border-color:var(--accent); background:linear-gradient(180deg, var(--accent-wash), var(--paper)) }
-  .nh-tile.invite{ border-style:dashed; background:var(--paper-2) }
-
-  .nh-pillrow{ display:flex; gap:12px; flex-wrap:wrap }
-  .nh-pill{ display:inline-flex; align-items:center; background:var(--indigo); color:#fff; padding:11px 22px; border-radius:30px; font-size:14px; font-weight:600 }
-  .nh-pill:hover{ background:var(--indigo-deep); text-decoration:none; color:#fff }
-  .nh-pill.ghost{ background:transparent; color:var(--indigo); border:1px solid var(--indigo) }
-  .nh-pill.ghost:hover{ background:var(--paper-3); color:var(--indigo-deep) }
-
-  .nh-band{ background:var(--paper-2); border-top:1px solid var(--line); margin-top:24px }
-  .nh-band .nh-wrap{ padding:30px 28px }
-  .nh-band h2{ font-family:var(--serif); font-size:18px; color:var(--indigo-deep); margin:0 0 12px }
-  .nh-srcs{ display:flex; flex-wrap:wrap; gap:10px 26px; font-size:14px; margin:0; padding:0; list-style:none }
-  .nh-updated{ font-size:13px; color:var(--ink-3); margin-top:16px; max-width:90ch }
+  .hub-content > section { margin-bottom: 40px; }
 </style>
 {% endblock %}
 
-{% macro tile(t) %}
-  <a class="nh-tile{% if t.feature %} feature{% endif %}{% if t.invite %} invite{% endif %}" href="{{ t.href }}">
-    <span class="nh-tag">{{ t.tag }}</span>
-    <h3>{{ t.title }}</h3>
-    <p>{{ t.desc }}</p>
-    <span class="nh-go">{{ t.go }} &rarr;</span>
-  </a>
-{% endmacro %}
-
 {% block hero %}
-<header class="nh-hero"><div class="nh-wrap">
+<header class="nh-hero"><div class="wrap wrap--wide">
   <p class="nh-crumb">Communities &middot; {{ nation.region_name }}</p>
   <h1>{{ nation.name }}</h1>
   <p class="nh-lede">{{ lede }}</p>
@@ -90,86 +43,87 @@
 {% endblock %}
 
 {% block content %}
-{% import _self as cards %}
-<div class="nh-main"><div class="nh-wrap"><div class="nh-grid">
+<div class="wrap wrap--wide" style="padding-top: 40px;">
+  <div class="hub-grid">
 
-  <aside class="nh-side">
-    <div class="nh-card">
-      <h2>Profile</h2>
-      <dl class="nh-facts">
-        {% if nation.anishinaabemowin %}<div><dt>Anishinaabemowin</dt><dd>{{ nation.anishinaabemowin }}</dd></div>{% endif %}
-        {% if nation.sub_region %}<div><dt>Sub-region</dt><dd>{{ nation.sub_region }}</dd></div>{% endif %}
-        {% if nation.nearest_town %}<div><dt>Location</dt><dd>{{ nation.nearest_town }}</dd></div>{% endif %}
-        {% if nation.population_total %}<div><dt>Population</dt><dd>{{ nation.population_total }}{% if nation.population_on_reserve %}, {{ nation.population_on_reserve }} on-reserve{% endif %}</dd></div>{% endif %}
-        {% if nation.governance %}<div><dt>Governance</dt><dd>{{ nation.governance }}</dd></div>{% endif %}
-        {% if nation.language %}<div><dt>Primary language</dt><dd>{{ nation.language }}</dd></div>{% endif %}
-        {% if nation.tribal_council %}<div><dt>Tribal council</dt><dd>{{ nation.tribal_council }}</dd></div>{% endif %}
-      </dl>
+    <aside class="side-panel">
+      <div class="side-card">
+        <h2>Profile</h2>
+        <dl class="facts-list">
+          {% if nation.anishinaabemowin %}<div><dt>Anishinaabemowin</dt><dd>{{ nation.anishinaabemowin }}</dd></div>{% endif %}
+          {% if nation.sub_region %}<div><dt>Sub-region</dt><dd>{{ nation.sub_region }}</dd></div>{% endif %}
+          {% if nation.nearest_town %}<div><dt>Location</dt><dd>{{ nation.nearest_town }}</dd></div>{% endif %}
+          {% if nation.population_total %}<div><dt>Population</dt><dd>{{ nation.population_total }}{% if nation.population_on_reserve %}, {{ nation.population_on_reserve }} on-reserve{% endif %}</dd></div>{% endif %}
+          {% if nation.governance %}<div><dt>Governance</dt><dd>{{ nation.governance }}</dd></div>{% endif %}
+          {% if nation.language %}<div><dt>Primary language</dt><dd>{{ nation.language }}</dd></div>{% endif %}
+          {% if nation.tribal_council %}<div><dt>Tribal council</dt><dd>{{ nation.tribal_council }}</dd></div>{% endif %}
+        </dl>
+      </div>
+      {% if nation.website %}
+        <a class="side-extlink" href="{{ nation.website }}" target="_blank" rel="noopener">The nation's own website<span>{% if nation.website_label %}{{ nation.website_label }}, {% endif %}the authority. We do not run it.</span></a>
+      {% elseif nation.website_note %}
+        <div class="notice">{{ nation.website_note }}</div>
+      {% endif %}
+      <div class="notice"><strong>Member-compiled and unofficial.</strong> Drawn from public sources. Not an official communication of {{ nation.name }} or its Chief and Council. Details change over time, so the nation's own website is the authority. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.</div>
+    </aside>
+
+    <div class="hub-content">
+      <section>
+        <h2>History and treaty relationship</h2>
+        <div class="measure">{{ nation.history|raw }}</div>
+      </section>
+
+      {% if community_life is not empty %}
+      <section>
+        <h2>Community life</h2>
+        <p class="muted">A shared event across the treaty nations, posted here so it is easier to find and use.</p>
+        <div class="tile-grid">
+          {% for t in community_life %}{% include 'components/tile_card.html.twig' with t only %}{% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      <section>
+        <h2>Member transparency resources</h2>
+        <p class="muted">{{ tsub }}</p>
+        <div class="tile-grid">
+          {% if transparency is not empty %}
+            {% for t in transparency %}{% include 'components/tile_card.html.twig' with t only %}{% endfor %}
+          {% else %}
+            {% include 'components/tile_card.html.twig' with { invite: true, tag: 'Start it here', title: 'Bring the shared standard home', desc: 'No member transparency work has been started for ' ~ nation.name ~ ' yet. The shared standard is ready for any member to bring to their own Chief and Council. Be the first local contact.', go: 'Join the Circle', href: '/circle' } only %}
+          {% endif %}
+        </div>
+      </section>
+
+      <section>
+        <h2>On the territory</h2>
+        <p class="muted">Decisions about the land and its resources reach members here too. They live in the land section, which covers the whole treaty, not any one community.</p>
+        <div class="tile-grid">
+          {% if territory is not empty %}
+            {% for t in territory %}{% include 'components/tile_card.html.twig' with t only %}{% endfor %}
+          {% else %}
+            {% include 'components/tile_card.html.twig' with { invite: true, tag: 'Across the treaty', title: 'Land and resource decisions', desc: 'Decisions about the land and its resources for every nation live in the land section, which covers the whole treaty.', go: 'Go to the land section', href: '/land' } only %}
+          {% endif %}
+        </div>
+      </section>
+
+      <section>
+        <div class="btn-row">
+          <a class="btn" href="/standard">The full shared standard</a>
+          <a class="btn btn--alt" href="/circle">Be a local contact</a>
+        </div>
+      </section>
     </div>
-    {% if nation.website %}
-      <a class="nh-extlink" href="{{ nation.website }}" target="_blank" rel="noopener">The nation's own website<span>{% if nation.website_label %}{{ nation.website_label }}, {% endif %}the authority. We do not run it.</span></a>
-    {% elseif nation.website_note %}
-      <div class="nh-disc">{{ nation.website_note }}</div>
-    {% endif %}
-    <div class="nh-disc"><b>Member-compiled and unofficial.</b> Drawn from public sources. Not an official communication of {{ nation.name }} or its Chief and Council. Details change over time, so the nation's own website is the authority. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.</div>
-  </aside>
 
-  <div class="nh-content">
-    <section class="nh-prose">
-      <h2 class="nh-sec">History and treaty relationship</h2>
-      {{ nation.history|raw }}
-    </section>
-
-    {% if community_life is not empty %}
-    <section>
-      <h2 class="nh-sec">Community life</h2>
-      <p class="nh-sub">A shared event across the treaty nations, posted here so it is easier to find and use.</p>
-      <div class="nh-cards">
-        {% for t in community_life %}{{ cards.tile(t) }}{% endfor %}
-      </div>
-    </section>
-    {% endif %}
-
-    <section>
-      <h2 class="nh-sec">Member transparency resources</h2>
-      <p class="nh-sub">{{ tsub }}</p>
-      <div class="nh-cards">
-        {% if transparency is not empty %}
-          {% for t in transparency %}{{ cards.tile(t) }}{% endfor %}
-        {% else %}
-          {{ cards.tile({ invite: true, tag: 'Start it here', title: 'Bring the shared standard home', desc: 'No member transparency work has been started for ' ~ nation.name ~ ' yet. The shared standard is ready for any member to bring to their own Chief and Council. Be the first local contact.', go: 'Join the Circle', href: '/circle' }) }}
-        {% endif %}
-      </div>
-    </section>
-
-    <section>
-      <h2 class="nh-sec">On the territory</h2>
-      <p class="nh-sub">Decisions about the land and its resources reach members here too. They live in the land section, which covers the whole treaty, not any one community.</p>
-      <div class="nh-cards">
-        {% if territory is not empty %}
-          {% for t in territory %}{{ cards.tile(t) }}{% endfor %}
-        {% else %}
-          {{ cards.tile({ invite: true, tag: 'Across the treaty', title: 'Land and resource decisions', desc: 'Decisions about the land and its resources for every nation live in the land section, which covers the whole treaty.', go: 'Go to the land section', href: '/land' }) }}
-        {% endif %}
-      </div>
-    </section>
-
-    <section>
-      <div class="nh-pillrow">
-        <a class="nh-pill" href="/standard">The full shared standard</a>
-        <a class="nh-pill ghost" href="/circle">Be a local contact</a>
-      </div>
-    </section>
   </div>
+</div>
 
-</div></div></div>
-
-<div class="nh-band"><div class="nh-wrap">
+<div class="sources-band"><div class="wrap wrap--wide">
   <h2>Sources</h2>
-  <ul class="nh-srcs">
+  <ul class="sources-list">
     {% for s in nation.sources %}<li>{% if s.url %}<a href="{{ s.url }}" target="_blank" rel="noopener">{{ s.label }}</a>{% else %}{{ s.label }}{% endif %}</li>{% endfor %}
   </ul>
-  {% if nation.note %}<p class="nh-updated">{{ nation.note }}</p>{% endif %}
+  {% if nation.note %}<p class="muted" style="margin-top:16px; max-width:90ch;">{{ nation.note }}</p>{% endif %}
   {% include 'components/freshness.html.twig' with { datetime: last_updated('nations') } only %}
 </div></div>
 {% endblock %}
