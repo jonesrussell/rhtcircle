@@ -54,6 +54,13 @@ final class CommunityHub
 
         return [
             [
+                'tag' => 'An informal member poll',
+                'title' => 'What matters most to you right now?',
+                'desc' => 'Anonymous, single select: what should our leadership be focused on? No personal data is collected, and results are shown right after you vote.',
+                'go' => 'Vote and see the results',
+                'href' => '/communities/sagamok/what-matters',
+            ],
+            [
                 'feature' => true,
                 'tag' => 'New, growing list',
                 'title' => 'Questions awaiting an answer',

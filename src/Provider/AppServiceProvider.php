@@ -25,6 +25,9 @@ use App\Lexicon\LexiconClient;
 use App\Lexicon\SqlLexiconCache;
 use App\Petition\PetitionRepository;
 use App\Petition\PetitionSchema;
+use App\Controller\PollController;
+use App\Poll\PollRepository;
+use App\Poll\PollSchema;
 use Symfony\Component\HttpFoundation\Request;
 use Waaseyaa\HttpClient\StreamHttpClient;
 use Waaseyaa\CLI\Command\HandlerArgument;
@@ -65,6 +68,26 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             new PetitionSchema($this->persistentDatabase())->ensure();
             // Public contact form: ensure its table on the same persistent file.
             new \App\Contact\ContactSchema($this->persistentDatabase())->ensure();
+            // Anonymous member polls: ensure the tables, then seed the Sagamok
+            // "what matters" poll (idempotent; only inserts on first boot, so
+            // editing the labels here later never reorders or resurrects a
+            // poll that already has votes).
+            new PollSchema($this->persistentDatabase())->ensure();
+            $this->pollRepository()->ensurePoll(
+                'sagamok-what-matters',
+                'Sagamok members: what matters most to you right now? What should our leadership be focused on?',
+                [
+                    'Housing, on-reserve and for off-reserve members',
+                    'Knowing where our settlement money goes, and what reaches members',
+                    'Care for our Elders and health close to home',
+                    'More member say in decisions, real consultation and community meetings',
+                    'Jobs and support for member-owned businesses',
+                    'Publishing council minutes, financials, and decisions openly',
+                    'Language, culture, and our youth',
+                    "Protecting our members' personal information",
+                    'Ending conflicts of interest, the same few people on all the boards',
+                ],
+            );
             // Anishinaabemowin lookup cache (Minoo language API). Ensured here on
             // the persistent file for the same reason as the petition below.
             new LexiconCacheSchema($this->persistentDatabase())->ensure();
@@ -96,6 +119,16 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         return $this->petitionRepository ??= new PetitionRepository(
             $this->persistentDatabase(),
             getenv('WAASEYAA_PETITION_SECRET') ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-petition'),
+        );
+    }
+
+    private ?PollRepository $pollRepository = null;
+
+    private function pollRepository(): PollRepository
+    {
+        return $this->pollRepository ??= new PollRepository(
+            $this->persistentDatabase(),
+            getenv('WAASEYAA_POLL_SECRET') ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-poll'),
         );
     }
 
@@ -156,6 +189,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         $controller = new SiteController();
         $petition = new PetitionController($this->petitionRepository());
         $contact = new ContactController($this->contactRepository());
+        $poll = new PollController($this->pollRepository());
         // Machine-readable Markdown layer (advertised in /llms.txt): pages honor
         // ?format=md / Accept: text/markdown, and the graph entities are fetchable
         // as Markdown. Reads the persistent file (route-build resolve() can be
@@ -406,6 +440,31 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 ->controller(fn (Request $request, string $token) => $petition->remove($token))
                 ->allowAll()
                 ->methods('GET')
+                ->build(),
+        );
+
+        // Anonymous member polls: a page per poll (the page closure carries
+        // its slug and template, same shape as the static $pages loop above)
+        // plus one shared JSON vote endpoint (CSRF-exempt like the petition,
+        // for the same reason: JSON body, no session to protect).
+        $router->addRoute(
+            'sagamok-what-matters',
+            RouteBuilder::create('/communities/sagamok/what-matters')
+                ->controller(fn (Request $request) => $poll->page(
+                    $request,
+                    'sagamok-what-matters',
+                    'pages/communities/sagamok/what-matters.html.twig',
+                ))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+        $router->addRoute(
+            'poll.vote',
+            RouteBuilder::create('/api/poll/vote')
+                ->controller(fn (Request $request) => $poll->vote($request))
+                ->allowAll()
+                ->methods('POST')
                 ->build(),
         );
 
