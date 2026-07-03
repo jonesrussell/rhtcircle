@@ -114,6 +114,18 @@ final class View
             ],
         );
 
+        // current_url(): the actual page being served, as an absolute URL, for
+        // og:url and <link rel="canonical"> (base.html.twig). Host is always the
+        // public rhtcircle.ca domain, matching the og_image_url convention below;
+        // never the internal Caddy-to-php-fpm Host header. Reads $_SERVER fresh
+        // per request in every runtime (classic php-fpm, php -S, and FrankenPHP
+        // worker mode all repopulate it per request), so this is safe everywhere.
+        self::$twig->addFunction(new TwigFunction('current_url', static function (): string {
+            $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+
+            return 'https://rhtcircle.ca' . $path;
+        }));
+
         // myth(['key', ...]) selects entries by key for the settlement and
         // information-safety pages. The /myth-versus-record page no longer uses a
         // Twig function: it renders from the managed myth_entry content type via
