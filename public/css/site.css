@@ -127,6 +127,18 @@ nav.site-nav a[aria-current="page"] { color: var(--indigo); border-bottom-color:
 
 /* Content */
 main .wrap { padding-top: 38px; padding-bottom: 56px; }
+/* Reserve a permanent right-side gutter below 900px, sized to clear the chat
+   launcher's fixed 48px circle (14px right offset + 48px + a little
+   breathing room). Content wraps before ever reaching that column, so
+   nothing sits under the launcher AT ANY scroll position, not just at the
+   bottom of the page (confirmed by measuring actual text line boxes, not
+   just element bounding boxes: a plain bottom-padding reserve does not
+   reposition earlier content and left real glyphs behind the icon). Extra
+   bottom padding still added for the true end-of-page case (the last line
+   or CTA, once scrolled all the way down). */
+@media (max-width: 900px) {
+  main .wrap { padding-right: 70px; padding-bottom: 92px; }
+}
 /* Type scale: h1/h2/h3/body/small, defined once (--fs-* above). No page sets
    its own font-size for these; a page's own {% block head_styles %} should
    only add layout, never typography. .hero h1 (below) is a deliberately more

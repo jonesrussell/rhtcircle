@@ -38,6 +38,13 @@
       margin: 0 auto;
       padding: var(--gap-7) var(--gap-5) var(--gap-9);
     }
+    /* Same right-gutter + bottom clearance as the shared .wrap (site.css),
+       since this page opts out of main_class to get the wide --sog-max frame
+       instead. See site.css for why padding-right (not just padding-bottom)
+       is required to actually clear the chat launcher at every scroll position. */
+    @media (max-width: 900px) {
+      .sog-wrap { padding-right: 70px; padding-bottom: 92px; }
+    }
     [data-theme="dark"] .sog-wrap {
       --sog-gov: oklch(0.68 0.12 240);
       --sog-adm: oklch(0.70 0.11 150);
@@ -139,7 +146,18 @@
     .sog-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex: none; }
 
     /* Board grid (matrix) */
-    .sog-matrix-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: var(--gap-4) 0; border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper-2); }
+    /* position: relative makes this the containing block for the table's
+       position:absolute .sog-sr (screen-reader-only) spans below; without it
+       they anchor to the page's initial containing block at their in-flow x
+       coordinate (up to 720px, the table's min-width), which pushes the whole
+       document wider even though the table itself scrolls correctly. */
+    .sog-matrix-wrap { position: relative; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: var(--gap-4) 0; border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper-2); }
+    /* Swipe hint: only relevant once the table's 720px min-width exceeds the
+       viewport (below that the grid already fits, nothing to scroll). */
+    .sog-swipe-hint { display: none; }
+    @media (max-width: 760px) {
+      .sog-swipe-hint { display: block; font-size: 12.5px; font-style: italic; margin: 0 0 6px; }
+    }
     .sog-matrix { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 13.5px; }
     .sog-matrix th, .sog-matrix td { padding: 9px 10px; border-bottom: 1px solid var(--rule); text-align: center; }
     .sog-matrix thead th { color: var(--ink-3); font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; vertical-align: bottom; }
@@ -309,6 +327,7 @@
   <section id="board">
     <h2>Who sits on which board</h2>
     <p class="sog-sub">This grid shows the documented board and director roles for each Council member, drawn from public corporate-registry filings and zgamok.ca. Each dot is one documented role; reading across a row shows the boards a member sits on. ZEI includes its related entities (Z'gamok Construction, OCL, Legend Mining).</p>
+    <p class="sog-sub sog-swipe-hint" aria-hidden="true">Swipe to see more &rarr;</p>
     <div class="sog-matrix-wrap">
       <table class="sog-matrix">
         <caption class="sog-sr">Documented board and director roles by Council member, from public registry filings and zgamok.ca.</caption>
