@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'circle' %}
+
+{% block title %}Removed from updates · The Circle{% endblock %}
+{% block description %}You have been removed from the Circle's update list.{% endblock %}
+
+{% block content %}
+<div class="su-wrap" style="max-width: 640px; margin: 0 auto; padding: var(--gap-6, 32px) var(--gap-5, 20px) var(--gap-9, 64px);">
+  {% if removed %}
+    <h1 style="font-family: var(--serif); font-weight: 600; font-size: clamp(28px, 5vw, 40px); line-height: 1.1; letter-spacing: -0.02em; color: var(--indigo-deep); margin: 0 0 12px;">You are removed</h1>
+    <p style="font-size: 18px; line-height: 1.5; color: var(--ink-2); max-width: 60ch;">You will not receive any more updates. If you change your mind, you can sign up again anytime.</p>
+  {% else %}
+    <h1 style="font-family: var(--serif); font-weight: 600; font-size: clamp(28px, 5vw, 40px); line-height: 1.1; letter-spacing: -0.02em; color: var(--indigo-deep); margin: 0 0 12px;">Link not found</h1>
+    <p style="font-size: 18px; line-height: 1.5; color: var(--ink-2); max-width: 60ch;">This removal link is not valid or has already been used. Contact us if you still want to be removed.</p>
+  {% endif %}
+</div>
+{% endblock %}

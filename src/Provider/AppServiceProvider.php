@@ -28,6 +28,9 @@ use App\Petition\PetitionSchema;
 use App\Controller\PollController;
 use App\Poll\PollRepository;
 use App\Poll\PollSchema;
+use App\Controller\SignupController;
+use App\Signup\SignupRepository;
+use App\Signup\SignupSchema;
 use Symfony\Component\HttpFoundation\Request;
 use Waaseyaa\HttpClient\StreamHttpClient;
 use Waaseyaa\CLI\Command\HandlerArgument;
@@ -68,6 +71,9 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             new PetitionSchema($this->persistentDatabase())->ensure();
             // Public contact form: ensure its table on the same persistent file.
             new \App\Contact\ContactSchema($this->persistentDatabase())->ensure();
+            // Member-owned email list (collect-only for now; see
+            // working/cc-prompt-rhtcircle-list.md): ensure its table.
+            new SignupSchema($this->persistentDatabase())->ensure();
             // Anonymous member polls: ensure the tables, then seed the Sagamok
             // "what matters" poll (idempotent; only inserts on first boot, so
             // editing the labels here later never reorders or resurrects a
@@ -142,6 +148,16 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         );
     }
 
+    private ?SignupRepository $signupRepository = null;
+
+    private function signupRepository(): SignupRepository
+    {
+        return $this->signupRepository ??= new SignupRepository(
+            $this->persistentDatabase(),
+            getenv('WAASEYAA_SIGNUP_SECRET') ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-signup'),
+        );
+    }
+
     private ?LexiconClient $lexiconClient = null;
 
     /**
@@ -190,6 +206,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         $petition = new PetitionController($this->petitionRepository());
         $contact = new ContactController($this->contactRepository());
         $poll = new PollController($this->pollRepository());
+        $signup = new SignupController($this->signupRepository());
         // Machine-readable Markdown layer (advertised in /llms.txt): pages honor
         // ?format=md / Accept: text/markdown, and the graph entities are fetchable
         // as Markdown. Reads the persistent file (route-build resolve() can be
@@ -489,6 +506,35 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 ->controller(fn (Request $request) => $contact->submit($request))
                 ->allowAll()
                 ->methods('POST')
+                ->build(),
+        );
+
+        // Member-owned email list (collect-only for now, see
+        // working/cc-prompt-rhtcircle-list.md): the page, the JSON submit
+        // endpoint (CSRF-exempt like contact/petition/analytics), and the
+        // one-click remove link (GET, no login, honored immediately).
+        $router->addRoute(
+            'signup',
+            RouteBuilder::create('/updates')
+                ->controller(fn () => $signup->page())
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+        $router->addRoute(
+            'signup.submit',
+            RouteBuilder::create('/api/signup')
+                ->controller(fn (Request $request) => $signup->submit($request))
+                ->allowAll()
+                ->methods('POST')
+                ->build(),
+        );
+        $router->addRoute(
+            'signup.remove',
+            RouteBuilder::create('/updates/remove')
+                ->controller(fn (Request $request) => $signup->remove($request))
+                ->allowAll()
+                ->methods('GET')
                 ->build(),
         );
 

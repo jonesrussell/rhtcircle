@@ -1,0 +1,139 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'circle' %}
+
+{% block title %}Get updates directly · The Circle{% endblock %}
+{% block description %}Get updates from the Circle directly, not through the band's channels. Independent, member-run, and yours to leave anytime.{% endblock %}
+{% block og_description %}Hear it from members, not through the band's channels. Independent, member-run, and yours to leave anytime.{% endblock %}
+
+{% block head_styles %}
+  <style>
+    .su-wrap { max-width: 640px; margin: 0 auto; padding: var(--gap-6, 32px) var(--gap-5, 20px) var(--gap-9, 64px); }
+    .su-wrap h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(28px, 5vw, 40px); line-height: 1.1; letter-spacing: -0.02em; color: var(--indigo-deep); margin: 0 0 12px; }
+    .su-lead { font-size: 18px; line-height: 1.5; color: var(--ink-2); margin: 0 0 28px; max-width: 60ch; }
+
+    .su-form { display: flex; flex-direction: column; gap: 18px; }
+    .su-field { display: flex; flex-direction: column; gap: 6px; }
+    .su-label { font-family: var(--sans); font-weight: 600; font-size: 15px; color: var(--ink); }
+    .su-label .opt { font-weight: 400; color: var(--ink-3); }
+    .su-input {
+      font: inherit; color: var(--ink); background: #fff;
+      border: 1px solid var(--rule-strong, #d6cdea); border-radius: 10px; padding: 11px 13px; width: 100%;
+    }
+    .su-input:focus-visible, .su-send:focus-visible, .su-consent input:focus-visible {
+      outline: 3px solid var(--magenta); outline-offset: 2px; border-color: var(--magenta);
+    }
+
+    .su-consent { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.45; color: var(--ink); }
+    .su-consent input { margin-top: 4px; flex-shrink: 0; width: 18px; height: 18px; }
+
+    .su-send {
+      font: inherit; font-weight: 600; color: #fff; background: var(--indigo); border: 0;
+      border-radius: 999px; padding: 13px 28px; cursor: pointer; align-self: flex-start;
+    }
+    .su-send:hover { background: var(--indigo-deep); }
+    .su-send[disabled] { opacity: 0.6; cursor: default; }
+
+    .su-privacy { font-size: 14px; line-height: 1.55; color: var(--ink-3); margin: 4px 0 0; max-width: 62ch; }
+
+    .su-status { margin: 0; border-radius: 10px; padding: 0; }
+    .su-status[data-state="ok"] { padding: 16px 18px; background: var(--paper-2); border: 1px solid var(--rule); color: var(--ink); }
+    .su-status[data-state="error"] { padding: 12px 14px; background: #fdeaf3; border: 1px solid var(--magenta); color: var(--magenta-deep, #98146d); font-weight: 600; }
+    .su-status h2 { font-family: var(--serif); font-size: 22px; margin: 0 0 6px; color: var(--indigo-deep); }
+    .su-status p { margin: 0; }
+
+    .su-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="su-wrap">
+  <h1>Get updates directly</h1>
+  <p class="su-lead">Hear it from members, not through the band's channels. Independent, member-run, and yours to leave anytime.</p>
+
+  <div class="su-status" data-signup-status role="status" aria-live="polite"></div>
+
+  <form class="su-form" data-signup-form novalidate>
+    <div class="su-hp" aria-hidden="true">
+      <label>Leave this blank<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+    </div>
+
+    <div class="su-field">
+      <label class="su-label" for="su-email">Email</label>
+      <input class="su-input" id="su-email" name="email" type="email" autocomplete="email" maxlength="255" required>
+    </div>
+
+    <div class="su-field">
+      <label class="su-label" for="su-first-name">First name <span class="opt">(optional)</span></label>
+      <input class="su-input" id="su-first-name" name="first_name" type="text" autocomplete="given-name" maxlength="120">
+    </div>
+
+    <div class="su-field">
+      <label class="su-label" for="su-nation">Nation / community <span class="opt">(optional)</span></label>
+      <input class="su-input" id="su-nation" name="nation" type="text" maxlength="120">
+    </div>
+
+    <label class="su-consent">
+      <input type="checkbox" id="su-consent" name="consent" required>
+      <span>{{ consent_text }}</span>
+    </label>
+
+    <button class="su-send" type="submit" data-signup-send>Sign up</button>
+
+    <p class="su-privacy">We ask for the least we can. Your information is stored on our own Canadian infrastructure, never shared or sold, and used only to send you these updates. Ask us to remove you and we will, immediately.</p>
+  </form>
+</div>
+
+<script>
+  (function () {
+    var form = document.querySelector('[data-signup-form]');
+    var statusBox = document.querySelector('[data-signup-status]');
+    var sendBtn = document.querySelector('[data-signup-send]');
+    if (!form || !statusBox) return;
+
+    function show(state, html) {
+      statusBox.setAttribute('data-state', state);
+      statusBox.innerHTML = html;
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      show('', '');
+
+      var payload = {
+        email: form.email.value.trim(),
+        first_name: form.first_name.value.trim(),
+        nation: form.nation.value.trim(),
+        consent: form.consent.checked,
+        website: form.website.value
+      };
+      if (!payload.email) { show('error', 'Please enter your email.'); form.email.focus(); return; }
+      if (!payload.consent) { show('error', 'Please check the consent box.'); form.consent.focus(); return; }
+
+      sendBtn.disabled = true;
+      var label = sendBtn.textContent;
+      sendBtn.textContent = 'Signing up...';
+
+      fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function (r) {
+        return r.json().catch(function () { return { ok: false }; });
+      }).then(function (data) {
+        if (data && data.ok) {
+          form.style.display = 'none';
+          show('ok', '<h2>You are on the list.</h2><p>We will not flood your inbox, and we will not send anything yet, we are building this the right way first.</p>');
+        } else {
+          sendBtn.disabled = false;
+          sendBtn.textContent = label;
+          show('error', (data && data.error) ? data.error : 'Something went wrong. Please try again.');
+        }
+      }).catch(function () {
+        sendBtn.disabled = false;
+        sendBtn.textContent = label;
+        show('error', 'Could not reach the server. Please check your connection and try again.');
+      });
+    });
+  })();
+</script>
+{% endblock %}
