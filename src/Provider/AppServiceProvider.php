@@ -272,6 +272,10 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             // resignation of the Director of IT and Communications. Content
             // from the July 2026 site-cohesion-and-design-brief.
             'sagamok-it-accountability' => ['/communities/sagamok/it-accountability', 'pages/communities/sagamok/it-accountability.html.twig'],
+            // Public-records kit: eleven member-compiled cards (image + ready
+            // caption), built from public sources only, for members to copy
+            // and post themselves.
+            'sagamok-share' => ['/communities/sagamok/share', 'pages/communities/sagamok/share.html.twig'],
 
             // Community life: events shared across the treaty nations. The youth
             // baseball league spans Sagamok, Serpent River, and Atikameksheng and

@@ -1,0 +1,297 @@
+{%- extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+{% block main_class %}wrap--wide{% endblock %}
+
+{% block title %}The public record, ready to share: Sagamok · Robinson Huron Treaty{% endblock %}
+{% block description %}Eleven member-compiled graphics built only from public records: Sagamok Chief and Council minutes, the Nation's audited financial statements, the Ontario business registry, and the land registry. Copy the caption, download the image, and share.{% endblock %}
+{% block og_description %}Eleven member-compiled graphics built only from public records, ready to copy and share.{% endblock %}
+{% block body_class %}route-sagamok-share{% endblock %}
+
+{% block head_styles %}
+<style>
+  main .wrap--wide { padding-top: 40px; padding-bottom: 64px; }
+  .share-how { margin: 8px 0 34px; padding-left: 22px; }
+  .share-how li { margin: 0 0 8px; line-height: 1.6; color: var(--ink-2); }
+  .share-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 22px; margin: 24px 0; }
+  .share-card { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .share-imglink { display: block; background: var(--paper-2); border-bottom: 1px solid var(--line); }
+  .share-imglink img { width: 100%; height: auto; display: block; }
+  .share-body { padding: 18px 20px 20px; display: flex; flex-direction: column; flex: 1; }
+  .share-num { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--magenta); font-weight: 700; margin: 0 0 7px; }
+  .share-body h3 { font-family: var(--serif); font-size: 18px; color: var(--indigo-deep); margin: 0 0 12px; font-weight: 600; line-height: 1.25; }
+  .share-cap { width: 100%; font-family: var(--sans); font-size: 12.5px; line-height: 1.55; color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--paper-2); white-space: pre-wrap; margin: 0 0 14px; max-height: 260px; overflow-y: auto; }
+  .share-actions { display: flex; gap: 10px; margin-top: auto; flex-wrap: wrap; }
+  .share-actions .btn { font-size: 13.5px; padding: 9px 16px; }
+  .share-status { font-size: 12.5px; color: var(--ink-3); margin: 8px 0 0; min-height: 1.4em; }
+</style>
+{% endblock %}
+
+{% block content %}
+  <p class="crumb"><a href="/communities">Communities</a> &rsaquo; <a href="/communities/sagamok">Sagamok Anishnawbek</a> &rsaquo; The public record, ready to share</p>
+
+  <h1>The public record, ready to share</h1>
+  <p class="lead">Eleven member-compiled graphics, built only from public records any Sagamok member can pull: our own Chief and Council minutes, the Nation's audited financial statements, the Ontario business registry, and the land registry. Take any card, post it yourself, and add the question it raises.</p>
+
+  {% set banner_body %}<strong>This is independent and member-led.</strong> It is not the Robinson Huron Treaty Litigation Fund and is not affiliated with it. It takes no side; it points to what the documents say. Every card lists its own sources. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.{% endset %}
+  {% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'About this page' } only %}
+
+  <h2>How to share a card</h2>
+  <ol class="share-how">
+    <li><strong>Pick</strong> a card below.</li>
+    <li><strong>Copy</strong> its caption with one tap, or write your own.</li>
+    <li><strong>Post</strong> the image with the caption to your own feed or group.</li>
+  </ol>
+
+  {%- set cap1 %}In 2025 the Nation took control of a company called GR Truss. Every seat on its board and every officer role is held by the Chief and two councillors. There are no independent directors. The price we paid is not disclosed, and $750,000 of Nation money has gone in so far.
+
+What did we buy, from whom, and why is there no one independent at that table? The facts are from the Ontario business registry and our own Band Council Resolutions.
+
+#Sagamok #Accountability #Transparency #SettlementTrust #RobinsonHuron #FirstNations #FNFA #ISC #rezlife #OurMoneyOurRight{%- endset %}
+  {%- set cap2 %}The Nation's paid Economic Development Manager is also an elected councillor, and sits on the company boards. That puts one person on both sides of the same money: the staff role, the board seats, and the Council vote.
+
+Should a sitting councillor also hold a senior paid staff job at the same time? When Council decides company matters, is that vote stepped out of? The facts are from our public records.
+
+#Sagamok #Accountability #Transparency #SettlementTrust #RobinsonHuron #FirstNations #FNFA #ISC #rezlife #OurMoneyOurRight{%- endset %}
+  {%- set cap3 %}Over three years the Nation has moved money into loans and a partnership with a Toronto developer, including a $25 million loan and, in early 2024, about $45 million into a developer income fund. The record is in Council's own motions.
+
+What secures these loans if the project does not perform? Why did two of our councillors step out of the borrowing vote? These are big commitments of our money and members deserve to see the terms.
+
+#Sagamok #Accountability #Transparency #SettlementTrust #RobinsonHuron #FirstNations #FNFA #ISC #rezlife #OurMoneyOurRight{%- endset %}
+  {%- set cap4 %}Council approved $7 million from the Treaty Settlement Proceeds for the "Urban Housing Development" in Sault Ste. Marie (Motion 2024/10 #07). The land registry shows what that was: a land purchase at 201 South Market Street. The same land sold for $350,000 in 2018, $1.2 million in August 2023, and $7 million to a Sagamok company in November 2024. The title shows no mortgage or financing charge, so it was paid in full.
+
+Was there an independent appraisal supporting the $7 million? Why did we pay $7 million for land that sold for $1.2 million fifteen months earlier? Who set the price, and who recommended the investment?
+
+#Sagamok #Accountability #Transparency #SettlementTrust #RobinsonHuron #FirstNations #FNFA #ISC #rezlife #OurMoneyOurRight{%- endset %}
+  {%- set cap5 %}This is a map of who sits on the boards of the Nation's companies. The same small group of names shows up again and again, across company after company.
+
+Who provides independent oversight of these boards? When the same people approve the money and govern the companies that receive it, where is the check? The facts are from the Ontario business registry and the Nation's own listings.
+
+#Sagamok #Accountability #Transparency #SettlementTrust #RobinsonHuron #FirstNations #FNFA #ISC #rezlife #OurMoneyOurRight{%- endset %}
+  {%- set cap6 %}The Robinson Huron settlement money is held in trust at BMO. Only two people can authorize money to leave that trust. An internal facility then lends it to the Nation's own companies at not less than 4 percent. One of the companies that can borrow is Legend Mining, and the same outside advisor who is one of the two release authorities also sits on Legend Mining's board.
+
+Who independently oversees this? Should the advisor who can release trust money also sit on the board of a company that borrows it? The facts are from our minutes and the business registry.
+
+#Sagamok #Accountability #Transparency #SettlementTrust #RobinsonHuron #FirstNations #FNFA #ISC #rezlife #OurMoneyOurRight{%- endset %}
+  {%- set cap7 %}The Nation files what the Chief and Council are paid every year. For 2024-25, a councillor, as President of the Nation's company Z'gamok Enterprises, was paid more than the Chief. The totals climb because pay stacks: the council seat, plus second jobs, plus board seats inside the band and its companies.
+
+Should councillors hold paid jobs in the band and the companies they are supposed to oversee? Where can members see, plainly, what each role pays? The facts are from the public Schedule of Remuneration.
+
+#Sagamok #Accountability #Transparency #SettlementTrust #RobinsonHuron #FirstNations #FNFA #ISC #rezlife #OurMoneyOurRight{%- endset %}
+  {%- set cap8 %}The Nation's financial advisor is a private contractor, not an elected official and not a band employee. The record shows he helped design the settlement trust, is one of only two people who can release money from it, advises on where the money goes, and sits on the board of one of the companies our money is lent to.
+
+Who provides independent oversight of the advisor? Is the advisor paid, and on what terms? Where can members see it? The facts are from our minutes and the business registry.
+
+#Sagamok #Accountability #Transparency #SettlementTrust #RobinsonHuron #FirstNations #FNFA #ISC #rezlife #OurMoneyOurRight{%- endset %}
+  {%- set cap9 %}The Nation's audited statements put a number on it. In one year, loans to the Nation's own for-profit companies went from about $315,000 to nearly $97 million. That is a hundred-fold jump.
+
+How much of this $97 million is settlement money? What secures these loans if a company cannot repay? How much has actually come back to the Nation? The figures are from our own audited financial statements.
+
+#Sagamok #Accountability #Transparency #SettlementTrust #RobinsonHuron #FirstNations #FNFA #ISC #rezlife #OurMoneyOurRight{%- endset %}
+  {%- set cap10 %}Across the posted council meetings, a small handful of the same names move most of the motions, and recorded disagreement is rare: only a small share of motions show any recorded vote against.
+
+Is real debate happening at the table, or are decisions moving through with little scrutiny? Why is so little dissent ever recorded? The facts are counted straight from the Nation's own posted minutes.
+
+#Sagamok #Accountability #Transparency #SettlementTrust #RobinsonHuron #FirstNations #FNFA #ISC #rezlife #OurMoneyOurRight{%- endset %}
+  {%- set cap11 %}Our settlement is advised, structured, and gatekept largely by one external person working through a single-person company. The same person helped design the trust that holds the money (about $219 million), championed the $7 million Sault project, and is one of only two who can release the money.
+
+Is the advisor a named trustee of the trust, or only its architect and a release authority? Where is the independent separation between advising the investments and gatekeeping the money? The facts are from our minutes and the registry.
+
+#Sagamok #Accountability #Transparency #SettlementTrust #RobinsonHuron #FirstNations #FNFA #ISC #rezlife #OurMoneyOurRight{%- endset %}
+
+  <div class="share-grid">
+    <article class="share-card">
+      <a class="share-imglink" href="/images/sagamok-kit/01_gr-truss.jpeg" target="_blank" rel="noopener" title="Open full size">
+        <img src="/images/sagamok-kit/01_gr-truss.jpeg" alt="GR Truss: a company we now own, and who runs it" loading="lazy">
+      </a>
+      <div class="share-body">
+        <div class="share-num">Card 01</div>
+        <h3>GR Truss: a company we now own, and who runs it</h3>
+        <pre class="share-cap" data-share-text>{{ cap1 }}</pre>
+        <div class="share-actions">
+          <button type="button" class="btn" data-share-copy>Copy caption</button>
+          <a class="btn btn--alt" href="/images/sagamok-kit/01_gr-truss.jpeg" download="01_gr-truss.jpeg">Download image</a>
+        </div>
+        <p class="share-status" data-share-status role="status" aria-live="polite"></p>
+      </div>
+    </article>
+    <article class="share-card">
+      <a class="share-imglink" href="/images/sagamok-kit/02_councillor-runs-the-businesses.jpg" target="_blank" rel="noopener" title="Open full size">
+        <img src="/images/sagamok-kit/02_councillor-runs-the-businesses.jpg" alt="Running the businesses, and sitting on the Council that funds them" loading="lazy">
+      </a>
+      <div class="share-body">
+        <div class="share-num">Card 02</div>
+        <h3>Running the businesses, and sitting on the Council that funds them</h3>
+        <pre class="share-cap" data-share-text>{{ cap2 }}</pre>
+        <div class="share-actions">
+          <button type="button" class="btn" data-share-copy>Copy caption</button>
+          <a class="btn btn--alt" href="/images/sagamok-kit/02_councillor-runs-the-businesses.jpg" download="02_councillor-runs-the-businesses.jpg">Download image</a>
+        </div>
+        <p class="share-status" data-share-status role="status" aria-live="polite"></p>
+      </div>
+    </article>
+    <article class="share-card">
+      <a class="share-imglink" href="/images/sagamok-kit/03_toronto-developer.jpeg" target="_blank" rel="noopener" title="Open full size">
+        <img src="/images/sagamok-kit/03_toronto-developer.jpeg" alt="Our money and a Toronto developer" loading="lazy">
+      </a>
+      <div class="share-body">
+        <div class="share-num">Card 03</div>
+        <h3>Our money and a Toronto developer</h3>
+        <pre class="share-cap" data-share-text>{{ cap3 }}</pre>
+        <div class="share-actions">
+          <button type="button" class="btn" data-share-copy>Copy caption</button>
+          <a class="btn btn--alt" href="/images/sagamok-kit/03_toronto-developer.jpeg" download="03_toronto-developer.jpeg">Download image</a>
+        </div>
+        <p class="share-status" data-share-status role="status" aria-live="polite"></p>
+      </div>
+    </article>
+    <article class="share-card">
+      <a class="share-imglink" href="/images/sagamok-kit/04_what-7-million-bought.jpg" target="_blank" rel="noopener" title="Open full size">
+        <img src="/images/sagamok-kit/04_what-7-million-bought.jpg" alt="What $7 million of settlement money bought" loading="lazy">
+      </a>
+      <div class="share-body">
+        <div class="share-num">Card 04</div>
+        <h3>What $7 million of settlement money bought</h3>
+        <pre class="share-cap" data-share-text>{{ cap4 }}</pre>
+        <div class="share-actions">
+          <button type="button" class="btn" data-share-copy>Copy caption</button>
+          <a class="btn btn--alt" href="/images/sagamok-kit/04_what-7-million-bought.jpg" download="04_what-7-million-bought.jpg">Download image</a>
+        </div>
+        <p class="share-status" data-share-status role="status" aria-live="polite"></p>
+      </div>
+    </article>
+    <article class="share-card">
+      <a class="share-imglink" href="/images/sagamok-kit/05_enterprises-and-directors.jpg" target="_blank" rel="noopener" title="Open full size">
+        <img src="/images/sagamok-kit/05_enterprises-and-directors.jpg" alt="Sagamok enterprises and their directors" loading="lazy">
+      </a>
+      <div class="share-body">
+        <div class="share-num">Card 05</div>
+        <h3>Sagamok enterprises and their directors</h3>
+        <pre class="share-cap" data-share-text>{{ cap5 }}</pre>
+        <div class="share-actions">
+          <button type="button" class="btn" data-share-copy>Copy caption</button>
+          <a class="btn btn--alt" href="/images/sagamok-kit/05_enterprises-and-directors.jpg" download="05_enterprises-and-directors.jpg">Download image</a>
+        </div>
+        <p class="share-status" data-share-status role="status" aria-live="polite"></p>
+      </div>
+    </article>
+    <article class="share-card">
+      <a class="share-imglink" href="/images/sagamok-kit/06_settlement-money-to-mining.jpg" target="_blank" rel="noopener" title="Open full size">
+        <img src="/images/sagamok-kit/06_settlement-money-to-mining.jpg" alt="How the settlement money reaches the mining company" loading="lazy">
+      </a>
+      <div class="share-body">
+        <div class="share-num">Card 06</div>
+        <h3>How the settlement money reaches the mining company</h3>
+        <pre class="share-cap" data-share-text>{{ cap6 }}</pre>
+        <div class="share-actions">
+          <button type="button" class="btn" data-share-copy>Copy caption</button>
+          <a class="btn btn--alt" href="/images/sagamok-kit/06_settlement-money-to-mining.jpg" download="06_settlement-money-to-mining.jpg">Download image</a>
+        </div>
+        <p class="share-status" data-share-status role="status" aria-live="polite"></p>
+      </div>
+    </article>
+    <article class="share-card">
+      <a class="share-imglink" href="/images/sagamok-kit/07_councillor-paid-more-than-chief.jpg" target="_blank" rel="noopener" title="Open full size">
+        <img src="/images/sagamok-kit/07_councillor-paid-more-than-chief.jpg" alt="A councillor was paid more than the Chief" loading="lazy">
+      </a>
+      <div class="share-body">
+        <div class="share-num">Card 07</div>
+        <h3>A councillor was paid more than the Chief</h3>
+        <pre class="share-cap" data-share-text>{{ cap7 }}</pre>
+        <div class="share-actions">
+          <button type="button" class="btn" data-share-copy>Copy caption</button>
+          <a class="btn btn--alt" href="/images/sagamok-kit/07_councillor-paid-more-than-chief.jpg" download="07_councillor-paid-more-than-chief.jpg">Download image</a>
+        </div>
+        <p class="share-status" data-share-status role="status" aria-live="polite"></p>
+      </div>
+    </article>
+    <article class="share-card">
+      <a class="share-imglink" href="/images/sagamok-kit/08_one-advisor-several-roles.jpg" target="_blank" rel="noopener" title="Open full size">
+        <img src="/images/sagamok-kit/08_one-advisor-several-roles.jpg" alt="One outside advisor, several roles in our money" loading="lazy">
+      </a>
+      <div class="share-body">
+        <div class="share-num">Card 08</div>
+        <h3>One outside advisor, several roles in our money</h3>
+        <pre class="share-cap" data-share-text>{{ cap8 }}</pre>
+        <div class="share-actions">
+          <button type="button" class="btn" data-share-copy>Copy caption</button>
+          <a class="btn btn--alt" href="/images/sagamok-kit/08_one-advisor-several-roles.jpg" download="08_one-advisor-several-roles.jpg">Download image</a>
+        </div>
+        <p class="share-status" data-share-status role="status" aria-live="polite"></p>
+      </div>
+    </article>
+    <article class="share-card">
+      <a class="share-imglink" href="/images/sagamok-kit/09_97-million-loaned.jpg" target="_blank" rel="noopener" title="Open full size">
+        <img src="/images/sagamok-kit/09_97-million-loaned.jpg" alt="$97 million of our money is loaned to our own companies" loading="lazy">
+      </a>
+      <div class="share-body">
+        <div class="share-num">Card 09</div>
+        <h3>$97 million of our money is loaned to our own companies</h3>
+        <pre class="share-cap" data-share-text>{{ cap9 }}</pre>
+        <div class="share-actions">
+          <button type="button" class="btn" data-share-copy>Copy caption</button>
+          <a class="btn btn--alt" href="/images/sagamok-kit/09_97-million-loaned.jpg" download="09_97-million-loaned.jpg">Download image</a>
+        </div>
+        <p class="share-status" data-share-status role="status" aria-live="polite"></p>
+      </div>
+    </article>
+    <article class="share-card">
+      <a class="share-imglink" href="/images/sagamok-kit/10_who-moves-the-motions.jpeg" target="_blank" rel="noopener" title="Open full size">
+        <img src="/images/sagamok-kit/10_who-moves-the-motions.jpeg" alt="Who moves the motions" loading="lazy">
+      </a>
+      <div class="share-body">
+        <div class="share-num">Card 10</div>
+        <h3>Who moves the motions</h3>
+        <pre class="share-cap" data-share-text>{{ cap10 }}</pre>
+        <div class="share-actions">
+          <button type="button" class="btn" data-share-copy>Copy caption</button>
+          <a class="btn btn--alt" href="/images/sagamok-kit/10_who-moves-the-motions.jpeg" download="10_who-moves-the-motions.jpeg">Download image</a>
+        </div>
+        <p class="share-status" data-share-status role="status" aria-live="polite"></p>
+      </div>
+    </article>
+    <article class="share-card">
+      <a class="share-imglink" href="/images/sagamok-kit/11_advisor-at-the-centre.jpg" target="_blank" rel="noopener" title="Open full size">
+        <img src="/images/sagamok-kit/11_advisor-at-the-centre.jpg" alt="One outside advisor sits at the centre of our settlement money" loading="lazy">
+      </a>
+      <div class="share-body">
+        <div class="share-num">Card 11</div>
+        <h3>One outside advisor sits at the centre of our settlement money</h3>
+        <pre class="share-cap" data-share-text>{{ cap11 }}</pre>
+        <div class="share-actions">
+          <button type="button" class="btn" data-share-copy>Copy caption</button>
+          <a class="btn btn--alt" href="/images/sagamok-kit/11_advisor-at-the-centre.jpg" download="11_advisor-at-the-centre.jpg">Download image</a>
+        </div>
+        <p class="share-status" data-share-status role="status" aria-live="polite"></p>
+      </div>
+    </article>
+  </div>
+
+  <script>
+  (function () {
+    document.querySelectorAll('[data-share-copy]').forEach(function (btn) {
+      var card = btn.closest('.share-card');
+      var pre = card.querySelector('[data-share-text]');
+      var status = card.querySelector('[data-share-status]');
+      function done() {
+        if (status) status.textContent = 'Copied to your clipboard.';
+        var label = btn.textContent; btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = label; }, 2000);
+      }
+      function fallback() {
+        var range = document.createRange(); range.selectNodeContents(pre);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+        try { document.execCommand('copy'); done(); }
+        catch (e) { if (status) status.textContent = 'Select the text and press Ctrl+C or Cmd+C to copy.'; }
+      }
+      btn.addEventListener('click', function () {
+        var text = pre.innerText;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done).catch(fallback);
+        } else { fallback(); }
+      });
+    });
+  })();
+  </script>
+
+  <p class="cover__byline">Where the facts come from: our own Chief and Council meeting minutes and Band Council Resolutions, the Nation's audited financial statements, the Ontario business registry, and the Ontario land registry. Each card carries its own sources. These are public records. Every member has the right to see them and to ask. Member-compiled and unofficial; corrections welcome.</p>
+{% endblock %}
