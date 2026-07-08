@@ -61,6 +61,13 @@ final class CommunityHub
                 'href' => '/communities/sagamok/what-matters',
             ],
             [
+                'tag' => 'An informal member poll',
+                'title' => 'Two quick questions on Council meetings',
+                'desc' => 'Should the meeting schedule and minutes stay posted, and should some meetings move to evenings? Anonymous, no personal data collected, results shown after voting.',
+                'go' => 'Vote and see the results',
+                'href' => '/communities/sagamok/poll',
+            ],
+            [
                 'feature' => true,
                 'tag' => "A member's record",
                 'title' => 'IT accountability: what is being asked of Council',

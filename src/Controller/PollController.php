@@ -111,6 +111,40 @@ final class PollController
         return $response;
     }
 
+    /**
+     * GET a page holding several independent one-question polls (e.g. a
+     * two-question ballot). Each slug is still its own poll row with its own
+     * options, votes, and vote cookie; this only groups them onto one page.
+     * A slug that is missing or inactive is silently skipped rather than
+     * 404ing the whole page.
+     *
+     * @param list<string> $slugs
+     */
+    public function pageMulti(Request $request, array $slugs, string $template): Response
+    {
+        $questions = [];
+        foreach ($slugs as $slug) {
+            $poll = $this->polls->findActivePoll($slug);
+            if ($poll === null) {
+                continue;
+            }
+
+            $pollId = (int) $poll['id'];
+            $votedOptionId = $this->votedOption($request, $slug, $pollId);
+
+            $questions[] = [
+                'slug' => $slug,
+                'question' => (string) $poll['question'],
+                'options' => $this->polls->options($pollId),
+                'has_voted' => $votedOptionId !== null,
+                'voted_option_id' => $votedOptionId,
+                'results' => $votedOptionId !== null ? $this->polls->results($pollId) : null,
+            ];
+        }
+
+        return $this->render($template, ['questions' => $questions]);
+    }
+
     // ---- helpers ---------------------------------------------------------
 
     /**

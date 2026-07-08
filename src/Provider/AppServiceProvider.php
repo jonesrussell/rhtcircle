@@ -94,6 +94,20 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                     'Ending conflicts of interest, the same few people on all the boards',
                 ],
             );
+            // Second Sagamok poll: two yes/no/not-sure questions about Chief
+            // and Council meetings, grouped onto one page (PollController::
+            // pageMulti) as two independent poll rows sharing the vote
+            // endpoint and cookie mechanism above.
+            $this->pollRepository()->ensurePoll(
+                'sagamok-poll-meetings-posted',
+                'Should Sagamok keep the Chief and Council meeting schedule and minutes current and posted on the Nation\'s website, so any member can see when Council meets and what was decided?',
+                ['Yes', 'No', 'Not sure'],
+            );
+            $this->pollRepository()->ensurePoll(
+                'sagamok-poll-evening-meetings',
+                'Should Council hold some meetings in the evening, alternating with daytime meetings, so members who work during the day can attend and be heard?',
+                ['Yes', 'No', 'Not sure'],
+            );
             // Anishinaabemowin lookup cache (Minoo language API). Ensured here on
             // the persistent file for the same reason as the petition below.
             new LexiconCacheSchema($this->persistentDatabase())->ensure();
@@ -479,6 +493,18 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                     $request,
                     'sagamok-what-matters',
                     'pages/communities/sagamok/what-matters.html.twig',
+                ))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+        $router->addRoute(
+            'sagamok-poll',
+            RouteBuilder::create('/communities/sagamok/poll')
+                ->controller(fn (Request $request) => $poll->pageMulti(
+                    $request,
+                    ['sagamok-poll-meetings-posted', 'sagamok-poll-evening-meetings'],
+                    'pages/communities/sagamok/poll.html.twig',
                 ))
                 ->allowAll()
                 ->methods('GET')
