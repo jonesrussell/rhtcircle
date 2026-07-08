@@ -268,9 +268,9 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'sagamok-members-website-issue' => ['/communities/sagamok/members-website-issue', 'pages/communities/sagamok/members-website-issue.html.twig'],
             'sagamok-where-your-data-lives' => ['/communities/sagamok/where-your-data-lives', 'pages/communities/sagamok/where-your-data-lives.html.twig'],
             'sagamok-long-term-care' => ['/communities/sagamok/long-term-care', 'pages/communities/sagamok/long-term-care.html.twig'],
-            // A member's public statement (Russell Jones): a call for the
-            // resignation of the Director of IT and Communications. Content
-            // from the July 2026 site-cohesion-and-design-brief.
+            // A member's record (Russell Jones): the members-only portal
+            // exposure, its capture in the public Internet Archive, and what
+            // is being asked of Council. Companion to members-website-issue.
             'sagamok-it-accountability' => ['/communities/sagamok/it-accountability', 'pages/communities/sagamok/it-accountability.html.twig'],
             // Public-records kit: eleven member-compiled cards (image + ready
             // caption), built from public sources only, for members to copy

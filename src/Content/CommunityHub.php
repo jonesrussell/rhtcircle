@@ -62,10 +62,10 @@ final class CommunityHub
             ],
             [
                 'feature' => true,
-                'tag' => "A member's public statement",
-                'title' => 'A call for the resignation of the Director of IT and Communications',
-                'desc' => 'Two serious IT and data failures, raised properly and privately first, met with silence. A member is now asking publicly.',
-                'go' => 'Read the statement',
+                'tag' => "A member's record",
+                'title' => 'IT accountability: what is being asked of Council',
+                'desc' => 'The gated members portal, once left open, is now confirmed captured in the public Internet Archive, permanently. What members were told, the pattern, and what is being asked of Council.',
+                'go' => 'Read the record',
                 'href' => '/communities/sagamok/it-accountability',
             ],
             [
@@ -91,9 +91,9 @@ final class CommunityHub
                 'href' => '/communities/sagamok/how-its-organized',
             ],
             [
-                'tag' => 'Reported and resolved',
+                'tag' => 'Reported, partially resolved',
                 'title' => 'The members website issue',
-                'desc' => 'A responsible disclosure of a members-portal exposure, reported and since resolved, kept here as a record.',
+                'desc' => 'A responsible disclosure of a members-portal exposure. The live site was fixed, but the gated area is confirmed captured in the public Internet Archive, permanently.',
                 'go' => 'Read what happened',
                 'href' => '/communities/sagamok/members-website-issue',
             ],
