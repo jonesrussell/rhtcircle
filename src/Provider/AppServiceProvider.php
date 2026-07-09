@@ -216,6 +216,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'sagamok-members-website-issue' => ['/communities/sagamok/members-website-issue', 'pages/communities/sagamok/members-website-issue.html.twig'],
             'sagamok-long-term-care' => ['/communities/sagamok/long-term-care', 'pages/communities/sagamok/long-term-care.html.twig'],
             'sagamok-awaiting-council' => ['/communities/sagamok/awaiting-council', 'pages/communities/sagamok/awaiting-council.html.twig'],
+            'sagamok-support-images' => ['/communities/sagamok/support-images', 'pages/communities/sagamok/support-images.html.twig'],
         ];
 
         foreach ($pages as $name => [$path, $template]) {

@@ -63,6 +63,7 @@ final class IngestCommand
         '/communities/sagamok/how-its-organized' => 'pages/communities/sagamok/how-its-organized.html.twig',
         '/communities/sagamok/members-website-issue' => 'pages/communities/sagamok/members-website-issue.html.twig',
         '/communities/sagamok/awaiting-council' => 'pages/communities/sagamok/awaiting-council.html.twig',
+        '/communities/sagamok/support-images' => 'pages/communities/sagamok/support-images.html.twig',
         '/circle' => 'pages/circle/index.html.twig',
         '/about' => 'pages/about.html.twig',
     ];
