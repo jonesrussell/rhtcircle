@@ -116,9 +116,9 @@
   <p class="muted">Here about school funding? Band post-secondary money is only one door, and it is not the only way to pay for college, university, or the trades. See <a href="/resources/paying-for-school">Paying for school</a> for the funding paths a member can use, most of which can be combined.</p>
 
   <figure class="rr-illus">
-    <img src="/images/records-request-illustration.png?v=100" width="1264" height="842" loading="lazy" decoding="async"
-         alt="Illustration of community members outside the Sagamok Anishnawbek Multi-Educational Centre holding Release Our Records signs, one figure for each signature collected.">
-    <figcaption>Illustration: 100 people, one for every member who has signed so far.</figcaption>
+    <img src="/images/records-request-illustration.png?v=1" width="1264" height="842" loading="lazy" decoding="async"
+         alt="Illustration of community members outside the Sagamok Anishnawbek Multi-Educational Centre holding Release Our Records signs, standing in for the people who have signed.">
+    <figcaption>Illustration: community members holding Release Our Records signs, one figure standing in for many. <span data-rr-illus-count>The current signature count is loading.</span></figcaption>
   </figure>
 
   <section class="rr-card" data-rr aria-labelledby="rr-h">
@@ -349,6 +349,17 @@
       if (el) { el.textContent = note; el.hidden = false; }
     }
 
+    // Illustration caption lives outside [data-rr], so it is read from the
+    // same live publicCount() the sign-up counter uses. This must never be a
+    // hardcoded number in the template: see the July 2026 incident where a
+    // hand-edited "88 people" caption drifted from the real total and shipped
+    // stale after a deploy-pin regression.
+    function setIllusCount(n) {
+      if (n === null || n === undefined) return;
+      var el = document.querySelector('[data-rr-illus-count]');
+      if (el) el.textContent = fmt(n) + ' people have signed so far, online and on paper.';
+    }
+
     function renderSupporters(recent) {
       if (!recent || !recent.length) return;
       var wrap = document.querySelector('[data-rr-supporters]');
@@ -366,7 +377,7 @@
     function hydrate() {
       fetch('/api/petition/' + SLUG, { headers: { 'Accept': 'application/json' } })
         .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (d) { if (d && d.ok) { setCount(d.count); setPaper(d.paper_count, d.paper_note); renderSupporters(d.recent); } })
+        .then(function (d) { if (d && d.ok) { setCount(d.count); setIllusCount(d.count); setPaper(d.paper_count, d.paper_note); renderSupporters(d.recent); } })
         .catch(function () {});
     }
 
