@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}One Seat, or One Salary · Robinson Huron Treaty{% endblock %}
+{% block description %}A member-compiled record: seven of Sagamok Anishnawbek's twelve elected Councillors also hold a paid staff or executive position with the Nation or a company it owns. Every fact is sourced to Sagamok's own public website, with a simple ask.{% endblock %}
+{% block og_description %}Seven of Sagamok's twelve elected Councillors also hold a paid staff or executive position with the Nation or a company it owns. What the public record shows, and a simple ask.{% endblock %}
+{% block body_class %}route-sagamok-one-seat-one-salary{% endblock %}
+
+{% block head_styles %}
+<style>
+  /* Scoped .osos-* table + callout, matching the records-request rrl-matrix
+     pattern (site design tokens, not page-local hex values). */
+  .osos-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: var(--gap-4) 0 var(--gap-2); border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper-2); }
+  .osos-table { border-collapse: collapse; width: 100%; min-width: 640px; font-family: var(--font-sans); font-size: 14px; }
+  .osos-table th, .osos-table td { border-bottom: 1px solid var(--rule); padding: 10px 14px; text-align: left; vertical-align: top; }
+  .osos-table thead th { color: var(--ink-3); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; }
+  .osos-table tbody tr:last-child td { border-bottom: none; }
+  .osos-table td.nm { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .osos-table td.src { white-space: nowrap; }
+  .osos-note { font-family: var(--font-sans); font-size: 12.5px; color: var(--ink-3); line-height: 1.5; margin: 0 0 var(--gap-5); max-width: 90ch; }
+
+  .osos-quote { font-family: var(--font-serif); font-size: 20px; line-height: 1.5; color: var(--ink); border-left: 3px solid var(--accent); padding: 4px 0 4px 20px; margin: var(--gap-4) 0; }
+  .osos-quote cite { display: block; font-family: var(--font-sans); font-size: 13px; font-style: normal; color: var(--ink-3); margin-top: 8px; }
+
+  .osos-ask { margin: var(--gap-5) 0; background: var(--accent-wash); border: 1px solid var(--accent-soft); border-left: 4px solid var(--accent); border-radius: var(--radius-md); padding: 18px 22px; }
+  .osos-ask p { margin: 0; max-width: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › One Seat, or One Salary</p>
+
+  <p class="eyebrow">Sagamok Anishnawbek · A member's ask</p>
+  <h1>One Seat, or One Salary</h1>
+  <p class="lead">Seven of Sagamok's twelve elected Councillors also hold a paid staff or executive position with the Nation or a company it owns. Every fact on this page comes from Sagamok's own public website and public filings. It is presented so members can see it in one place, and it comes with a simple ask.</p>
+
+  {% set banner_body %}<strong>Member-compiled and unofficial.</strong> This is a member-compiled summary, not an official communication of Sagamok Anishnawbek. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.{% endset %}
+  {% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'About this page' } only %}
+
+  {% include 'components/section_heading.html.twig' with { title: 'What the public record shows' } only %}
+  <p>According to Sagamok's own public staff directory, the Chief and Council page, and the Z'gamok Enterprises website, these Council members also hold a paid role:</p>
+
+  <div class="osos-table-wrap">
+    <table class="osos-table">
+      <thead>
+        <tr><th>Name</th><th>Elected role</th><th>Also holds</th><th>Source</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="nm">Arnelda Bennett</td>
+          <td>Councillor</td>
+          <td>Economic Development Manager</td>
+          <td class="src"><a href="https://www.sagamokanishnawbek.com/directory" target="_blank" rel="noopener">staff directory</a></td>
+        </tr>
+        <tr>
+          <td class="nm">Paul Eshkakogan</td>
+          <td>Councillor</td>
+          <td>President, Z'gamok Enterprises</td>
+          <td class="src"><a href="https://zgamok.ca/our-team" target="_blank" rel="noopener">zgamok.ca</a></td>
+        </tr>
+        <tr>
+          <td class="nm">Leroy Bennett</td>
+          <td>Councillor</td>
+          <td>Research and Policy Analyst (Lands, Resources and Environment)</td>
+          <td class="src"><a href="https://www.sagamokanishnawbek.com/directory" target="_blank" rel="noopener">staff directory</a></td>
+        </tr>
+        <tr>
+          <td class="nm">Michael Abitong</td>
+          <td>Councillor</td>
+          <td>Land-Based Resource Instructor (Saswin)</td>
+          <td class="src"><a href="https://www.sagamokanishnawbek.com/directory" target="_blank" rel="noopener">staff directory</a></td>
+        </tr>
+        <tr>
+          <td class="nm">Sadie Southwind</td>
+          <td>Councillor</td>
+          <td>Infrastructure Manager (Planning and Infrastructure)</td>
+          <td class="src"><a href="https://www.sagamokanishnawbek.com/directory" target="_blank" rel="noopener">staff directory</a></td>
+        </tr>
+        <tr>
+          <td class="nm">Dan Owl</td>
+          <td>Councillor</td>
+          <td>Infrastructure Manager, Education Department</td>
+          <td class="src"><a href="https://www.sagamokanishnawbek.com/sagamok-team-members/dan-owl" target="_blank" rel="noopener">his own councillor bio</a></td>
+        </tr>
+        <tr>
+          <td class="nm">Conrad Toulouse</td>
+          <td>Councillor</td>
+          <td>After Care team, Mental Health and Addictions</td>
+          <td class="src"><a href="https://www.sagamokanishnawbek.com/mental-health-and-addiction" target="_blank" rel="noopener">MHA team page</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="osos-note">Sagamok's own <a href="https://www.sagamokanishnawbek.com/chief-council" target="_blank" rel="noopener">Chief and Council page</a> lists twelve Councillors alongside the Chief. The staff directory spells one name "Micheal Abitong" where the Chief and Council page spells it "Michael Abitong"; both entries describe the same Land-Based Resource Instructor role at Saswin. <a href="/about#corrections">Tell us if we have this wrong</a> and we will correct it.</p>
+
+  {% include 'components/section_heading.html.twig' with { title: 'The principle' } only %}
+  <blockquote class="osos-quote">
+    "Chief and Council&hellip; oversee the work of the organization."
+    <cite>Sagamok Anishnawbek, <a href="https://www.sagamokanishnawbek.com/chief-council" target="_blank" rel="noopener">Chief and Council page</a></cite>
+  </blockquote>
+  <p>A councillor helps set the budgets, approves the spending, and oversees the managers of the administration. When that same councillor is also an employee of the administration, they are on both sides of the table: overseeing the very body that employs and pays them. This is not a question about any one person's work. It is a question about the structure.</p>
+
+  {% include 'components/section_heading.html.twig' with { title: 'The ask' } only %}
+  <div class="osos-ask">
+    <p><strong>Choose one.</strong> A member of Chief and Council should hold one paid public role: keep the elected seat, or keep the staff job. One public role each. This changes nothing about a person's standing in the community. It simply separates the people who oversee the Nation's money from the people the Nation pays.</p>
+  </div>
+
+  {% include 'components/section_heading.html.twig' with { title: 'Right of reply' } only %}
+  <p>Chief and Council have been asked directly to confirm this information is current and to submit any corrections. Any correction they provide will be reflected here.</p>
+
+  {% include 'components/section_heading.html.twig' with { title: 'Sources' } only %}
+  <ul class="src-links">
+    <li><a href="https://www.sagamokanishnawbek.com/directory" target="_blank" rel="noopener">Sagamok staff directory</a></li>
+    <li><a href="https://www.sagamokanishnawbek.com/chief-council" target="_blank" rel="noopener">Sagamok Chief and Council page</a></li>
+    <li><a href="https://www.sagamokanishnawbek.com/sagamok-team-members/dan-owl" target="_blank" rel="noopener">Dan Owl, councillor bio</a></li>
+    <li><a href="https://zgamok.ca/our-team" target="_blank" rel="noopener">Z'gamok Enterprises, our team</a></li>
+    <li><a href="https://www.sagamokanishnawbek.com/mental-health-and-addiction" target="_blank" rel="noopener">Mental Health and Addictions, meet the team</a></li>
+    <li>Pay figures, where referenced, come from the FNFTA <a href="https://www.sagamokanishnawbek.com/annual-report-financial-statements/2025-annual-report" target="_blank" rel="noopener">Schedule of Remuneration and Expenses</a> (Sagamok's audited annual remuneration filing).</li>
+  </ul>
+
+  <p class="cover__byline">A community resource from the Robinson Huron Treaty hub, member-led and independent. Facts are from public sources; the questions are for our leadership. Corrections welcome.</p>
+{% endblock %}

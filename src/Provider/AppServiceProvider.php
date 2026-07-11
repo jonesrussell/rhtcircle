@@ -309,6 +309,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'sagamok-gr-truss' => ['/communities/sagamok/gr-truss', 'pages/communities/sagamok/gr-truss.html.twig'],
             'sagamok-play-limited-partnership' => ['/communities/sagamok/play-limited-partnership', 'pages/communities/sagamok/play-limited-partnership.html.twig'],
             'sagamok-espanola-mill-bmi' => ['/communities/sagamok/espanola-mill-bmi', 'pages/communities/sagamok/espanola-mill-bmi.html.twig'],
+            'sagamok-one-seat-one-salary' => ['/communities/sagamok/one-seat-one-salary', 'pages/communities/sagamok/one-seat-one-salary.html.twig'],
             // A member's record (Russell Jones): the members-only portal
             // exposure, its capture in the public Internet Archive, and what
             // is being asked of Council. Companion to members-website-issue.

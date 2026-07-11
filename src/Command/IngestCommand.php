@@ -74,6 +74,7 @@ final class IngestCommand
         '/communities/sagamok/gr-truss' => 'pages/communities/sagamok/gr-truss.html.twig',
         '/communities/sagamok/play-limited-partnership' => 'pages/communities/sagamok/play-limited-partnership.html.twig',
         '/communities/sagamok/espanola-mill-bmi' => 'pages/communities/sagamok/espanola-mill-bmi.html.twig',
+        '/communities/sagamok/one-seat-one-salary' => 'pages/communities/sagamok/one-seat-one-salary.html.twig',
         '/circle' => 'pages/circle/index.html.twig',
         '/about' => 'pages/about.html.twig',
     ];

@@ -159,6 +159,14 @@ final class CommunityHub
                 'go' => 'See the questions',
                 'href' => '/communities/sagamok/espanola-mill-bmi',
             ],
+            [
+                'feature' => true,
+                'tag' => "A member's ask",
+                'title' => 'One Seat, or One Salary',
+                'desc' => 'Seven of Sagamok\'s twelve elected Councillors also hold a paid staff or executive position with the Nation or a company it owns. What the public record shows, and a simple ask.',
+                'go' => 'Read the record',
+                'href' => '/communities/sagamok/one-seat-one-salary',
+            ],
         ];
     }
 
