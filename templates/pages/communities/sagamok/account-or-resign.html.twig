@@ -94,6 +94,31 @@
   .rr-supporters ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
   .rr-supporters li { font-size: 13px; color: var(--ink-2); background: var(--paper-2); border: 1px solid var(--rule); border-radius: 999px; padding: 4px 12px; }
 
+  /* "The members' record": three stat pills right before the sign form, each
+     a different colour + caption so the three counts are never confused with
+     one another. .aor-stat--primary (this statement, magenta/accent) is the
+     live, highlighted one tied to the sign form below; the other two are
+     reference counts from a different instrument entirely (a different
+     petition/campaign), each linked to its own source. Side by side on
+     desktop, stacked on mobile. */
+  .aor-stats { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 var(--gap-6); }
+  .aor-stat { flex: 1 1 220px; display: block; text-decoration: none; border-radius: var(--radius-lg); border: 1px solid var(--rule); background: var(--paper-2); padding: 16px 18px; }
+  .aor-stat__n { display: block; font-family: var(--font-serif); font-size: 30px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .aor-stat__c { display: block; margin-top: 4px; font-family: var(--font-sans); font-size: 13px; line-height: 1.4; color: var(--ink-2); }
+  .aor-stat--primary { background: var(--accent-wash); border-color: var(--accent-soft); border-left: 4px solid var(--accent); }
+  .aor-stat--primary .aor-stat__n { color: var(--accent-deep); }
+  .aor-stat--records { border-left: 4px solid var(--blue); }
+  .aor-stat--records .aor-stat__n { color: var(--blue); }
+  .aor-stat--audit { border-left: 4px solid var(--coral); }
+  .aor-stat--audit .aor-stat__n { color: var(--coral); }
+  a.aor-stat:hover { border-color: var(--rule-strong); }
+  a.aor-stat--primary:hover { border-color: var(--accent-soft); }
+
+  @media (max-width: 560px) {
+    .aor-stats { flex-direction: column; }
+    .aor-stat { flex: 1 1 auto; }
+  }
+
   /* "How we got here." timeline: full wide frame (no .aor-prose wrapper
      around this section, unlike the statement/ask/sign-form above and below
      it), a genuine two-column "date on one side, event on the other" layout
@@ -199,6 +224,21 @@
 </div>
 
   <div class="aor-prose">
+  <div class="aor-stats" aria-label="The members' record">
+    <div class="aor-stat aor-stat--primary">
+      <span class="aor-stat__n" data-aor-stat-primary>0</span>
+      <span class="aor-stat__c">members have signed this statement.</span>
+    </div>
+    <a class="aor-stat aor-stat--records" href="/standard/records-request">
+      <span class="aor-stat__n" data-aor-stat-records>&hellip;</span>
+      <span class="aor-stat__c">members signed the June 2026 records request.</span>
+    </a>
+    <a class="aor-stat aor-stat--audit" href="https://www.change.org/p/mandate-independent-financial-audit-for-sagamok-anishnawbek-chief-and-council" target="_blank" rel="noopener">
+      <span class="aor-stat__n">276</span>
+      <span class="aor-stat__c">members signed the 2024 independent financial audit petition.</span>
+    </a>
+  </div>
+
   <section class="rr-card" data-rr aria-labelledby="rr-h">
     <h2 id="rr-h">Add your name</h2>
     <p class="rr-count" data-rr-countbox hidden>Joined by <b data-rr-count>0</b> members and supporters so far</p>
@@ -339,6 +379,26 @@
       if (box) box.hidden = false;
     }
 
+    // "The members' record" stat pills: the primary pill mirrors this
+    // page's own live count (same source as setCount above, just a second
+    // place it's displayed); the records-request pill is a fully separate
+    // fetch against that campaign's own slug, never hardcoded here.
+    function setPrimaryStat(n) {
+      if (n === null || n === undefined) return;
+      var el = document.querySelector('[data-aor-stat-primary]');
+      if (el) el.textContent = fmt(n);
+    }
+
+    function hydrateRecordsStat() {
+      fetch('/api/petition/records-request-support', { headers: { 'Accept': 'application/json' } })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          var el = document.querySelector('[data-aor-stat-records]');
+          if (el && d && d.ok) el.textContent = fmt(d.count);
+        })
+        .catch(function () {});
+    }
+
     function setPaper(count, note) {
       if (!count || !note) return;
       var el = card.querySelector('[data-rr-paper]');
@@ -362,8 +422,9 @@
     function hydrate() {
       fetch('/api/petition/' + SLUG, { headers: { 'Accept': 'application/json' } })
         .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (d) { if (d && d.ok) { setCount(d.count); setPaper(d.paper_count, d.paper_note); renderSupporters(d.recent); } })
+        .then(function (d) { if (d && d.ok) { setCount(d.count); setPrimaryStat(d.count); setPaper(d.paper_count, d.paper_note); renderSupporters(d.recent); } })
         .catch(function () {});
+      hydrateRecordsStat();
     }
 
     function checked(name) {
@@ -407,6 +468,7 @@
           }
           card.classList.add('is-done');
           setCount(res.count);
+          setPrimaryStat(res.count);
           var dc = card.querySelector('[data-rr-donecount]');
           if (dc && res.count != null) dc.textContent = 'You are one of ' + fmt(res.count) + ' so far.';
           var rw = card.querySelector('[data-rr-removewrap]');
