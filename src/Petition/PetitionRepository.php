@@ -245,6 +245,26 @@ final class PetitionRepository
             + (int) ($campaign['online_base'] ?? 0);
     }
 
+    /**
+     * The total/online/paper breakdown shown wherever the site mentions a
+     * signature count (the sign-up counter, the awaiting-council page, the
+     * community hub card). Single source so none of those can drift from the
+     * database independently, the way a hand-typed number in a template did
+     * (see the July 2026 stale-caption incident).
+     *
+     * @param array<string, mixed> $campaign
+     *
+     * @return array{total: int, online: int, paper: int}
+     */
+    public function signatureBreakdown(array $campaign): array
+    {
+        return [
+            'total' => $this->publicCount($campaign),
+            'online' => $this->verifiedCount((int) $campaign['id']),
+            'paper' => (int) ($campaign['paper_count'] ?? 0),
+        ];
+    }
+
     public function verifiedCount(int $campaignId): int
     {
         foreach ($this->db->query(

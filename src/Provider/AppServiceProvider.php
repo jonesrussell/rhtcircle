@@ -142,6 +142,22 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         );
     }
 
+    /**
+     * Live total/online/paper breakdown for the records-request campaign.
+     * The single place every page-render context gets this figure from, so a
+     * hardcoded number can never reappear in a template.
+     *
+     * @return array{total: int, online: int, paper: int}
+     */
+    private function recordsRequestSignatures(): array
+    {
+        $campaign = $this->petitionRepository()->findActiveCampaign('records-request-support');
+
+        return $campaign !== null
+            ? $this->petitionRepository()->signatureBreakdown($campaign)
+            : ['total' => 0, 'online' => 0, 'paper' => 0];
+    }
+
     private ?PollRepository $pollRepository = null;
 
     private function pollRepository(): PollRepository
@@ -277,7 +293,9 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'about' => ['/about', 'pages/about.html.twig'],
             'get-involved' => ['/get-involved', 'pages/get-involved.html.twig'],
 
-            'sagamok-awaiting-council' => ['/communities/sagamok/awaiting-council', 'pages/communities/sagamok/awaiting-council.html.twig'],
+            // sagamok-awaiting-council is registered explicitly below (not
+            // here): it needs the live signature count passed into the
+            // template, which this generic no-context loop cannot supply.
             // Support images: a client-side canvas generator (Facebook cover,
             // square post, profile badge) for the records request. No login,
             // no upload, no names collected. Ported from main, where it was
@@ -401,7 +419,24 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             RouteBuilder::create('/communities/{slug}')
                 ->controller(fn (Request $request, string $slug) => $md->wantsMarkdown($request)
                     ? $md->pageResponse('/communities/' . $slug)
-                    : $controller->community($slug))
+                    : $controller->community($slug, $this->recordsRequestSignatures()))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+
+        // The awaiting-council page states the records-request signature count
+        // in prose ("Carried by N signatures..."). Registered as its own route
+        // (not through the generic $pages loop above) so it can carry that live
+        // figure in, the same publicCount()/paper_count source the sign-up
+        // counter uses. Never hand-type this number in the template again, see
+        // the July 2026 incident where a hardcoded caption drifted from the DB.
+        $router->addRoute(
+            'sagamok-awaiting-council',
+            RouteBuilder::create('/communities/sagamok/awaiting-council')
+                ->controller(fn (Request $request) => $md->wantsMarkdown($request)
+                    ? $md->pageResponse('/communities/sagamok/awaiting-council')
+                    : $controller->sagamokAwaitingCouncil($this->recordsRequestSignatures()))
                 ->allowAll()
                 ->methods('GET')
                 ->build(),

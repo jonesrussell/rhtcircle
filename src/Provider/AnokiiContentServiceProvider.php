@@ -6,10 +6,12 @@ namespace App\Provider;
 
 use App\Command\IngestCommand;
 use App\Command\SeedGraphCommand;
+use App\Petition\PetitionRepository;
 use Waaseyaa\CLI\Command\HandlerCommand;
 use Waaseyaa\CLI\Command\HandlerOption;
 use Waaseyaa\CLI\Command\HandlerOptionMode;
 use Waaseyaa\CLI\Command\SymfonyCommandIO;
+use Waaseyaa\Database\DBALDatabase;
 use Waaseyaa\Entity\EntityTypeManager;
 use Waaseyaa\Foundation\ServiceProvider\Capability\ProvidesConsoleCommandsInterface;
 use Waaseyaa\Foundation\ServiceProvider\ServiceProvider;
@@ -53,7 +55,7 @@ final class AnokiiContentServiceProvider extends ServiceProvider implements Prov
                     return 1;
                 }
 
-                return new IngestCommand($etm->getRepository('doc_chunk'))->run($io);
+                return new IngestCommand($etm->getRepository('doc_chunk'), $this->petitionRepository())->run($io);
             },
         );
 
@@ -86,7 +88,7 @@ final class AnokiiContentServiceProvider extends ServiceProvider implements Prov
 
                     return 1;
                 }
-                $ingest = new IngestCommand($etm->getRepository('doc_chunk'))->run($io);
+                $ingest = new IngestCommand($etm->getRepository('doc_chunk'), $this->petitionRepository())->run($io);
                 if ($ingest !== 0) {
                     return $ingest;
                 }
@@ -118,5 +120,26 @@ final class AnokiiContentServiceProvider extends ServiceProvider implements Prov
         } catch (\Throwable) {
             return null;
         }
+    }
+
+    /**
+     * Built the same way as AppServiceProvider::petitionRepository(): a
+     * separate instance (this provider does not share AppServiceProvider's
+     * state), but the same DB file and secret resolution, so app:ingest reads
+     * the exact signature figures the live site does.
+     */
+    private function petitionRepository(): PetitionRepository
+    {
+        $root = \dirname(__DIR__, 2);
+        $configured = getenv('WAASEYAA_DB') ?: '';
+        $isAbsolute = str_starts_with($configured, '/') || preg_match('#^[A-Za-z]:[\\\\/]#', $configured) === 1;
+        $path = $configured === ''
+            ? $root . '/storage/waaseyaa.sqlite'
+            : ($isAbsolute ? $configured : $root . '/' . ltrim($configured, './'));
+
+        return new PetitionRepository(
+            DBALDatabase::createSqlite($path),
+            getenv('WAASEYAA_PETITION_SECRET') ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-petition'),
+        );
     }
 }

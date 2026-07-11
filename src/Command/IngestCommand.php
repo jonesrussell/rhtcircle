@@ -9,6 +9,7 @@ use App\Anokii\GraphSeedData;
 use App\Content\CommunityHub;
 use App\Content\LandProjects;
 use App\Content\Nations;
+use App\Petition\PetitionRepository;
 use App\Support\ChunkData;
 use App\Support\DocChunker;
 use App\Support\View;
@@ -61,7 +62,9 @@ final class IngestCommand
         '/safety/hate-and-extremism' => 'pages/safety/hate-and-extremism.html.twig',
         '/resources' => 'pages/resources/index.html.twig',
         '/resources/paying-for-school' => 'pages/resources/paying-for-school.html.twig',
-        '/communities/sagamok/awaiting-council' => 'pages/communities/sagamok/awaiting-council.html.twig',
+        // /communities/sagamok/awaiting-council is rendered separately below:
+        // it needs the live signature breakdown, which this no-context loop
+        // cannot supply.
         '/communities/sagamok/support-images' => 'pages/communities/sagamok/support-images.html.twig',
         '/communities/sagamok/how-its-organized' => 'pages/communities/sagamok/how-its-organized.html.twig',
         '/communities/sagamok/members-website-issue' => 'pages/communities/sagamok/members-website-issue.html.twig',
@@ -74,8 +77,26 @@ final class IngestCommand
 
     public function __construct(
         private readonly EntityRepositoryInterface $chunks,
+        private readonly PetitionRepository $petitions,
         private readonly DocChunker $chunker = new DocChunker(),
     ) {}
+
+    /**
+     * Live total/online/paper breakdown for the records-request campaign, the
+     * same figure the sign-up counter and the community hub card use. Kept
+     * here (not re-derived per call site) so the whole corpus render uses one
+     * consistent snapshot.
+     *
+     * @return array{total: int, online: int, paper: int}
+     */
+    private function recordsRequestSignatures(): array
+    {
+        $campaign = $this->petitions->findActiveCampaign('records-request-support');
+
+        return $campaign !== null
+            ? $this->petitions->signatureBreakdown($campaign)
+            : ['total' => 0, 'online' => 0, 'paper' => 0];
+    }
 
     public function run(SymfonyCommandIO $io): int
     {
@@ -129,9 +150,15 @@ final class IngestCommand
             }
         };
 
+        $signatures = $this->recordsRequestSignatures();
+
         foreach (self::PAGES as $sourceUrl => $template) {
             $render($sourceUrl, $template, []);
         }
+
+        $render('/communities/sagamok/awaiting-council', 'pages/communities/sagamok/awaiting-council.html.twig', [
+            'signatures' => $signatures,
+        ]);
 
         // The Land project pages are data-driven: render each profile through the
         // shared template. (Massey keeps its own templates, ingested via PAGES above.)
@@ -146,7 +173,7 @@ final class IngestCommand
             $slug = (string) $nation['slug'];
             $render('/communities/' . $slug, 'pages/communities/nation.html.twig', [
                 'nation' => $nation,
-                ...CommunityHub::context($slug, $nation),
+                ...CommunityHub::context($slug, $nation, $signatures),
             ]);
         }
 

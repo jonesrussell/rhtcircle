@@ -43,8 +43,12 @@ final class SiteController
      * instead, and the territory grid is built from the land projects that touch
      * the nation. The unofficial banner and correction link are carried by the
      * template. Unknown slug renders the 404 page.
+     *
+     * @param array{total: int, online: int, paper: int} $signatures the live
+     *   records-request count (only used by Sagamok's card; harmless to pass
+     *   for every nation so the route stays simple)
      */
-    public function community(string $slug): Response
+    public function community(string $slug, array $signatures): Response
     {
         $nation = Nations::find($slug);
         if ($nation === null) {
@@ -53,7 +57,23 @@ final class SiteController
 
         return $this->html(View::render('pages/communities/nation.html.twig', [
             'nation' => $nation,
-            ...CommunityHub::context($slug, $nation),
+            ...CommunityHub::context($slug, $nation, $signatures),
+        ]));
+    }
+
+    /**
+     * The Sagamok "Questions awaiting an answer" page. Carries the live
+     * records-request signature count into the records-request item's prose,
+     * the same source (PetitionRepository::signatureBreakdown()) the sign-up
+     * counter and the community hub card use, so it can never go stale like
+     * the hand-typed caption did in the July 2026 incident.
+     *
+     * @param array{total: int, online: int, paper: int} $signatures
+     */
+    public function sagamokAwaitingCouncil(array $signatures): Response
+    {
+        return $this->html(View::render('pages/communities/sagamok/awaiting-council.html.twig', [
+            'signatures' => $signatures,
         ]));
     }
 

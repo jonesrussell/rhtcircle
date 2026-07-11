@@ -27,12 +27,16 @@ final class CommunityHub
 {
     /**
      * @param array<string, mixed> $nation
+     * @param array{total: int, online: int, paper: int} $signatures the live
+     *   records-request count (from PetitionRepository::signatureBreakdown()),
+     *   supplied by every caller (SiteController, IngestCommand) so the
+     *   records-request card never hardcodes a number that can go stale
      *
      * @return array{transparency: list<array<string, string|bool>>, territory: list<array<string, string|bool>>, community_life: list<array<string, string|bool>>, lede: string, tsub: string}
      */
-    public static function context(string $slug, array $nation): array
+    public static function context(string $slug, array $nation, array $signatures): array
     {
-        $transparency = self::transparencyCards($slug);
+        $transparency = self::transparencyCards($slug, $signatures);
 
         return [
             'transparency' => $transparency,
@@ -45,8 +49,12 @@ final class CommunityHub
         ];
     }
 
-    /** @return list<array<string, string|bool>> */
-    private static function transparencyCards(string $slug): array
+    /**
+     * @param array{total: int, online: int, paper: int} $signatures
+     *
+     * @return list<array<string, string|bool>>
+     */
+    private static function transparencyCards(string $slug, array $signatures): array
     {
         if ($slug !== 'sagamok') {
             return [];
@@ -86,7 +94,12 @@ final class CommunityHub
             [
                 'tag' => 'The standard, in practice',
                 'title' => 'The records request',
-                'desc' => 'Sixteen member questions about the settlement, the trust, the enterprises, and the benefit to members, carried with 88 plus signatures.',
+                'desc' => sprintf(
+                    'Sixteen member questions about the settlement, the trust, the enterprises, and the benefit to members, carried by %d signatures (%d online and %d on paper).',
+                    $signatures['total'],
+                    $signatures['online'],
+                    $signatures['paper'],
+                ),
                 'go' => 'Read the request',
                 'href' => '/standard/records-request',
             ],
