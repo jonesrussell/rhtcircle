@@ -27,10 +27,20 @@
     #2f80c4 52%, #17a8ba 64%, #5bb87a 74%, #f6d05e 84%,
     #f9781f 93%, #e0452a 100%);
 
-  --max: 760px;
-  --max-wide: 1080px;
+  /* One container system, site-wide (cohesion pass, July 2026): --max is the
+     reading measure, --max-wide is the shared hub/interactive container.
+     Every page uses one of these two via .wrap / .wrap--wide; no page sets
+     its own width. See the "Design system" block near the end of this file. */
+  --max: 720px;
+  --max-wide: 1140px;
   --serif: "Fraunces", Georgia, "Iowan Old Style", serif;
   --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --fs-h1: clamp(28px, 4.5vw, 42px);
+  --fs-h2: clamp(22px, 3vw, 29px);
+  --fs-h3: 15px;
+  --fs-body: 17px;
+  --fs-small: 14.5px;
 }
 
 * { box-sizing: border-box; }
@@ -41,13 +51,14 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 17px;
+  font-size: var(--fs-body);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
 
-.wrap { max-width: var(--max); margin: 0 auto; padding: 0 22px; }
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
 .wrap--wide { max-width: var(--max-wide); }
+@media (min-width: 1024px) { .wrap { padding: 0 48px; } }
 
 /* Signature rainbow rule */
 .rainbow-rule { height: 6px; border: 0; margin: 0; background: var(--rainbow); }
@@ -116,10 +127,36 @@ nav.site-nav a[aria-current="page"] { color: var(--indigo); border-bottom-color:
 
 /* Content */
 main .wrap { padding-top: 38px; padding-bottom: 56px; }
+/* Reserve a permanent right-side gutter below 900px, sized to clear the chat
+   launcher's fixed 48px circle (14px right offset + 48px + a little
+   breathing room). Content wraps before ever reaching that column, so
+   nothing sits under the launcher AT ANY scroll position, not just at the
+   bottom of the page (confirmed by measuring actual text line boxes, not
+   just element bounding boxes: a plain bottom-padding reserve does not
+   reposition earlier content and left real glyphs behind the icon). Extra
+   bottom padding still added for the true end-of-page case (the last line
+   or CTA, once scrolled all the way down). */
+@media (max-width: 900px) {
+  main .wrap { padding-right: 70px; padding-bottom: 92px; }
+}
+/* Type scale: h1/h2/h3/body/small, defined once (--fs-* above). No page sets
+   its own font-size for these; a page's own {% block head_styles %} should
+   only add layout, never typography. .hero h1 (below) is a deliberately more
+   specific override for the hero context; every other h1 uses this. */
+h1 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: var(--fs-h1);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--indigo-deep);
+  margin: 0 0 16px;
+  max-width: 20ch;
+}
 h2 {
   font-family: var(--serif);
   font-weight: 600;
-  font-size: clamp(22px, 3vw, 29px);
+  font-size: var(--fs-h2);
   line-height: 1.2;
   letter-spacing: -0.01em;
   color: var(--indigo-deep);
@@ -129,7 +166,7 @@ h2:first-child { margin-top: 0; }
 h3 {
   font-family: var(--sans);
   font-weight: 700;
-  font-size: 15px;
+  font-size: var(--fs-h3);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--magenta);
@@ -142,7 +179,14 @@ strong { color: var(--ink); font-weight: 600; }
 ul, ol { margin: 0 0 18px; padding-left: 22px; }
 li { margin: 0 0 9px; }
 .lead { font-size: 19px; color: var(--ink-2); }
-.muted { color: var(--ink-3); font-size: 14.5px; }
+.muted { color: var(--ink-3); font-size: var(--fs-small); }
+/* Prose measure, for use inside .wrap--wide (hub/interactive pages) when a
+   block of running text still needs the narrower reading width. */
+.measure { max-width: var(--max); }
+
+/* Breadcrumb, for reading pages nested under a section. */
+.crumb { font-size: 12.5px; color: var(--ink-3); margin: 0 0 16px; }
+.crumb a { color: var(--magenta); }
 
 /* Callout cards */
 .card {
@@ -422,4 +466,110 @@ li { margin: 0 0 9px; }
 /* freshness: an honest, machine-readable "last updated" stamp. */
 .freshness { font-family: var(--font-sans, var(--sans)); font-size: 13px; color: var(--ink-3); margin: 12px 0 0; }
 .freshness time { font-variant-numeric: tabular-nums; }
+
+/* ==========================================================================
+   Design system: shared shell + component library (site cohesion +
+   responsiveness pass, July 2026). One definition each, reused everywhere;
+   no page sets its own container width, card style, or font size. See
+   docs/audits or the design brief for the diagnosis this answers.
+   ========================================================================== */
+
+/* Canonical card grid, generalized from the community hub. Use for any card
+   grid site-wide: hub tiles, transparency/territory cards, resource tiles. */
+.tile-grid { display: grid; gap: 16px; grid-template-columns: repeat(3, 1fr); margin: 24px 0; }
+.tile-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px 22px;
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.tile-card:hover { transform: translateY(-2px); border-color: var(--violet); box-shadow: 0 8px 24px rgba(79,47,176,.10); color: var(--ink); text-decoration: none; }
+.tile-card .tile-tag { font-family: var(--sans); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--magenta); margin: 0 0 9px; font-weight: 700; }
+.tile-card h3 { font-family: var(--serif); font-size: 19px; color: var(--indigo-deep); margin: 0 0 7px; font-weight: 600; text-transform: none; letter-spacing: normal; }
+.tile-card p { font-size: 14px; color: var(--ink-2); margin: 0 0 16px; line-height: 1.5; flex: 1; }
+.tile-card .tile-go { font-size: 13.5px; color: var(--magenta-deep); font-weight: 600; }
+.tile-card.is-feature { border-color: var(--violet); background: linear-gradient(180deg, var(--accent-wash), #fff); }
+.tile-card.is-invite { border-style: dashed; background: var(--paper-2); }
+
+/* Side panel (profile / at-a-glance facts), for the hub layout template. */
+.side-panel { display: flex; flex-direction: column; gap: 18px; }
+.side-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; }
+.side-card h2 { font-family: var(--serif); font-size: 18px; margin: 0 0 14px; color: var(--indigo-deep); font-weight: 600; }
+.facts-list div { padding: 11px 0; border-top: 1px solid var(--line); }
+.facts-list div:first-child { border-top: none; padding-top: 0; }
+.facts-list dt { font-family: var(--sans); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 3px; }
+.facts-list dd { margin: 0; font-size: 14.5px; color: var(--ink); }
+.side-extlink { display: block; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; font-size: 14.5px; color: var(--indigo-deep); font-weight: 600; text-decoration: none; }
+.side-extlink:hover { border-color: var(--violet); text-decoration: none; }
+.side-extlink span { display: block; font-size: 11.5px; color: var(--ink-3); font-weight: 400; margin-top: 2px; }
+
+/* Hub layout: sidebar + content, both inside .wrap--wide. Sidebar stacks
+   above content on mobile/tablet, sits beside it on desktop (>=1024px). */
+.hub-grid { display: grid; grid-template-columns: 1fr; gap: 30px; align-items: start; }
+@media (min-width: 1024px) {
+  .hub-grid { grid-template-columns: 320px 1fr; gap: 44px; }
+  .side-panel { position: sticky; top: 18px; }
+}
+
+/* Sources band: the bottom-of-page source list, for reading and hub pages. */
+.sources-band { background: var(--paper-2); border-top: 1px solid var(--line); margin-top: var(--gap-7); padding: var(--gap-6) 0; }
+.sources-band h2 { font-family: var(--serif); font-size: 18px; color: var(--indigo-deep); margin: 0 0 12px; }
+.sources-list { display: flex; flex-wrap: wrap; gap: 10px 26px; font-size: 14px; margin: 0; padding: 0; list-style: none; }
+
+/* Poll option + result bar (interactive template). */
+.poll-options { display: flex; flex-direction: column; gap: 10px; }
+.poll-opt { display: flex; align-items: flex-start; gap: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 13px 16px; cursor: pointer; background: #fff; }
+.poll-opt:hover { border-color: var(--indigo); }
+.poll-opt input[type="radio"] { margin-top: 3px; accent-color: var(--indigo); flex: none; }
+.poll-opt span { font-size: 15.5px; line-height: 1.45; color: var(--ink); }
+.poll-opt input[type="radio"]:focus-visible { outline: 3px solid var(--magenta); outline-offset: 2px; }
+.poll-send { font: inherit; font-weight: 700; color: #fff; background: var(--indigo); border: 0; border-radius: 999px; padding: 13px 28px; cursor: pointer; align-self: flex-start; }
+.poll-send:hover { background: var(--indigo-deep); }
+.poll-send[disabled] { opacity: .6; cursor: default; }
+.poll-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.poll-status { margin: 0 0 var(--gap-4); border-radius: 10px; padding: 0; }
+.poll-status[data-state="error"] { padding: 12px 14px; background: #fdeaf3; border: 1px solid var(--magenta); color: var(--magenta-deep); font-weight: 600; font-size: 14.5px; }
+.poll-results h2 { font-family: var(--serif); font-size: 20px; color: var(--indigo-deep); margin: 0 0 4px; font-weight: 600; }
+.poll-results .poll-total { font-size: 14px; color: var(--ink-3); margin: 0 0 var(--gap-4); }
+.poll-rows { display: flex; flex-direction: column; gap: 14px; margin: 0 0 var(--gap-5); }
+.poll-row-label { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; color: var(--ink); margin: 0 0 6px; }
+.poll-row-label strong { font-weight: 600; }
+.poll-row-label .poll-pct { font-family: var(--sans); font-weight: 700; color: var(--indigo-deep); white-space: nowrap; }
+.poll-bar { background: var(--paper-2); border: 1px solid var(--line); border-radius: 999px; height: 12px; overflow: hidden; }
+.poll-bar-fill { height: 100%; background: var(--indigo); border-radius: 999px 0 0 999px; }
+.poll-row.is-picked .poll-row-label strong::after { content: " (your pick)"; font-weight: 400; color: var(--ink-3); }
+.poll-row.is-picked .poll-bar-fill { background: var(--magenta); }
+
+/* Essay/statement reading template ("docwrap"), consolidated from six
+   near-identical per-page copies (the Massey solar cluster, treaty/index,
+   treaty/distribution-models). One definition, reused; a page adds only its
+   own content, never its own width. */
+.docwrap { font-family: var(--sans); }
+.doctop { max-width: 880px; margin: 0 auto; padding: 32px 24px 0; }
+.cover { max-width: var(--max); margin: 0 auto; padding: var(--gap-6) 24px var(--gap-7); }
+.cover__eyebrow { font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 16px; font-weight: 600; }
+.cover__title { font-family: var(--serif); font-size: clamp(28px, 4.2vw, 38px); line-height: 1.15; letter-spacing: -0.01em; font-weight: 600; color: var(--indigo-deep); margin: 0 0 var(--gap-3); max-width: none; }
+.cover__lede { font-size: 19px; color: var(--ink-2); margin: 0 0 8px; }
+.cover__byline { font-size: 14px; color: var(--ink-3); margin: var(--gap-4) 0 0; padding-top: var(--gap-4); border-top: 1px solid var(--rule); }
+.page { max-width: var(--max); margin: 0 auto; padding: 0 24px var(--gap-9); }
+.page > h2 { margin-top: var(--gap-7); }
+
+/* ---- Responsive breakpoints (mobile <768px, tablet 768-1024px, desktop
+   >1024px). Real, tested breakpoints; nothing left to a single fluid clamp. */
+
+/* Nav: the eight-link row scrolls horizontally on narrow screens instead of
+   wrapping into a ragged multi-row block. */
+@media (max-width: 767px) {
+  nav.site-nav { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+  nav.site-nav a { white-space: nowrap; }
+}
+
+/* Card grids: 3 desktop / 2 tablet / 1 mobile, explicit at every breakpoint. */
+@media (max-width: 767px) { .tile-grid, .community-grid { grid-template-columns: 1fr; } }
+@media (min-width: 768px) and (max-width: 1023px) { .tile-grid, .community-grid { grid-template-columns: repeat(2, 1fr); } }
 

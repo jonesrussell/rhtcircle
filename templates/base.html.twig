@@ -7,6 +7,13 @@
   <meta name="description" content="{% block description %}A member-led resource for the Robinson Huron Treaty and its 21 First Nations: what the 1850 treaty is, the communities of the territory, what is happening on the land, and the member-led transparency work on the shared settlement.{% endblock %}">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Robinson Huron Treaty resource (rhtcircle.ca)">
+  {# Canonical URL for the share. Defaults to the actual current page's URL
+     (current_url(), from the request path), so every page is correctly
+     attributed without needing to override this block. A page can still set
+     {% block og_url %} to force a different canonical (e.g. a page that
+     should attribute shares to a canonical alias). #}
+  <meta property="og:url" content="{% block og_url %}{{ current_url() }}{% endblock %}">
+  <link rel="canonical" href="{{ block('og_url') }}">
   <meta property="og:title" content="{% block og_title %}{{ block('title') }}{% endblock %}">
   <meta property="og:description" content="{% block og_description %}{{ block('description') }}{% endblock %}">
   {# Per-page social card by convention: og_image_url is set by View::render from

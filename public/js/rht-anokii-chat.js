@@ -63,7 +63,16 @@
     if (document.getElementById('rht-chat')) return;
     injectStyles();
 
-    var launch = el('button', { id: 'rht-chat-launch', type: 'button', 'aria-expanded': 'false', 'aria-controls': 'rht-chat' }, 'Aanii. Ask about the treaty');
+    // Full text at desktop width; shrinks to an icon-only circle below 900px
+    // (see injectStyles) so it can no longer overlap page content on mobile
+    // and tablet. The full label survives for assistive tech via aria-label
+    // regardless of which span CSS is showing.
+    var launch = el('button', {
+      id: 'rht-chat-launch', type: 'button', 'aria-expanded': 'false', 'aria-controls': 'rht-chat',
+      'aria-label': 'Aanii. Ask about the treaty',
+    });
+    launch.appendChild(el('span', { class: 'rht-chat-launch__text' }, 'Aanii. Ask about the treaty'));
+    launch.appendChild(el('span', { class: 'rht-chat-launch__icon', 'aria-hidden': 'true' }, '💬'));
     launch.addEventListener('click', toggle);
     document.body.appendChild(launch);
 
@@ -230,8 +239,19 @@
   function injectStyles() {
     if (document.getElementById('rht-chat-style')) return;
     var css =
-      '#rht-chat-launch{position:fixed;right:18px;bottom:18px;z-index:50;background:var(--indigo,#4f2fb0);color:#fff;border:none;border-radius:999px;padding:12px 20px;font:600 15px/1 var(--sans,system-ui,sans-serif);box-shadow:0 6px 24px rgba(34,29,51,.25);cursor:pointer}' +
+      '#rht-chat-launch{position:fixed;right:18px;bottom:18px;z-index:50;background:var(--indigo,#4f2fb0);color:#fff;border:none;border-radius:999px;padding:12px 20px;font:600 15px/1 var(--sans,system-ui,sans-serif);box-shadow:0 6px 24px rgba(34,29,51,.25);cursor:pointer;display:flex;align-items:center}' +
       '#rht-chat-launch:hover{background:var(--indigo-deep,#38217f)}' +
+      '.rht-chat-launch__icon{display:none;font-size:22px;line-height:1}' +
+      // Below 900px (covers both mobile ~390px and tablet ~800px, verified against
+      // both) the full-text pill is wide enough to overlap page content with no
+      // side margin to float clear in; shrink to an icon-only circle instead.
+      // Desktop (>900px) keeps the full pill: confirmed there's enough side
+      // whitespace there for it to never overlap content.
+      '@media (max-width:900px){' +
+        '#rht-chat-launch{right:14px;bottom:14px;width:48px;height:48px;padding:0;border-radius:50%;justify-content:center}' +
+        '.rht-chat-launch__text{display:none}' +
+        '.rht-chat-launch__icon{display:block}' +
+      '}' +
       '.rht-chat{position:fixed;right:18px;bottom:18px;z-index:51;width:min(420px,calc(100vw - 24px));max-height:min(80vh,640px);display:flex;flex-direction:column;background:#fff;border:1px solid var(--line,#e4def2);border-radius:16px;box-shadow:0 12px 40px rgba(34,29,51,.3);overflow:hidden;font-family:var(--sans,system-ui,sans-serif)}' +
       '.rht-chat__head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line,#e4def2);background:var(--paper-2,#f4f1fb)}' +
       '.rht-chat__title{margin:0;font-family:var(--serif,Georgia,serif);font-weight:600;font-size:15px;color:var(--indigo-deep,#38217f)}' +

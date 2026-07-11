@@ -1,63 +1,129 @@
 {% extends 'base.html.twig' %}
 {% set nav = 'communities' %}
+{% block main_class %}{% endblock %}
+
+{#
+  Hub template (shared shell): the reference layout per the design brief.
+  Uses the shared wrap--wide container (matches the header exactly) for both
+  the hero and the hub-grid, and the shared component library (tile-card,
+  side-panel, sources-band) instead of page-local classes. main_class is
+  blanked only so the sources band below can be full-bleed; every other
+  section explicitly applies wrap/wrap--wide itself.
+#}
 
 {% block title %}{{ nation.name }} · Communities · Robinson Huron Treaty{% endblock %}
 {% block description %}{{ nation.name }}: a member-compiled, unofficial profile. {{ nation.sub_region }}, near {{ nation.nearest_town }}. Population, governance, the treaty relationship, the nation's own website, and sources.{% endblock %}
 {% block og_description %}A member-compiled, unofficial, sourced profile of {{ nation.name }}, one of the 21 Robinson Huron Treaty First Nations.{% endblock %}
+{% block body_class %}route-community-hub{% endblock %}
+
+{% block head_styles %}
+<style>
+  /* Hero band: full-bleed gradient background, shared wrap--wide inside it.
+     Decorative only (brand look, not structure), kept per the brief's
+     "keep the existing visual brand" instruction. */
+  .nh-hero { background: linear-gradient(180deg, var(--paper-2), var(--paper)); border-bottom: 1px solid var(--line); }
+  .nh-hero .wrap { padding-top: 34px; padding-bottom: 36px; }
+  .nh-crumb { font-family: var(--sans); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--magenta-deep); margin: 0 0 14px; font-weight: 600; }
+  .nh-hero h1 { max-width: none; }
+  .nh-lede { font-size: clamp(16px, 1.5vw, 19px); color: var(--ink); max-width: 760px; margin: 0; line-height: 1.6; }
+  .nh-loc { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; font-family: var(--sans); font-size: 14px; color: var(--ink-2); background: var(--paper); border: 1px solid var(--line); padding: 7px 14px; border-radius: 30px; }
+  .nh-loc::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--magenta); }
+
+  .hub-content > section { margin-bottom: 40px; }
+</style>
+{% endblock %}
 
 {% block hero %}
-<section class="hero">
-  <div class="wrap wrap--wide">
-    <p class="eyebrow">Communities · {{ nation.region_name }}</p>
-    <h1>{{ nation.name }}.</h1>
-    {% if nation.anishinaabemowin %}<p class="lead">{{ nation.anishinaabemowin }}</p>{% endif %}
-    <p class="nation-chips">
-      {% include 'components/region_chip.html.twig' with { region: nation.sub_region } only %}
-    </p>
-  </div>
-</section>
+<header class="nh-hero"><div class="wrap wrap--wide">
+  <p class="nh-crumb">Communities &middot; {{ nation.region_name }}</p>
+  <h1>{{ nation.name }}</h1>
+  <p class="nh-lede">{{ lede }}</p>
+  {% if nation.sub_region %}<span class="nh-loc">{{ nation.sub_region }}</span>{% endif %}
+</div></header>
 {% endblock %}
 
 {% block content %}
-  {% include 'partials/nation_banner.html.twig' %}
+<div class="wrap wrap--wide" style="padding-top: 40px;">
+  <div class="hub-grid">
 
-  {% include 'components/section_heading.html.twig' with { title: 'Profile' } only %}
-  {% include 'partials/nation_facts.html.twig' %}
+    <aside class="side-panel">
+      <div class="side-card">
+        <h2>Profile</h2>
+        <dl class="facts-list">
+          {% if nation.anishinaabemowin %}<div><dt>Anishinaabemowin</dt><dd>{{ nation.anishinaabemowin }}</dd></div>{% endif %}
+          {% if nation.sub_region %}<div><dt>Sub-region</dt><dd>{{ nation.sub_region }}</dd></div>{% endif %}
+          {% if nation.nearest_town %}<div><dt>Location</dt><dd>{{ nation.nearest_town }}</dd></div>{% endif %}
+          {% if nation.population_total %}<div><dt>Population</dt><dd>{{ nation.population_total }}{% if nation.population_on_reserve %}, {{ nation.population_on_reserve }} on-reserve{% endif %}</dd></div>{% endif %}
+          {% if nation.governance %}<div><dt>Governance</dt><dd>{{ nation.governance }}</dd></div>{% endif %}
+          {% if nation.language %}<div><dt>Primary language</dt><dd>{{ nation.language }}</dd></div>{% endif %}
+          {% if nation.tribal_council %}<div><dt>Tribal council</dt><dd>{{ nation.tribal_council }}</dd></div>{% endif %}
+        </dl>
+      </div>
+      {% if nation.website %}
+        <a class="side-extlink" href="{{ nation.website }}" target="_blank" rel="noopener">The nation's own website<span>{% if nation.website_label %}{{ nation.website_label }}, {% endif %}the authority. We do not run it.</span></a>
+      {% elseif nation.website_note %}
+        <div class="notice">{{ nation.website_note }}</div>
+      {% endif %}
+      <div class="notice"><strong>Member-compiled and unofficial.</strong> Drawn from public sources. Not an official communication of {{ nation.name }} or its Chief and Council. Details change over time, so the nation's own website is the authority. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.</div>
+    </aside>
 
-  {% include 'components/section_heading.html.twig' with { title: 'History and treaty relationship' } only %}
-  {{ nation.history|raw }}
+    <div class="hub-content">
+      <section>
+        <h2>History and treaty relationship</h2>
+        <div class="measure">{{ nation.history|raw }}</div>
+      </section>
 
-  {% if nation.note %}
-    {% set note_body %}<strong>A note on the figures.</strong> {{ nation.note }}{% endset %}
-    {% include 'components/notice.html.twig' with { body: note_body } only %}
-  {% endif %}
+      {% if community_life is not empty %}
+      <section>
+        <h2>Community life</h2>
+        <p class="muted">A shared event across the treaty nations, posted here so it is easier to find and use.</p>
+        <div class="tile-grid">
+          {% for t in community_life %}{% include 'components/tile_card.html.twig' with t only %}{% endfor %}
+        </div>
+      </section>
+      {% endif %}
 
-  {% include 'partials/nation_official.html.twig' %}
+      <section>
+        <h2>Member transparency resources</h2>
+        <p class="muted">{{ tsub }}</p>
+        <div class="tile-grid">
+          {% if transparency is not empty %}
+            {% for t in transparency %}{% include 'components/tile_card.html.twig' with t only %}{% endfor %}
+          {% else %}
+            {% include 'components/tile_card.html.twig' with { invite: true, tag: 'Start it here', title: 'Bring the shared standard home', desc: 'No member transparency work has been started for ' ~ nation.name ~ ' yet. The shared standard is ready for any member to bring to their own Chief and Council. Be the first local contact.', go: 'Join the Circle', href: '/circle' } only %}
+          {% endif %}
+        </div>
+      </section>
 
-  {% include 'components/section_heading.html.twig' with { title: 'Across the hub', note: 'This page links out rather than repeating what lives elsewhere on the site.' } only %}
-  <ul class="community-grid">
-    <li><a class="community-card" href="/treaty">
-      <p class="name">The Treaty</p>
-      <p class="pillar-desc">What the 1850 treaty is, and what is happening with the settlement.</p>
-    </a></li>
-    <li><a class="community-card" href="/land">
-      <p class="name">The Land</p>
-      <p class="pillar-desc">Decisions on the territory across the 21 nations.</p>
-    </a></li>
-    <li><a class="community-card" href="/standard">
-      <p class="name">The shared standard</p>
-      <p class="pillar-desc">Questions any member can put to their own council.</p>
-    </a></li>
-    {% for link in nation.related %}
-    <li><a class="community-card" href="{{ link.href }}">
-      <p class="name">{{ link.label }}</p>
-      <p class="pillar-desc">{{ link.desc }}</p>
-    </a></li>
-    {% endfor %}
+      <section>
+        <h2>On the territory</h2>
+        <p class="muted">Decisions about the land and its resources reach members here too. They live in the land section, which covers the whole treaty, not any one community.</p>
+        <div class="tile-grid">
+          {% if territory is not empty %}
+            {% for t in territory %}{% include 'components/tile_card.html.twig' with t only %}{% endfor %}
+          {% else %}
+            {% include 'components/tile_card.html.twig' with { invite: true, tag: 'Across the treaty', title: 'Land and resource decisions', desc: 'Decisions about the land and its resources for every nation live in the land section, which covers the whole treaty.', go: 'Go to the land section', href: '/land' } only %}
+          {% endif %}
+        </div>
+      </section>
+
+      <section>
+        <div class="btn-row">
+          <a class="btn" href="/standard">The full shared standard</a>
+          <a class="btn btn--alt" href="/circle">Be a local contact</a>
+        </div>
+      </section>
+    </div>
+
+  </div>
+</div>
+
+<div class="sources-band"><div class="wrap wrap--wide">
+  <h2>Sources</h2>
+  <ul class="sources-list">
+    {% for s in nation.sources %}<li>{% if s.url %}<a href="{{ s.url }}" target="_blank" rel="noopener">{{ s.label }}</a>{% else %}{{ s.label }}{% endif %}</li>{% endfor %}
   </ul>
-
-  {% include 'components/section_heading.html.twig' with { title: 'Sources' } only %}
-  {% include 'partials/nation_sources.html.twig' %}
-
+  {% if nation.note %}<p class="muted" style="margin-top:16px; max-width:90ch;">{{ nation.note }}</p>{% endif %}
   {% include 'components/freshness.html.twig' with { datetime: last_updated('nations') } only %}
+</div></div>
 {% endblock %}

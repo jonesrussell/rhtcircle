@@ -25,6 +25,12 @@ use App\Lexicon\LexiconClient;
 use App\Lexicon\SqlLexiconCache;
 use App\Petition\PetitionRepository;
 use App\Petition\PetitionSchema;
+use App\Controller\PollController;
+use App\Poll\PollRepository;
+use App\Poll\PollSchema;
+use App\Controller\SignupController;
+use App\Signup\SignupRepository;
+use App\Signup\SignupSchema;
 use Symfony\Component\HttpFoundation\Request;
 use Waaseyaa\HttpClient\StreamHttpClient;
 use Waaseyaa\CLI\Command\HandlerArgument;
@@ -65,6 +71,43 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             new PetitionSchema($this->persistentDatabase())->ensure();
             // Public contact form: ensure its table on the same persistent file.
             new \App\Contact\ContactSchema($this->persistentDatabase())->ensure();
+            // Member-owned email list (collect-only for now; see
+            // working/cc-prompt-rhtcircle-list.md): ensure its table.
+            new SignupSchema($this->persistentDatabase())->ensure();
+            // Anonymous member polls: ensure the tables, then seed the Sagamok
+            // "what matters" poll (idempotent; only inserts on first boot, so
+            // editing the labels here later never reorders or resurrects a
+            // poll that already has votes).
+            new PollSchema($this->persistentDatabase())->ensure();
+            $this->pollRepository()->ensurePoll(
+                'sagamok-what-matters',
+                'Sagamok members: what matters most to you right now? What should our leadership be focused on?',
+                [
+                    'Housing, on-reserve and for off-reserve members',
+                    'Knowing where our settlement money goes, and what reaches members',
+                    'Care for our Elders and health close to home',
+                    'More member say in decisions, real consultation and community meetings',
+                    'Jobs and support for member-owned businesses',
+                    'Publishing council minutes, financials, and decisions openly',
+                    'Language, culture, and our youth',
+                    "Protecting our members' personal information",
+                    'Ending conflicts of interest, the same few people on all the boards',
+                ],
+            );
+            // Second Sagamok poll: two yes/no/not-sure questions about Chief
+            // and Council meetings, grouped onto one page (PollController::
+            // pageMulti) as two independent poll rows sharing the vote
+            // endpoint and cookie mechanism above.
+            $this->pollRepository()->ensurePoll(
+                'sagamok-poll-meetings-posted',
+                'Should Sagamok keep the Chief and Council meeting schedule and minutes current and posted on the Nation\'s website, so any member can see when Council meets and what was decided?',
+                ['Yes', 'No', 'Not sure'],
+            );
+            $this->pollRepository()->ensurePoll(
+                'sagamok-poll-evening-meetings',
+                'Should Council hold some meetings in the evening, alternating with daytime meetings, so members who work during the day can attend and be heard?',
+                ['Yes', 'No', 'Not sure'],
+            );
             // Anishinaabemowin lookup cache (Minoo language API). Ensured here on
             // the persistent file for the same reason as the petition below.
             new LexiconCacheSchema($this->persistentDatabase())->ensure();
@@ -99,6 +142,16 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         );
     }
 
+    private ?PollRepository $pollRepository = null;
+
+    private function pollRepository(): PollRepository
+    {
+        return $this->pollRepository ??= new PollRepository(
+            $this->persistentDatabase(),
+            getenv('WAASEYAA_POLL_SECRET') ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-poll'),
+        );
+    }
+
     private ?\App\Contact\ContactRepository $contactRepository = null;
 
     private function contactRepository(): \App\Contact\ContactRepository
@@ -106,6 +159,16 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         return $this->contactRepository ??= new \App\Contact\ContactRepository(
             $this->persistentDatabase(),
             getenv('WAASEYAA_CONTACT_SECRET') ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-contact'),
+        );
+    }
+
+    private ?SignupRepository $signupRepository = null;
+
+    private function signupRepository(): SignupRepository
+    {
+        return $this->signupRepository ??= new SignupRepository(
+            $this->persistentDatabase(),
+            getenv('WAASEYAA_SIGNUP_SECRET') ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-signup'),
         );
     }
 
@@ -156,6 +219,8 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         $controller = new SiteController();
         $petition = new PetitionController($this->petitionRepository());
         $contact = new ContactController($this->contactRepository());
+        $poll = new PollController($this->pollRepository());
+        $signup = new SignupController($this->signupRepository());
         // Machine-readable Markdown layer (advertised in /llms.txt): pages honor
         // ?format=md / Accept: text/markdown, and the graph entities are fetchable
         // as Markdown. Reads the persistent file (route-build resolve() can be
@@ -212,11 +277,30 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'about' => ['/about', 'pages/about.html.twig'],
             'get-involved' => ['/get-involved', 'pages/get-involved.html.twig'],
 
+            'sagamok-awaiting-council' => ['/communities/sagamok/awaiting-council', 'pages/communities/sagamok/awaiting-council.html.twig'],
+            // Support images: a client-side canvas generator (Facebook cover,
+            // square post, profile badge) for the records request. No login,
+            // no upload, no names collected. Ported from main, where it was
+            // built directly during the bad-pin window; see the awaiting-
+            // council reconciliation commit for context.
+            'sagamok-support-images' => ['/communities/sagamok/support-images', 'pages/communities/sagamok/support-images.html.twig'],
             'sagamok-how-organized' => ['/communities/sagamok/how-its-organized', 'pages/communities/sagamok/how-its-organized.html.twig'],
             'sagamok-members-website-issue' => ['/communities/sagamok/members-website-issue', 'pages/communities/sagamok/members-website-issue.html.twig'],
+            'sagamok-where-your-data-lives' => ['/communities/sagamok/where-your-data-lives', 'pages/communities/sagamok/where-your-data-lives.html.twig'],
             'sagamok-long-term-care' => ['/communities/sagamok/long-term-care', 'pages/communities/sagamok/long-term-care.html.twig'],
-            'sagamok-awaiting-council' => ['/communities/sagamok/awaiting-council', 'pages/communities/sagamok/awaiting-council.html.twig'],
-            'sagamok-support-images' => ['/communities/sagamok/support-images', 'pages/communities/sagamok/support-images.html.twig'],
+            // A member's record (Russell Jones): the members-only portal
+            // exposure, its capture in the public Internet Archive, and what
+            // is being asked of Council. Companion to members-website-issue.
+            'sagamok-it-accountability' => ['/communities/sagamok/it-accountability', 'pages/communities/sagamok/it-accountability.html.twig'],
+            // Public-records kit: eleven member-compiled cards (image + ready
+            // caption), built from public sources only, for members to copy
+            // and post themselves.
+            'sagamok-share' => ['/communities/sagamok/share', 'pages/communities/sagamok/share.html.twig'],
+
+            // Community life: events shared across the treaty nations. The youth
+            // baseball league spans Sagamok, Serpent River, and Atikameksheng and
+            // is featured from each of their community pages.
+            'community-life-baseball' => ['/community-life/indigenous-baseball-league', 'pages/community-life/indigenous-baseball-league.html.twig'],
         ];
 
         foreach ($pages as $name => [$path, $template]) {
@@ -404,6 +488,43 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 ->build(),
         );
 
+        // Anonymous member polls: a page per poll (the page closure carries
+        // its slug and template, same shape as the static $pages loop above)
+        // plus one shared JSON vote endpoint (CSRF-exempt like the petition,
+        // for the same reason: JSON body, no session to protect).
+        $router->addRoute(
+            'sagamok-what-matters',
+            RouteBuilder::create('/communities/sagamok/what-matters')
+                ->controller(fn (Request $request) => $poll->page(
+                    $request,
+                    'sagamok-what-matters',
+                    'pages/communities/sagamok/what-matters.html.twig',
+                ))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+        $router->addRoute(
+            'sagamok-poll',
+            RouteBuilder::create('/communities/sagamok/poll')
+                ->controller(fn (Request $request) => $poll->pageMulti(
+                    $request,
+                    ['sagamok-poll-meetings-posted', 'sagamok-poll-evening-meetings'],
+                    'pages/communities/sagamok/poll.html.twig',
+                ))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+        $router->addRoute(
+            'poll.vote',
+            RouteBuilder::create('/api/poll/vote')
+                ->controller(fn (Request $request) => $poll->vote($request))
+                ->allowAll()
+                ->methods('POST')
+                ->build(),
+        );
+
         // Contact form: the public page and a JSON submit endpoint (CSRF-exempt
         // like the petition/analytics beacons). Stored on the Circle's database;
         // listed in the gated admin (no mailer wired yet).
@@ -421,6 +542,35 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 ->controller(fn (Request $request) => $contact->submit($request))
                 ->allowAll()
                 ->methods('POST')
+                ->build(),
+        );
+
+        // Member-owned email list (collect-only for now, see
+        // working/cc-prompt-rhtcircle-list.md): the page, the JSON submit
+        // endpoint (CSRF-exempt like contact/petition/analytics), and the
+        // one-click remove link (GET, no login, honored immediately).
+        $router->addRoute(
+            'signup',
+            RouteBuilder::create('/updates')
+                ->controller(fn () => $signup->page())
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+        $router->addRoute(
+            'signup.submit',
+            RouteBuilder::create('/api/signup')
+                ->controller(fn (Request $request) => $signup->submit($request))
+                ->allowAll()
+                ->methods('POST')
+                ->build(),
+        );
+        $router->addRoute(
+            'signup.remove',
+            RouteBuilder::create('/updates/remove')
+                ->controller(fn (Request $request) => $signup->remove($request))
+                ->allowAll()
+                ->methods('GET')
                 ->build(),
         );
 

@@ -38,6 +38,11 @@ return [
             getenv('WAASEYAA_DEV_FALLBACK_ACCOUNT') ?: false,
             FILTER_VALIDATE_BOOLEAN,
         ),
+        // alpha.250 hardening: the reset/verify-token HMAC secret must be
+        // configured in production (the framework rejects an empty/placeholder
+        // value). Use a dedicated secret if set, otherwise reuse the existing
+        // JWT secret (already vault-rendered into the env) so boot succeeds.
+        'token_secret' => getenv('WAASEYAA_AUTH_TOKEN_SECRET') ?: (getenv('WAASEYAA_JWT_SECRET') ?: ''),
     ],
 
     // Upload validation (POST /api/media/upload).

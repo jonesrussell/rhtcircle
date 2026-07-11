@@ -1,0 +1,256 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+{% block main_class %}{% endblock %}
+
+{% block title %}Indigenous Baseball League 2026 · Community life · Robinson Huron Treaty{% endblock %}
+{% block description %}A summer youth baseball season run by Maamwesying and the Jays Care Foundation, played across three Robinson Huron Treaty communities: Sagamok, Serpent River, and Atikameksheng. Home schedule, how kids earn points, and contacts.{% endblock %}
+{% block og_description %}Indigenous Baseball League 2026: a Maamwesying and Jays Care youth season across Sagamok, Serpent River, and Atikameksheng. The home schedule, the points, and who to ask.{% endblock %}
+{% block og_url %}https://rhtcircle.ca/community-life/indigenous-baseball-league{% endblock %}
+{% block body_class %}route-ibl{% endblock %}
+
+{% block head_styles %}
+<style>
+  /* Community-life page on the site shell + site.css tokens (follows the
+     light/dark toggle). Scoped .ibl-*. Layout mirrors the community-hub
+     reference; palette is the rht brand, not the mockup's teal. */
+  .ibl-wrap{ max-width:1240px; margin:0 auto; padding:0 28px }
+  .ibl-hero{ background:linear-gradient(180deg, var(--paper-2), var(--paper)); border-bottom:1px solid var(--line) }
+  .ibl-hero .ibl-wrap{ padding-top:34px; padding-bottom:36px }
+  .ibl-crumb{ font-family:var(--sans); font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent-deep); margin:0 0 14px; font-weight:600 }
+  .ibl-hero h1{ font-family:var(--serif); font-size:clamp(32px,5vw,50px); line-height:1.06; margin:0 0 14px; color:var(--indigo-deep); font-weight:600 }
+  .ibl-lede{ font-size:clamp(16px,1.5vw,19px); color:var(--ink); max-width:780px; margin:0; line-height:1.6 }
+  .ibl-next{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 22px; margin-top:22px; background:var(--paper); border:1px solid var(--accent); border-left:5px solid var(--accent); border-radius:14px; padding:16px 22px }
+  .ibl-next .nt{ font-family:var(--sans); font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-deep); font-weight:700 }
+  .ibl-next .nm{ font-family:var(--serif); font-size:20px; color:var(--indigo-deep); font-weight:600 }
+  .ibl-next .nmeta{ font-size:14px; color:var(--ink-2) } .ibl-next .nmeta b{ color:var(--ink) }
+
+  .ibl-main{ padding:40px 0 10px }
+  .ibl-grid{ display:grid; grid-template-columns:320px 1fr; gap:44px; align-items:start }
+  @media(max-width:900px){ .ibl-grid{ grid-template-columns:1fr; gap:30px } }
+  .ibl-side{ position:sticky; top:18px; display:flex; flex-direction:column; gap:18px }
+  @media(max-width:900px){ .ibl-side{ position:static } }
+  .ibl-card{ background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:22px 24px }
+  .ibl-card h2{ font-family:var(--serif); font-size:18px; margin:0 0 14px; color:var(--indigo-deep); font-weight:600 }
+  .ibl-facts div{ padding:11px 0; border-top:1px solid var(--line) }
+  .ibl-facts div:first-child{ border-top:none; padding-top:0 }
+  .ibl-facts dt{ font-family:var(--sans); font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-3); margin-bottom:3px }
+  .ibl-facts dd{ margin:0; font-size:14.5px; color:var(--ink) }
+  .ibl-extlink{ display:block; background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:14px 18px; font-size:14.5px; color:var(--indigo-deep); font-weight:600 }
+  .ibl-extlink:hover{ border-color:var(--accent); text-decoration:none }
+  .ibl-extlink span{ display:block; font-size:11.5px; color:var(--ink-3); font-weight:400; margin-top:2px }
+  .ibl-disc{ background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:18px 20px; font-size:13px; color:var(--ink-2); line-height:1.55 }
+  .ibl-disc b{ color:var(--ink) }
+
+  .ibl-content > section{ margin-bottom:42px }
+  .ibl-sec{ font-family:var(--serif); font-size:26px; color:var(--indigo-deep); margin:0 0 6px; font-weight:600 }
+  .ibl-sub{ color:var(--ink-2); font-size:15px; margin:0 0 20px; max-width:740px }
+  .ibl-prose p{ font-size:16px; color:var(--ink); max-width:740px; margin:0 0 14px; line-height:1.7 }
+
+  /* home games by community */
+  .ibl-comms{ display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px }
+  .ibl-comm{ background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:20px 22px }
+  .ibl-comm.host{ border-color:var(--accent); background:linear-gradient(180deg, var(--accent-wash), var(--paper)) }
+  .ibl-comm h3{ font-family:var(--serif); font-size:19px; color:var(--indigo-deep); margin:0 0 3px; font-weight:600 }
+  .ibl-comm .field{ font-size:12.5px; color:var(--ink-3); margin:0 0 14px }
+  .ibl-comm ul{ list-style:none; margin:0; padding:0 }
+  .ibl-comm li{ padding:10px 0; border-top:1px solid var(--line); font-size:14px } .ibl-comm li:first-child{ border-top:none }
+  .ibl-comm li .d{ display:block; font-size:12px; letter-spacing:.03em; text-transform:uppercase; color:var(--accent-deep); margin-bottom:2px }
+  .ibl-comm li .o{ color:var(--ink); font-weight:500 }
+
+  /* points */
+  .ibl-ptgroup{ display:grid; grid-template-columns:1fr 1fr; gap:18px }
+  @media(max-width:760px){ .ibl-ptgroup{ grid-template-columns:1fr } }
+  .ibl-ptcol{ background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:20px 22px }
+  .ibl-ptcol h3{ font-family:var(--serif); font-size:18px; color:var(--indigo-deep); margin:0 0 4px; font-weight:600 }
+  .ibl-ptnote{ font-size:12.5px; color:var(--ink-3); margin:0 0 14px }
+  .ibl-ptlist{ list-style:none; margin:0; padding:0 }
+  .ibl-ptlist li{ display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:9px 0; border-top:1px solid var(--line); font-size:14px; color:var(--ink) } .ibl-ptlist li:first-child{ border-top:none }
+  .ibl-ptlist .pts{ font-family:var(--serif); font-size:16px; font-weight:700; color:var(--accent); white-space:nowrap }
+  .ibl-ptlist .each{ font-size:11px; color:var(--ink-3); display:block; font-weight:400 }
+  .ibl-rules{ background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:18px 22px; margin-top:18px }
+  .ibl-rules h3{ font-family:var(--serif); font-size:16px; color:var(--indigo-deep); margin:0 0 10px; font-weight:600 }
+  .ibl-rules ul{ margin:0; padding-left:20px; font-size:14px; color:var(--ink-2) } .ibl-rules li{ margin:5px 0 }
+
+  /* full schedule table */
+  .ibl-sched{ width:100%; border-collapse:collapse; font-size:14px; background:var(--paper); border:1px solid var(--line); border-radius:14px; overflow:hidden }
+  .ibl-sched th,.ibl-sched td{ text-align:left; padding:11px 14px; border-top:1px solid var(--line) }
+  .ibl-sched thead th{ background:var(--paper-2); color:var(--ink-2); font-size:12px; letter-spacing:.04em; text-transform:uppercase; border-top:none }
+  .ibl-sched .wk{ color:var(--ink-3); font-size:12.5px; white-space:nowrap }
+  .ibl-sched .mt b{ color:var(--ink-3); font-weight:600 }
+  .ibl-sched .host{ color:var(--indigo-deep); font-weight:600 }
+
+  .ibl-contact{ background:var(--indigo-deep); color:#eef0fb; border-radius:14px; padding:22px 24px }
+  .ibl-contact h3{ font-family:var(--serif); margin:0 0 6px; color:#fff; font-size:19px }
+  .ibl-contact p{ margin:4px 0; font-size:14.5px }
+  .ibl-contact a{ color:#cdb8ef; font-weight:500 }
+  .ibl-contact .note{ font-size:13px; color:#b3a7d6; margin-top:10px }
+
+  .ibl-band{ background:var(--paper-2); border-top:1px solid var(--line); margin-top:24px }
+  .ibl-band .ibl-wrap{ padding:30px 28px }
+  .ibl-band h2{ font-family:var(--serif); font-size:18px; color:var(--indigo-deep); margin:0 0 12px }
+  .ibl-srcs{ display:flex; flex-wrap:wrap; gap:10px 26px; font-size:14px; margin:0; padding:0; list-style:none }
+  .ibl-updated{ font-size:13px; color:var(--ink-3); margin-top:16px; max-width:90ch }
+</style>
+{% endblock %}
+
+{% block hero %}
+<header class="ibl-hero"><div class="ibl-wrap">
+  <p class="ibl-crumb">Community life &middot; Across the treaty &middot; Youth baseball</p>
+  <h1>Indigenous Baseball League 2026</h1>
+  <p class="ibl-lede">A summer youth baseball season run by Maamwesying and the Jays Care Foundation, played across three Robinson Huron Treaty communities: Sagamok, Serpent River, and Atikameksheng. Each fields a Junior and a Senior team. At every home game, kids and families earn points just for taking part, building toward a reward for the youth at season's end.</p>
+  <div class="ibl-next">
+    <div class="nt">Next game</div>
+    <div class="nm">Sagamok vs. Serpent River</div>
+    <div class="nmeta"><b>Thursday, July 2, 2026</b> &nbsp;&middot;&nbsp; Junior 6:00 PM, Senior 7:30 PM &nbsp;&middot;&nbsp; MEC Ball Field, Sagamok</div>
+  </div>
+</div></header>
+{% endblock %}
+
+{% block content %}
+<div class="ibl-main"><div class="ibl-wrap"><div class="ibl-grid">
+
+  <aside class="ibl-side">
+    <div class="ibl-card"><h2>The season at a glance</h2>
+      <dl class="ibl-facts">
+        <div><dt>League</dt><dd>Maamwesying and Jays Care Indigenous Baseball League (Indigenous Rookie League)</dd></div>
+        <div><dt>Season</dt><dd>June 24 to August 6, 2026</dd></div>
+        <div><dt>Communities</dt><dd>Sagamok, Serpent River, Atikameksheng, three of the treaty's 21 nations</dd></div>
+        <div><dt>Divisions</dt><dd>Junior 6:00 to 7:15 PM, Senior 7:30 to 8:45 PM</dd></div>
+        <div><dt>Format</dt><dd>Each team plays 6 games, 3 home and 3 away. Junior and Senior play back-to-back at the host field.</dd></div>
+        <div><dt>Funded by</dt><dd>The Jays Care Foundation, with Maamwesying</dd></div>
+      </dl>
+    </div>
+    <a class="ibl-extlink" href="https://www.sagamokanishnawbek.com/sagamok-posts/support-sagamok-jayscare-games" target="_blank" rel="noopener">Sagamok's post on the games<span>sagamokanishnawbek.com, the authority. We do not run it.</span></a>
+    <div class="ibl-disc"><b>Member-compiled and unofficial.</b> Put together from the public league schedule and Sagamok's post so it is easier to read on a phone, with no PDF to download. Dates and times can change, so each community's own coordinator is the authority. <a href="/about#corrections">Tell us what we got wrong</a> and we will fix it.</div>
+  </aside>
+
+  <div class="ibl-content">
+
+    <section class="ibl-prose">
+      <h2 class="ibl-sec">What this is</h2>
+      <p>The Jays Care Foundation, the charity of the Toronto Blue Jays, funds an Indigenous youth baseball league on the North Shore, run with Maamwesying. Three Robinson Huron Treaty communities take part: Sagamok, Serpent River, and Atikameksheng. Each fields a Junior and a Senior team and plays a short summer season, three home games and three away games.</p>
+      <p>The point of the points is simple: it rewards kids and families for being there. Attendance, cheering, signs, cultural teachings, and family taking part all earn points at a community's home games, and each community's total goes toward a season-end reward for its youth. Points are earned at home games only, so the home schedule for your community is the one to circle.</p>
+    </section>
+
+    <section>
+      <h2 class="ibl-sec">Home games by community</h2>
+      <p class="ibl-sub">Points are earned at home games. Here is each community's three-game home slate. Times are Junior 6:00 PM, Senior 7:30 PM, back-to-back at the host field.</p>
+      <div class="ibl-comms">
+        <div class="ibl-comm host">
+          <h3>Sagamok</h3>
+          <p class="field">MEC Ball Field</p>
+          <ul>
+            <li><span class="d">Thu, July 2</span><span class="o">vs. Serpent River</span></li>
+            <li><span class="d">Wed, July 15</span><span class="o">vs. Atikameksheng</span></li>
+            <li><span class="d">Wed, July 22</span><span class="o">vs. Serpent River</span></li>
+          </ul>
+        </div>
+        <div class="ibl-comm">
+          <h3>Serpent River</h3>
+          <p class="field">Home field</p>
+          <ul>
+            <li><span class="d">Wed, June 24</span><span class="o">vs. Atikameksheng</span></li>
+            <li><span class="d">Wed, July 8</span><span class="o">vs. Atikameksheng</span></li>
+            <li><span class="d">Wed, July 29</span><span class="o">vs. Sagamok</span></li>
+          </ul>
+        </div>
+        <div class="ibl-comm">
+          <h3>Atikameksheng</h3>
+          <p class="field">Home field &middot; hosts on Thursdays</p>
+          <ul>
+            <li><span class="d">Thu, June 25</span><span class="o">vs. Sagamok</span></li>
+            <li><span class="d">Thu, July 23</span><span class="o">vs. Sagamok</span></li>
+            <li><span class="d">Thu, August 6</span><span class="o">vs. Serpent River</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="ibl-sec">How the kids earn points</h2>
+      <p class="ibl-sub">Two ways to score: at one practice a week, and at home games. The bigger points reward cultural teachings and the whole family taking part. Some items count once, others count for every person, sign, or spectator.</p>
+      <div class="ibl-ptgroup">
+        <div class="ibl-ptcol">
+          <h3>At practice</h3>
+          <p class="ibl-ptnote">One practice a week counts.</p>
+          <ul class="ibl-ptlist">
+            <li><span>Cultural teaching included (a teaching, opening prayer, and so on)</span><span class="pts">40</span></li>
+            <li><span>A community worker takes part (shares a program, gives a short talk, joins in)</span><span class="pts">20</span></li>
+            <li><span>Coach attends</span><span class="pts">10</span></li>
+            <li><span>Youth coach attends</span><span class="pts">10</span></li>
+            <li><span>Each parent or guardian taking part <span class="each">up to 5</span></span><span class="pts">5</span></li>
+            <li><span>Each child or youth attending <span class="each">up to 10</span></span><span class="pts">1</span></li>
+          </ul>
+        </div>
+        <div class="ibl-ptcol">
+          <h3>At a home game</h3>
+          <p class="ibl-ptnote">Home games only. No away games.</p>
+          <ul class="ibl-ptlist">
+            <li><span>Cultural element included (teaching, opening prayer)</span><span class="pts">40</span></li>
+            <li><span>Everyone high-fives after the game and cheers on the winning team</span><span class="pts">20</span></li>
+            <li><span>Send a highlight or quote with a photo to the league coordinator</span><span class="pts">20</span></li>
+            <li><span>An intergenerational activity in the game (guardians vs. kids inning, Elder and grandchild hat parade, wheelbarrow race)</span><span class="pts">20</span></li>
+            <li><span>Invite a political leader (Chief and Council) and have them attend</span><span class="pts">15</span></li>
+            <li><span>Coach attends</span><span class="pts">10</span></li>
+            <li><span>Youth coach attends</span><span class="pts">10</span></li>
+            <li><span>For a win</span><span class="pts">5</span></li>
+            <li><span>Each parent or guardian taking part <span class="each">up to 5</span></span><span class="pts">5</span></li>
+            <li><span>Each sign made to cheer on the kids</span><span class="pts">5</span></li>
+            <li><span>Each spectator who watches the game</span><span class="pts">1</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="ibl-rules">
+        <h3>The rules in short</h3>
+        <ul>
+          <li>Points count for home games only, not away games.</li>
+          <li>One practice a week counts toward points.</li>
+          <li>Junior and Senior are tracked separately, one tracker each per week.</li>
+          <li>The league coordinator adds it all up into one community score, and the points go toward a reward for the youth at season's end.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="ibl-sec">The full league schedule</h2>
+      <p class="ibl-sub">All three communities, June 24 to August 6. Each team plays every other team three times. The host community is listed first in each matchup.</p>
+      <table class="ibl-sched">
+        <thead><tr><th>Week</th><th>Day</th><th>Matchup (host vs. visitor)</th></tr></thead>
+        <tbody>
+          <tr><td class="wk">Week 1</td><td>Wed, Jun 24</td><td class="mt"><span class="host">Serpent River</span> <b>vs.</b> Atikameksheng</td></tr>
+          <tr><td class="wk">Week 1</td><td>Thu, Jun 25</td><td class="mt"><span class="host">Atikameksheng</span> <b>vs.</b> Sagamok</td></tr>
+          <tr><td class="wk">Week 2</td><td>Thu, Jul 2</td><td class="mt"><span class="host">Sagamok</span> <b>vs.</b> Serpent River</td></tr>
+          <tr><td class="wk">Week 3</td><td>Wed, Jul 8</td><td class="mt"><span class="host">Serpent River</span> <b>vs.</b> Atikameksheng</td></tr>
+          <tr><td class="wk">Week 4</td><td>Wed, Jul 15</td><td class="mt"><span class="host">Sagamok</span> <b>vs.</b> Atikameksheng</td></tr>
+          <tr><td class="wk">Week 5</td><td>Wed, Jul 22</td><td class="mt"><span class="host">Sagamok</span> <b>vs.</b> Serpent River</td></tr>
+          <tr><td class="wk">Week 5</td><td>Thu, Jul 23</td><td class="mt"><span class="host">Atikameksheng</span> <b>vs.</b> Sagamok</td></tr>
+          <tr><td class="wk">Week 6</td><td>Wed, Jul 29</td><td class="mt"><span class="host">Serpent River</span> <b>vs.</b> Sagamok</td></tr>
+          <tr><td class="wk">Week 7</td><td>Thu, Aug 6</td><td class="mt"><span class="host">Atikameksheng</span> <b>vs.</b> Serpent River</td></tr>
+        </tbody>
+      </table>
+      <p class="ibl-sub" style="margin-top:14px">Canada Day falls on Wednesday, July 1, so Week 2 is a single Thursday game. Atikameksheng hosts its home games on Thursdays.</p>
+    </section>
+
+    <section>
+      <div class="ibl-contact">
+        <h3>Questions, or want to help out?</h3>
+        <p>Sagamok contact: Carson Abitong</p>
+        <p>Phone: <a href="tel:7058630714">705-863-0714</a></p>
+        <p>Email: <a href="mailto:abitong_carson@sagamok.ca">abitong_carson@sagamok.ca</a></p>
+        <p class="note">Serpent River and Atikameksheng families: reach your own community's league coordinator through Maamwesying.</p>
+      </div>
+    </section>
+
+  </div>
+
+</div></div></div>
+
+<div class="ibl-band"><div class="ibl-wrap"><h2>Sources</h2>
+  <ul class="ibl-srcs">
+    <li><a href="https://www.sagamokanishnawbek.com/sagamok-posts/support-sagamok-jayscare-games" target="_blank" rel="noopener">Sagamok Anishnawbek, "Support Sagamok JaysCare Games"</a></li>
+    <li><a href="https://cdn.prod.website-files.com/69666b6c172f06c635bd383c/6a42bbf72f35dd9552241058_baseball_schedule_2026_2.pdf" target="_blank" rel="noopener">2026 regular season schedule (PDF)</a></li>
+    <li><a href="https://cdn.prod.website-files.com/69666b6c172f06c635bd383c/6a42bc0955e7a9ed42661439_PointTracker_Maamwesying_2026%20final.pdf" target="_blank" rel="noopener">Maamwesying and Jays Care point tracker (PDF)</a></li>
+  </ul>
+  <p class="ibl-updated">Compiled June 2026 from the public league materials. Funded by the Jays Care Foundation. Re-check dates and times with your community coordinator before heading out.</p>
+</div></div>
+{% endblock %}

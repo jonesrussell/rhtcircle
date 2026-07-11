@@ -1,5 +1,6 @@
-{# section_heading: Context: { title, id (optional), note (optional) }. #}
+{# section_heading: Context: { title, eyebrow (optional), id (optional), note (optional) }. #}
 <div class="rsection__head">
+  {% if eyebrow is defined and eyebrow %}<p class="eyebrow">{{ eyebrow }}</p>{% endif %}
   <h2{% if id is defined and id %} id="{{ id }}"{% endif %}>{{ title }}</h2>
   {% if note is defined and note %}<p class="muted">{{ note }}</p>{% endif %}
 </div>

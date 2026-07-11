@@ -1,0 +1,11 @@
+{#
+  tile_card: the canonical card, generalized from the community hub grid.
+  Context: { tag, title, desc, go, href, feature (optional bool), invite (optional bool) }
+  Used inside a .tile-grid. See site.css ".tile-card".
+#}
+<a class="tile-card{% if feature is defined and feature %} is-feature{% endif %}{% if invite is defined and invite %} is-invite{% endif %}" href="{{ href }}">
+  <span class="tile-tag">{{ tag }}</span>
+  <h3>{{ title }}</h3>
+  <p>{{ desc }}</p>
+  <span class="tile-go">{{ go }} &rarr;</span>
+</a>

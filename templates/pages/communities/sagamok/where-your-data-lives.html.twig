@@ -1,0 +1,200 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+{% block main_class %}wrap{% endblock %}
+
+{#
+  Plain-language data-sovereignty explainer for members, restored to the Circle
+  from the original Sagamok content audit. Facts re-verified June 2026: the
+  Sagamok site still runs on Webflow (cdn.prod.website-files.com) with a
+  Mailchimp mailing list; the US CLOUD Act (2018) and OCAP (a trademark of the
+  FNIGC) are as described.
+  SAFETY: the members-portal issue this references is RESOLVED, kept here only as
+  a dated record. Do NOT add the site's real Webflow ID, any working file link,
+  passwords, or members-only document content. Name no private individuals.
+#}
+
+{% block title %}Where does your community's data actually live? · Robinson Huron Treaty{% endblock %}
+{% block description %}Most First Nations websites run on US platforms and global content networks. A plain-language explainer of where member data goes, which laws reach it, and what data sovereignty really means, using the Sagamok members portal as the example.{% endblock %}
+{% block og_title %}Where does your community's data actually live?{% endblock %}
+{% block og_description %}Where member data goes, which laws reach it, and what data sovereignty really means, using the Sagamok members portal as the example.{% endblock %}
+{% block body_class %}route-sagamok-where-your-data-lives{% endblock %}
+
+{% block head_styles %}
+  <style>
+    /* Data-sovereignty explainer. Reading template (shared shell): the plain
+       .wrap container (720px measure) from base.html.twig; h1/h2/eyebrow/lead
+       all come from the global type scale, no page-local overrides. Two
+       custom "specimen" visuals (the CDN URL anatomy and the data map)
+       rendered on the site's dark statement surface so they read clearly.
+       Namespaced .dsv-* for what's unique to this page only. */
+    main .wrap { padding-top: var(--gap-7); padding-bottom: var(--gap-9); }
+
+    .dsv-wrap ul { list-style: none; padding-left: 0; margin: 0 0 var(--gap-4); }
+    .dsv-wrap li { position: relative; padding-left: 20px; margin: 0 0 10px; }
+    .dsv-wrap li::before { content: ""; position: absolute; left: 3px; top: 12px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+    .dsv-hl { background: var(--accent-wash); color: var(--ink); padding: .03em .28em; border-radius: 4px; font-weight: 600; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+    .dsv-hlw { background: color-mix(in oklab, var(--accent) 22%, transparent); color: var(--ink); padding: .03em .28em; border-radius: 4px; font-weight: 600; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+    .dsv-pull { font-family: var(--serif); font-size: 21px; line-height: 1.4; color: var(--ink); font-weight: 500; border-left: 3px solid var(--accent); padding: 4px 0 4px 18px; margin: var(--gap-5) 0; }
+
+    /* CDN URL anatomy, dark specimen. */
+    .dsv-url { background: var(--statement-bg); color: var(--statement-fg); border-radius: var(--radius-md); padding: 18px; margin: var(--gap-4) 0; font-family: var(--font-mono); font-size: 14px; line-height: 2.1; word-break: break-all; }
+    .dsv-url .host { color: #7fd0a8; }
+    .dsv-url .red { background: color-mix(in oklab, var(--statement-fg) 16%, transparent); color: var(--statement-fg); border-radius: 4px; padding: 1px 7px; letter-spacing: .04em; }
+    .dsv-url .file { color: var(--accent-soft); }
+    .dsv-legend { margin: var(--gap-3) 0 0; font-size: 13.5px; color: var(--ink-3); line-height: 1.5; }
+    .dsv-legend b { color: var(--ink-2); font-weight: 600; }
+
+    /* Data map, dark specimen; the SVG is kept verbatim. */
+    .dsv-map { background: var(--statement-bg); border-radius: var(--radius-md); padding: 14px 14px 6px; margin: var(--gap-4) 0; }
+    .dsv-map svg { display: block; width: 100%; height: auto; }
+    .dsv-mapcap { font-size: 13.5px; color: color-mix(in oklab, var(--statement-fg) 72%, transparent); line-height: 1.55; margin: 10px 4px 6px; }
+    .dsv-mapcap b { color: var(--statement-fg); font-weight: 600; }
+    .dsv-key { display: flex; flex-wrap: wrap; gap: 14px; margin: 4px 4px 8px; font-size: 13px; color: color-mix(in oklab, var(--statement-fg) 72%, transparent); }
+    .dsv-key span { display: inline-flex; align-items: center; gap: 6px; }
+    .dsv-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+    .dsv-note { font-size: 14px; color: var(--ink-3); margin: var(--gap-6) 0 0; padding-top: var(--gap-4); border-top: 1px solid var(--rule); }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="dsv-wrap">
+
+  <p class="eyebrow">Sagamok · A member explainer</p>
+  <h1>Where does your community's data actually live?</h1>
+  <p class="lead">Most First Nations and small municipal websites run on the same few tools, owned by companies in another country, on clouds the community does not control. So a simple question turns out to be hard: when you put your information into your community's website, where does it go, who can reach it, and whose laws decide? Here it is in plain terms, using the Sagamok members portal as the example.</p>
+  <p class="cover__byline">From Russell Jones, a Sagamok Anishnawbek member. This explains how the technology works and is not legal advice. June 2026.</p>
+
+  <h2>The pieces, in plain words</h2>
+  <p>A site like this is not one thing. It is a stack of services, each owned by a different company:</p>
+  <ul>
+    <li><strong>The website builder.</strong> Sagamok's site runs on <strong>Webflow</strong>, a US company that publishes the pages and stores the content.</li>
+    <li><strong>The login layer.</strong> The members area uses <strong>Memberstack</strong>, another US company. It runs in your browser and keeps member account details, including fields like a band registration number, in its own database.</li>
+    <li><strong>The email tool.</strong> Member newsletters and notices go out through <strong>Mailchimp</strong>, a US company owned by Intuit, of Atlanta, which keeps member names and email addresses on its own servers.</li>
+    <li><strong>The trackers.</strong> A site like this also commonly loads analytics, such as <strong>Google Analytics</strong>, which reports who looked at which page back to a US company.</li>
+    <li><strong>The delivery network.</strong> The pages and files are pushed out through a global content delivery network, or CDN, so they load fast everywhere. Webflow has used Amazon Web Services and Fastly, and now uses <strong>Cloudflare</strong>.</li>
+    <li><strong>The cloud underneath.</strong> All of it ultimately runs on large US cloud infrastructure, chiefly Amazon Web Services.</li>
+  </ul>
+  <p>None of these are bad tools. The point is that <span class="dsv-hl">a single page load can reach several US companies at once</span>: the site builder, the login layer, the email tool, and the trackers.</p>
+
+  <h2>That long link you have seen: what it is</h2>
+  <p>If you have ever opened a file on a Webflow site, you have seen a web address like this. People see it constantly and have no idea what it is. Here is what each part means (the community-specific parts are blacked out, so this is not a working link):</p>
+  <div class="dsv-url">
+    <span class="host">https://cdn.prod.website-files.com</span>/<span class="red">&nbsp;site ID&nbsp;</span>/<span class="red">&nbsp;file hash&nbsp;</span>_<span class="file">Chief-and-Council-Meeting-Minutes.pdf</span>
+  </div>
+  <p class="dsv-legend"><b>cdn.prod.website-files.com</b> is the shared CDN address that every Webflow site uses, not Sagamok's alone, which is why you have seen it elsewhere. <b>site ID</b> identifies the website on Webflow. <b>file hash</b> is the file's unique code. <b>the filename</b> is just the document's name. Anyone with the full link reaches the file directly from the CDN, with no login. That direct-from-CDN behaviour is part of what the <a href="/communities/sagamok/members-website-issue">members-only website issue, since resolved</a>, was about.</p>
+
+  <h2>Where this file actually lives</h2>
+  <p>You cannot tell where a file lives from the address itself. But the server's own response tells you, and it is worth seeing. For Sagamok's files, when this was checked:</p>
+  <div class="dsv-map">
+    <svg viewBox="0 0 920 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A schematic world map: the master copy in Northern Virginia, served from Cloudflare's Toronto edge, with cached copies in cities worldwide.">
+      <defs>
+        <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#5fb0d6"/></marker>
+      </defs>
+      <!-- graticule -->
+      <g stroke="#3a2f55" stroke-width="1">
+        <line x1="0" y1="118" x2="920" y2="118"/><line x1="0" y1="235" x2="920" y2="235"/><line x1="0" y1="352" x2="920" y2="352"/>
+        <line x1="230" y1="0" x2="230" y2="470"/><line x1="460" y1="0" x2="460" y2="470"/><line x1="690" y1="0" x2="690" y2="470"/>
+      </g>
+      <!-- region labels -->
+      <g font-family="sans-serif" font-size="11" letter-spacing="2" fill="#6a5e88">
+        <text x="120" y="92">NORTH AMERICA</text>
+        <text x="300" y="300">SOUTH AMERICA</text>
+        <text x="455" y="92">EUROPE</text>
+        <text x="500" y="250">AFRICA</text>
+        <text x="650" y="100">ASIA</text>
+        <text x="800" y="330">OCEANIA</text>
+      </g>
+      <!-- global edge dots (cached copies worldwide) -->
+      <g fill="#8a6fd0" fill-opacity="0.8">
+        <circle cx="158" cy="150" r="3.5"/>   <!-- LA -->
+        <circle cx="460" cy="100" r="3.5"/>   <!-- London -->
+        <circle cx="486" cy="104" r="3.5"/>   <!-- Frankfurt -->
+        <circle cx="817" cy="140" r="3.5"/>   <!-- Tokyo -->
+        <circle cx="725" cy="232" r="3.5"/>   <!-- Singapore -->
+        <circle cx="846" cy="322" r="3.5"/>   <!-- Sydney -->
+        <circle cx="341" cy="296" r="3.5"/>   <!-- Sao Paulo -->
+        <circle cx="531" cy="300" r="3.5"/>   <!-- Johannesburg -->
+      </g>
+      <!-- flow: origin (Virginia) -> Toronto edge -> member -->
+      <path d="M262,150 C220,160 210,150 200,142" fill="none" stroke="#5fb0d6" stroke-width="1.6" marker-end="url(#arrow)" opacity="0.9"/>
+      <!-- origin: Northern Virginia -->
+      <circle cx="262" cy="150" r="6" fill="#e0b15a"/>
+      <circle cx="262" cy="150" r="12" fill="none" stroke="#e0b15a" stroke-opacity="0.4"/>
+      <!-- toronto edge -->
+      <circle cx="244" cy="128" r="5" fill="#5fb0d6"/>
+      <!-- sagamok / member -->
+      <circle cx="232" cy="118" r="5" fill="#fff"/>
+      <!-- labels with leader lines, placed left over open ocean to avoid overlap -->
+      <g font-family="sans-serif" font-size="12.5">
+        <line x1="232" y1="118" x2="60" y2="70" stroke="#6a5e88" stroke-width="1"/>
+        <text x="20" y="66" fill="#fff">You, a Sagamok member</text>
+        <line x1="244" y1="128" x2="60" y2="200" stroke="#6a5e88" stroke-width="1"/>
+        <text x="20" y="204" fill="#5fb0d6">Served from Cloudflare Toronto</text>
+        <line x1="262" y1="150" x2="60" y2="330" stroke="#6a5e88" stroke-width="1"/>
+        <text x="20" y="334" fill="#e0b15a">Master copy: Northern Virginia, USA</text>
+      </g>
+    </svg>
+    <div class="dsv-key">
+      <span><i class="dsv-dot" style="background:#fff"></i> the member</span>
+      <span><i class="dsv-dot" style="background:#5fb0d6"></i> nearest edge that serves you</span>
+      <span><i class="dsv-dot" style="background:#e0b15a"></i> origin / master copy</span>
+      <span><i class="dsv-dot" style="background:#8a6fd0"></i> cached copies worldwide</span>
+    </div>
+    <p class="dsv-mapcap">What the server's own response said when this was checked: the master copy sat in Webflow's <b>us-east-1</b> region, <b>Northern Virginia, USA</b>. The request was answered from Cloudflare's <b>Toronto</b> location, where a copy had been cached. A member somewhere else is served from their nearest Cloudflare city, and the same file exists in cities around the world. Map is schematic; positions are approximate.</p>
+  </div>
+  <p>Two things follow that surprise most people. <span class="dsv-hl">Copies of your content sit on servers around the world</span>, not in your community and not only in Canada. And <span class="dsv-hl">a cached copy can outlive the original</span>, so taking something off the site does not remove every copy at once.</p>
+
+  <h2>Whose hands it is in, and where</h2>
+  <p>Storing data "in Canada" feels like it should settle the question. It does not. What matters is <strong>who controls the data</strong>, and here that is a set of US-headquartered companies on US and globally distributed infrastructure. Even a Canadian data center owned by a US company does not change who can be ordered to hand it over.</p>
+
+  <h2>Which laws apply</h2>
+  <p>This is information, not legal advice, but the shape of it matters.</p>
+  <ul>
+    <li><strong>US law can reach this data.</strong> The US <strong>CLOUD Act</strong> (2018) lets US authorities compel US-based companies to turn over data they control, no matter where it is stored, <span class="dsv-hlw">without the matter going through a Canadian court</span>. It turns on who holds the data, not where it sits.</li>
+    <li><strong>Canadian privacy law applies too.</strong> Canada's private-sector law (PIPEDA) governs how an organization collects and uses personal information, but it cannot stop a US-compelled disclosure by a US provider. The data sits under <span class="dsv-hl">two legal regimes at once</span>.</li>
+    <li><strong>First Nations data sovereignty is the deeper standard.</strong> The recognized framework is <strong>OCAP</strong>: Ownership, Control, Access, and Possession, a registered trademark of the First Nations Information Governance Centre. In plain terms, the data belongs to the community, and the community should control how it is collected, who can access it, and where it is held. A stack of outside US companies is close to the opposite.</li>
+  </ul>
+
+  <h2>What this means for you</h2>
+  <p>When the platform, the servers, and the laws all sit outside the community, the community cannot fully answer the basic question: <span class="dsv-hlw">is our data safe, and who can see it.</span> Not because anyone did wrong, but because the answer is in other people's hands. That is the gap between <strong>data residency</strong>, where a file happens to sit, and <strong>data sovereignty</strong>, who actually governs it.</p>
+  <p>This is not abstract. <span class="dsv-hl">Exposed names, band registration numbers, and contact details are exactly what fuel the targeted fraud and phishing</span> that some members are already experiencing.</p>
+  <p class="dsv-pull">Your data is the community's. Deciding how it is kept, and being able to check that yourself, is part of sovereignty.</p>
+
+  <h2>What a member or council can ask</h2>
+  <ul>
+    <li>Where is our members' data stored, and which companies can access it?</li>
+    <li>Are those companies subject to foreign laws that could compel disclosure?</li>
+    <li>What did we agree to in their terms, and can we get our data back out?</li>
+    <li>Do we have our own qualified people who can verify how it is protected?</li>
+    <li>What would it take to move the most sensitive data onto infrastructure we control?</li>
+  </ul>
+
+  {% include 'components/cta_callout.html.twig' with {
+    id: 'dsv-records',
+    heading: 'These are the records members are asking for',
+    line: 'The same questions, put on the record: when the Nation invests in businesses and ventures, what are the benefits to the membership, and who is being served? Members are signing on to ask Council for clear answers.',
+    button_label: 'Read the records request',
+    href: '/standard/records-request',
+  } only %}
+
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://help.webflow.com/hc/en-us/articles/33961342422547-Webflow-hosting-overview" target="_blank" rel="noopener">Webflow hosting overview</a> and the <a href="https://webflow.com/feature/hosting" target="_blank" rel="noopener">hosting feature page</a> (AWS, Fastly, Cloudflare).</li>
+    <li><a href="https://docs.memberstack.com/hc/en-us/articles/7389627062299-Understanding-Member-Data-in-Memberstack-Custom-Fields-Metadata-and-JSON" target="_blank" rel="noopener">Memberstack: member data</a> and <a href="https://www.memberstack.com/features/data-is-encrypted-at-rest" target="_blank" rel="noopener">data encrypted at rest</a>.</li>
+    <li><a href="https://en.wikipedia.org/wiki/CLOUD_Act" target="_blank" rel="noopener">CLOUD Act overview</a>, with analysis from <a href="https://www.osler.com/en/insights/updates/data-sovereignty-in-light-of-the-cloud-act-back-to-the-future/" target="_blank" rel="noopener">Osler</a> and <a href="https://www.blg.com/en/insights/2026/04/data-sovereignty-and-the-cloud-act-what-canadian-organizations-should-know" target="_blank" rel="noopener">BLG</a>.</li>
+    <li><a href="https://fnigc.ca/ocap-training/" target="_blank" rel="noopener">The First Nations Principles of OCAP (FNIGC)</a>.</li>
+    <li>The <a href="/communities/sagamok/members-website-issue">Sagamok members-only website issue, reported and resolved</a>, the live case study this explainer accompanies.</li>
+  </ul>
+
+  <nav class="cover__byline" aria-label="Related on this hub">
+    Related: <a href="/communities/sagamok/members-website-issue">the members-only website issue</a> ·
+    <a href="/communities/sagamok/how-its-organized">how Sagamok is organized</a> ·
+    <a href="/standard/records-request">the records request</a>
+  </nav>
+
+  <p class="muted" style="margin-top: var(--gap-4);">From Russell Jones, a Sagamok Anishnawbek member. It explains how this technology works and what it means for community data. It is general information, not legal advice; for decisions that rely on the legal points, confirm with a privacy lawyer. Independent of Sagamok Chief and Council, and of Webflow, Memberstack, and the other companies named. Corrections welcome.</p>
+
+</div>
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+{% block main_class %}wrap wrap--wide{% endblock %}
+
+{#
+  Anonymous member poll for Sagamok: two independent yes/no/not-sure
+  questions about Chief and Council meetings, grouped onto one page. Each
+  question is its own poll row (see src/Poll and PollController::pageMulti):
+  a vote is an aggregate counter, never a per-voter row, and "have I voted"
+  is read from a stateless per-poll cookie, never a database lookup keyed to
+  a person. Same interactive template shape as what-matters.html.twig.
+#}
+
+{% block title %}Sagamok members: two questions on Council meetings · Robinson Huron Treaty{% endblock %}
+{% block description %}An anonymous, informal member poll for Sagamok Anishnawbek: should the Council meeting schedule and minutes stay posted, and should some meetings move to evenings? Yes, No, or Not sure. No personal data collected, results shown after voting.{% endblock %}
+{% block og_title %}Sagamok members: two questions on Council meetings{% endblock %}
+{% block og_description %}An anonymous, informal member poll on Chief and Council meetings: keeping the schedule and minutes posted, and evening meetings. Results shown after voting.{% endblock %}
+{% block body_class %}route-sagamok-poll{% endblock %}
+
+{% block head_styles %}
+<style>
+  .poll-block + .poll-block { margin-top: var(--gap-8); padding-top: var(--gap-7); border-top: 1px solid var(--line); }
+  .poll-block h2.poll-q { font-family: var(--serif); font-size: 21px; color: var(--ink); margin: 0 0 var(--gap-4); font-weight: 600; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="measure" style="margin: 0 auto;">
+  <p class="eyebrow">Sagamok &middot; An informal member poll</p>
+  <h1>Two quick questions about Council meetings</h1>
+  <p class="lead">Two quick questions about how our Chief and Council meetings work, so members' voices are on the record.</p>
+
+  <p class="notice">An informal member poll. Indicative, not an official vote.</p>
+
+  {% for q in questions %}
+    <div class="poll-block" data-poll-block="{{ q.slug }}">
+      <h2 class="poll-q">{{ q.question }}</h2>
+
+      {% if q.has_voted and q.results %}
+        <div class="poll-results">
+          <p class="poll-total">{{ q.results.total }} vote{{ q.results.total == 1 ? '' : 's' }} so far</p>
+          <div class="poll-rows">
+            {% for o in q.results.options %}
+              <div class="poll-row{{ o.id == q.voted_option_id ? ' is-picked' : '' }}">
+                <p class="poll-row-label"><strong>{{ o.label }}</strong><span class="poll-pct">{{ o.percent }}%</span></p>
+                <div class="poll-bar"><div class="poll-bar-fill" style="width: {{ o.percent }}%"></div></div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% else %}
+        <div class="poll-status" data-poll-status role="status" aria-live="polite"></div>
+
+        <form class="poll-form" data-poll-form="{{ q.slug }}" novalidate>
+          <div class="poll-hp" aria-hidden="true">
+            <label>Leave this blank<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+          </div>
+
+          <div class="poll-options" role="radiogroup" aria-label="{{ q.question }}">
+            {% for o in q.options %}
+              <label class="poll-opt">
+                <input type="radio" name="option_id" value="{{ o.id }}" required>
+                <span>{{ o.label }}</span>
+              </label>
+            {% endfor %}
+          </div>
+
+          <button class="poll-send" type="submit" data-poll-send>Cast your vote</button>
+        </form>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    var forms = document.querySelectorAll('[data-poll-form]');
+
+    forms.forEach(function (form) {
+      var slug = form.getAttribute('data-poll-form');
+      var statusBox = form.parentElement.querySelector('[data-poll-status]');
+      var sendBtn = form.querySelector('[data-poll-send]');
+
+      function show(state, text) {
+        statusBox.setAttribute('data-state', state);
+        statusBox.textContent = text;
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        show('', '');
+
+        var picked = form.querySelector('input[name="option_id"]:checked');
+        if (!picked) { show('error', 'Please choose one option.'); return; }
+
+        sendBtn.disabled = true;
+        var label = sendBtn.textContent;
+        sendBtn.textContent = 'Sending...';
+
+        fetch('/api/poll/vote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            slug: slug,
+            option_id: parseInt(picked.value, 10),
+            website: form.website.value
+          })
+        }).then(function (r) {
+          return r.json().catch(function () { return { ok: false }; });
+        }).then(function (data) {
+          if (data && data.ok) {
+            window.location.reload();
+          } else {
+            sendBtn.disabled = false;
+            sendBtn.textContent = label;
+            show('error', (data && data.error) ? data.error : 'Something went wrong. Please try again.');
+          }
+        }).catch(function () {
+          sendBtn.disabled = false;
+          sendBtn.textContent = label;
+          show('error', 'Could not reach the server. Please check your connection and try again.');
+        });
+      });
+    });
+  })();
+</script>
+{% endblock %}

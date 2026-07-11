@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+{% block main_class %}wrap wrap--wide{% endblock %}
+
+{#
+  Anonymous, single-select member poll for Sagamok. See src/Poll for the
+  storage model: a vote is an aggregate counter, never a per-voter row, so
+  there is nothing here that identifies who voted or how. Results only ever
+  render after this browser has voted (has_voted, set from a stateless
+  per-poll cookie, never from a database lookup keyed to a person).
+
+  Interactive template (shared shell): same wrap--wide container as every
+  other page, so the header above it and the poll below it are the same
+  width. The poll itself sits centered inside that container at the .measure
+  reading width, not stretched edge to edge and not left-offset.
+#}
+
+{% block title %}Sagamok members: what matters most right now? · Robinson Huron Treaty{% endblock %}
+{% block description %}An anonymous, informal member poll for Sagamok Anishnawbek: what should our leadership be focused on right now? Single select, no personal data collected, results shown after voting.{% endblock %}
+{% block og_title %}Sagamok members: what matters most right now?{% endblock %}
+{% block og_description %}An anonymous, informal member poll. Pick the one thing you want Sagamok's leadership focused on right now.{% endblock %}
+{% block body_class %}route-sagamok-what-matters{% endblock %}
+
+{% block content %}
+<div class="measure" style="margin: 0 auto;">
+  <p class="eyebrow">Sagamok &middot; An informal member poll</p>
+  <h1>{{ question }}</h1>
+  <p class="lead">Members are asking each other this directly. Pick the one thing you want our leadership focused on right now. It is single select, anonymous, and results are shown right after you vote.</p>
+
+  <p class="notice">An informal member poll. Indicative, not an official vote.</p>
+
+  {% if has_voted and results %}
+    <div class="poll-results">
+      <h2>Miigwech, here is what members are saying so far</h2>
+      <p class="poll-total">{{ results.total }} vote{{ results.total == 1 ? '' : 's' }} so far</p>
+      <div class="poll-rows">
+        {% for o in results.options %}
+          <div class="poll-row{{ o.id == voted_option_id ? ' is-picked' : '' }}">
+            <p class="poll-row-label"><strong>{{ o.label }}</strong><span class="poll-pct">{{ o.percent }}%</span></p>
+            <div class="poll-bar"><div class="poll-bar-fill" style="width: {{ o.percent }}%"></div></div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% include 'components/cta_callout.html.twig' with {
+      id: 'poll-records',
+      heading: 'See the records request',
+      line: 'The related, formal ask: sixteen member questions about the settlement, the trust, the enterprises, and the benefit to members, carried with signatures.',
+      button_label: 'Read the records request',
+      href: '/standard/records-request',
+    } only %}
+  {% else %}
+    <div class="poll-status" data-poll-status role="status" aria-live="polite"></div>
+
+    <form class="poll-form" data-poll-form novalidate>
+      <div class="poll-hp" aria-hidden="true">
+        <label>Leave this blank<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+      </div>
+
+      <div class="poll-options" role="radiogroup" aria-label="{{ question }}">
+        {% for o in options %}
+          <label class="poll-opt">
+            <input type="radio" name="option_id" value="{{ o.id }}" required>
+            <span>{{ o.label }}</span>
+          </label>
+        {% endfor %}
+      </div>
+
+      <button class="poll-send" type="submit" data-poll-send>Cast your vote</button>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    var form = document.querySelector('[data-poll-form]');
+    if (!form) return;
+    var statusBox = document.querySelector('[data-poll-status]');
+    var sendBtn = document.querySelector('[data-poll-send]');
+
+    function show(state, text) {
+      statusBox.setAttribute('data-state', state);
+      statusBox.textContent = text;
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      show('', '');
+
+      var picked = form.querySelector('input[name="option_id"]:checked');
+      if (!picked) { show('error', 'Please choose one option.'); return; }
+
+      sendBtn.disabled = true;
+      var label = sendBtn.textContent;
+      sendBtn.textContent = 'Sending...';
+
+      fetch('/api/poll/vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          slug: 'sagamok-what-matters',
+          option_id: parseInt(picked.value, 10),
+          website: form.website.value
+        })
+      }).then(function (r) {
+        return r.json().catch(function () { return { ok: false }; });
+      }).then(function (data) {
+        if (data && data.ok) {
+          window.location.reload();
+        } else {
+          sendBtn.disabled = false;
+          sendBtn.textContent = label;
+          show('error', (data && data.error) ? data.error : 'Something went wrong. Please try again.');
+        }
+      }).catch(function () {
+        sendBtn.disabled = false;
+        sendBtn.textContent = label;
+        show('error', 'Could not reach the server. Please check your connection and try again.');
+      });
+    });
+  })();
+</script>
+{% endblock %}

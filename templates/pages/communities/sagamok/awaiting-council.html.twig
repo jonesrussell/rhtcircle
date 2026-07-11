@@ -1,115 +1,141 @@
 {% extends 'base.html.twig' %}
 {% set nav = 'communities' %}
-{% block main_class %}{% endblock %}
+{% block main_class %}wrap{% endblock %}
 
-{% block title %}Sagamok: questions awaiting Council{% endblock %}
-{% block description %}A member-led public tracker of questions and records requests still awaiting an answer from Sagamok Chief and Council.{% endblock %}
+{% block title %}Questions awaiting an answer: Sagamok Chief and Council · Robinson Huron Treaty{% endblock %}
+{% block description %}A member-compiled, growing record of questions members have put to Sagamok Chief and Council that are still awaiting a reply, each tied to a public source or an as-filed document, with the date asked and the status.{% endblock %}
+{% block og_description %}A growing record of member questions to Sagamok Chief and Council still awaiting a reply, with dates and status. Silence is its own answer.{% endblock %}
 {% block body_class %}route-sagamok-awaiting-council{% endblock %}
 
 {% block head_styles %}
 <style>
-  .awaiting{--maxw:760px;color:var(--ink);font:18px/1.7 var(--sans);-webkit-font-smoothing:antialiased}
-  .awaiting *{box-sizing:border-box}
-  .awaiting .wrap{max-width:var(--maxw);margin:0 auto;padding:40px 22px 64px}
-  .awaiting a{color:var(--accent);text-decoration:none}
-  .awaiting a:hover{text-decoration:underline}
-  .awaiting .crumb{font-size:12.5px;color:var(--ink-3);margin:0 0 16px}
-  .awaiting h1{font-size:34px;line-height:1.16;font-weight:700;margin:0 0 12px;color:var(--indigo-deep);font-family:var(--serif)}
-  .awaiting .lede{font-size:19px;color:var(--ink-2);margin:0 0 18px}
-  .awaiting h2{font-size:24px;line-height:1.25;font-weight:700;margin:44px 0 16px;color:var(--indigo-deep);font-family:var(--serif)}
-  .awaiting h3{font-size:20px;line-height:1.25;font-weight:700;margin:0 0 10px;color:var(--indigo-deep);font-family:var(--serif)}
-  .awaiting p{margin:0 0 14px}
-  .awaiting .item{background:#fff;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 14px 14px 0;padding:20px 22px;margin:18px 0;box-shadow:0 6px 24px rgba(31,29,26,.06)}
-  .awaiting .meta{font-size:14.5px;color:var(--ink-2);margin:0 0 8px}
-  .awaiting .status{display:inline-block;font-size:12px;line-height:1;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--indigo-deep);background:var(--paper-2);border:1px solid var(--rule);border-radius:999px;padding:7px 9px;margin:0 0 12px}
-  .awaiting ul{margin:0 0 18px;padding-left:0;list-style:none}
-  .awaiting li{position:relative;padding-left:22px;margin:0 0 10px}
-  .awaiting li::before{content:"";position:absolute;left:3px;top:12px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
-  .awaiting .byline{font-size:14px;color:var(--ink-3);margin:34px 0 0;padding-top:16px;border-top:1px solid var(--rule)}
+  main .wrap { padding-top: 40px; padding-bottom: 64px; }
+
+  /* question entries */
+  .awc-item{background:#fff; border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:18px 22px; margin:0 0 16px}
+  .awc-item h3{font-family:var(--serif); font-size:19px; color:var(--indigo-deep); margin:0 0 10px}
+  .awc-item dl{margin:0}
+  .awc-item dt{font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-3); font-weight:700; margin:10px 0 2px}
+  .awc-item dd{margin:0; font-size:15.5px; color:var(--ink-2); line-height:1.6}
+  .awc-status{display:inline-block; font-family:var(--sans); font-size:12px; font-weight:700; letter-spacing:.03em; color:var(--accent-deep); background:var(--accent-wash); border:1px solid var(--accent-soft); border-radius:999px; padding:2px 11px}
+  .awc-empty{background:var(--paper-2); border:1px dashed var(--rule-strong); border-radius:12px; padding:16px 20px; color:var(--ink-3); font-size:15px}
+  .awc-how{margin:0 0 14px; padding-left:22px}
+  .awc-how li{margin:0 0 10px; line-height:1.6; color:var(--ink-2)}
+  .awc-updated{font-family:var(--sans); font-size:13px; color:var(--ink-3); margin:0 0 22px}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="awaiting">
-<div class="wrap">
+  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › Questions awaiting an answer</p>
 
-  <p class="crumb"><a href="/communities">Communities</a> &gt; <a href="/communities/sagamok">Sagamok Anishnawbek</a> &gt; Awaiting Council</p>
+  <h1>Questions awaiting an answer</h1>
+  <p class="lead">A growing record of questions members have put to Sagamok Chief and Council, and to the Nation's offices, that are still awaiting a reply. Each entry is tied to a public source or an as-filed document, framed as a question, not an accusation. We post the date asked and the status, and we update it as answers come in. Where there is no reply, that is recorded too. Silence is its own kind of answer.</p>
+  <p class="awc-updated">Last updated: July 10, 2026.</p>
 
-  <h1>Sagamok: questions awaiting an answer</h1>
-  <p class="lede">A growing record of questions members have put to Sagamok Chief and Council, and to the Nation's offices, that are still awaiting a reply.</p>
-
-  {% set banner_body %}<strong>Member-led and unofficial.</strong> This tracker is independent. It is not the Robinson Huron Treaty Litigation Fund and is not affiliated with it. Each item is framed as a question, tied to a public source, an open meeting, or a written request. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.{% endset %}
+  {% set banner_body %}<strong>Member-compiled and unofficial.</strong> This is independent and member-led. It is not the Robinson Huron Treaty Litigation Fund and is not affiliated with it. It takes no side; it points to what the documents say. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.{% endset %}
   {% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'About this page' } only %}
 
   <h2>Open</h2>
 
-  <article class="item">
-    <span class="status">Awaiting</span>
-    <h3>1. Member records request</h3>
-    <p class="meta"><strong>Asked:</strong> June 10, 2026, to Chief and Council through the Council Secretariat.</p>
-    <p>The request asks how the Nation's settlement capital and enterprise investments are governed and what benefit reaches members, including the trust deed, company loans and terms, Finance and Audit Committee independence, committee memberships, and the records-access process. The final signed request, with supplements, was filed July 9, 2026.</p>
-  </article>
+  <div class="awc-item">
+    <h3>Member records request (16 questions, plus a supplement)</h3>
+    <dl>
+      <dt>Asked</dt>
+      <dd>June 10, 2026, to Chief and Council through the Council Secretariat.</dd>
+      <dt>What it asks</dt>
+      <dd>How the Nation's settlement capital and enterprise investments are governed and what benefit reaches members, the trust deed and who controls it, the loans to the Nation's companies and their terms, the Finance and Audit Committee's independence, committee memberships, the records-access process, and more. Carried by 113 signatures (74 online and 39 on paper), with a written response requested within 30 days.</dd>
+      <dt>Status</dt>
+      <dd><span class="awc-status">No reply</span> &middot; The 30-day response period closed on July 10, 2026 with no records provided and no response received. On July 10 an updated package, the signed request with an evidence appendix grounding each item and an updated list of signatories, was delivered to the full Chief and Council. The request remains open and signatures are still being collected. Read the full request: <a href="/standard/records-request">the records request</a>.</dd>
+    </dl>
+  </div>
 
-  <article class="item">
-    <span class="status">Awaiting</span>
-    <h3>2. Next Chief and Council meeting, and whether members can attend</h3>
-    <p class="meta"><strong>Asked:</strong> July 3, 2026, to the Council Secretariat and the Political Office.</p>
-    <p>A member asked when the next Chief and Council meeting is, whether it is open to members, and how a member can be heard. The public meeting schedule remains out of date, and meeting agendas are not posted.</p>
-  </article>
+  <div class="awc-item">
+    <h3>When is the next Chief and Council meeting, and can members attend?</h3>
+    <dl>
+      <dt>Asked</dt>
+      <dd>July 3, 2026, to the Council Secretariat and the Political Office.</dd>
+      <dt>What it asks</dt>
+      <dd>The Nation's public website and meeting schedule are out of date, so a member asked three plain questions: when is the next Chief and Council meeting, is it open to members, and how can a member be heard.</dd>
+      <dt>Status</dt>
+      <dd><span class="awc-status">No reply</span> &middot; The public meeting schedule remains out of date, and meeting agendas are not posted, so members cannot readily learn when Council meets or what it is deciding. A member who attended the July 7, 2026 meeting learned the next meeting is July 28, 2026; that date was not available from the posted schedule, which remains out of date.</dd>
+    </dl>
+  </div>
 
-  <article class="item">
-    <span class="status">Awaiting</span>
-    <h3>3. The long-term care MOU</h3>
-    <p class="meta"><strong>Asked:</strong> June 2026, to Chief and Council through the Council Secretariat.</p>
-    <p>The June public announcement said Sagamok signed a Memorandum of Understanding with Whitefish River First Nation, the Town of Espanola, and the Espanola Regional Hospital. Members asked what Council authorized, when, and on what terms. A July 7 staff reply said the signed MOU will be shared "when it becomes available," with no date given, and did not address the request for the authorizing Band Council Resolution.</p>
-  </article>
+  <div class="awc-item">
+    <h3>The long-term care MOU (Espanola)</h3>
+    <dl>
+      <dt>Asked</dt>
+      <dd>June 2026, to Chief and Council through the Council Secretariat.</dd>
+      <dt>What it asks</dt>
+      <dd>The June public announcement said Sagamok signed a Memorandum of Understanding with Whitefish River First Nation, the Town of Espanola, and the Espanola Regional Hospital and Health Centre. What did Council authorize, when, and on what terms?</dd>
+      <dt>Status</dt>
+      <dd><span class="awc-status">Partly answered</span> &middot; On July 10, 2026 the signed MOU and two related minutes (December 2, 2025 and May 19, 2026) were posted to the Members Portal. The MOU, dated June 26, 2026, is a non-binding agreement to explore a shared-ownership expansion of the long-term care and assisted living facility in Espanola. What remains unanswered: the two minutes record a 10,000 dollar concept-drawing approval and the motions to enter and exit closed session, but not the resolution that authorized signing the MOU, its terms, or who signed. That authorization has been requested and is still awaited.</dd>
+    </dl>
+  </div>
 
-  <article class="item">
-    <span class="status">Awaiting</span>
-    <h3>4. The members-portal disclosure</h3>
-    <p class="meta"><strong>Asked:</strong> June 1, 2026, to the Political Office, delivered to Chief and Council; escalated July 3, 2026.</p>
-    <p>A member raised that members-portal pages had been exposed online, asked Council to confirm the issue was fixed, and asked Council to account for it. The exposure has since been resolved. A substantive response to the letter is still outstanding.</p>
-  </article>
+  <div class="awc-item">
+    <h3>The members-portal disclosure (letter to Chief and Council)</h3>
+    <dl>
+      <dt>Asked</dt>
+      <dd>June 1, 2026, to the Political Office, delivered to Chief and Council; escalated July 3, 2026.</dd>
+      <dt>What it asks</dt>
+      <dd>A member raised that the members portal had left member information open, asked Council to confirm it was fixed and to account for it. The July 3 follow-up noted that the gated pages and confidential-document passwords have been captured in the public Internet Archive. The exposure has since been resolved (see <a href="/communities/sagamok/members-website-issue">the members website issue</a>); a substantive response from Council to the letter is still outstanding.</dd>
+      <dt>Status</dt>
+      <dd><span class="awc-status">Awaiting</span> &middot; Acknowledgement only; awaiting a substantive response.</dd>
+    </dl>
+  </div>
 
-  <article class="item">
-    <span class="status">Awaiting</span>
-    <h3>5. The July 20 Elders Forum and day trip</h3>
-    <p class="meta"><strong>Asked:</strong> June 2026, to the Political Office.</p>
-    <p>Members asked which department owns and funds the event, why an elders program is administered through the Political Office rather than a wellness or service department, and what consideration was given to elder financial wellbeing in scheduling a stop at a casino on a band-organized, band-funded elders trip.</p>
-    <p class="meta"><strong>Source:</strong> the Nation's public notice for the Elders Forum, July 20, 2026.</p>
-  </article>
+  <div class="awc-item">
+    <h3>The July 20 Elders Forum and day trip</h3>
+    <dl>
+      <dt>Asked</dt>
+      <dd>June 2026, to the Political Office.</dd>
+      <dt>What it asks</dt>
+      <dd>Which department owns and funds the event (catering, busing, and agenda) and why an elders program is administered through the Political Office rather than a wellness or service department; and what consideration was given to elder financial wellbeing in scheduling a stop at a casino on a band-organized, band-funded elders trip, including who approved it and out of which budget.</dd>
+      <dt>Status</dt>
+      <dd><span class="awc-status">Awaiting</span></dd>
+      <dt>Source</dt>
+      <dd>The Nation's public notice for the Elders Forum, July 20, 2026.</dd>
+    </dl>
+  </div>
 
-  <article class="item">
-    <span class="status">Awaiting</span>
-    <h3>6. Full draft of the proposed Community Safety By-law</h3>
-    <p class="meta"><strong>Asked:</strong> July 8, 2026, to the Political Office and Council Secretariat.</p>
-    <p>The request asks for the full current draft of the proposed Community Safety By-law presented by FALLS Law at the July 7, 2026 Chief and Council meeting, plus any plain-language summary or presentation materials shared with Council, the expected member-engagement schedule, and the expected date when Council will be asked to consider or approve the by-law.</p>
-    <p>The proposal discussed at the open meeting appeared to deal with removal powers, trespass notices, appeal rights, enforcement officers, penalties, housing implications, and how the law may apply to members and non-members. Members should be able to read the full draft before Council considers it further.</p>
-    <p class="meta"><strong>Source:</strong> July 7, 2026 open Chief and Council meeting attended by a member; written request sent July 8, 2026.</p>
-  </article>
+  <div class="awc-item">
+    <h3>The full draft of the proposed Community Safety By-law</h3>
+    <dl>
+      <dt>Asked</dt>
+      <dd>July 8, 2026, to the Political Office and Council Secretariat.</dd>
+      <dt>What it asks</dt>
+      <dd>At the July 7, 2026 Council meeting, Falls Law presented a proposed Community Safety By-law, covering removal powers, trespass notices, appeal rights, enforcement officers, penalties, housing implications, and how the law would apply to members and non-members. A member asked for the full current draft, any plain-language summary or presentation materials shared with Council, the expected member-engagement schedule, and the expected date Council will be asked to consider or approve it, so members can read it before it returns to Council.</dd>
+      <dt>Status</dt>
+      <dd><span class="awc-status">Awaiting</span></dd>
+      <dt>Source</dt>
+      <dd>The July 7, 2026 Chief and Council meeting; written request sent July 8, 2026.</dd>
+    </dl>
+  </div>
 
-  <article class="item">
-    <span class="status">Awaiting</span>
-    <h3>7. Missing accepted Council minutes and committee records</h3>
-    <p class="meta"><strong>Asked:</strong> July 9, 2026, to the Political Office, Council Secretariat, Governance, and Administration.</p>
-    <p>The request asks who is responsible for maintaining the posted Council minutes archive and committee minutes archive, and asks whether final accepted records exist for minutes that appear to have been accepted or received but are not posted in the archive.</p>
-    <p>The records requested are: August 26, 2024; March 25, 2025; June 10, 2025; July 22, 2025; August 1, 2025; November 4, 2025; November 11, 2025; September 30, 2024 Finance and Audit Committee; and October 7, 2024 Finance and Audit Committee.</p>
-    <p>The request also asks when the records will be posted and how members can obtain copies in the meantime.</p>
-    <p class="meta"><strong>Source:</strong> written request sent July 9, 2026.</p>
-  </article>
+  <div class="awc-item">
+    <h3>Missing accepted Council minutes and committee records</h3>
+    <dl>
+      <dt>Asked</dt>
+      <dd>July 9, 2026, to the Political Office, Council Secretariat, Governance, and Administration.</dd>
+      <dt>What it asks</dt>
+      <dd>Several sets of minutes appear to have been accepted or received by Council but are not posted in the public minutes archive. A member asked who is responsible for maintaining the Council minutes archive and the committee minutes archive, whether final accepted records exist for the dates below, when they will be posted, and how members can obtain copies in the meantime: August 26, 2024; March 25, 2025; June 10, 2025; July 22, 2025; August 1, 2025; November 4, 2025; November 11, 2025; and the Finance and Audit Committee's September 30, 2024 and October 7, 2024 meetings.</dd>
+      <dt>Status</dt>
+      <dd><span class="awc-status">Awaiting</span></dd>
+      <dt>Source</dt>
+      <dd>Written request sent July 9, 2026.</dd>
+    </dl>
+  </div>
 
   <h2>Answered</h2>
-  <p>Nothing here yet. As replies arrive, they will move to this section with the date and a short summary of what was provided.</p>
+  <p class="awc-empty">Nothing here yet. As replies arrive, they move to this section with the date and a short summary of what was provided.</p>
 
   <h2>How this list works</h2>
-  <ul>
-    <li>Every item is a question grounded in a public source, an open meeting, or an as-filed document.</li>
-    <li>An item stays under Open until the Nation provides a written answer.</li>
-    <li>This is a member resource. Corrections are welcome.</li>
+  <ul class="awc-how">
+    <li>Every item is a question grounded in a public source or an as-filed document, never an accusation about any person.</li>
+    <li>An item stays under "Open" until the Nation provides a written answer, then it moves to "Answered" with the date and what was said.</li>
+    <li>This is a member resource. If you have asked Council something and are still waiting, or if you think we have a detail wrong, <a href="/about#corrections">tell the Circle</a> and we will record it or correct it.</li>
   </ul>
 
-  <p class="byline">A community resource from the Robinson Huron Treaty hub, member-led and independent. Last updated July 9, 2026.</p>
-
-</div>
-</div>
+  <p class="cover__byline">A community resource from the Robinson Huron Treaty hub, member-led and independent. Facts are from public sources; the questions are for our leadership. Corrections welcome.</p>
 {% endblock %}

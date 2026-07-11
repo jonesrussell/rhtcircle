@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Hand-crafted OG card for /community-life/indigenous-baseball-league.
+       Same brand language as og-template.html: rainbow rule, indigo-violet,
+       magenta accent, Fraunces. A baseball motif sits bottom-right, on-brand
+       (magenta seams, not the traditional red), not the mockup's teal. */
+    :root {
+      --paper: #fbfaff;
+      --paper-2: #f4f1fb;
+      --indigo: #4f2fb0;
+      --indigo-deep: #38217f;
+      --magenta: #c41d8f;
+      --coral: #f4795a;
+      --ink: #221d33;
+      --ink-2: #4a4361;
+      --ink-3: #6f6688;
+      --line: #e4def2;
+      --rainbow: linear-gradient(90deg,
+        #cc2484 0%, #a824a8 14%, #6c30d8 28%, #4854cc 40%,
+        #2f80c4 52%, #17a8ba 64%, #5bb87a 74%, #f6d05e 84%,
+        #f9781f 93%, #e0452a 100%);
+      --serif: "Fraunces", Georgia, "Iowan Old Style", serif;
+      --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      width: 1200px; height: 630px; overflow: hidden;
+      background: var(--paper); font-family: var(--sans); color: var(--ink);
+      position: relative;
+    }
+    .rainbow { position: absolute; top: 0; left: 0; right: 0; height: 12px; background: var(--rainbow); z-index: 3; }
+
+    /* baseball, bottom-right, large and partly off-canvas */
+    .ball { position: absolute; right: -70px; bottom: -90px; width: 470px; height: 470px; z-index: 0; opacity: .96; }
+    .glow { position: absolute; right: -120px; bottom: -150px; width: 560px; height: 560px; border-radius: 50%;
+      background: radial-gradient(circle at 38% 38%, rgba(196,29,143,0.10) 0%, rgba(196,29,143,0.05) 55%, transparent 72%); z-index: 0; }
+
+    .content { position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: center;
+      height: 100%; padding: 70px 90px; }
+    .eyebrow { font-size: 14px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--indigo); margin-bottom: 22px; }
+    h1 { font-family: var(--serif); font-size: 66px; font-weight: 600; line-height: 1.04; letter-spacing: -0.022em;
+      color: var(--indigo-deep); max-width: 760px; margin-bottom: 26px; }
+    h1 .dot { color: var(--magenta); }
+    .chips { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 34px; }
+    .chip { font-size: 19px; font-weight: 600; color: var(--indigo-deep); background: #fff;
+      border: 1.5px solid var(--line); border-radius: 30px; padding: 9px 20px; }
+    .subline { font-size: 22px; font-weight: 400; color: var(--ink-2); line-height: 1.4; max-width: 700px; margin-bottom: 36px; }
+    .foot { display: flex; align-items: center; gap: 16px; }
+    .url { font-size: 18px; font-weight: 700; color: var(--magenta); }
+    .sep { width: 5px; height: 5px; border-radius: 50%; background: var(--ink-3); }
+    .tagline { font-size: 17px; font-weight: 500; color: var(--ink-3); }
+  </style>
+</head>
+<body>
+  <div class="rainbow"></div>
+  <div class="glow"></div>
+
+  <!-- baseball motif: white ball, magenta seams + stitches (on-brand) -->
+  <svg class="ball" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="100" cy="100" r="94" fill="#ffffff" stroke="#e4def2" stroke-width="2.5"/>
+    <path d="M44 30 Q74 100 44 170" stroke="#c41d8f" stroke-width="5" stroke-linecap="round"/>
+    <path d="M156 30 Q126 100 156 170" stroke="#c41d8f" stroke-width="5" stroke-linecap="round"/>
+    <g stroke="#c41d8f" stroke-width="3.5" stroke-linecap="round">
+      <path d="M52 50 l13 6"/><path d="M50 50 l-11 7"/>
+      <path d="M48 74 l14 4"/><path d="M46 74 l-12 5"/>
+      <path d="M45 100 l15 2"/><path d="M43 100 l-13 2"/>
+      <path d="M48 126 l14 -4"/><path d="M46 126 l-12 -5"/>
+      <path d="M52 150 l13 -6"/><path d="M50 150 l-11 -7"/>
+      <path d="M148 50 l-13 6"/><path d="M150 50 l11 7"/>
+      <path d="M152 74 l-14 4"/><path d="M154 74 l12 5"/>
+      <path d="M155 100 l-15 2"/><path d="M157 100 l13 2"/>
+      <path d="M152 126 l-14 -4"/><path d="M154 126 l12 -5"/>
+      <path d="M148 150 l-13 -6"/><path d="M150 150 l11 -7"/>
+    </g>
+  </svg>
+
+  <div class="content">
+    <div class="eyebrow">Community life &middot; A youth season across the treaty</div>
+    <h1>Indigenous Baseball League 2026<span class="dot">.</span></h1>
+    <div class="chips">
+      <span class="chip">Sagamok</span>
+      <span class="chip">Serpent River</span>
+      <span class="chip">Atikameksheng</span>
+    </div>
+    <p class="subline">A Maamwesying and Jays Care youth season. The home schedule, how kids earn points, and who to ask.</p>
+    <div class="foot">
+      <span class="url">rhtcircle.ca</span>
+      <span class="sep"></span>
+      <span class="tagline">Prepared by members, for members.</span>
+    </div>
+  </div>
+</body>
+</html>

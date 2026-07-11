@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+{% block main_class %}wrap{% endblock %}
+
+{#
+  A Sagamok member's record: sourced facts and dates about the members-only
+  portal exposure and its capture in the public Internet Archive, and what is
+  being asked of Council. Names offices and roles, not private individuals.
+  No member personal information appears on this page. Companion record to
+  members-website-issue.html.twig; same layout (shared shell).
+#}
+
+{% block title %}Sagamok IT accountability: a members' record · Robinson Huron Treaty{% endblock %}
+{% block description %}A Sagamok member's record: the members-only portal, once left open, is now confirmed captured in the public Internet Archive, permanently. What is being asked of Council.{% endblock %}
+{% block og_title %}Sagamok IT accountability: a members' record{% endblock %}
+{% block og_description %}A member's record, sourced and dated, and what is being asked of Council.{% endblock %}
+{% block body_class %}route-sagamok-it-accountability{% endblock %}
+
+{% block head_styles %}
+<style>
+  .ita{
+    --muted:var(--ink-3); --panel:var(--paper-2); --panel-2:var(--paper-3);
+    --border:var(--rule); --warn:var(--accent-deep);
+  }
+  main .wrap { padding-top: 40px; padding-bottom: 64px; }
+  .ita .hlw{background:var(--accent-wash); color:var(--ink); padding:.03em .28em; border-radius:4px; font-weight:600; box-decoration-break:clone; -webkit-box-decoration-break:clone}
+  .ita .summary{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:8px 22px 12px; margin:26px 0 8px}
+  .ita .summary p.h{font-size:12.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:600; margin:16px 0 10px}
+  .ita ul{margin:0 0 18px; padding-left:0; list-style:none}
+  .ita li{position:relative; padding-left:22px; margin:0 0 11px}
+  .ita li::before{content:""; position:absolute; left:3px; top:12px; width:6px; height:6px; border-radius:50%; background:var(--accent)}
+  .ita ol.asks{margin:0 0 18px; padding-left:22px}
+  .ita ol.asks li{padding-left:6px; margin:0 0 14px; line-height:1.6}
+  .ita .pull{font-size:21px; line-height:1.4; color:var(--ink); font-weight:600; border-left:3px solid var(--accent); padding:4px 0 4px 20px; margin:22px 0}
+  .ita .timeline{position:relative; margin:16px 0 18px; padding-left:36px}
+  .ita .timeline::before{content:""; position:absolute; left:9px; top:8px; bottom:12px; width:2px; background:linear-gradient(180deg,var(--accent),var(--border))}
+  .ita .tl{position:relative; padding:0 0 24px}
+  .ita .tl:last-child{padding-bottom:0}
+  .ita .tl::before{content:""; position:absolute; left:-36px; top:2px; width:20px; height:20px; border-radius:50%; background:var(--panel-2); border:3px solid var(--accent)}
+  .ita .tl .when{display:inline-block; font-size:13.5px; letter-spacing:.03em; color:var(--accent); font-weight:700; margin:0 0 5px}
+  .ita .tl p{margin:0; color:var(--ink-2); font-size:16px; line-height:1.55}
+  .ita .status{border-left:3px solid var(--warn); background:var(--panel-2); padding:14px 18px; border-radius:0 10px 10px 0; color:var(--ink-2); font-size:16.5px}
+  .ita .tech{font-size:14.5px; color:var(--muted); background:var(--panel-2); border:1px solid var(--border); border-radius:10px; padding:15px 18px; margin:20px 0 0; line-height:1.55}
+  .ita .tech b{color:var(--ink-2)}
+  .ita footer{margin-top:50px; padding-top:20px; border-top:1px solid var(--border); color:var(--muted); font-size:14px}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ita">
+  <p class="eyebrow">Sagamok · A members' record</p>
+  <h1>We were told our data was safe. It was not.</h1>
+  <p class="lead">The members-only portal was left open to the public. It has now been confirmed captured in the public Internet Archive, not one page, but the gated area, including confidential documents and council minutes that name members and their families. That capture is permanent. Fixing the live site stopped new copies; it did not, and cannot, take back what was already taken.</p>
+  <p class="cover__byline">From Russell Jones, a Sagamok Anishnawbek member.</p>
+
+  <p class="status">This is not the first warning, and the failure is not only technical. It is a failure of accountability.</p>
+
+  <div class="summary">
+    <p class="h">In short</p>
+    <ul>
+      <li>The gated members portal, once left open, is now confirmed captured in the public Internet Archive, including confidential documents and council minutes.</li>
+      <li>Some of those documents had their passwords printed in plain text on the same pages.</li>
+      <li>This is the second time members' information has been exposed. Both times the response was an assurance, silence, or a fix after the damage was done.</li>
+      <li>Three things are being asked of Council: the IT Director's resignation, informing the membership now, and an independent review.</li>
+    </ul>
+  </div>
+
+  <h2>What members were told, and what was true</h2>
+  <p>On February 6, 2026, when all members were told to reset their portal passwords, I asked the IT office in writing whether there had been any breach or security problem. The same-day written reply stated there had been no security issues and no vulnerability to member accounts or personal data. That assurance did not hold.</p>
+
+  <h2>The pattern</h2>
+  <div class="timeline">
+    <div class="tl"><p class="when">September 2023</p><p>I wrote to the office of the Chief raising concerns about how member data was being collected and handled, and offered to help move it to a safer setup. It was acknowledged and said to be going to Council.</p></div>
+    <div class="tl"><p class="when">February 2026</p><p>The written assurance above: no security issues, no vulnerability to member accounts or personal data.</p></div>
+    <div class="tl"><p class="when">May and June 2026</p><p>Members-only pages were found loading before the login appeared. It was reported, and the live site was fixed on June 3, 2026.</p></div>
+    <div class="tl"><p class="when">July 2026</p><p>The gated portal, and the confidential documents and minutes within it, are confirmed captured in the public Internet Archive, and beyond recall.</p></div>
+  </div>
+  <p>Each time, the answer was an assurance, silence, or a fix after the fact. The underlying failure was left in place until the damage was permanent.</p>
+
+  <h2>What is being asked of Council</h2>
+  <ol class="asks">
+    <li><strong>The resignation of the IT Director.</strong> This is the second exposure of members' information I have raised. Both times the response was silence or deflection, and both times the failure was left until the damage was permanent. As a member, I have no confidence in the Nation's IT leadership, and I have asked Council for the IT Director's resignation.</li>
+    <li><strong>Inform the membership, now.</strong> Every member and family whose information was exposed has a right to be told, plainly and without further delay, what happened and what it means. As of this writing that is over a month overdue.</li>
+    <li><strong>An independent review.</strong> Council should engage an arm's-length firm to confirm exactly what was exposed, whether the remediation is complete, and the full scope of what is now archived. An Indigenous-owned firm would be the fitting choice for member-data sovereignty.</li>
+  </ol>
+
+  <h2>Why this matters beyond the fix</h2>
+  <p>When the systems holding our information are run on outside platforms by people outside the community, and we do not have our own qualified people able to check them, we cannot answer a simple question: is our data safe, and who can see it. <strong>Our data is ours.</strong> Deciding how it is kept, and being able to check it ourselves, is part of our sovereignty.</p>
+
+  <p class="tech"><b>For the record:</b> this is the position of Russell Jones, a Sagamok Anishnawbek member. It is independent of Sagamok Chief and Council and its administration. It names offices, roles, and dates, not private individuals, and it publishes no member information. Questions and corrections are welcome.</p>
+
+  <p>The companion technical record is at <a href="/communities/sagamok/members-website-issue">the members website issue</a>. Open questions to Council are tracked at <a href="/communities/sagamok/awaiting-council">questions awaiting an answer</a>.</p>
+
+  <footer>
+    <p>This is from Russell Jones, a Sagamok Anishnawbek member. It is independent of Sagamok Chief and Council and its administration.</p>
+  </footer>
+</div>
+{% endblock %}
