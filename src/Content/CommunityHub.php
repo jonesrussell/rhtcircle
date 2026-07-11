@@ -138,6 +138,27 @@ final class CommunityHub
                 'go' => 'See the questions',
                 'href' => '/communities/sagamok/long-term-care',
             ],
+            [
+                'tag' => "A member's record",
+                'title' => 'GR Truss: bought for $100, then funded',
+                'desc' => 'The Nation acquired a truss company for $100, then directed $775,000 to $900,000 to it. What members are entitled to ask about the money, the conflict, and the return.',
+                'go' => 'Read the record',
+                'href' => '/communities/sagamok/gr-truss',
+            ],
+            [
+                'tag' => 'Questions for Chief and Council',
+                'title' => 'The Play Limited Partnership',
+                'desc' => 'A term sheet and side letter signed in closed session for an entity members cannot yet identify. Members are calling on Council to release the agreement.',
+                'go' => 'See the questions',
+                'href' => '/communities/sagamok/play-limited-partnership',
+            ],
+            [
+                'tag' => 'Questions for Chief and Council',
+                'title' => 'The Espanola Mill and the BMI Group',
+                'desc' => 'A major redevelopment in the territory, a non-disclosure agreement signed in closed session, and the questions about how members fit in.',
+                'go' => 'See the questions',
+                'href' => '/communities/sagamok/espanola-mill-bmi',
+            ],
         ];
     }
 
@@ -159,6 +180,13 @@ final class CommunityHub
                     'desc' => 'Two new Hydro One transmission lines, with eight RHT nations participating together as equity partners through Waasmoowin.',
                     'go' => 'Open the profile',
                     'href' => '/land/north-shore-link-northeast-power-line',
+                ],
+                [
+                    'tag' => 'On the shared territory',
+                    'title' => 'Agnew Lake radioactive tailings',
+                    'desc' => 'A provincial plan to move radioactive tailings within the shared territory, and the questions it raises for members.',
+                    'go' => 'Open the profile',
+                    'href' => '/land/agnew-lake-tailings',
                 ],
                 [
                     'tag' => 'Help, MMIWG, and safety',
@@ -190,28 +218,41 @@ final class CommunityHub
     }
 
     /**
-     * Community-life features shared across nations. The Maamwesying and Jays Care
-     * youth baseball league spans Sagamok, Serpent River, and Atikameksheng, so it
-     * is featured on each of their pages and nowhere else.
+     * Community-life features. The Maamwesying and Jays Care youth baseball
+     * league spans Sagamok, Serpent River, and Atikameksheng, so it is featured
+     * on each of their pages. Sagamok additionally links the Nation's own
+     * bulletin, so the Nation's official communications sit alongside the
+     * member resources on this hub.
      *
      * @return list<array<string, string|bool>>
      */
     private static function communityLife(string $slug): array
     {
-        if (!in_array($slug, ['sagamok', 'serpent-river', 'atikameksheng'], true)) {
-            return [];
+        $cards = [];
+
+        if ($slug === 'sagamok') {
+            $cards[] = [
+                'tag' => "The Nation's own voice",
+                'title' => 'The Nation\'s own posts',
+                'desc' => 'Sagamok Anishnawbek publishes its own community bulletin: notices, events, tenders, programs, and announcements. We link it so members can see the Nation\'s official communications next to the member resources here.',
+                'go' => 'See the Nation\'s posts',
+                'href' => 'https://www.sagamokanishnawbek.com/sagamok-posts',
+                'external' => true,
+            ];
         }
 
-        return [
-            [
+        if (in_array($slug, ['sagamok', 'serpent-river', 'atikameksheng'], true)) {
+            $cards[] = [
                 'feature' => true,
                 'tag' => 'Community life, summer 2026',
                 'title' => 'Indigenous Baseball League 2026',
                 'desc' => 'A summer youth baseball season run by Maamwesying and the Jays Care Foundation, played across Sagamok, Serpent River, and Atikameksheng. The home schedule, how kids earn points, and who to ask.',
                 'go' => 'See the league page',
                 'href' => '/community-life/indigenous-baseball-league',
-            ],
-        ];
+            ];
+        }
+
+        return $cards;
     }
 
     private static function lede(string $name, bool $hasTransparency): string

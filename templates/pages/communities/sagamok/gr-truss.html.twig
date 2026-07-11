@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}GR Truss: bought for $100, then funded · Robinson Huron Treaty{% endblock %}
+{% block description %}A member-compiled record of what Sagamok Anishnawbek has directed to GR Truss (2262012 Ontario Limited), a truss manufacturer the Nation acquired for $100, and the questions members are entitled to ask about it.{% endblock %}
+{% block og_description %}The Nation acquired a truss company for $100, then directed $775,000 to $900,000 to it. What members are entitled to ask about the money, the conflict, and the return.{% endblock %}
+{% block body_class %}route-sagamok-gr-truss{% endblock %}
+
+{% block content %}
+  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › GR Truss</p>
+
+  <h1>GR Truss: bought for $100, then funded</h1>
+  <p class="lead">What the Nation has directed to a company it bought for $100.</p>
+
+  {% set banner_body %}<strong>Member-compiled and unofficial.</strong> This is a member-compiled summary, not an official communication of Sagamok Anishnawbek. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.{% endset %}
+  {% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'About this page' } only %}
+
+  <p>The Nation acquired GR Truss (2262012 Ontario Limited), a truss manufacturer, for a total price of $100 on April 1, 2025 (FY2025 audited financial statements, Note 18). The officers of GR Truss are the Chief (President), Councillor Norma Petahtegoose (Treasurer), and Councillor Michael Abitong (Secretary) (Ontario Business Registry; BCR 2025-05-57).</p>
+
+  <p>Since the purchase, Council has directed band money to GR Truss: a $500,000 advance at 4%, repayable March 2026 (Motion 2025/04 #05); a $125,000 economic development equity contribution for a lot in Carling Township, near Parry Sound (Motion 2025/09 #45); a second, identically worded $125,000 (Motion 2026/01 #18) whose status, a distinct contribution or a re-approval, is unclear; and a $150,000 advance for "immediate cashflow needs," repayable in six months, approved in a closed session (Motion 2026/05 #10). That is $775,000 to $900,000 directed to a company bought for $100, plus a pending acquisition of a second truss business. Advances are repayable on paper; the equity contribution is not.</p>
+
+  {% include 'components/section_heading.html.twig' with { title: 'Questions members can ask' } only %}
+  <ul>
+    <li>How much band money has gone into GR Truss, and how much has been or will be repaid?</li>
+    <li>Is it a working business, or does it require ongoing cash?</li>
+    <li>What returns to members, in jobs or dollars?</li>
+    <li>When Council sends money to a company its own members direct, how is that conflict declared and handled?</li>
+  </ul>
+
+  <p>See also <a href="/communities/sagamok/how-its-organized">how Sagamok is organized</a>, which maps GR Truss and the Nation's other enterprises, and the <a href="/standard/records-request">records request</a>, which asks Council directly about the enterprises and the benefit to members.</p>
+
+  {% include 'components/section_heading.html.twig' with { title: 'Sources' } only %}
+  <ul class="src-links">
+    <li><a href="https://www.sagamokanishnawbek.com/annual-report-financial-statements/2025-annual-report" target="_blank" rel="noopener">FY2025 audited financial statements (Note 18)</a></li>
+    <li><a href="https://www.sagamokanishnawbek.com/meeting-minutes/meeting-minutes" target="_blank" rel="noopener">Council minutes and BCRs as cited</a></li>
+    <li><a href="https://www.ontario.ca/page/ontario-business-registry" target="_blank" rel="noopener">Ontario Business Registry</a></li>
+  </ul>
+
+  <p class="cover__byline">A community resource from the Robinson Huron Treaty hub, member-led and independent. Facts are from public sources; the questions are for our leadership. Corrections welcome.</p>
+{% endblock %}

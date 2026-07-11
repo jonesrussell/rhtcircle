@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}The Play Limited Partnership · Robinson Huron Treaty{% endblock %}
+{% block description %}A member-compiled record of the Play Limited Partnership, a term sheet and legal side letter Sagamok Chief and Council signed in closed session, and the questions members are entitled to ask about it.{% endblock %}
+{% block og_description %}A deal signed in closed session that members cannot yet see. What the Play Limited Partnership is, and what Sagamok is committing to it.{% endblock %}
+{% block body_class %}route-sagamok-play-limited-partnership{% endblock %}
+
+{% block content %}
+  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › The Play Limited Partnership</p>
+
+  <h1>The Play Limited Partnership</h1>
+  <p class="lead">A deal signed in closed session that members cannot yet see.</p>
+
+  {% set banner_body %}<strong>Member-compiled and unofficial.</strong> This is a member-compiled summary, not an official communication of Sagamok Anishnawbek. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.{% endset %}
+  {% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'About this page' } only %}
+
+  <p>On April 7, 2026, in a closed (in-camera) session, Chief and Council authorized the Chief to sign a term sheet and a legal side letter for an entity called the "Play Limited Partnership" (Motion 2026/04 #13), after accepting a revised term sheet and continuing due diligence (Motion 2026/04 #12). One councillor is recorded as opposed. The entity does not appear in the public Ontario Business Registry under that name, so members cannot identify what it is or who is behind it.</p>
+
+  {% include 'components/section_heading.html.twig' with { title: 'Questions members can ask' } only %}
+  <ul>
+    <li>What is the Play Limited Partnership, and who is behind it?</li>
+    <li>What is Sagamok committing to it, in money and in terms?</li>
+    <li>Why was it decided in closed session, and when will members see the agreement?</li>
+  </ul>
+
+  <p>Members are calling on Council to release the term sheet and the side letter.</p>
+
+  <p>See also <a href="/communities/sagamok/awaiting-council">questions awaiting an answer</a>, and the <a href="/standard">shared transparency standard</a>: a commitment made in the members' name should follow from members being informed, not come before it.</p>
+
+  {% include 'components/section_heading.html.twig' with { title: 'Sources' } only %}
+  <ul class="src-links">
+    <li><a href="https://www.sagamokanishnawbek.com/meeting-minutes/meeting-minutes" target="_blank" rel="noopener">Council minutes, April 7, 2026 (Motions 2026/04 #12 and #13)</a></li>
+    <li><a href="https://www.ontario.ca/page/ontario-business-registry" target="_blank" rel="noopener">Ontario Business Registry name search</a></li>
+  </ul>
+
+  <p class="cover__byline">A community resource from the Robinson Huron Treaty hub, member-led and independent. Facts are from public sources; the questions are for our leadership. Corrections welcome.</p>
+{% endblock %}

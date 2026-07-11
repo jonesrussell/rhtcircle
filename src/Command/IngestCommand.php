@@ -71,6 +71,9 @@ final class IngestCommand
         '/communities/sagamok/it-accountability' => 'pages/communities/sagamok/it-accountability.html.twig',
         '/communities/sagamok/where-your-data-lives' => 'pages/communities/sagamok/where-your-data-lives.html.twig',
         '/communities/sagamok/long-term-care' => 'pages/communities/sagamok/long-term-care.html.twig',
+        '/communities/sagamok/gr-truss' => 'pages/communities/sagamok/gr-truss.html.twig',
+        '/communities/sagamok/play-limited-partnership' => 'pages/communities/sagamok/play-limited-partnership.html.twig',
+        '/communities/sagamok/espanola-mill-bmi' => 'pages/communities/sagamok/espanola-mill-bmi.html.twig',
         '/circle' => 'pages/circle/index.html.twig',
         '/about' => 'pages/about.html.twig',
     ];

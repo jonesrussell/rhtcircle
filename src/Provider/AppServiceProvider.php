@@ -306,6 +306,9 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'sagamok-members-website-issue' => ['/communities/sagamok/members-website-issue', 'pages/communities/sagamok/members-website-issue.html.twig'],
             'sagamok-where-your-data-lives' => ['/communities/sagamok/where-your-data-lives', 'pages/communities/sagamok/where-your-data-lives.html.twig'],
             'sagamok-long-term-care' => ['/communities/sagamok/long-term-care', 'pages/communities/sagamok/long-term-care.html.twig'],
+            'sagamok-gr-truss' => ['/communities/sagamok/gr-truss', 'pages/communities/sagamok/gr-truss.html.twig'],
+            'sagamok-play-limited-partnership' => ['/communities/sagamok/play-limited-partnership', 'pages/communities/sagamok/play-limited-partnership.html.twig'],
+            'sagamok-espanola-mill-bmi' => ['/communities/sagamok/espanola-mill-bmi', 'pages/communities/sagamok/espanola-mill-bmi.html.twig'],
             // A member's record (Russell Jones): the members-only portal
             // exposure, its capture in the public Internet Archive, and what
             // is being asked of Council. Companion to members-website-issue.

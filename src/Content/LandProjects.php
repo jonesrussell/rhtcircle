@@ -190,6 +190,30 @@ HTML,
                 ],
             ],
             [
+                'slug' => 'agnew-lake-tailings',
+                'name' => 'Agnew Lake radioactive tailings',
+                'type_label' => 'Environment',
+                'status' => 'Rerouted; Ontario sent the waste to a Sarnia-area site in July 2025',
+                'location' => 'Agnew Lake Tailings Management Area, about 15 km north of Nairn Centre, within the shared territory of several RHT nations',
+                'nations' => 'Atikameksheng Anishnawbek, Sagamok Anishnawbek, and Serpent River First Nation (leadership briefed)',
+                'lead' => 'A public matter affecting the shared territory near Nairn, and the questions it raises for members.',
+                'body' => <<<'HTML'
+<p>In 2024 and 2025 the Province of Ontario planned to move about 34,000 tonnes of processed, naturally occurring radioactive (niobium) tailings from the former Beaucage Mine and waste site, on Nipissing First Nation lands, to the Agnew Lake Tailings Management Area, an existing former-uranium tailings site about 15 kilometres north of Nairn Centre. The Agnew Lake site sits within the shared territory of several Robinson Huron Treaty nations. Meetings were held with the leadership of Atikameksheng Anishnawbek, Sagamok Anishnawbek, and Serpent River First Nation. After residents of Nairn organized and raised concerns, the Province rerouted the waste in July 2025, sending it instead to a site near Sarnia and Aamjiwnaang First Nation.</p>
+<p>Sagamok's public record: Council resolved to continue receiving Ministry of Mines information on the transport and to request a presentation from the parties (Motion 2025/01 #06, January 14, 2025); received a Ministry update on the site (July 8, 2025); and directed staff to press the Ministry to address the deteriorating cover at the Agnew Lake site (Motion 2025/09 #14, September 10, 2025).</p>
+<p>Questions members can ask: What is our nation's position on radioactive tailings being managed or moved within the territory? Were members told or consulted about our nation's involvement in these discussions? What is the long-term plan for the Agnew Lake site, and who is responsible for its safety?</p>
+HTML,
+                'caveat' => 'Sourced from public reporting and Sagamok\'s public council minutes. Atikameksheng\'s and Serpent River\'s own public records on this matter have not yet been compiled here; verify before relying on any figure.',
+                'related' => [
+                    ['slug' => 'atikameksheng', 'name' => 'Atikameksheng Anishnawbek'],
+                    ['slug' => 'sagamok', 'name' => 'Sagamok Anishnawbek'],
+                ],
+                'sources' => [
+                    ['label' => 'CBC News (Sudbury)', 'url' => 'https://www.cbc.ca/news/canada/sudbury'],
+                    ['label' => 'The Narwhal', 'url' => 'https://thenarwhal.ca/'],
+                    ['label' => 'Sagamok Council minutes (January 14, July 8, September 10, 2025)', 'url' => 'https://www.sagamokanishnawbek.com/meeting-minutes/meeting-minutes'],
+                ],
+            ],
+            [
                 'slug' => 'atikameksheng-land-claim',
                 'name' => 'Atikameksheng land claim',
                 'type_label' => 'Land claim',
