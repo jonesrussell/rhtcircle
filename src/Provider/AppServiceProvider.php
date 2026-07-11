@@ -278,6 +278,12 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'get-involved' => ['/get-involved', 'pages/get-involved.html.twig'],
 
             'sagamok-awaiting-council' => ['/communities/sagamok/awaiting-council', 'pages/communities/sagamok/awaiting-council.html.twig'],
+            // Support images: a client-side canvas generator (Facebook cover,
+            // square post, profile badge) for the records request. No login,
+            // no upload, no names collected. Ported from main, where it was
+            // built directly during the bad-pin window; see the awaiting-
+            // council reconciliation commit for context.
+            'sagamok-support-images' => ['/communities/sagamok/support-images', 'pages/communities/sagamok/support-images.html.twig'],
             'sagamok-how-organized' => ['/communities/sagamok/how-its-organized', 'pages/communities/sagamok/how-its-organized.html.twig'],
             'sagamok-members-website-issue' => ['/communities/sagamok/members-website-issue', 'pages/communities/sagamok/members-website-issue.html.twig'],
             'sagamok-where-your-data-lives' => ['/communities/sagamok/where-your-data-lives', 'pages/communities/sagamok/where-your-data-lives.html.twig'],

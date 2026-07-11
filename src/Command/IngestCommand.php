@@ -62,6 +62,7 @@ final class IngestCommand
         '/resources' => 'pages/resources/index.html.twig',
         '/resources/paying-for-school' => 'pages/resources/paying-for-school.html.twig',
         '/communities/sagamok/awaiting-council' => 'pages/communities/sagamok/awaiting-council.html.twig',
+        '/communities/sagamok/support-images' => 'pages/communities/sagamok/support-images.html.twig',
         '/communities/sagamok/how-its-organized' => 'pages/communities/sagamok/how-its-organized.html.twig',
         '/communities/sagamok/members-website-issue' => 'pages/communities/sagamok/members-website-issue.html.twig',
         '/communities/sagamok/it-accountability' => 'pages/communities/sagamok/it-accountability.html.twig',

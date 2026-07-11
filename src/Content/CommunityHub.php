@@ -91,6 +91,13 @@ final class CommunityHub
                 'href' => '/standard/records-request',
             ],
             [
+                'tag' => 'Show your support',
+                'title' => 'Create a support image',
+                'desc' => 'Make a Facebook cover, square post, or profile badge for the records request. No login, no upload, no names collected.',
+                'go' => 'Create an image',
+                'href' => '/communities/sagamok/support-images',
+            ],
+            [
                 'tag' => "A member's guide",
                 'title' => 'How Sagamok is organized',
                 'desc' => 'Governance, administration, and the enterprises, mapped in plain terms so the questions have somewhere to land.',

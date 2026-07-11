@@ -1,0 +1,436 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}Support images for Sagamok members · Robinson Huron Treaty{% endblock %}
+{% block description %}Create a Facebook cover, square post, or profile badge for the member-led Sagamok records request. No login, no upload, no names collected.{% endblock %}
+{% block og_description %}Create a support image for the member-led Sagamok records request. Member-led and unofficial.{% endblock %}
+{% block body_class %}route-sagamok-support-images{% endblock %}
+
+{% block head_styles %}
+<style>
+  .support-shell {
+    display: grid;
+    gap: var(--gap-5);
+  }
+
+  .support-intro {
+    max-width: 780px;
+  }
+
+  .support-tool {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.35fr);
+    gap: 22px;
+    align-items: start;
+  }
+
+  .support-panel {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+  }
+
+  .support-panel h2 {
+    margin-top: 0;
+  }
+
+  .support-control {
+    margin: 0 0 20px;
+  }
+
+  .support-control legend {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--magenta);
+    margin: 0 0 8px;
+  }
+
+  .support-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .support-options label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 42px;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--paper-2);
+    color: var(--ink-2);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .support-options input {
+    accent-color: var(--magenta);
+  }
+
+  .support-options label:has(input:checked) {
+    background: var(--indigo);
+    border-color: var(--indigo);
+    color: #fff;
+  }
+
+  .support-preview-wrap {
+    position: sticky;
+    top: 18px;
+  }
+
+  .support-preview {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+  }
+
+  .support-preview canvas {
+    display: block;
+    width: 100%;
+    max-height: 66vh;
+    object-fit: contain;
+    border-radius: 8px;
+    background: var(--paper-2);
+    box-shadow: 0 10px 30px rgba(34, 29, 51, 0.08);
+  }
+
+  .support-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 14px;
+    align-items: center;
+  }
+
+  .support-actions button {
+    border: 1px solid var(--indigo);
+    border-radius: 999px;
+    background: var(--indigo);
+    color: #fff;
+    font-family: var(--sans);
+    font-size: 16px;
+    font-weight: 700;
+    padding: 12px 22px;
+    cursor: pointer;
+  }
+
+  .support-actions button:hover {
+    background: var(--indigo-deep);
+  }
+
+  .support-size {
+    color: var(--ink-3);
+    font-size: 13px;
+    margin: 0;
+  }
+
+  .support-note {
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--coral);
+    border-radius: 0 12px 12px 0;
+    padding: 14px 18px;
+    color: var(--ink-2);
+    font-size: 14.5px;
+  }
+
+  @media (max-width: 860px) {
+    .support-tool {
+      grid-template-columns: 1fr;
+    }
+
+    .support-preview-wrap {
+      position: static;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block hero %}
+<section class="hero">
+  <div class="wrap wrap--wide">
+    <p class="eyebrow">Sagamok · member-led records request</p>
+    <h1>Create a support image.</h1>
+    <p class="lead">Choose a format, choose a message, download the image, and use it on Facebook if you want.</p>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="support-shell" data-support-image-tool>
+  <p class="crumb"><a href="/communities">Communities</a> &gt; <a href="/communities/sagamok">Sagamok Anishnawbek</a> &gt; Support images</p>
+
+  <div class="support-intro">
+    <p class="lead">Create a support image for the member-led Sagamok records request.</p>
+    {% set banner_body %}
+      <strong>Member-led and unofficial.</strong> This is not Sagamok Anishnawbek, Chief and Council, or the Robinson Huron Treaty Litigation Fund. This tool runs in your browser. It does not upload images, save names, or collect personal information.
+    {% endset %}
+    {% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'About this tool' } only %}
+  </div>
+
+  <div class="support-tool">
+    <form class="support-panel" aria-label="Support image controls">
+      <fieldset class="support-control">
+        <legend>Format</legend>
+        <div class="support-options">
+          <label><input type="radio" name="format" value="cover" checked> Facebook cover</label>
+          <label><input type="radio" name="format" value="square"> Square post</label>
+          <label><input type="radio" name="format" value="badge"> Profile badge</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="support-control">
+        <legend>Message</legend>
+        <div class="support-options">
+          <label><input type="radio" name="message" value="Release the Records" checked> Release the Records</label>
+          <label><input type="radio" name="message" value="Sagamok Members Deserve the Records"> Sagamok Members Deserve the Records</label>
+          <label><input type="radio" name="message" value="I Support the Members' Records Request"> I Support the Members' Records Request</label>
+          <label><input type="radio" name="message" value="Let Members Verify"> Let Members Verify</label>
+          <label><input type="radio" name="message" value="Come to the Member-Led Records Meeting"> Come to the Member-Led Records Meeting</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="support-control">
+        <legend>Theme</legend>
+        <div class="support-options">
+          <label><input type="radio" name="theme" value="light" checked> Light</label>
+          <label><input type="radio" name="theme" value="indigo"> Indigo</label>
+          <label><input type="radio" name="theme" value="yellow"> Yellow</label>
+          <label><input type="radio" name="theme" value="green"> Green</label>
+        </div>
+      </fieldset>
+
+      <div class="support-note">
+        Use it as a cover image, a post image, or a temporary profile badge. The words are deliberately simple so they stay readable after Facebook compression.
+      </div>
+    </form>
+
+    <div class="support-preview-wrap">
+      <div class="support-preview">
+        <canvas data-support-canvas width="1640" height="624" aria-label="Generated support image preview"></canvas>
+        <div class="support-actions">
+          <button type="button" data-support-download>Download PNG</button>
+          <p class="support-size" data-support-size>1640 x 624</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% include 'components/section_heading.html.twig' with { title: 'What this does not do' } only %}
+  <ul>
+    <li>It does not use the Sagamok logo.</li>
+    <li>It does not use any official Treaty Fund logo.</li>
+    <li>It does not collect your name.</li>
+    <li>It does not store generated images.</li>
+    <li>It does not upload anything from your computer.</li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var root = document.querySelector('[data-support-image-tool]');
+  if (!root) return;
+
+  var canvas = root.querySelector('[data-support-canvas]');
+  var ctx = canvas.getContext('2d');
+  var sizeLabel = root.querySelector('[data-support-size]');
+  var download = root.querySelector('[data-support-download]');
+
+  var formats = {
+    cover: { width: 1640, height: 624, label: '1640 x 624', filename: 'sagamok-records-facebook-cover.png' },
+    square: { width: 1080, height: 1080, label: '1080 x 1080', filename: 'sagamok-records-square-post.png' },
+    badge: { width: 1080, height: 1080, label: '1080 x 1080', filename: 'sagamok-records-profile-badge.png' }
+  };
+
+  var themes = {
+    light: {
+      bg: '#fbfaff',
+      panel: '#ffffff',
+      ink: '#221d33',
+      sub: '#4a4361',
+      accent: '#c41d8f',
+      ring: '#4f2fb0',
+      footerBg: '#ece7f7',
+      footerInk: '#4a4361'
+    },
+    indigo: {
+      bg: '#38217f',
+      panel: '#4f2fb0',
+      ink: '#ffffff',
+      sub: '#f4f1fb',
+      accent: '#f4795a',
+      ring: '#c41d8f',
+      footerBg: '#221d33',
+      footerInk: '#ffffff'
+    },
+    yellow: {
+      bg: '#f6d05e',
+      panel: '#fff7cf',
+      ink: '#221d33',
+      sub: '#4a4361',
+      accent: '#38217f',
+      ring: '#c41d8f',
+      footerBg: '#221d33',
+      footerInk: '#ffffff'
+    },
+    green: {
+      bg: '#0f5f4b',
+      panel: '#147a61',
+      ink: '#ffffff',
+      sub: '#e8fff7',
+      accent: '#f6d05e',
+      ring: '#17a8ba',
+      footerBg: '#073e32',
+      footerInk: '#ffffff'
+    }
+  };
+
+  var rainbow = ['#cc2484', '#a824a8', '#6c30d8', '#4854cc', '#2f80c4', '#17a8ba', '#5bb87a', '#f6d05e', '#f9781f', '#e0452a'];
+
+  function selected(name) {
+    var input = root.querySelector('input[name="' + name + '"]:checked');
+    return input ? input.value : '';
+  }
+
+  function wrapLines(text, font, maxWidth) {
+    ctx.font = font;
+    var words = text.split(' ');
+    var lines = [];
+    var line = '';
+    words.forEach(function (word) {
+      var next = line ? line + ' ' + word : word;
+      if (ctx.measureText(next).width <= maxWidth) {
+        line = next;
+        return;
+      }
+      if (line) lines.push(line);
+      line = word;
+    });
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  function drawRoundedRect(x, y, w, h, r) {
+    var radius = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.arcTo(x + w, y, x + w, y + h, radius);
+    ctx.arcTo(x + w, y + h, x, y + h, radius);
+    ctx.arcTo(x, y + h, x, y, radius);
+    ctx.arcTo(x, y, x + w, y, radius);
+    ctx.closePath();
+  }
+
+  function drawRainbowRule(width, height) {
+    var segment = width / rainbow.length;
+    rainbow.forEach(function (color, index) {
+      ctx.fillStyle = color;
+      ctx.fillRect(index * segment, 0, segment + 1, height);
+    });
+  }
+
+  function fitFont(text, family, weight, maxWidth, maxSize, minSize) {
+    var size = maxSize;
+    while (size > minSize) {
+      var lines = wrapLines(text, weight + ' ' + size + 'px ' + family, maxWidth);
+      if (lines.length <= 3) return { size: size, lines: lines };
+      size -= 4;
+    }
+    return { size: minSize, lines: wrapLines(text, weight + ' ' + minSize + 'px ' + family, maxWidth) };
+  }
+
+  function render() {
+    var format = formats[selected('format')] || formats.cover;
+    var theme = themes[selected('theme')] || themes.light;
+    var message = selected('message') || 'Release the Records';
+    var isCover = selected('format') === 'cover';
+    var isBadge = selected('format') === 'badge';
+
+    canvas.width = format.width;
+    canvas.height = format.height;
+    sizeLabel.textContent = format.label;
+
+    var w = canvas.width;
+    var h = canvas.height;
+    var pad = Math.round(Math.min(w, h) * (isCover ? 0.075 : 0.085));
+    var ruleH = Math.max(12, Math.round(h * 0.018));
+
+    ctx.fillStyle = theme.bg;
+    ctx.fillRect(0, 0, w, h);
+    drawRainbowRule(w, ruleH);
+
+    ctx.globalAlpha = 0.18;
+    ctx.fillStyle = theme.accent;
+    ctx.beginPath();
+    ctx.arc(w + pad * 0.15, pad * 1.15, isCover ? h * 0.43 : w * 0.36, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    if (isBadge) {
+      ctx.fillStyle = theme.panel;
+      ctx.beginPath();
+      ctx.arc(w / 2, h / 2, w * 0.42, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.lineWidth = Math.max(14, w * 0.018);
+      ctx.strokeStyle = theme.ring;
+      ctx.stroke();
+    } else {
+      ctx.fillStyle = theme.panel;
+      drawRoundedRect(pad, pad * 1.05, w - pad * 2, h - pad * 2.05, Math.round(pad * 0.28));
+      ctx.fill();
+    }
+
+    var textMax = isCover ? w - pad * 3.2 : w - pad * 2.4;
+    var fontFamily = 'Fraunces, Georgia, serif';
+    var fit = fitFont(message, fontFamily, '700', textMax, isCover ? 118 : 118, isCover ? 58 : 56);
+    var lineHeight = fit.size * 1.06;
+    var textHeight = fit.lines.length * lineHeight;
+    var centerY = isBadge ? h * 0.47 : h * 0.45;
+    var startY = centerY - textHeight / 2 + fit.size * 0.82;
+
+    ctx.fillStyle = theme.ink;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    ctx.font = '700 ' + fit.size + 'px ' + fontFamily;
+    fit.lines.forEach(function (line, index) {
+      ctx.fillText(line, w / 2, startY + index * lineHeight);
+    });
+
+    var sub = 'Members and beneficiaries, asking together.';
+    ctx.font = '700 ' + Math.round(isCover ? 32 : 30) + 'px Inter, Arial, sans-serif';
+    ctx.fillStyle = theme.sub;
+    ctx.fillText(sub, w / 2, startY + textHeight + (isCover ? 42 : 48));
+
+    var footerH = Math.round(h * (isCover ? 0.18 : 0.16));
+    ctx.fillStyle = theme.footerBg;
+    ctx.fillRect(0, h - footerH, w, footerH);
+    ctx.fillStyle = theme.footerInk;
+    ctx.font = '700 ' + Math.round(isCover ? 28 : 30) + 'px Inter, Arial, sans-serif';
+    ctx.fillText('RHT Circle - Sagamok Members Records Desk', w / 2, h - footerH * 0.58);
+    ctx.font = '600 ' + Math.round(isCover ? 20 : 22) + 'px Inter, Arial, sans-serif';
+    ctx.fillText('Member-led and unofficial', w / 2, h - footerH * 0.26);
+  }
+
+  root.addEventListener('change', render);
+  download.addEventListener('click', function () {
+    var format = formats[selected('format')] || formats.cover;
+    var link = document.createElement('a');
+    link.download = format.filename;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+
+  render();
+})();
+</script>
+{% endblock %}
