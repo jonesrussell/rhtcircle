@@ -19,6 +19,17 @@
      so it spans the full wide frame per the 2026-07-11 layout request. */
   .aor-prose { max-width: 780px; margin: 0 auto; }
 
+  /* Inline callout visuals interspersed in the statement (2026-07-11), to
+     break up the wall of text for members who find it harder to read
+     (learning differences, literacy, visual learners). A touch wider than
+     the 74ch prose measure so they read as their own callout rather than
+     squeezed prose, but still comfortably inside .aor-prose's 780px column.
+     Rounded corners + border match the site's existing figure treatment
+     (.rr-illus in the records-request page). Placeholder background shows
+     through with no broken-image look until the real files land. */
+  .aor-visual { margin: var(--gap-5) 0; text-align: center; }
+  .aor-visual img { display: block; width: 100%; max-width: 720px; min-height: 140px; height: auto; margin: 0 auto; padding: 10px; box-sizing: border-box; border-radius: var(--radius-lg); border: 1px solid var(--rule); background: var(--paper-2); color: var(--ink-3); font-family: var(--font-sans); font-size: 13px; }
+
   /* Full-width header banner (roughly 3:1), above the hero title. Natural
      width/height scaling (no forced aspect-ratio crop) so it stays correct
      for whatever the actual supplied image's dimensions are. A soft gradient
@@ -149,13 +160,25 @@
 
     <p>We asked for answers, and received none. On June 10, 2026, members submitted a <a href="/standard/records-request">formal records request</a> to Chief and Council, signed by more than one hundred members, asking for specific documents tied to specific decisions. We asked for a response within thirty days. That period closed on July 10 with no records, no accounting, and no substantive reply.</p>
 
+    <figure class="aor-visual">
+      <img src="/images/account-or-resign-v1-deadline.png?v=1" loading="lazy" alt="Thirty days. No answer. On June 10 more than one hundred members asked Chief and Council for records; the thirty-day period closed July 10 with no reply.">
+    </figure>
+
     <p>Our settlement is not accounted for to us. The Nation holds a settlement trust of roughly $219 million (BMO, December 2025). We want to be fair and clear about this: the most recent audit is clean, and our concern is transparency, not a verdict. But members still cannot see the basic answers. Where is the trust held, and who can authorize moving it? What return does it earn for the members? And by the Nation's own audited statements, about $97 million of our settlement was loaned to the Nation's own businesses, on terms that are not made public. We have asked these questions. We have not been answered.</p>
 
     <p>Decisions are made without us. Major commitments, including the long-term care Memorandum of Understanding and a series of enterprise and lending decisions, have been made in closed session and disclosed to members late or not at all, without consultation.</p>
 
     <p>Power and pay are concentrated in a few hands. By the Nation's own public record, <a href="/communities/sagamok/one-seat-one-salary">thirteen elected people hold more than fifty paid roles between them</a>. Councillors draw salaries as employees of the same administration they are elected to oversee, and the honourariums and committee appointments are not made public.</p>
 
+    <figure class="aor-visual">
+      <img src="/images/account-or-resign-v2-concentration.png?v=1" loading="lazy" alt="Thirteen elected people hold fifty-four paid roles between them.">
+    </figure>
+
     <p>And we cannot remove them. There is no recall, no-confidence, or removal provision available to members in our election law, and none in force under the federal Act either. Between now and the next election, members have been left with no formal accountability at all.</p>
+
+    <figure class="aor-visual">
+      <img src="/images/account-or-resign-v3-norecall.png?v=1" loading="lazy" alt="No way to remove them: the election law has no recall or removal provision.">
+    </figure>
 
     <p>For these reasons, we, the undersigned members of Sagamok Anishnawbek, declare that we have lost confidence in the current Chief and Council, and we call on them to choose one of two honourable paths:</p>
   </div>
