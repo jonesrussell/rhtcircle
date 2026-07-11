@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 {% set nav = 'communities' %}
 
-{% block title %}One Seat, or One Salary · Robinson Huron Treaty{% endblock %}
-{% block description %}A member-compiled record: seven of Sagamok Anishnawbek's twelve elected Councillors also hold a paid staff or executive position with the Nation or a company it owns. Every fact is sourced to Sagamok's own public website, with a simple ask.{% endblock %}
-{% block og_description %}Seven of Sagamok's twelve elected Councillors also hold a paid staff or executive position with the Nation or a company it owns. What the public record shows, and a simple ask.{% endblock %}
+{% block title %}Paid at every table · Robinson Huron Treaty{% endblock %}
+{% block description %}A member-compiled record: the thirteen people elected to Sagamok's Chief and Council hold at least fifty-five paid roles between them, in staff jobs, company boards, and committees. Every figure is sourced to Sagamok's own public record, with a simple ask.{% endblock %}
+{% block og_description %}Thirteen people elected to Sagamok's Chief and Council hold at least fifty-five paid roles between them. What the public record shows, and a simple ask.{% endblock %}
 {% block body_class %}route-sagamok-one-seat-one-salary{% endblock %}
 
 {% block head_styles %}
@@ -19,25 +19,54 @@
   .osos-table td.src { white-space: nowrap; }
   .osos-note { font-family: var(--font-sans); font-size: 12.5px; color: var(--ink-3); line-height: 1.5; margin: 0 0 var(--gap-5); max-width: 90ch; }
 
+  /* Roster tables (company boards, committees): cells hold long name lists,
+     not short dot-grid marks, so give them explicit proportioned columns
+     instead of leaving auto-layout to squeeze the widest column. */
+  .osos-table.is-roster { table-layout: fixed; min-width: 720px; }
+  .osos-table.is-roster td.nm { white-space: normal; }
+
   .osos-quote { font-family: var(--font-serif); font-size: 20px; line-height: 1.5; color: var(--ink); border-left: 3px solid var(--accent); padding: 4px 0 4px 20px; margin: var(--gap-4) 0; }
   .osos-quote cite { display: block; font-family: var(--font-sans); font-size: 13px; font-style: normal; color: var(--ink-3); margin-top: 8px; }
 
   .osos-ask { margin: var(--gap-5) 0; background: var(--accent-wash); border: 1px solid var(--accent-soft); border-left: 4px solid var(--accent); border-radius: var(--radius-md); padding: 18px 22px; }
   .osos-ask p { margin: 0; max-width: none; }
+
+  /* The count: a running tally, styled as a receipt-like strip rather than a
+     table (the point is the arithmetic, not a data grid). */
+  .osos-count { border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper-2); padding: 6px 22px; margin: var(--gap-4) 0 var(--gap-2); }
+  .osos-count-row { display: flex; align-items: baseline; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); font-family: var(--font-sans); }
+  .osos-count-row:last-of-type { border-bottom: none; }
+  .osos-count-row .op { font-family: var(--font-serif); font-size: 20px; color: var(--ink-3); width: 1.2em; flex: none; }
+  .osos-count-row .fig { font-family: var(--font-serif); font-size: 20px; font-weight: 600; color: var(--ink); width: 2.2em; flex: none; }
+  .osos-count-row .lab { color: var(--ink-2); line-height: 1.5; }
+  .osos-count-total { display: flex; align-items: baseline; gap: 12px; padding: 14px 0 16px; font-family: var(--font-sans); }
+  .osos-count-total .op { font-family: var(--font-serif); font-size: 20px; color: var(--accent-deep); width: 1.2em; flex: none; }
+  .osos-count-total .fig { font-family: var(--font-serif); font-size: 26px; font-weight: 700; color: var(--accent-deep); width: 2.2em; flex: none; }
+  .osos-count-total .lab { color: var(--ink); font-weight: 600; line-height: 1.4; }
 </style>
 {% endblock %}
 
 {% block content %}
-  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › One Seat, or One Salary</p>
+  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › Paid at every table</p>
 
   <p class="eyebrow">Sagamok Anishnawbek · A member's ask</p>
-  <h1>One Seat, or One Salary</h1>
-  <p class="lead">Seven of Sagamok's twelve elected Councillors also hold a paid staff or executive position with the Nation or a company it owns. Every fact on this page comes from Sagamok's own public website and public filings. It is presented so members can see it in one place, and it comes with a simple ask.</p>
+  <h1>Paid at every table</h1>
+  <p class="lead">The thirteen people elected to Sagamok's Chief and Council, the Chief and twelve Councillors, do not each hold one paid role. Between them, they hold at least fifty-five. Every figure below is from Sagamok's own public record.</p>
 
   {% set banner_body %}<strong>Member-compiled and unofficial.</strong> This is a member-compiled summary, not an official communication of Sagamok Anishnawbek. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.{% endset %}
   {% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'About this page' } only %}
 
-  {% include 'components/section_heading.html.twig' with { title: 'What the public record shows' } only %}
+  {% include 'components/section_heading.html.twig' with { title: 'The count' } only %}
+  <div class="osos-count">
+    <div class="osos-count-row"><span class="op">&nbsp;</span><span class="fig">13</span><span class="lab">elected seats: the Chief and twelve Councillors</span></div>
+    <div class="osos-count-row"><span class="op">+</span><span class="fig">7</span><span class="lab">paid staff jobs: seven of the twelve Councillors are also on the Nation's payroll</span></div>
+    <div class="osos-count-row"><span class="op">+</span><span class="fig">28</span><span class="lab">seats on the boards of the Nation's companies, per the corporate registry</span></div>
+    <div class="osos-count-row"><span class="op">+</span><span class="fig">7</span><span class="lab">committee seats that Councillors list on their own biography pages</span></div>
+    <div class="osos-count-total"><span class="op">=</span><span class="fig">55</span><span class="lab">at least fifty-five paid roles, held by 13 people</span></div>
+  </div>
+  <p class="osos-note">This counts only the committees Councillors chose to list on their own biography pages. The full committee roster is not published, so the real number is higher. Members have asked Council to release it.</p>
+
+  {% include 'components/section_heading.html.twig' with { title: 'The staff jobs' } only %}
   <p>According to Sagamok's own public staff directory, the Chief and Council page, and the Z'gamok Enterprises website, these Council members also hold a paid role:</p>
 
   <div class="osos-table-wrap">
@@ -93,16 +122,100 @@
   </div>
   <p class="osos-note">Sagamok's own <a href="https://www.sagamokanishnawbek.com/chief-council" target="_blank" rel="noopener">Chief and Council page</a> lists twelve Councillors alongside the Chief. The staff directory spells one name "Micheal Abitong" where the Chief and Council page spells it "Michael Abitong"; both entries describe the same Land-Based Resource Instructor role at Saswin. <a href="/about#corrections">Tell us if we have this wrong</a> and we will correct it.</p>
 
+  {% include 'components/section_heading.html.twig' with { title: 'The company board seats' } only %}
+  <p>The Nation and Z'gamok Enterprises own or control several companies. Council members and the Chief hold twenty-eight seats on their boards:</p>
+
+  <div class="osos-table-wrap">
+    <table class="osos-table is-roster">
+      <colgroup><col style="width:30%"><col style="width:58%"><col style="width:12%"></colgroup>
+      <thead>
+        <tr><th>Company</th><th>Board members</th><th>Seats</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="nm">Z'gamok Enterprises Inc. (ZEI)</td>
+          <td>Paul Eshkakogan (President), Nelson Toulouse, Norma Petahtegoose, Lawrence Solomon, Leroy Bennett, Arnelda Bennett</td>
+          <td>6</td>
+        </tr>
+        <tr>
+          <td class="nm">11017624 Canada Corp. <span style="color:var(--ink-3); font-weight:400;">(general partner, Z'gamok Construction Limited Partnership)</span></td>
+          <td>Norma Petahtegoose, Arnelda Bennett, Paul Eshkakogan, Nelson Toulouse, Leroy Bennett, Lawrence Solomon</td>
+          <td>6</td>
+        </tr>
+        <tr>
+          <td class="nm">OCL Custom Crushing and Quarrying Ltd.</td>
+          <td>Angus Toulouse (President), Arnelda Bennett (Secretary), Lawrence Solomon (Treasurer), Nelson Toulouse</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td class="nm">GR Truss (2262012 Ontario Ltd.)</td>
+          <td>Angus Toulouse (Chief), Michael Abitong, Norma Petahtegoose</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td class="nm">ZEI-Stuart Olson Inc. <span style="color:var(--ink-3); font-weight:400;">(joint-venture general partner)</span></td>
+          <td>Arnelda Bennett, Nelson Toulouse, Paul Eshkakogan (Vice President)</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td class="nm">Sagamok Real Estate Co.</td>
+          <td>Arnelda Bennett, Norma Petahtegoose, Dan Owl</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td class="nm">Legend Mining Inc.</td>
+          <td>Paul Eshkakogan, Arnelda Bennett</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td class="nm">Robinson Huron Forestry Company Inc. <span style="color:var(--ink-3); font-weight:400;">(regional, multi-nation)</span></td>
+          <td>Paul Eshkakogan (President)</td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="osos-note">Sources: the Z'gamok Enterprises board, <a href="https://zgamok.ca/our-team" target="_blank" rel="noopener">zgamok.ca</a>. The Z'gamok Construction Limited Partnership general partner, Corporations Canada's free federal corporate registry (<a href="https://ised-isde.canada.ca/cc/lgcy/fdrlCrpDtls.html?corpId=11017624" target="_blank" rel="noopener">corporation number 1101762-4</a>). GR Truss, OCL Custom Crushing and Quarrying, ZEI-Stuart Olson, Legend Mining, Robinson Huron Forestry Company, and Sagamok Real Estate Co., the <a href="https://www.ontario.ca/page/ontario-business-registry" target="_blank" rel="noopener">Ontario Business Registry</a>. Several of these seats are also self-disclosed on councillors' own <a href="https://www.sagamokanishnawbek.com/sagamok-team-members/arnelda-bennett" target="_blank" rel="noopener">biography pages</a>. <a href="/about#corrections">Tell us if we have this wrong</a> and we will correct it.</p>
+
+  {% include 'components/section_heading.html.twig' with { title: 'The committee seats' } only %}
+  <p>Councillors' own biography pages list these additional committee and working-group seats:</p>
+
+  <div class="osos-table-wrap">
+    <table class="osos-table is-roster">
+      <colgroup><col style="width:26%"><col style="width:74%"></colgroup>
+      <thead>
+        <tr><th>Name</th><th>Committee or working group</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="nm" rowspan="5">Arnelda Bennett</td>
+          <td>Housing Working Group (Chair)</td>
+        </tr>
+        <tr><td>Case Management Working Group</td></tr>
+        <tr><td>Capital Projects Oversight Sub-Committee</td></tr>
+        <tr><td>Integrated Primary Health Committee</td></tr>
+        <tr><td>Language Committee</td></tr>
+        <tr>
+          <td class="nm" rowspan="2">Sadie Southwind</td>
+          <td>Healing Lodge Working Group</td>
+        </tr>
+        <tr><td>Education Committee</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="osos-note">Source: councillors' own biography pages (<a href="https://www.sagamokanishnawbek.com/sagamok-team-members/arnelda-bennett" target="_blank" rel="noopener">Arnelda Bennett</a>, <a href="https://www.sagamokanishnawbek.com/sagamok-team-members/sadie-southwind" target="_blank" rel="noopener">Sadie Southwind</a>). This counts only what these two Councillors chose to list; the full committee roster is not published, so the real number of committee seats held across Council is higher.</p>
+
   {% include 'components/section_heading.html.twig' with { title: 'The principle' } only %}
   <blockquote class="osos-quote">
     "Chief and Council&hellip; oversee the work of the organization."
     <cite>Sagamok Anishnawbek, <a href="https://www.sagamokanishnawbek.com/chief-council" target="_blank" rel="noopener">Chief and Council page</a></cite>
   </blockquote>
   <p>A councillor helps set the budgets, approves the spending, and oversees the managers of the administration. When that same councillor is also an employee of the administration, they are on both sides of the table: overseeing the very body that employs and pays them. This is not a question about any one person's work. It is a question about the structure.</p>
+  <p>The more tables a person sits at, the bigger the cheque. The Councillor who holds only her seat was paid $22,850 in the year ending March 2025; the one who is also a company president was paid $200,365, more than the Chief. Pay figures come from the FNFTA Schedule of Remuneration and Expenses, which folds all pay from the Nation and its companies into one number per Councillor.</p>
 
   {% include 'components/section_heading.html.twig' with { title: 'The ask' } only %}
   <div class="osos-ask">
-    <p><strong>Choose one.</strong> A member of Chief and Council should hold one paid public role: keep the elected seat, or keep the staff job. One public role each. This changes nothing about a person's standing in the community. It simply separates the people who oversee the Nation's money from the people the Nation pays.</p>
+    <p><strong>Choose a role.</strong> A member gets none of these; thirteen leaders hold fifty-five. How many is one person allowed to hold? One paid public role each: keep the seat, or keep the job, not a fistful of both. No elected leader also drawing a staff salary, and the paid board and committee seats shared across the community, not stacked on the same few people.</p>
   </div>
 
   {% include 'components/section_heading.html.twig' with { title: 'Right of reply' } only %}
@@ -110,12 +223,13 @@
 
   {% include 'components/section_heading.html.twig' with { title: 'Sources' } only %}
   <ul class="src-links">
+    <li><a href="https://www.sagamokanishnawbek.com/chief-council" target="_blank" rel="noopener">Sagamok Chief and Council page</a> (the elected roster and the "oversee the work of the organization" statement)</li>
     <li><a href="https://www.sagamokanishnawbek.com/directory" target="_blank" rel="noopener">Sagamok staff directory</a></li>
-    <li><a href="https://www.sagamokanishnawbek.com/chief-council" target="_blank" rel="noopener">Sagamok Chief and Council page</a></li>
-    <li><a href="https://www.sagamokanishnawbek.com/sagamok-team-members/dan-owl" target="_blank" rel="noopener">Dan Owl, councillor bio</a></li>
+    <li>Councillors' own biography pages (staff jobs, self-disclosed board seats, and committees): <a href="https://www.sagamokanishnawbek.com/sagamok-team-members/arnelda-bennett" target="_blank" rel="noopener">Arnelda Bennett</a>, <a href="https://www.sagamokanishnawbek.com/sagamok-team-members/sadie-southwind" target="_blank" rel="noopener">Sadie Southwind</a>, <a href="https://www.sagamokanishnawbek.com/sagamok-team-members/dan-owl" target="_blank" rel="noopener">Dan Owl</a></li>
     <li><a href="https://zgamok.ca/our-team" target="_blank" rel="noopener">Z'gamok Enterprises, our team</a></li>
     <li><a href="https://www.sagamokanishnawbek.com/mental-health-and-addiction" target="_blank" rel="noopener">Mental Health and Addictions, meet the team</a></li>
-    <li>Pay figures, where referenced, come from the FNFTA <a href="https://www.sagamokanishnawbek.com/annual-report-financial-statements/2025-annual-report" target="_blank" rel="noopener">Schedule of Remuneration and Expenses</a> (Sagamok's audited annual remuneration filing).</li>
+    <li>Company board directorships: Corporations Canada's <a href="https://ised-isde.canada.ca/cc/lgcy/fdrlCrpDtls.html?corpId=11017624" target="_blank" rel="noopener">federal corporate registry</a> and the <a href="https://www.ontario.ca/page/ontario-business-registry" target="_blank" rel="noopener">Ontario Business Registry</a></li>
+    <li>Pay figures come from the FNFTA <a href="https://www.sagamokanishnawbek.com/annual-report-financial-statements/2025-annual-report" target="_blank" rel="noopener">Schedule of Remuneration and Expenses</a>, year ending March 2025 (Sagamok's audited annual remuneration filing)</li>
   </ul>
 
   <p class="cover__byline">A community resource from the Robinson Huron Treaty hub, member-led and independent. Facts are from public sources; the questions are for our leadership. Corrections welcome.</p>

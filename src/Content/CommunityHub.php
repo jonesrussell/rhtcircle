@@ -162,8 +162,8 @@ final class CommunityHub
             [
                 'feature' => true,
                 'tag' => "A member's ask",
-                'title' => 'One Seat, or One Salary',
-                'desc' => 'Seven of Sagamok\'s twelve elected Councillors also hold a paid staff or executive position with the Nation or a company it owns. What the public record shows, and a simple ask.',
+                'title' => 'Paid at every table',
+                'desc' => 'The thirteen people elected to Sagamok\'s Chief and Council hold at least fifty-five paid roles between them, in staff jobs, company boards, and committees. What the public record shows, and a simple ask.',
                 'go' => 'Read the record',
                 'href' => '/communities/sagamok/one-seat-one-salary',
             ],
