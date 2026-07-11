@@ -19,6 +19,14 @@
      so it spans the full wide frame per the 2026-07-11 layout request. */
   .aor-prose { max-width: 780px; margin: 0 auto; }
 
+  /* Full-width header banner (roughly 3:1), above the hero title. Natural
+     width/height scaling (no forced aspect-ratio crop) so it stays correct
+     for whatever the actual supplied image's dimensions are. A soft gradient
+     behind the <img> shows through as a graceful placeholder until the real
+     file is in place, and briefly if the image ever fails to load. */
+  .aor-banner { margin: 0; background: linear-gradient(120deg, var(--indigo-deep), var(--indigo)); }
+  .aor-banner img { display: block; width: 100%; height: auto; }
+
   /* Statement body + reused sign-card (.aor-stmt is page-local prose framing;
      .rr-* is the shared petition sign-card, same tokens/markup as the
      records-request page, just a different campaign slug in the script). */
@@ -111,28 +119,41 @@
 </style>
 {% endblock %}
 
+{% block hero %}
+<figure class="aor-banner">
+  {# Placeholder path: Russell, drop the banner file in at
+     public/images/account-or-resign-banner.jpg (roughly 3:1, a generated
+     North Shore landscape) and it will appear here automatically, no
+     template change needed. #}
+  <img src="/images/account-or-resign-banner.jpg?v=1" alt="A North Shore landscape banner for the Sagamok Anishnawbek member statement, Account, or Resign." loading="eager">
+</figure>
+<section class="hero">
+  <div class="wrap wrap--wide">
+    <p class="eyebrow">Sagamok Anishnawbek · A statement from the members</p>
+    <h1>Account, or Resign</h1>
+  </div>
+</section>
+{% endblock %}
+
 {% block content %}
 <div class="aor-prose">
   <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › Account, or Resign</p>
 
-  <p class="eyebrow">Sagamok Anishnawbek · A statement from the members</p>
-  <h1>Account, or Resign</h1>
-
-  {% set banner_body %}<strong>A member-authored statement, hosted and carried by the Circle.</strong> This is not the Circle's own characterization of any person; it is a statement members chose to write and sign, reproduced here as written. <a href="/about#corrections">Tell us what we got wrong</a> and we will correct it.{% endset %}
+  {% set banner_body %}<strong>A member-authored statement, hosted and carried by the Circle.</strong> This is not the Circle's own characterization of any person; it is a statement members chose to write and sign, reproduced here as written. Everything here is drawn from the public record. If you can <a href="/about#corrections">show us an inaccuracy</a>, we will correct it.{% endset %}
   {% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'About this statement' } only %}
 
   <div class="aor-stmt">
-    <p>We are members of Sagamok Anishnawbek. We are writing together because we have lost confidence in our Chief and Council, and because we have no other way to say so that carries any weight. Our election law provides members no means to remove leadership between elections. That silence in the law is exactly why this statement is necessary.</p>
+    <p>We are members of <a href="/communities/sagamok">Sagamok Anishnawbek</a>. We are writing together because we have lost confidence in our Chief and Council, and because we have no other way to say so that carries any weight. Our election law provides members no means to remove leadership between elections. That silence in the law is exactly why this statement is necessary.</p>
 
     <p>We do not make this statement lightly. We come to it with different feelings. Some of us are angry. Some are disappointed. Some are worried. Some are confused. Some are simply tired of asking and getting no answer. What unites us is not a mood, it is the record. Here is what that record shows.</p>
 
-    <p>We asked for answers, and received none. On June 10, 2026, members submitted a formal records request to Chief and Council, signed by more than one hundred members, asking for specific documents tied to specific decisions. We asked for a response within thirty days. That period closed on July 10 with no records, no accounting, and no substantive reply.</p>
+    <p>We asked for answers, and received none. On June 10, 2026, members submitted a <a href="/standard/records-request">formal records request</a> to Chief and Council, signed by more than one hundred members, asking for specific documents tied to specific decisions. We asked for a response within thirty days. That period closed on July 10 with no records, no accounting, and no substantive reply.</p>
 
     <p>Our settlement is not accounted for to us. The Nation holds a settlement trust of roughly $219 million (BMO, December 2025). We want to be fair and clear about this: the most recent audit is clean, and our concern is transparency, not a verdict. But members still cannot see the basic answers. Where is the trust held, and who can authorize moving it? What return does it earn for the members? And by the Nation's own audited statements, about $97 million of our settlement was loaned to the Nation's own businesses, on terms that are not made public. We have asked these questions. We have not been answered.</p>
 
     <p>Decisions are made without us. Major commitments, including the long-term care Memorandum of Understanding and a series of enterprise and lending decisions, have been made in closed session and disclosed to members late or not at all, without consultation.</p>
 
-    <p>Power and pay are concentrated in a few hands. By the Nation's own public record, thirteen elected people hold more than fifty paid roles between them. Councillors draw salaries as employees of the same administration they are elected to oversee, and the honourariums and committee appointments are not made public.</p>
+    <p>Power and pay are concentrated in a few hands. By the Nation's own public record, <a href="/communities/sagamok/one-seat-one-salary">thirteen elected people hold more than fifty paid roles between them</a>. Councillors draw salaries as employees of the same administration they are elected to oversee, and the honourariums and committee appointments are not made public.</p>
 
     <p>And we cannot remove them. There is no recall, no-confidence, or removal provision available to members in our election law, and none in force under the federal Act either. Between now and the next election, members have been left with no formal accountability at all.</p>
 
@@ -170,12 +191,12 @@
       <li class="aor-timeline__item">
         <span class="aor-timeline__date">2023 to 2024</span>
         <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>The settlement, and the trust.</strong> The Robinson Huron Treaty annuities settlement was received, and roughly $219 million was placed in a trust. Members began asking where it is held, what it earns, and who can move it.</div>
+        <div class="aor-timeline__event"><strong>The settlement, and the trust.</strong> The Robinson Huron Treaty annuities settlement was received, and about $185 million was placed in a trust (the minutes recorded "$185 million plus interest to be invested"). By December 2025 it had grown to roughly $219 million (BMO). Members began asking where it is held, what it earns, and who can move it.</div>
       </li>
       <li class="aor-timeline__item">
         <span class="aor-timeline__date">June 10, 2026</span>
         <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>Members file a formal records request.</strong> More than one hundred members signed a records request to Chief and Council, tied to specific documents and decisions, asking for a response within thirty days.</div>
+        <div class="aor-timeline__event"><strong>Members file a formal records request.</strong> More than one hundred members signed <a href="/standard/records-request">a records request</a> to Chief and Council, tied to specific documents and decisions, asking for a response within thirty days.</div>
       </li>
       <li class="aor-timeline__item">
         <span class="aor-timeline__date">June 26, 2026</span>
@@ -188,6 +209,11 @@
         <div class="aor-timeline__event"><strong>Partial responses.</strong> The Nation replied that the documents would be "posted shortly," and later "when it becomes available," without providing them and without a date.</div>
       </li>
       <li class="aor-timeline__item">
+        <span class="aor-timeline__date">July 3, 2026</span>
+        <span class="aor-timeline__marker"></span>
+        <div class="aor-timeline__event"><strong>A member-privacy exposure comes to light.</strong> The <a href="/communities/sagamok/members-website-issue">members-only portal</a>, which holds confidential documents and member information, was found to be reachable through public search engines and captured by the Internet Archive. Members raised this with Chief and Council and asked what was exposed, who the Nation's privacy officer is, and what the breach response would be.</div>
+      </li>
+      <li class="aor-timeline__item">
         <span class="aor-timeline__date">July 10, 2026</span>
         <span class="aor-timeline__marker"></span>
         <div class="aor-timeline__event"><strong>The deadline passes, and a document appears under pressure.</strong> The thirty-day records-request period closed with no records, no accounting, and no substantive reply. On the same day, the signed MOU and two related minutes were finally posted, documents that were available all along.</div>
@@ -195,7 +221,7 @@
       <li class="aor-timeline__item">
         <span class="aor-timeline__date">July 2026</span>
         <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>Members put the record in front of the community.</strong> Members published, from the Nation's own public record, that thirteen elected people hold more than fifty paid roles between them. Members sent Chief and Council a verification request, and members issued this statement: account, or resign.</div>
+        <div class="aor-timeline__event"><strong>Members put the record in front of the community.</strong> Members published, from the Nation's own public record, that <a href="/communities/sagamok/one-seat-one-salary">thirteen elected people hold more than fifty paid roles between them</a>. Members sent Chief and Council a verification request, and members issued this statement: account, or resign.</div>
       </li>
     </ol>
   </section>
