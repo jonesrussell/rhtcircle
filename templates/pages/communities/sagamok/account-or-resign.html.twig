@@ -5,9 +5,20 @@
 {% block description %}A member-authored statement of no confidence in Sagamok's current Chief and Council, calling on them to account fully to the members within thirty days, or resign. Members can add their name, publicly or to be counted only.{% endblock %}
 {% block og_description %}Members of Sagamok Anishnawbek state that they have lost confidence in the current Chief and Council, and call on them to account fully, or resign.{% endblock %}
 {% block body_class %}route-sagamok-account-or-resign{% endblock %}
+{# Wide outer frame (site's shared --max-wide token, same as what-matters/poll)
+   so the timeline section below has real room. Statement/ask/sign-form stay
+   in their own narrower .aor-prose column inside it; only the timeline
+   section breaks out to the full wide frame. #}
+{% block main_class %}wrap wrap--wide{% endblock %}
 
 {% block head_styles %}
 <style>
+  /* Page structure: .aor-prose is the narrow reading column (centered inside
+     the wide .wrap--wide frame set by main_class above); the timeline section
+     sits between two .aor-prose blocks and deliberately has no such wrapper,
+     so it spans the full wide frame per the 2026-07-11 layout request. */
+  .aor-prose { max-width: 780px; margin: 0 auto; }
+
   /* Statement body + reused sign-card (.aor-stmt is page-local prose framing;
      .rr-* is the shared petition sign-card, same tokens/markup as the
      records-request page, just a different campaign slug in the script). */
@@ -63,10 +74,45 @@
   .rr-supporters h3 { font-family: var(--font-sans); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 10px; border: none; padding: 0; }
   .rr-supporters ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
   .rr-supporters li { font-size: 13px; color: var(--ink-2); background: var(--paper-2); border: 1px solid var(--rule); border-radius: 999px; padding: 4px 12px; }
+
+  /* "How we got here." timeline: full wide frame (no .aor-prose wrapper
+     around this section, unlike the statement/ask/sign-form above and below
+     it), a genuine two-column "date on one side, event on the other" layout
+     on desktop, using the room the wide frame provides. Event text itself
+     still has its own readable measure (68ch) even at full width; only the
+     spine/date gutter use the extra space. Collapses to a single stacked
+     column (date above event) on mobile. */
+  .aor-timeline-section { margin: var(--gap-7) 0; }
+  .aor-timeline { list-style: none; margin: 0; padding: 0; }
+  .aor-timeline__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 190px 28px 1fr;
+    column-gap: 4px;
+    padding: 0 0 var(--gap-6);
+    border-bottom: 1px solid var(--rule);
+    margin: 0 0 var(--gap-6);
+  }
+  .aor-timeline__item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .aor-timeline__date { font-family: var(--font-sans); font-size: 13px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--accent-deep); padding-top: 3px; }
+  .aor-timeline__marker { position: relative; display: flex; justify-content: center; }
+  .aor-timeline__marker::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid var(--paper); box-shadow: 0 0 0 2px var(--rule); margin-top: 3px; }
+  .aor-timeline__marker::after { content: ''; position: absolute; top: 22px; bottom: calc(-1 * var(--gap-6) - 1px); left: 50%; width: 2px; background: var(--rule); transform: translateX(-50%); }
+  .aor-timeline__item:last-child .aor-timeline__marker::after { display: none; }
+  .aor-timeline__event { font-size: 15px; line-height: 1.65; color: var(--ink-2); max-width: 68ch; }
+  .aor-timeline__event strong { display: block; color: var(--ink); font-family: var(--font-serif); font-size: 17.5px; font-weight: 600; margin: 0 0 4px; }
+
+  @media (max-width: 700px) {
+    .aor-timeline__item { grid-template-columns: 20px 1fr; column-gap: 14px; }
+    .aor-timeline__date { grid-column: 2; grid-row: 1; padding-top: 0; margin-bottom: 4px; }
+    .aor-timeline__marker { grid-column: 1; grid-row: 1 / 3; }
+    .aor-timeline__event { grid-column: 2; grid-row: 2; }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
+<div class="aor-prose">
   <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › Account, or Resign</p>
 
   <p class="eyebrow">Sagamok Anishnawbek · A statement from the members</p>
@@ -106,7 +152,55 @@
 
     <p>This is a call for accountability, not an accusation against any person. We seek the truth and the records, and we seek a leadership that answers to its members.</p>
   </div>
+</div>
 
+  <section class="aor-timeline-section" aria-labelledby="aor-timeline-h">
+    {% include 'components/section_heading.html.twig' with { title: 'How we got here.', id: 'aor-timeline-h' } only %}
+    <ol class="aor-timeline">
+      <li class="aor-timeline__item">
+        <span class="aor-timeline__date">2023</span>
+        <span class="aor-timeline__marker"></span>
+        <div class="aor-timeline__event"><strong>A data-sovereignty concern in the Child and Family Advocacy Unit.</strong> Members raised concern that the Nation placed sensitive family case records with a United States cloud provider rather than a Canadian option, raising questions about data sovereignty and OCAP, the community's ownership and control of its own information.</div>
+      </li>
+      <li class="aor-timeline__item">
+        <span class="aor-timeline__date">February 2024</span>
+        <span class="aor-timeline__marker"></span>
+        <div class="aor-timeline__event"><strong>A member petition for an audit.</strong> A petition signed by 276 members called for a financial audit of the Nation.</div>
+      </li>
+      <li class="aor-timeline__item">
+        <span class="aor-timeline__date">2023 to 2024</span>
+        <span class="aor-timeline__marker"></span>
+        <div class="aor-timeline__event"><strong>The settlement, and the trust.</strong> The Robinson Huron Treaty annuities settlement was received, and roughly $219 million was placed in a trust. Members began asking where it is held, what it earns, and who can move it.</div>
+      </li>
+      <li class="aor-timeline__item">
+        <span class="aor-timeline__date">June 10, 2026</span>
+        <span class="aor-timeline__marker"></span>
+        <div class="aor-timeline__event"><strong>Members file a formal records request.</strong> More than one hundred members signed a records request to Chief and Council, tied to specific documents and decisions, asking for a response within thirty days.</div>
+      </li>
+      <li class="aor-timeline__item">
+        <span class="aor-timeline__date">June 26, 2026</span>
+        <span class="aor-timeline__marker"></span>
+        <div class="aor-timeline__event"><strong>A major decision, and a request to see it.</strong> Sagamok signed a long-term care Memorandum of Understanding. The next day a member asked for the signed MOU and Council's authorization for it.</div>
+      </li>
+      <li class="aor-timeline__item">
+        <span class="aor-timeline__date">June 29 to July 7, 2026</span>
+        <span class="aor-timeline__marker"></span>
+        <div class="aor-timeline__event"><strong>Partial responses.</strong> The Nation replied that the documents would be "posted shortly," and later "when it becomes available," without providing them and without a date.</div>
+      </li>
+      <li class="aor-timeline__item">
+        <span class="aor-timeline__date">July 10, 2026</span>
+        <span class="aor-timeline__marker"></span>
+        <div class="aor-timeline__event"><strong>The deadline passes, and a document appears under pressure.</strong> The thirty-day records-request period closed with no records, no accounting, and no substantive reply. On the same day, the signed MOU and two related minutes were finally posted, documents that were available all along.</div>
+      </li>
+      <li class="aor-timeline__item">
+        <span class="aor-timeline__date">July 2026</span>
+        <span class="aor-timeline__marker"></span>
+        <div class="aor-timeline__event"><strong>Members put the record in front of the community.</strong> Members published, from the Nation's own public record, that thirteen elected people hold more than fifty paid roles between them. Members sent Chief and Council a verification request, and members issued this statement: account, or resign.</div>
+      </li>
+    </ol>
+  </section>
+
+<div class="aor-prose">
   <section class="rr-card" data-rr aria-labelledby="rr-h">
     <h2 id="rr-h">Add your name</h2>
     <p class="rr-count" data-rr-countbox hidden>Joined by <b data-rr-count>0</b> members and supporters so far</p>
@@ -171,6 +265,7 @@
   </div>
 
   <p class="rr-fine">Published July 11, 2026. See also: <a href="/standard/records-request">the member records request</a> this statement follows up on, and <a href="/communities/sagamok/one-seat-one-salary">Paid at every table</a>, the sourced record of roles and pay behind this statement.</p>
+</div>
 {% endblock %}
 
 {% block scripts %}
