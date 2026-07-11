@@ -29,6 +29,17 @@ member-led effort. Apply them to every page and every edit:
 4. **No em dashes (U+2014) anywhere in copy.** Use commas, colons, or new sentences. Enforced by
    `php bin/lint-copy.php` (run before every commit/deploy).
 
+**Exception (2026-07-11): the Sagamok "Account, or Resign" member statement.** Rules 1 and 2 are
+the default for every page the Circle writes in its own voice. `/communities/sagamok/account-or-resign`
+is different in kind, the same way the records-request letter is: it is a verbatim member-authored
+statement the Circle hosts and carries, not the Circle's own characterization of any person. After the
+June 10, 2026 member records request went unanswered past its 30-day window (closed July 10, 2026),
+the signing members chose to state a loss of confidence and ask Chief and Council to account fully or
+resign, rather than confine themselves to questions. This is a deliberate, considered escalation by
+those members, not a change to how the Circle writes its own pages. Keep applying rules 1 to 4 to
+every other page; this one page is the named exception, and it still follows rule 3 (no private
+individuals) and rule 4 (no em dashes).
+
 ## Brand
 
 Vibrant, member-led, treaty-wide. Derived from the June 2026 one-pager invitation. Distinct from

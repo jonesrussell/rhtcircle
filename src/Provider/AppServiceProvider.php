@@ -129,6 +129,17 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 39,
                 'Paper signatures handed to the Sagamok band office: 16 on June 15, 2026, 10 on June 22, 2026, and 3 on June 25, 2026. Plus 10 members who signed on paper and asked to be counted only, not named, accounted on June 25, 2026.',
             );
+
+            // "Account, or Resign": a separate campaign/slug from records-request-support,
+            // sharing the same petition infrastructure (see CLAUDE.md's 2026-07-11
+            // exception for this one page). New campaign, no carried-over paper/online
+            // base; it starts at zero and counts online sign-ons from here.
+            $repo->ensureCampaign(
+                'account-or-resign',
+                'Account, or Resign: a member statement of no confidence',
+                'We, the undersigned members of Sagamok Anishnawbek, declare that we have lost confidence in the current Chief and Council, and we call on them to account fully to the members within thirty days, or resign.',
+                'Sagamok Chief and Council',
+            );
         } catch (\Throwable) {
             // Additive feature; never let it break page rendering.
         }
@@ -310,6 +321,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'sagamok-play-limited-partnership' => ['/communities/sagamok/play-limited-partnership', 'pages/communities/sagamok/play-limited-partnership.html.twig'],
             'sagamok-espanola-mill-bmi' => ['/communities/sagamok/espanola-mill-bmi', 'pages/communities/sagamok/espanola-mill-bmi.html.twig'],
             'sagamok-one-seat-one-salary' => ['/communities/sagamok/one-seat-one-salary', 'pages/communities/sagamok/one-seat-one-salary.html.twig'],
+            'sagamok-account-or-resign' => ['/communities/sagamok/account-or-resign', 'pages/communities/sagamok/account-or-resign.html.twig'],
             // A member's record (Russell Jones): the members-only portal
             // exposure, its capture in the public Internet Archive, and what
             // is being asked of Council. Companion to members-website-issue.

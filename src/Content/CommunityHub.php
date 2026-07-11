@@ -167,6 +167,14 @@ final class CommunityHub
                 'go' => 'Read the record',
                 'href' => '/communities/sagamok/one-seat-one-salary',
             ],
+            [
+                'feature' => true,
+                'tag' => 'A statement from the members',
+                'title' => 'Account, or Resign',
+                'desc' => 'After the records request went unanswered past its 30-day window, members wrote a statement of no confidence in Chief and Council, calling on them to account fully or resign. Add your name.',
+                'go' => 'Read the statement',
+                'href' => '/communities/sagamok/account-or-resign',
+            ],
         ];
     }
 
