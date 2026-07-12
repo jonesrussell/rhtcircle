@@ -51,6 +51,7 @@
   .cr-card__why { font-family: var(--font-sans); font-size: 14px; line-height: 1.55; color: var(--ink-2); margin: 0 0 8px; }
   .cr-card__why strong { color: var(--ink); }
   .cr-card__dirlabel { font-family: var(--font-sans); font-size: 14px; margin: 0 0 6px; }
+  .cr-td-none { font-family: var(--font-sans); font-size: 13px; font-style: italic; color: var(--ink-3); }
   .cr-card__dirlabel strong { color: var(--ink); }
   .cr-chips { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 8px; }
   .cr-chip { display: inline-block; background: #fff; border: 1px solid var(--rule-strong); color: var(--ink-2); border-radius: 999px; padding: 2px 10px; font-family: var(--font-sans); font-size: 12px; font-weight: 600; white-space: nowrap; }
@@ -73,7 +74,7 @@
 
   <p class="eyebrow">Sagamok Anishnawbek · A member's accountability tool</p>
   <h1>The Conflict Register</h1>
-  <p class="lead">Councillors sit on the boards of the Nation's companies. Pick a councillor to see the decisions where Council handled money or business for a company they help run, and whether they stepped out of the vote.</p>
+  <p class="lead">Councillors sit on the boards of the Nation's companies. Pick a councillor to see the decisions where Council approved money or business for a company they help run, and whether they stepped out of the vote.</p>
 
   <div class="cr-stats" data-cr-stats></div>
 
@@ -103,7 +104,7 @@
   <div class="cr-cards" data-cr-cards></div>
 
   <div class="cr-disclaimer">
-    <strong>How to read this.</strong> Every figure is from the Nation's own Council minutes and the corporate registry. "No recusal recorded" means the minutes do not show a councillor stepping out over a board seat, a question for Council, not a finding of wrongdoing. The minutes do record six abstentions across both terms, and nearly all are a councillor stepping out over her own <em>employment</em> (for example "as Economic Development Manager"), not over a company she directs. In-camera and prior-term rows (before the August 2024 election) are marked; board membership may have differed on earlier dates.
+    <strong>How to read this.</strong> Every figure is from the Nation's own Council minutes and the corporate registry, and dollar amounts are what the motion <em>approved or authorized</em>, not proof the money was paid out. "No recusal is recorded" means the minutes do not show a councillor stepping out over a board seat, a question for Council, not a finding of wrongdoing. The minutes do record six abstentions across both terms, and nearly all are a councillor stepping out over her own <em>employment</em> (for example "as Economic Development Manager"), not over a company she directs. In-camera and prior-term rows (before the August 2024 election) are marked, and a councillor is only shown as a director on dates their board seat was actually held.
   </div>
 
   {% include 'components/section_heading.html.twig' with { title: 'Right of reply' } only %}
@@ -117,7 +118,7 @@
     <li>Financial Administration Law, sections 21 and 22 (conflict declaration and recusal) and section 11 (Finance and Audit Committee independence)</li>
   </ul>
 
-  <p class="cover__byline">A community resource from the Robinson Huron Treaty hub, member-led and independent. Facts are from public sources; the questions are for our leadership. Corrections welcome.</p>
+  <p class="cover__byline">A community resource from the Robinson Huron Treaty hub, member-led and independent. Facts are from cited records; the questions are for our leadership. Corrections welcome.</p>
 {% endblock %}
 
 {% block scripts %}
@@ -781,7 +782,12 @@
   "Conrad Toulouse",
   "Sadie Southwind",
   "Veronica Nashkawa"
-]
+],
+  "effective": {
+    "GR Truss": "2025-04-01",
+    "Sagamok Real Estate": "2025-05-27",
+    "15558409": "2023-11-27"
+  }
 };
 
     var boards = DATA.boards;
@@ -795,12 +801,20 @@
       var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML;
     }
 
-    function dget(entity) {
+    function boardEff(k) {
+      return (DATA.effective && DATA.effective[k]) ? DATA.effective[k] : '0000-00-00';
+    }
+
+    // date, when given, excludes a board whose seat was not yet appointed
+    // on that decision's date (e.g. Sagamok Real Estate's board was not
+    // appointed until 2025-05-27; a 2024 decision naming that company
+    // shows no directors for it, since none held the seat yet).
+    function dget(entity, date) {
       var out = {};
       (entity || '').split('/').forEach(function (part) {
         var p = part.trim();
         Object.keys(boards).forEach(function (k) {
-          if (p === k || p.indexOf(k) === 0 || k.indexOf(p) === 0) {
+          if ((p === k || p.indexOf(k) === 0 || k.indexOf(p) === 0) && (!date || date >= boardEff(k))) {
             Object.keys(boards[k]).forEach(function (n) { out[n] = boards[k][n]; });
           }
         });
@@ -808,6 +822,8 @@
       return out;
     }
 
+    // Unlike dget(), not date-scoped: this is the councillor's full,
+    // current seat profile for the "Pick a councillor" context line.
     function seatsOf(name) {
       var out = {};
       Object.keys(boards).forEach(function (e) {
@@ -817,7 +833,7 @@
     }
 
     function decCount(name) {
-      return decisions.filter(function (d) { return Object.prototype.hasOwnProperty.call(dget(d.entity), name); }).length;
+      return decisions.filter(function (d) { return Object.prototype.hasOwnProperty.call(dget(d.entity, d.date), name); }).length;
     }
 
     var companySel = document.querySelector('[data-cr-company]');
@@ -864,12 +880,12 @@
 
     function whatDid(d) {
       var co = coNameOf(d.entity);
-      return d.amount ? ('sent ' + co + ' ' + money(d.amount)) : ('was a decision about ' + co);
+      return d.amount ? ('approved ' + money(d.amount) + ' for ' + co) : ('was a decision about ' + co);
     }
 
     function render() {
       var list = decisions.slice();
-      if (sel) list = list.filter(function (d) { return Object.prototype.hasOwnProperty.call(dget(d.entity), sel); });
+      if (sel) list = list.filter(function (d) { return Object.prototype.hasOwnProperty.call(dget(d.entity, d.date), sel); });
       if (companySel.value) list = list.filter(function (d) { return d.entity === companySel.value; });
       if (termSel.value) list = list.filter(function (d) { return d.term === termSel.value; });
 
@@ -890,7 +906,7 @@
       if (statsEl) {
         statsEl.innerHTML =
           '<div class="cr-stat"><span class="cr-stat__n">' + list.length + '</span><span class="cr-stat__l">decisions shown</span></div>' +
-          '<div class="cr-stat"><span class="cr-stat__n">' + esc(money(total)) + '</span><span class="cr-stat__l">money to these companies</span></div>' +
+          '<div class="cr-stat"><span class="cr-stat__n">' + esc(money(total)) + '</span><span class="cr-stat__l">approved for these companies (in motions)</span></div>' +
           '<div class="cr-stat"><span class="cr-stat__n">' + abstentionCount + '</span><span class="cr-stat__l">abstentions recorded</span></div>';
       }
 
@@ -901,7 +917,7 @@
           ctxEl.style.display = 'block';
           if (seatNames.length) {
             var chips = seatNames.map(function (e) { return '<span class="cr-seat">' + esc(e) + ' · ' + esc(seats[e]) + '</span>'; }).join('');
-            ctxEl.innerHTML = '<strong>' + esc(sel) + '</strong> holds seats on the Nation\'s companies: ' + chips + '<br>Below: every decision where Council handled money or business for one of those companies.';
+            ctxEl.innerHTML = '<strong>' + esc(sel) + '</strong> holds seats on the Nation\'s companies: ' + chips + '<br>Below: every decision where Council approved money or business for one of those companies, on dates the seat was held.';
           } else {
             ctxEl.innerHTML = '<strong>' + esc(sel) + '</strong> holds no seat on any of the Nation\'s companies. No conflict decisions to show, and that is the point of showing it.';
           }
@@ -917,7 +933,7 @@
       }
 
       cardsEl.innerHTML = list.map(function (d) {
-        var dirs = dget(d.entity);
+        var dirs = dget(d.entity, d.date);
         var co = coNameOf(d.entity);
         var ab = d.abstention;
 
@@ -927,18 +943,20 @@
           why = '<p class="cr-card__why"><strong>' + esc(sel) + '</strong> is ' + esc(role) + ' of ' + esc(co) + '. This decision ' + esc(whatDid(d)) + ', and ' + esc(sel) + ' ' + esc(involvement(d, sel)) + '.</p>';
         } else {
           var dirNames = Object.keys(dirs);
-          var chips = dirNames.map(function (n) {
-            var hl = (n === d.mover || n === d.seconder);
-            return '<span class="cr-chip' + (hl ? ' is-voter' : '') + '">' + esc(n) + ' · ' + esc(dirs[n]) + '</span>';
-          }).join('');
+          var chips = dirNames.length
+            ? dirNames.map(function (n) {
+                var hl = (n === d.mover || n === d.seconder);
+                return '<span class="cr-chip' + (hl ? ' is-voter' : '') + '">' + esc(n) + ' · ' + esc(dirs[n]) + '</span>';
+              }).join('')
+            : '<span class="cr-td-none">no councillor held a seat on this company on this date</span>';
           why = '<p class="cr-card__dirlabel"><strong>Councillors who help run ' + esc(co) + ':</strong></p>' +
             '<div class="cr-chips">' + chips + '</div>' +
-            '<p class="cr-card__why">This decision ' + esc(whatDid(d)) + '. The people who govern ' + esc(co) + ' are the same people who voted on it.</p>';
+            '<p class="cr-card__why">This decision ' + esc(whatDid(d)) + '. The people who govern ' + esc(co) + ' are among those who voted on it.</p>';
         }
 
         var rec = ab
           ? '<p class="cr-card__rec is-ok">Abstention recorded: ' + esc(ab) + '</p>'
-          : '<p class="cr-card__rec">No recusal recorded, no one stepped out of this vote.</p>';
+          : '<p class="cr-card__rec">No recusal is recorded in the minutes.</p>';
 
         var amtHtml = d.amount
           ? '<span class="cr-card__amt">' + esc(money(d.amount)) + '</span>'
