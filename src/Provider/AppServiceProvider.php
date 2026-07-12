@@ -322,6 +322,12 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'sagamok-espanola-mill-bmi' => ['/communities/sagamok/espanola-mill-bmi', 'pages/communities/sagamok/espanola-mill-bmi.html.twig'],
             'sagamok-one-seat-one-salary' => ['/communities/sagamok/one-seat-one-salary', 'pages/communities/sagamok/one-seat-one-salary.html.twig'],
             'sagamok-account-or-resign' => ['/communities/sagamok/account-or-resign', 'pages/communities/sagamok/account-or-resign.html.twig'],
+            // The Conflict Register: an interactive tool, filterable by
+            // councillor or company, cross-referencing enterprise money
+            // votes against councillor-director board seats. First of a
+            // planned interactive data hub for this section (see the
+            // "companion tools" note in the build history for this page).
+            'sagamok-conflict-register' => ['/communities/sagamok/conflict-register', 'pages/communities/sagamok/conflict-register.html.twig'],
             // A member's record (Russell Jones): the members-only portal
             // exposure, its capture in the public Internet Archive, and what
             // is being asked of Council. Companion to members-website-issue.

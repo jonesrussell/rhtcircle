@@ -175,6 +175,14 @@ final class CommunityHub
                 'go' => 'Read the statement',
                 'href' => '/communities/sagamok/account-or-resign',
             ],
+            [
+                'feature' => true,
+                'tag' => "A member's accountability tool",
+                'title' => 'The Conflict Register',
+                'desc' => 'Pick a councillor or a company and see the enterprise money votes: who moved and seconded them, which of the recipient\'s councillor-directors were on Council, and whether a recusal was recorded.',
+                'go' => 'Open the register',
+                'href' => '/communities/sagamok/conflict-register',
+            ],
         ];
     }
 

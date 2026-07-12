@@ -1,0 +1,234 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}The Conflict Register · Robinson Huron Treaty{% endblock %}
+{% block description %}A member-built tool: pick a Sagamok councillor or company and see the enterprise money votes, who moved and seconded them, which of the recipient's councillor-directors were on Council, and whether a recusal was recorded.{% endblock %}
+{% block og_description %}Pick a Sagamok councillor or company and see the enterprise money votes: who moved and seconded them, who on Council directs the recipient, and whether a recusal was recorded.{% endblock %}
+{% block body_class %}route-sagamok-conflict-register{% endblock %}
+
+{% block head_styles %}
+<style>
+  /* Scoped .cr-* filter bar, stat pills, and cards, built from site design
+     tokens (matching the resources rfilter pattern and the account-or-resign
+     stat pills), not page-local hex values. */
+  .cr-filter { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px; margin: var(--gap-4) 0 var(--gap-4); }
+  .cr-filter__group { display: flex; flex-direction: column; gap: 4px; }
+  .cr-filter__label { font-family: var(--font-sans); font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
+  .cr-filter__select { font: inherit; color: var(--ink); background: #fff; border: 1px solid var(--rule-strong); border-radius: 8px; padding: 9px 12px; min-width: 230px; }
+  .cr-filter__reset { font: inherit; font-weight: 700; color: #fff; background: var(--accent); border: 0; border-radius: 999px; padding: 10px 20px; cursor: pointer; align-self: flex-end; }
+  .cr-filter__reset:hover { background: var(--accent-deep); }
+  .cr-filter__select:focus-visible, .cr-filter__reset:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  .cr-stats { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 var(--gap-4); }
+  .cr-stat { flex: 1 1 200px; border-radius: var(--radius-lg); border: 1px solid var(--rule); background: var(--paper-2); padding: 14px 18px; }
+  .cr-stat__n { display: block; font-family: var(--font-serif); font-size: 28px; font-weight: 700; color: var(--accent-deep); font-variant-numeric: tabular-nums; line-height: 1.15; }
+  .cr-stat__l { display: block; margin-top: 4px; font-family: var(--font-sans); font-size: 13px; color: var(--ink-2); }
+
+  .cr-count { font-family: var(--font-sans); font-size: 14px; color: var(--ink-2); margin: 0 0 var(--gap-3); min-height: 1.4em; }
+
+  .cr-list { display: flex; flex-direction: column; gap: 14px; margin: 0 0 var(--gap-5); }
+  .cr-card { border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper-2); padding: 18px 20px; }
+  .cr-card__top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .cr-card__entity { font-family: var(--font-serif); font-size: 19px; font-weight: 600; color: var(--ink); }
+  .cr-card__amount { font-family: var(--font-sans); font-size: 19px; font-weight: 700; color: var(--accent-deep); white-space: nowrap; }
+  .cr-card__meta { font-family: var(--font-sans); font-size: 13.5px; color: var(--ink-3); margin: 4px 0 12px; }
+  .cr-card__meta .cr-tag--incamera { color: var(--coral); font-weight: 700; }
+  .cr-card__row { font-family: var(--font-sans); font-size: 14.5px; color: var(--ink-2); margin: 0 0 4px; }
+  .cr-card__row strong { color: var(--ink); }
+  .cr-card__chiplabel { font-family: var(--font-sans); font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 4px; }
+  .cr-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+  .cr-chip { display: inline-block; background: #fff; border: 1px solid var(--rule-strong); color: var(--ink-2); border-radius: 999px; padding: 3px 12px; font-family: var(--font-sans); font-size: 12.5px; font-weight: 600; }
+  .cr-chip.is-voter { background: var(--accent-wash); border-color: var(--accent-soft); color: var(--accent-deep); }
+  .cr-chip.is-selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .cr-badge { display: inline-block; background: var(--paper); border: 1px solid var(--coral); color: var(--coral); border-radius: 999px; padding: 4px 12px; font-family: var(--font-sans); font-size: 12.5px; font-weight: 700; margin: 2px 0 10px; }
+  .cr-q { font-family: var(--font-sans); font-size: 14px; color: var(--ink-2); border-top: 1px dashed var(--rule); padding-top: 10px; margin: 0; }
+  .cr-q strong { color: var(--ink); }
+  .cr-empty { font-family: var(--font-sans); font-size: 14.5px; padding: 24px; text-align: center; color: var(--ink-3); border: 1px dashed var(--rule); border-radius: var(--radius-lg); }
+
+  @media (max-width: 560px) {
+    .cr-filter__select { min-width: 100%; }
+    .cr-filter__group { width: 100%; }
+    .cr-filter__reset { width: 100%; }
+    .cr-card__top { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › The Conflict Register</p>
+
+  <p class="eyebrow">Sagamok Anishnawbek · A member's accountability tool</p>
+  <h1>The Conflict Register</h1>
+  <p class="lead">Councillors sit on the boards of the Nation's companies. When Council votes to send those companies the Nation's money, a councillor with a personal interest is supposed to declare it and step out of the vote (Financial Administration Law, sections 21 and 22). This tool lets members check, decision by decision, who sat on which board and whether a recusal was recorded. Pick a councillor or a company.</p>
+
+  {% set banner_body %}Every figure comes from the Nation's own Council minutes and the public corporate registry. "No recusal recorded" means the minutes do not show a recusal, it is a question for Council to answer, not a finding of wrongdoing. Since 2025 the minutes have stopped listing individual votes and abstentions by name, which is itself part of the problem. Shown here: enterprise money decisions in the current Council term (since the August 2024 election).{% endset %}
+  {% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'How to read this' } only %}
+
+  <form class="cr-filter" aria-label="Filter the conflict register" data-cr-filter onsubmit="return false">
+    <div class="cr-filter__group">
+      <label class="cr-filter__label" for="cr-councillor">Filter by councillor</label>
+      <select class="cr-filter__select" id="cr-councillor" data-cr-councillor>
+        <option value="">All councillors</option>
+      </select>
+    </div>
+    <div class="cr-filter__group">
+      <label class="cr-filter__label" for="cr-company">Filter by company</label>
+      <select class="cr-filter__select" id="cr-company" data-cr-company>
+        <option value="">All companies</option>
+      </select>
+    </div>
+    <button class="cr-filter__reset" type="button" data-cr-reset>Reset</button>
+  </form>
+
+  <div class="cr-stats" data-cr-stats></div>
+  <p class="cr-count" data-cr-count></p>
+  <div class="cr-list" data-cr-list></div>
+
+  {% include 'components/section_heading.html.twig' with { title: 'Right of reply' } only %}
+  <p>Chief and Council have been asked to confirm this information and submit corrections. Any correction will be reflected here.</p>
+
+  {% include 'components/section_heading.html.twig' with { title: 'Sources' } only %}
+  <ul class="src-links">
+    <li>The Nation's Council minutes, cited by motion number and date</li>
+    <li><a href="https://www.ontario.ca/page/ontario-business-registry" target="_blank" rel="noopener">Ontario Business Registry</a> and Corporations Canada's <a href="https://ised-isde.canada.ca/cc/lgcy/fdrlCrpDtls.html?corpId=11017624" target="_blank" rel="noopener">federal corporate registry</a> (board and officer roles)</li>
+    <li><a href="https://zgamok.ca/our-team" target="_blank" rel="noopener">zgamok.ca, our team</a> (board and officer roles)</li>
+    <li>Financial Administration Law, sections 21 and 22 (conflict declaration and recusal) and section 11 (Finance and Audit Committee independence)</li>
+  </ul>
+
+  <p class="cover__byline">A community resource from the Robinson Huron Treaty hub, member-led and independent. Facts are from public sources; the questions are for our leadership. Corrections welcome.</p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    // ---- Data (public: Council minutes + corporate registry) ----
+    // Councillor-directors of each company (officer roles noted). Keys are
+    // the filterable company names shown in the "Filter by company" select.
+    var boards = {
+      "GR Truss": { "Angus Toulouse": "Chief / President", "Michael Abitong": "Director", "Norma Petahtegoose": "Director & Treasurer" },
+      "ZEI": { "Paul Eshkakogan": "President", "Nelson Toulouse": "Director", "Norma Petahtegoose": "Director", "Lawrence Solomon": "Director", "Leroy Bennett": "Director", "Arnelda Bennett": "Director" },
+      "ZCLP": { "Paul Eshkakogan": "Director", "Nelson Toulouse": "Director", "Norma Petahtegoose": "Director", "Lawrence Solomon": "Director", "Leroy Bennett": "Director", "Arnelda Bennett": "Director" },
+      "OCL": { "Angus Toulouse": "President", "Arnelda Bennett": "Secretary", "Lawrence Solomon": "Treasurer", "Nelson Toulouse": "Director" },
+      "Sagamok Real Estate": { "Arnelda Bennett": "Director", "Norma Petahtegoose": "Director", "Dan Owl": "Director" },
+      "Legend Mining": { "Paul Eshkakogan": "Director" }
+    };
+
+    // Enterprise money decisions, current Council term (since August 2024).
+    // "entity" is the filter key (must match a boards key above); "company"
+    // is the display label, which for the 2024/10 #06 facility names all
+    // four companies it reaches even though it is filed here under ZEI.
+    var votes = [
+      { date: "2024-10-08", motion: "2024/10 #05", entity: "ZEI", company: "ZEI", amount: 25000000, mover: "Paul Eshkakogan", seconder: "Nelson Toulouse", note: "Repairs and upgrades financing" },
+      { date: "2024-10-08", motion: "2024/10 #06", entity: "ZEI", company: "ZEI / ZCLP / OCL / Legend", amount: null, amountLabel: "(financing facility)", mover: "Nelson Toulouse", seconder: "Norma Petahtegoose", note: "Internal facility: Nation money lent to the enterprises at not less than 4%" },
+      { date: "2025-09-23", motion: "2025/09 #45", entity: "GR Truss", company: "GR Truss", amount: 125000, mover: "Nelson Toulouse", seconder: "Paul Eshkakogan", note: "OFNLP equity contribution" },
+      { date: "2025-10-31", motion: "2025/10 #23", entity: "ZCLP", company: "ZCLP", amount: 432845.82, mover: "Arnelda Bennett", seconder: "Leroy Bennett", note: "ZCLP financing item" },
+      { date: "2025-11-18", motion: "2025/11 #20", entity: "Sagamok Real Estate", company: "Sagamok Real Estate", amount: 3450000, mover: "Lawrence Solomon", seconder: "Arnelda Bennett", note: "Advancement to the real-estate corporation" },
+      { date: "2026-01-22", motion: "2026/01 #18", entity: "GR Truss", company: "GR Truss", amount: 125000, mover: "Nelson Toulouse", seconder: "Leroy Bennett", note: "OFNLP equity contribution (repeat)" },
+      { date: "2026-02-11", motion: "2026/02 #16", entity: "GR Truss", company: "GR Truss", amount: null, amountLabel: "(Letter of Intent)", mover: "Nelson Toulouse", seconder: "Norma Petahtegoose", note: "LOI to advance the GR Truss / Timberfield acquisition (“Project Build”)" },
+      { date: "2026-05-12", motion: "2026/05 #10", entity: "GR Truss", company: "GR Truss", amount: 150000, mover: "Leroy Bennett", seconder: "Sadie Southwind", note: "Advance, in-camera, repayable in 6 months", inCamera: true }
+    ];
+
+    var fcSel = document.querySelector('[data-cr-councillor]');
+    var feSel = document.querySelector('[data-cr-company]');
+    var resetBtn = document.querySelector('[data-cr-reset]');
+    var statsEl = document.querySelector('[data-cr-stats]');
+    var countEl = document.querySelector('[data-cr-count]');
+    var listEl = document.querySelector('[data-cr-list]');
+    if (!fcSel || !feSel || !listEl) return;
+
+    function fmt(n) {
+      if (n === null || n === undefined) return null;
+      try { return '$' + Number(n).toLocaleString('en-CA', { maximumFractionDigits: 2 }); } catch (e) { return '$' + n; }
+    }
+
+    function amountText(v) {
+      var f = fmt(v.amount);
+      if (f) return f;
+      return v.amountLabel || 'n/a';
+    }
+
+    function directorsOf(entity) { return boards[entity] || {}; }
+    function isDirector(person, entity) { return Object.prototype.hasOwnProperty.call(directorsOf(entity), person); }
+
+    var allCouncillors = Array.prototype.concat.apply([], Object.keys(boards).map(function (k) { return Object.keys(boards[k]); }));
+    allCouncillors = allCouncillors.filter(function (n, i) { return allCouncillors.indexOf(n) === i; }).sort();
+    var allCompanies = Object.keys(boards);
+
+    allCouncillors.forEach(function (n) {
+      var o = document.createElement('option'); o.value = n; o.textContent = n; fcSel.appendChild(o);
+    });
+    allCompanies.forEach(function (n) {
+      var o = document.createElement('option'); o.value = n; o.textContent = n; feSel.appendChild(o);
+    });
+
+    function esc(s) {
+      var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML;
+    }
+
+    function render() {
+      var cSel = fcSel.value, eSel = feSel.value;
+      listEl.innerHTML = '';
+      var shown = 0, moneyTotal = 0;
+
+      votes.forEach(function (v) {
+        // Councillor filter: show votes where the selected councillor is a
+        // director of the company receiving the money.
+        if (cSel && !isDirector(cSel, v.entity)) return;
+        if (eSel && v.entity !== eSel) return;
+        shown++;
+        if (v.amount) moneyTotal += v.amount;
+
+        var dirs = directorsOf(v.entity);
+        var chips = Object.keys(dirs).map(function (n) {
+          var role = dirs[n];
+          var votedOnThis = (n === v.mover || n === v.seconder);
+          var isYou = (cSel && n === cSel);
+          var cls = 'cr-chip' + (isYou ? ' is-selected' : (votedOnThis ? ' is-voter' : ''));
+          return '<span class="' + cls + '">' + esc(n) + ' · ' + esc(role) + (votedOnThis ? ' (voted on this)' : '') + '</span>';
+        }).join('');
+
+        var card = document.createElement('article');
+        card.className = 'cr-card';
+        card.innerHTML =
+          '<div class="cr-card__top"><span class="cr-card__entity">' + esc(v.company) + '</span><span class="cr-card__amount">' + esc(amountText(v)) + '</span></div>' +
+          '<p class="cr-card__meta">' + esc(v.date) + ' · Motion ' + esc(v.motion) + (v.inCamera ? ' <span class="cr-tag--incamera">(in-camera)</span>' : '') + ' · ' + esc(v.note) + '</p>' +
+          '<p class="cr-card__row"><strong>Moved by:</strong> ' + esc(v.mover) + ' &nbsp; <strong>Seconded by:</strong> ' + esc(v.seconder) + '</p>' +
+          '<p class="cr-card__chiplabel">Councillors who direct ' + esc(v.entity) + ':</p>' +
+          '<div class="cr-chips">' + chips + '</div>' +
+          '<span class="cr-badge">No recusal recorded</span>' +
+          '<p class="cr-q">Was a conflict declared and a recusal taken, and where is it recorded? <strong>Release the conflict declarations and recusal records for ' + esc(v.motion) + '.</strong></p>';
+        listEl.appendChild(card);
+      });
+
+      if (statsEl) {
+        statsEl.innerHTML =
+          '<div class="cr-stat"><span class="cr-stat__n">' + shown + '</span><span class="cr-stat__l">decisions shown</span></div>' +
+          '<div class="cr-stat"><span class="cr-stat__n">0</span><span class="cr-stat__l">recusals recorded</span></div>' +
+          '<div class="cr-stat"><span class="cr-stat__n">' + esc(fmt(moneyTotal) || '$0') + '</span><span class="cr-stat__l">money to these companies (shown)</span></div>';
+      }
+
+      if (countEl) {
+        if (!shown) {
+          countEl.textContent = 'No decisions match this filter' + (cSel ? '. ' + cSel + ' may not sit on the board of the selected company.' : '.');
+        } else {
+          var ctx = cSel ? 'Showing decisions where ' + cSel + ' is a director of the company receiving the money' : 'Showing all current-term enterprise money decisions';
+          if (eSel) ctx += ' · company: ' + eSel;
+          countEl.textContent = ctx + '.';
+        }
+      }
+
+      if (listEl && !shown) {
+        listEl.innerHTML = '<p class="cr-empty">No decisions match this filter.</p>';
+      }
+    }
+
+    fcSel.addEventListener('change', render);
+    feSel.addEventListener('change', render);
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function () { fcSel.value = ''; feSel.value = ''; render(); });
+    }
+
+    render();
+  })();
+</script>
+{% endblock %}
