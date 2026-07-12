@@ -2,8 +2,8 @@
 {% set nav = 'communities' %}
 
 {% block title %}The Conflict Register · Robinson Huron Treaty{% endblock %}
-{% block description %}A member-built tool: pick a Sagamok councillor to see every company they direct and every enterprise money decision about those companies, across both Council terms, who moved and seconded each, and whether a recusal was recorded.{% endblock %}
-{% block og_description %}Pick a Sagamok councillor or company and see the enterprise money decisions: who moved and seconded them, who on Council directs the recipient, and whether a recusal was recorded.{% endblock %}
+{% block description %}A member-built tool: pick a Sagamok councillor to see every company they direct and every enterprise money decision about those companies, across both Council terms, who moved and seconded each, and whether an abstention was recorded.{% endblock %}
+{% block og_description %}Pick a Sagamok councillor or company and see the enterprise money decisions: who moved and seconded them, who on Council directs the recipient, and whether an abstention was recorded.{% endblock %}
 {% block body_class %}route-sagamok-conflict-register{% endblock %}
 {% block main_class %}wrap wrap--wide{% endblock %}
 
@@ -35,7 +35,7 @@
   .cr-count { font-family: var(--font-sans); font-size: 14px; color: var(--ink-2); margin: 0 0 var(--gap-3); min-height: 1.4em; }
 
   .cr-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper-2); margin: 0 0 var(--gap-5); }
-  .cr-table { border-collapse: collapse; width: 100%; min-width: 960px; font-family: var(--font-sans); font-size: 13.5px; }
+  .cr-table { border-collapse: collapse; width: 100%; min-width: 1000px; font-family: var(--font-sans); font-size: 13.5px; }
   .cr-table th, .cr-table td { border-bottom: 1px solid var(--rule); padding: 10px 12px; text-align: left; vertical-align: top; }
   .cr-table thead th { color: var(--ink-3); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; white-space: nowrap; }
   .cr-table thead th.is-sortable { cursor: pointer; }
@@ -46,11 +46,13 @@
   .cr-td-amount { font-weight: 700; color: var(--accent-deep); white-space: nowrap; text-align: right; }
   .cr-td-amount.is-none { color: var(--ink-3); font-weight: 400; font-style: italic; text-align: left; white-space: normal; }
   .cr-tag--prior { display: inline-block; background: var(--paper); border: 1px solid var(--rule); color: var(--ink-3); border-radius: 4px; padding: 1px 6px; font-size: 10.5px; margin-left: 6px; white-space: nowrap; }
+  .cr-tag--incamera { display: inline-block; background: var(--paper); border: 1px solid var(--rule); color: var(--ink-3); border-radius: 4px; padding: 1px 6px; font-size: 10.5px; margin-left: 6px; white-space: nowrap; }
   .cr-chips { display: flex; flex-wrap: wrap; gap: 4px; }
   .cr-chip { display: inline-block; background: #fff; border: 1px solid var(--rule-strong); color: var(--ink-2); border-radius: 999px; padding: 2px 10px; font-family: var(--font-sans); font-size: 12px; font-weight: 600; white-space: nowrap; }
   .cr-chip.is-voter { background: var(--accent-wash); border-color: var(--accent-soft); color: var(--accent-deep); }
   .cr-td-none { color: var(--ink-3); }
-  .cr-badge { display: inline-block; background: var(--paper); border: 1px solid var(--coral); color: var(--coral); border-radius: 999px; padding: 3px 10px; font-family: var(--font-sans); font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .cr-badge { display: inline-block; background: var(--paper); border: 1px solid var(--coral); color: var(--coral); border-radius: 999px; padding: 3px 10px; font-family: var(--font-sans); font-size: 12px; font-weight: 700; white-space: normal; }
+  .cr-badge--abstention { border-color: var(--blue); color: var(--blue); }
 
   @media (max-width: 560px) {
     .cr-filter__select { min-width: 100%; }
@@ -67,7 +69,7 @@
   <h1>The Conflict Register</h1>
   <p class="lead">Councillors sit on the boards of the Nation's companies. When Council votes to send those companies the Nation's money, a councillor with a personal interest is supposed to declare it and step out of the vote (Financial Administration Law, sections 21 and 22). Pick a councillor to see every company they direct and every decision about those companies, or filter by company.</p>
 
-  {% set banner_body %}Every figure is from the Nation's own Council minutes and the public corporate registry. "No recusal recorded" means the minutes do not show a recusal, a question for Council to answer, not a finding of wrongdoing. Since 2025 the minutes have stopped listing individual votes and abstentions by name. Prior-term rows (before the August 2024 election) are marked; board membership may have differed on those earlier dates.{% endset %}
+  {% set banner_body %}Every figure is from the Nation's own Council minutes and the public corporate registry. The minutes record six abstentions across both terms, and nearly all of them are a councillor stepping out of a vote over her own employment, for example "as Economic Development Manager," not over a company she directs. "No recusal recorded" means the minutes do not show any councillor stepping out over their board or officer seat, a question for Council to answer, not a finding of wrongdoing. In-camera decisions and prior-term rows (before the August 2024 election) are marked; board membership may have differed on those earlier dates.{% endset %}
   {% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'How to read this' } only %}
 
   <div class="cr-stats" data-cr-stats></div>
@@ -139,11 +141,13 @@
 <script>
   (function () {
     // ---- Data (public: Council minutes + corporate registry) ----
-    // Vetted across both Council terms; every amount re-derived from each
-    // motion's own resolution sentence. Councillor-director rosters are the
-    // CURRENT boards (used for every row, including prior-term rows; board
-    // membership may have differed on those earlier dates, per the callout
-    // above).
+    // Independently re-verified across both Council terms (audit report:
+    // Sagamok-Accountability/working/enterprise-decisions-discrepancy-
+    // report.md); every amount re-derived from each motion's own resolution
+    // sentence. Entities are sometimes compound ("ZCLP / OCL") when one
+    // motion names more than one company; dget() below resolves the full
+    // director roster for those by matching each named part against the
+    // boards keys.
     var DATA = {
   "boards": {
     "GR Truss": {
@@ -187,8 +191,18 @@
       "Michael Abitong": "Director",
       "McKenzie Toulouse": "Director"
     },
+    "15558409": {
+      "Paul Eshkakogan": "Director",
+      "Leroy Bennett": "Director",
+      "Michael Abitong": "Director",
+      "McKenzie Toulouse": "Director"
+    },
     "Ritchie Falls": {
       "Michael Abitong": "Director"
+    },
+    "1534 Kanata": {
+      "Nelson Toulouse": "Director",
+      "Paul Eshkakogan": "Director"
     }
   },
   "decisions": [
@@ -196,457 +210,577 @@
       "date": "2023-01-10",
       "motion": "2023/01 #08",
       "entity": "SDC",
-      "type": "board",
       "amount": null,
       "mover": "Nelson Toulouse",
       "seconder": "Anna Marie Abitong",
       "term": "prior",
-      "text": "2023/01 #08 Sagamok Chief & Council motion to appoint Meggan McCracken as an officer and Director of the Sagamok Development Corporation.",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to appoint Meggan McCracken as an officer and Director of the Sagamok Development Corporation.",
+      "abstention": "Arnelda Bennett"
     },
     {
       "date": "2023-01-10",
       "motion": "2023/01 #09",
       "entity": "SDC",
-      "type": "board",
       "amount": null,
       "mover": "Sheldon Toulouse",
       "seconder": "Lawrence Solomon",
       "term": "prior",
-      "text": "2023/01 #09 Sagamok Chief & Council motion to pass BCR 2023-01-10X – SDC Board of Directors.",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to pass BCR 2023-01-10X – SDC Board of Directors.",
+      "abstention": "Arnelda Bennett"
     },
     {
       "date": "2023-01-24",
       "motion": "2023/01 #16",
       "entity": "ZCLP",
-      "type": "borrowing",
       "amount": null,
       "mover": "Nelson Toulouse",
       "seconder": "Sheldon Toulouse",
       "term": "prior",
-      "text": "2023/01 #16 Sagamok Chief & Council motion to approve BCR 2023-01-114 FNFA Borrowing Law – OR 2023, to secure funding for ZCLP.",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve BCR 2023-01-114 FNFA Borrowing Law – OR 2023, to secure funding for ZCLP.",
+      "abstention": "1 – Nicole Eshkakogan"
     },
     {
       "date": "2023-01-24",
       "motion": "2023/01 #17",
-      "entity": "ZCLP",
-      "type": "money",
-      "amount": 1680349.0,
+      "entity": "ZCLP / OCL",
+      "amount": 1680349,
       "mover": "Lawrence Solomon",
       "seconder": "Anna Marie Abitong",
       "term": "prior",
-      "text": "2023/01 #17 Sagamok Chief & Council motion to approve an advance to ZCLP in the amount of $1,680,349.00 for the purchase of OCL Trucking & Excavation Ltd.",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve an advance to ZCLP in the amount of $1,680,349.00 for the purchase of OCL Trucking & Excavation Ltd.",
+      "abstention": null
     },
     {
       "date": "2023-01-24",
       "motion": "2023/01 #18",
       "entity": "Ritchie Falls",
-      "type": "money",
-      "amount": 292000.0,
+      "amount": 342000,
       "mover": "Anna Marie Abitong",
       "seconder": "Leroy Bennett",
       "term": "prior",
-      "text": "2023/01 #18 Sagamok Chief & Council motion to commit the following amounts to assist in addressing the Ritchie Falls Resort budget, $50,000.00 from Indigenous Tourism Ontario, $292,000 from an amendment to OFNLP budget, and additional portions from ISC & FNIHB",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to commit the following amounts to assist in addressing the Ritchie Falls Resort budget, $50,000.00 from Indigenous Tourism Ontario, $292,000 from an amendment to OFNLP budget, and addition",
+      "abstention": null
     },
     {
       "date": "2023-05-09",
       "motion": "2023/05 #04",
       "entity": "OCL",
-      "type": "governance",
       "amount": null,
-      "mover": "Nelson Toulouse",
+      "mover": "Anna Marie Abitong",
       "seconder": "Nelson Toulouse",
       "term": "prior",
-      "text": "2023/05 #04 Sagamok Chief & Council motion to accept BCR 2023-05-03 RBC Credit Agreement – OCL Trucking.",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to accept BCR 2023-05-03 RBC Credit Agreement – OCL Trucking.",
+      "abstention": null
     },
     {
       "date": "2023-07-03",
       "motion": "2023/07 #03",
       "entity": "ZEI",
-      "type": "governance",
       "amount": null,
       "mover": "Anna Marie Abitong",
       "seconder": "Nicole Eshkakogan",
       "term": "prior",
-      "text": "2023/07 #03 Sagamok Chief & Council motion to approve BCR 2023-07-07 – ZEI Mining Feasibility Study Application Support.",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve BCR 2023-07-07 – ZEI Mining Feasibility Study Application Support.",
+      "abstention": null
     },
     {
       "date": "2023-11-20",
       "motion": "2023/11 #05",
-      "entity": "Sagamok Real Estate",
-      "type": "governance",
+      "entity": "Sagamok Real Estate / 15558409",
       "amount": null,
       "mover": "Paul Eshkakogan",
-      "seconder": "Leroy Bennett",
+      "seconder": "Nicole Eshkakogan",
       "term": "prior",
-      "text": "2023/11 #05 Sagamok Chief & Council motion to approve BCR 2023-11-40 – Establishment of a For-Profit Corporation for Off-Reserve Real Estate.",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve BCR 2023-11-40 – Establishment of a For-Profit Corporation for Off-Reserve Real Estate.",
+      "abstention": null
+    },
+    {
+      "date": "2023-12-19",
+      "motion": "2023/12 #04",
+      "entity": "Ritchie Falls",
+      "amount": null,
+      "mover": "McKenzie Toulouse",
+      "seconder": "Sheldon Toulouse",
+      "term": "prior",
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to acknowledge the 2023 Holiday Schedule excepting Ritchie Falls until reviewed.",
+      "abstention": "2 – Arnelda Bennett and Anna Marie Abitong as employees"
     },
     {
       "date": "2023-12-19",
       "motion": "2023/12 #09",
       "entity": "ZCLP",
-      "type": "money",
-      "amount": 500000.0,
+      "amount": 500000,
       "mover": "McKenzie Toulouse",
       "seconder": "Michael Abitong",
       "term": "prior",
-      "text": "2023/12 #09 Sagamok Chief & Council motion to support the advance of funds to ZCLP for $500,000.00 to support their cash flow needs with the funds being returned within 60 days.",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to support the advance of funds to ZCLP for $500,000.00 to support their cash flow needs with the funds being returned within 60 days.",
+      "abstention": null
+    },
+    {
+      "date": "2024-03-07",
+      "motion": "2024/03 #08",
+      "entity": "SDC",
+      "amount": null,
+      "mover": "Nelson Toulouse",
+      "seconder": "Sheldon Toulouse",
+      "term": "prior",
+      "incamera": false,
+      "text": "Sagamok Chief and Council motion to approve the proposed SDC Strategic Plan with revised mandate; and to implement the proposed organizational changes and change management plan.",
+      "abstention": "1 – Arnelda Bennett, as Economic Development Manager"
     },
     {
       "date": "2024-03-26",
       "motion": "2024/03 #17",
-      "entity": "ZEI",
-      "type": "money",
-      "amount": 14500000.0,
+      "entity": "ZEI / ZCLP / OCL",
+      "amount": 14500000,
       "mover": "Nelson Toulouse",
       "seconder": "Lawrence Solomon",
       "term": "prior",
-      "text": "2024/03 #17 Sagamok Chief and Council motion to authorize the conversion of loans receivable (not exceeding $14,500,000.00) from ZEI/ZCLP/OCL to an equity investment by Sagamok Anishnawbek that will see a shift on the balance sheet for the period ending March ",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief and Council motion to authorize the conversion of loans receivable (not exceeding $14,500,000.00) from ZEI/ZCLP/OCL to an equity investment by Sagamok Anishnawbek that will see a shift on the balance sheet ",
+      "abstention": null
     },
     {
       "date": "2024-04-16",
       "motion": "2024/04 #04",
-      "entity": "ZEI",
-      "type": "governance",
+      "entity": "ZEI / Legend Mining",
       "amount": null,
-      "mover": "Lawrence Solomon",
+      "mover": "Nelson Toulouse",
       "seconder": "Lawrence Solomon",
       "term": "prior",
-      "text": "2024/04 #04 Sagamok Chief and Council motion to approve BCR 2024-04-57 ZEI CORP Application – Legend Mining Inc.",
-      "recusal": "not recorded"
+      "incamera": true,
+      "text": "Sagamok Chief and Council motion to approve BCR 2024-04-57 ZEI CORP Application – Legend Mining Inc.",
+      "abstention": null
     },
     {
       "date": "2024-04-16",
-      "motion": "2024/04 #16",
-      "entity": "Legend Mining",
-      "type": "acquisition",
-      "amount": null,
+      "motion": "2024/04 #05",
+      "entity": "ZCLP",
+      "amount": 2000000,
       "mover": "Arnelda Bennett",
-      "seconder": "Arnelda Bennett",
+      "seconder": "Lawrence Solomon",
       "term": "prior",
-      "text": "2024/04 #16 Sagamok Chief and Council motion to reopen the Council meeting.",
-      "recusal": "not recorded"
+      "incamera": true,
+      "text": "Sagamok Chief and Council motion to support the administration advancing funds to ZCLP for $1,000,000.00 for the week of April 16th, 2024, and $1,000,000.00 the week of April 23rd, 2024 if required to support their cashf",
+      "abstention": null
     },
     {
       "date": "2024-04-16",
       "motion": "2024/04 #17",
-      "entity": "ZEI",
-      "type": "money",
-      "amount": 1525000.0,
-      "mover": "Arnelda Bennett",
+      "entity": "ZEI / Legend Mining",
+      "amount": 1525000,
+      "mover": "Paul Eshkakogan",
       "seconder": "Arnelda Bennett",
       "term": "prior",
-      "text": "2024/04 #17 Sagamok Chief and Council motion to support ZEI’s acquisition of Legend Mining Inc, with financing provided through the BMO Line of Credit not to exceed $1,525,000.00.",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief and Council motion to support ZEI's acquisition of Legend Mining Inc, with financing provided through the BMO Line of Credit not to exceed $1,525,000.00.",
+      "abstention": null
     },
     {
       "date": "2024-05-28",
       "motion": "2024/05 #20",
-      "entity": "ZCLP",
-      "type": "money",
+      "entity": "ZCLP / OCL",
       "amount": 7150000,
       "mover": "Nelson Toulouse",
       "seconder": "Arnelda Bennett",
       "term": "prior",
-      "text": "2024/05 #20 Sagamok Chief & Council motion to approve immediate financing to ZCLP & OCL up to $7.15 million repayable over the next three years. Chief & Council Meeting Minutes | May 28th, 2024 3 CARRIED",
-      "recusal": "not recorded"
+      "incamera": true,
+      "text": "Sagamok Chief & Council motion to approve immediate financing to ZCLP & OCL up to $7.15 million repayable over the next three years.",
+      "abstention": null
     },
     {
       "date": "2024-10-08",
       "motion": "2024/10 #06",
-      "entity": "ZEI",
-      "type": "money",
+      "entity": "ZEI / ZCLP / OCL / Legend Mining",
       "amount": null,
       "mover": "Nelson Toulouse",
       "seconder": "Norma Petahtegoose",
       "term": "current",
-      "text": "2024/10 #06 Sagamok Chief & Council motion to approve the establishment of an internal financing facility from the Treaty Settlement Proceeds. These funds are to be held in a segregated BMO account within Sagamok Anishnawbek and is accessible to ZEI/ZCLP/OCL/L",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve the establishment of an internal financing facility from the Treaty Settlement Proceeds. These funds are to be held in a segregated BMO account within Sagamok Anishnawbek and is ",
+      "abstention": null
     },
     {
-      "date": "2025-01-14",
-      "motion": "2025/01 #15",
-      "entity": "SDC",
-      "type": "governance",
-      "amount": null,
-      "mover": "Arnelda Bennett",
-      "seconder": "Michael Abitong",
+      "date": "2024-10-08",
+      "motion": "2024/10 #07",
+      "entity": "15558409 / Sagamok Real Estate",
+      "amount": 7000000,
+      "mover": "McKenzie Toulouse",
+      "seconder": "Paul Eshkakogan",
       "term": "current",
-      "text": "2025/01 #15 Sagamok Chief & Council motion to approve BCR 2025-01-22 MTO Petition for Payment Road Program – Capital Maintenance 2024. CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve and direct allocating $7 million from the Treaty Settlement Proceeds towards the Urban Housing Development Project in Sault Ste. Marie.",
+      "abstention": null
     },
     {
       "date": "2025-03-04",
-      "motion": "2025/03 #08",
+      "motion": "2025/03 #09",
       "entity": "Ritchie Falls",
-      "type": "money",
       "amount": null,
-      "mover": "Lawrence Solomon",
-      "seconder": "Daniel Owl",
+      "mover": "Leroy Bennett",
+      "seconder": "Michael Abitong",
       "term": "current",
-      "text": "2025/03 #08 Sagamok Chief & Council motion to renew both presented loan agreements for 5 years and that the loan agreements be signed by Chief & Council. CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to transition Ritchie Falls Resort to a dedicated community recreation facility for Sagamok Anishnawbek members and Sagamok government department programming.",
+      "abstention": null
     },
     {
       "date": "2025-04-02",
       "motion": "2025/04 #05",
       "entity": "GR Truss",
-      "type": "money",
-      "amount": 500000.0,
+      "amount": 500000,
       "mover": "Leroy Bennett",
       "seconder": "Nelson Toulouse",
       "term": "current",
-      "text": "2025/04 #05 Sagamok Chief & Council motion to support the administration advancing funds to GR Truss for $500,000.00 to support the cashflow needs, repayable at 4% by March 2026. CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to support the administration advancing funds to GR Truss for $500,000.00 to support the cashflow needs, repayable at 4% by March 2026.",
+      "abstention": null
     },
     {
       "date": "2025-04-16",
-      "motion": "2025/04 #17",
+      "motion": "2025/04 #18",
       "entity": "SDC",
-      "type": "governance",
-      "amount": null,
-      "mover": "Norma Petahtegoose",
-      "seconder": "McKenzie Toulouse",
+      "amount": 48000,
+      "mover": "McKenzie Toulouse",
+      "seconder": "Nelson Toulouse",
       "term": "current",
-      "text": "2025/04 #17 Sagamok Chief & Council motion to approve BCR 2025-04-46 – Fiber Upgrades to Unserviced Areas CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve the payment of $48,000 in engineering fees paid to Hatch Limited for the Indigenous Led Clean Energy Stream Request for Proposals.",
+      "abstention": null
+    },
+    {
+      "date": "2025-04-22",
+      "motion": "2025/04 #32",
+      "entity": "Ritchie Falls",
+      "amount": null,
+      "mover": "Nelson Toulouse",
+      "seconder": "Leroy Bennett",
+      "term": "current",
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve the transition of Ritchie Falls Resort to a department under the Sagamok Anishnawbek administration as of January 1st, 2025.",
+      "abstention": null
     },
     {
       "date": "2025-04-22",
       "motion": "2025/04 #33",
       "entity": "ZEI",
-      "type": "governance",
       "amount": null,
       "mover": "Paul Eshkakogan",
       "seconder": "Nelson Toulouse",
       "term": "current",
-      "text": "2025/04 #33 Sagamok Chief & Council motion to approve BCR 2025-04-47 – ZEI Community Readiness Program Funding Application. CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve BCR 2025-04-47 – ZEI Community Readiness Program Funding Application.",
+      "abstention": null
     },
     {
       "date": "2025-05-06",
       "motion": "2025/05 #07",
       "entity": "SDC",
-      "type": "governance",
       "amount": null,
       "mover": "Nelson Toulouse",
       "seconder": "Leroy Bennett",
       "term": "current",
-      "text": "2025/05 #07 Sagamok Chief & Council motion to approve the workplan and preconstruction budget as presented. CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve the workplan and preconstruction budget as presented.",
+      "abstention": null
     },
     {
       "date": "2025-05-06",
       "motion": "2025/05 #08",
       "entity": "SDC",
-      "type": "governance",
       "amount": null,
       "mover": "Nelson Toulouse",
       "seconder": "Norma Petahtegoose",
       "term": "current",
-      "text": "2025/05 #08 Sagamok Chief & Council motion to approve BCR 2025-05-51 – SDC Corporate Filing for Corporate Year 2023/24. CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve BCR 2025-05-51 – SDC Corporate Filing for Corporate Year 2023/24.",
+      "abstention": null
     },
     {
       "date": "2025-05-06",
       "motion": "2025/05 #09",
       "entity": "SDC",
-      "type": "governance",
       "amount": null,
       "mover": "Leroy Bennett",
       "seconder": "Lawrence Solomon",
       "term": "current",
-      "text": "2025/05 #09 Sagamok Chief & Council motion to approve BCR 2025-05-52 – SDC Corporate Filing for Corporate Year 2024/25. CARRIED",
-      "recusal": "not recorded"
-    },
-    {
-      "date": "2025-05-27",
-      "motion": "2025/05 #22",
-      "entity": "GR Truss",
-      "type": "governance",
-      "amount": null,
-      "mover": "Arnelda Bennett",
-      "seconder": "Norma Petahtegoose",
-      "term": "current",
-      "text": "2025/05 #22 Sagamok Chief & Council motion to approve BCR 2025-05-54 – BMO Trust Co. Authorized Individuals CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve BCR 2025-05-52 – SDC Corporate Filing for Corporate Year 2024/25.",
+      "abstention": null
     },
     {
       "date": "2025-05-27",
       "motion": "2025/05 #23",
       "entity": "GR Truss",
-      "type": "board",
       "amount": null,
       "mover": "Leroy Bennett",
       "seconder": "Dan Owl",
       "term": "current",
-      "text": "2025/05 #23 Sagamok Chief & Council motion to approve BCR 2025-05-57 – GR Truss Appointment of Board Members. CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve BCR 2025-05-57 – GR Truss Appointment of Board Members.",
+      "abstention": null
     },
     {
       "date": "2025-05-27",
       "motion": "2025/05 #24",
       "entity": "Sagamok Real Estate",
-      "type": "board",
       "amount": null,
       "mover": "Paul Eshkakogan",
       "seconder": "Leroy Bennett",
       "term": "current",
-      "text": "2025/05 #24 Sagamok Chief & Council motion to approve BCR 2025-05-59 – Sagamok Real Estate Co Appointment of Board Members. Chief & Council Meeting Minutes | May 27th, 2025 7 CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve BCR 2025-05-59 – Sagamok Real Estate Co Appointment of Board Members.",
+      "abstention": null
     },
     {
       "date": "2025-05-27",
       "motion": "2025/05 #29",
-      "entity": "Ritchie Falls",
-      "type": "governance",
+      "entity": "SDC",
       "amount": null,
       "mover": "Leroy Bennett",
       "seconder": "Norma Petahtegoose",
       "term": "current",
-      "text": "2025/05 #29 Sagamok Chief & Council motion to approve BCR 2025-05-60 – Renewable Energy Phase 1 Solar Farm. CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve BCR 2025-05-60 – Renewable Energy Phase 1 Solar Farm.",
+      "abstention": null
     },
     {
       "date": "2025-05-27",
       "motion": "2025/05 #30",
       "entity": "Ritchie Falls",
-      "type": "acquisition",
       "amount": null,
       "mover": "Paul Eshkakogan",
       "seconder": "Leroy Bennett",
       "term": "current",
-      "text": "2025/05 #30 Sagamok Chief & Council motion to create the position of Lead Operator at Ritchie Falls Resort, extend the offer of the newly created position to Mason Southwind, and reallocate the 2024-2025 Fiscal Year Budget to support the position’s creation. C",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to create the position of Lead Operator at Ritchie Falls Resort, extend the offer of the newly created position to Mason Southwind, and reallocate the 2024-2025 Fiscal Year Budget to suppor",
+      "abstention": null
+    },
+    {
+      "date": "2025-07-08",
+      "motion": "2025/07 #04",
+      "entity": "ZCLP",
+      "amount": null,
+      "mover": "Norma Petahtegoose",
+      "seconder": "Leroy Bennett",
+      "term": "current",
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve the demolition of the Becker building by ZCLP and for the debris to be disposed of at the landfill site.",
+      "abstention": null
+    },
+    {
+      "date": "2025-07-08",
+      "motion": "2025/07 #05",
+      "entity": "ZEI",
+      "amount": null,
+      "mover": "Nelson Toulouse",
+      "seconder": "Norma Petahtegoose",
+      "term": "current",
+      "incamera": false,
+      "text": "Sagamok Chief & Council hereby conditionally approves the construction of the new ZEI office pending the design work completion and proposed costs is brought back to Council.",
+      "abstention": null
     },
     {
       "date": "2025-07-31",
       "motion": "2025/07 #32",
       "entity": "GR Truss",
-      "type": "governance",
       "amount": null,
       "mover": "Nelson Toulouse",
       "seconder": "Leroy Bennett",
       "term": "current",
-      "text": "2025/07 #32 Sagamok Chief and Council motion to accept BCR 2025-07-65 Truss Service Agreement CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief and Council motion to accept BCR 2025-07-65 Truss Service Agreement",
+      "abstention": null
+    },
+    {
+      "date": "2025-09-10",
+      "motion": "2025/09 #04",
+      "entity": "SDC",
+      "amount": null,
+      "mover": "Norma Petahtegoose",
+      "seconder": "Michael Abitong",
+      "term": "current",
+      "incamera": true,
+      "text": "Sagamok Chief & Council motion to continue to have Claims and Negotiations Department, Sagamok Development Corporation, and SA Manager of Economic Development, pursue the opportunity with SA (25%) and WFN (25%) as equity",
+      "abstention": "Arnelda Bennett, Paul Eshkakogan"
     },
     {
       "date": "2025-09-23",
       "motion": "2025/09 #45",
       "entity": "GR Truss",
-      "type": "money",
-      "amount": 125000.0,
+      "amount": 125000,
       "mover": "Nelson Toulouse",
       "seconder": "Paul Eshkakogan",
       "term": "current",
-      "text": "2025/09 #45 Sagamok Chief & Council motion to approve $125,000 from the OFNLP funding as an economic development equity contribution to GR Truss to assist with the lot development work in Carling Township. CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to approve $125,000 from the OFNLP funding as an economic development equity contribution to GR Truss to assist with the lot development work in Carling Township.",
+      "abstention": null
+    },
+    {
+      "date": "2025-10-14",
+      "motion": "2025/10 #03",
+      "entity": "1534 Kanata",
+      "amount": null,
+      "mover": "McKenzie Toulouse",
+      "seconder": "Sadie Southwind",
+      "term": "current",
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to provide FNPI, Dent-X, & 1534 Kanata and any associated companies with a 60-day notice to remove their possessions from the Millenium Centre.",
+      "abstention": null
+    },
+    {
+      "date": "2025-10-14",
+      "motion": "2025/10 #07",
+      "entity": "Ritchie Falls",
+      "amount": 47723.31,
+      "mover": "Leroy Bennett",
+      "seconder": "Norma Petahtegoose",
+      "term": "current",
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to replace two wood-fired boilers at Ritchie Falls at a cost of $47,723.31.",
+      "abstention": null
     },
     {
       "date": "2025-10-31",
       "motion": "2025/10 #24",
       "entity": "ZCLP",
-      "type": "governance",
       "amount": null,
       "mover": "Norma Petahtegoose",
       "seconder": "Michael Abitong",
       "term": "current",
-      "text": "2025/10 #24 Sagamok Chief & Council approve BCR 2025-10-76 – ZCLP Application Support for NOHFC Funding for Maintenance Facility. CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council approve BCR 2025-10-76 – ZCLP Application Support for NOHFC Funding for Maintenance Facility.",
+      "abstention": null
     },
     {
       "date": "2025-11-18",
       "motion": "2025/11 #19",
       "entity": "GR Truss",
-      "type": "acquisition",
       "amount": null,
       "mover": "Paul Eshkakogan",
       "seconder": "Leroy Bennett",
       "term": "current",
-      "text": "2025/11 #19 Sagamok Chief & Council motion to allow 22620112 Ontario Limited (GR Truss) to make a conditional offer for the purchase of the Parry Sound property. CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to allow 22620112 Ontario Limited (GR Truss) to make a conditional offer for the purchase of the Parry Sound property.",
+      "abstention": null
     },
     {
       "date": "2025-11-18",
       "motion": "2025/11 #20",
-      "entity": "Sagamok Real Estate",
-      "type": "money",
+      "entity": "Sagamok Real Estate / 15558409",
       "amount": 3450000,
       "mover": "Lawrence Solomon",
       "seconder": "Arnelda Bennett",
       "term": "current",
-      "text": "approve the advancement of $3.45 million for the purchase of the Brockville property until the FNFA draw is completed.",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council approve the advancement of $3.45 million for the purchase of the Brockville property until the FNFA draw is completed.",
+      "abstention": null
     },
     {
       "date": "2026-01-13",
-      "motion": "2026/01 #09",
+      "motion": "2026/01 #10",
       "entity": "SDC",
-      "type": "governance",
       "amount": null,
       "mover": "Nelson Toulouse",
-      "seconder": "Dan Owl",
+      "seconder": "Mckenzie Toulouse",
       "term": "current",
-      "text": "2026/01 #09 Sagamok Chief & Council to approve BCR 2026-01-87 Hydro One Connection for 3118 Industrial Park CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council approves the amendment to BCR 2025-12-81 as presented.",
+      "abstention": null
     },
     {
       "date": "2026-01-22",
       "motion": "2026/01 #18",
       "entity": "GR Truss",
-      "type": "money",
-      "amount": 125000.0,
+      "amount": 125000,
       "mover": "Nelson Toulouse",
       "seconder": "Leroy Bennett",
       "term": "current",
-      "text": "2026/01 #18 Sagamok Chief & Council approves $125,000 from the OFNLP funding as an economic development equity contribution to GR Truss to assist with the lot development work in Carling Township. CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council approves $125,000 from the OFNLP funding as an economic development equity contribution to GR Truss to assist with the lot development work in Carling Township.",
+      "abstention": null
+    },
+    {
+      "date": "2026-02-11",
+      "motion": "2026/02 #16",
+      "entity": "GR Truss",
+      "amount": null,
+      "mover": "Nelson Toulouse",
+      "seconder": "Norma Petahtegoose",
+      "term": "current",
+      "incamera": false,
+      "text": "Sagamok Chief & Council approve Chief Toulouse to execute the non-binding Letter of Intent with the information outlined in the briefing note in relation to Project Build.",
+      "abstention": null
     },
     {
       "date": "2026-02-18",
       "motion": "2026/02 #28",
       "entity": "SDC",
-      "type": "governance",
       "amount": null,
       "mover": "Arnelda Bennett",
       "seconder": "Veronica Nashkawa",
       "term": "current",
-      "text": "2026/02 #28 Sagamok Chief & Council approve BCR 2026-02-96 – Hydro One Multi Capacity Funding Agreement & SDC Authorization for Implementation. CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council approve BCR 2026-02-96 – Hydro One Multi Capacity Funding Agreement & SDC Authorization for Implementation.",
+      "abstention": null
+    },
+    {
+      "date": "2026-02-18",
+      "motion": "2026/02 #29",
+      "entity": "SDC",
+      "amount": null,
+      "mover": "McKenzie Toulouse",
+      "seconder": "Sadie Southwind",
+      "term": "current",
+      "incamera": false,
+      "text": "Sagamok Chief & Council motion to amend BCR 2025-12-81 – Electric Vehicle Charging Station Applications as revised and presented.",
+      "abstention": null
     },
     {
       "date": "2026-03-24",
-      "motion": "2026/03 #17",
+      "motion": "2026/03 #18",
       "entity": "ZEI",
-      "type": "governance",
       "amount": null,
-      "mover": "Lawrence Solomon",
-      "seconder": "Michael Abitong",
+      "mover": "Nelson Toulouse",
+      "seconder": "Veronica Nashkawa",
       "term": "current",
-      "text": "2026/03 #17 Sagamok Chief & Council approve Fuel Partners Ltd with conditions, including staged approvals, legal review, and requirement for Council approval prior to major financial commitments. CARRIED",
-      "recusal": "not recorded"
+      "incamera": false,
+      "text": "Sagamok Chief & Council approve BCR 2026-03-98 Waubetek Business Financing Guarantee.",
+      "abstention": null
     },
     {
       "date": "2026-05-12",
       "motion": "2026/05 #10",
       "entity": "GR Truss",
-      "type": "money",
       "amount": 150000,
       "mover": "Leroy Bennett",
       "seconder": "Sadie Southwind",
       "term": "current",
-      "text": "direct administration to advance $150,000 to GR Truss to support immediate cashflow needs, repayable within 6 months (in-camera).",
-      "recusal": "not recorded"
+      "incamera": true,
+      "text": "Sagamok Chief & Council direct administration to advance $150,000 to GR Truss to support immediate cashflow needs with funds being repayable within a 6-month period.",
+      "abstention": null
+    },
+    {
+      "date": "2026-05-19",
+      "motion": "2026/05 #35",
+      "entity": "Sagamok Real Estate / 15558409",
+      "amount": null,
+      "mover": "Paul Eshkakogan",
+      "seconder": "Michael Abitong",
+      "term": "current",
+      "incamera": false,
+      "text": "Sagamok Chief & Council approve BCR 2026-05-120, CMHC South Market Application Loan Guarantee",
+      "abstention": null
     }
   ]
 };
@@ -658,21 +792,34 @@
       try { return '$' + Number(n).toLocaleString('en-CA', { maximumFractionDigits: 2 }); } catch (e) { return '$' + n; }
     }
 
-    function dirsOf(entity) { return boards[entity] || {}; }
-
     function esc(s) {
       var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML;
+    }
+
+    // Resolves the full director roster for an entity string, which is
+    // sometimes compound ("ZCLP / OCL", "ZEI / ZCLP / OCL / Legend Mining")
+    // when one motion names more than one company. Matches each named part
+    // against the boards keys (exact, or a prefix match either direction,
+    // since some minute entries abbreviate a company name) and merges.
+    function dget(entity) {
+      var out = {};
+      (entity || '').split('/').forEach(function (part) {
+        var p = part.trim();
+        Object.keys(boards).forEach(function (k) {
+          if (p === k || p.indexOf(k) === 0 || k.indexOf(p) === 0) {
+            Object.keys(boards[k]).forEach(function (n) { out[n] = boards[k][n]; });
+          }
+        });
+      });
+      return out;
     }
 
     // Person roster: every named councillor-director across all boards,
     // with a count of decisions about companies they direct.
     var people = {};
-    Object.keys(boards).forEach(function (e) {
-      Object.keys(boards[e]).forEach(function (n) { people[n] = people[n] || 0; });
-    });
     decisions.forEach(function (d) {
-      Object.keys(dirsOf(d.entity)).forEach(function (n) {
-        if (Object.prototype.hasOwnProperty.call(people, n)) people[n]++;
+      Object.keys(dget(d.entity)).forEach(function (n) {
+        people[n] = (people[n] || 0) + 1;
       });
     });
 
@@ -708,7 +855,7 @@
 
     function render() {
       var list = decisions.slice();
-      if (selPerson) list = list.filter(function (d) { return Object.prototype.hasOwnProperty.call(dirsOf(d.entity), selPerson); });
+      if (selPerson) list = list.filter(function (d) { return Object.prototype.hasOwnProperty.call(dget(d.entity), selPerson); });
       if (companySel.value) list = list.filter(function (d) { return d.entity === companySel.value; });
       if (termSel.value) list = list.filter(function (d) { return d.term === termSel.value; });
 
@@ -725,12 +872,13 @@
 
       var moneyRows = list.filter(function (d) { return d.amount; });
       var total = moneyRows.reduce(function (sum, d) { return sum + d.amount; }, 0);
+      var abstentionCount = list.filter(function (d) { return d.abstention; }).length;
 
       if (statsEl) {
         statsEl.innerHTML =
           '<div class="cr-stat"><span class="cr-stat__n">' + list.length + '</span><span class="cr-stat__l">decisions shown</span></div>' +
-          '<div class="cr-stat"><span class="cr-stat__n">0</span><span class="cr-stat__l">recusals recorded</span></div>' +
-          '<div class="cr-stat"><span class="cr-stat__n">' + esc(fmtMoney(total)) + '</span><span class="cr-stat__l">money to these companies (shown)</span></div>';
+          '<div class="cr-stat"><span class="cr-stat__n">' + esc(fmtMoney(total)) + '</span><span class="cr-stat__l">money to these companies (shown)</span></div>' +
+          '<div class="cr-stat"><span class="cr-stat__n">' + abstentionCount + '</span><span class="cr-stat__l">abstentions recorded</span></div>';
       }
 
       if (countEl) {
@@ -740,7 +888,7 @@
       }
 
       rowsEl.innerHTML = list.map(function (d) {
-        var dirs = dirsOf(d.entity);
+        var dirs = dget(d.entity);
         var dirNames = Object.keys(dirs);
         var chips = dirNames.length
           ? dirNames.map(function (n) {
@@ -756,14 +904,21 @@
 
         var text = d.text.length > 150 ? d.text.slice(0, 150) + '…' : d.text;
 
+        var recusalCell = d.abstention
+          ? '<span class="cr-badge cr-badge--abstention">Abstention: ' + esc(d.abstention) + '</span>'
+          : '<span class="cr-badge">No recusal recorded</span>';
+
+        var dateTags = (d.term === 'prior' ? '<span class="cr-tag--prior">prior term</span>' : '') +
+          (d.incamera ? '<span class="cr-tag--incamera">in-camera</span>' : '');
+
         return '<tr>' +
-          '<td class="cr-td-date">' + esc(d.date) + (d.term === 'prior' ? '<span class="cr-tag--prior">prior term</span>' : '') + '</td>' +
+          '<td class="cr-td-date">' + esc(d.date) + dateTags + '</td>' +
           '<td class="cr-td-entity">' + esc(d.entity) + '</td>' +
           '<td>' + esc(text) + '</td>' +
           amountCell +
           '<td>' + esc(d.mover) + ' / ' + esc(d.seconder) + '</td>' +
           '<td><div class="cr-chips">' + chips + '</div></td>' +
-          '<td><span class="cr-badge">No recusal recorded</span></td>' +
+          '<td>' + recusalCell + '</td>' +
           '</tr>';
       }).join('');
     }
