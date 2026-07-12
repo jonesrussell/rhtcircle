@@ -56,6 +56,19 @@ final class CommunityHub
      */
     private static function transparencyCards(string $slug, array $signatures): array
     {
+        if ($slug === 'garden-river') {
+            return [
+                [
+                    'feature' => true,
+                    'tag' => "A member's living record",
+                    'title' => 'Help document GR Truss, on your territory',
+                    'desc' => 'Sagamok members are documenting a Nation-owned truss company on your territory, GR Truss at 177 Highway 17B. If you are nearby, current dated photos from the public road would help. Public places only, no trespassing, not the workers, the site.',
+                    'go' => 'See the record and help build it',
+                    'href' => '/communities/sagamok/gr-truss',
+                ],
+            ];
+        }
+
         if ($slug !== 'sagamok') {
             return [];
         }

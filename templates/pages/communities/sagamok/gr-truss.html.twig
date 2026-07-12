@@ -2,39 +2,84 @@
 {% set nav = 'communities' %}
 
 {% block title %}GR Truss: bought for $100, then funded · Robinson Huron Treaty{% endblock %}
-{% block description %}A member-compiled record of what Sagamok Anishnawbek has directed to GR Truss (2262012 Ontario Limited), a truss manufacturer the Nation acquired for $100, and the questions members are entitled to ask about it.{% endblock %}
-{% block og_description %}The Nation acquired a truss company for $100, then directed $775,000 to $900,000 to it. What members are entitled to ask about the money, the conflict, and the return.{% endblock %}
+{% block description %}A living, member-built picture of GR Truss (2262012 Ontario Limited), the truss manufacturer Sagamok acquired for $100: what the public record shows today, what members cannot see, and the open questions still being answered.{% endblock %}
+{% block og_description %}The Nation acquired a truss company for $100, then directed $775,000 to $900,000 to it. A living page: what the record shows, what is still unknown, and how members can help fill it in.{% endblock %}
 {% block body_class %}route-sagamok-gr-truss{% endblock %}
+
+{% block head_styles %}
+<style>
+  /* Scoped .grt-* crowdsource callout, matching the site's existing
+     accent-bordered ask boxes (.aor-ask, .osos-ask) rather than new colors. */
+  .grt-help { margin: var(--gap-5) 0; background: var(--accent-wash); border: 1px solid var(--accent-soft); border-left: 4px solid var(--accent); border-radius: var(--radius-md); padding: 20px 24px; }
+  .grt-help h3 { font-family: var(--font-sans); font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-deep); margin: 0 0 10px; }
+  .grt-help ol { margin: 0 0 var(--gap-3); padding-left: 22px; max-width: 74ch; }
+  .grt-help li { margin: 0 0 12px; line-height: 1.6; color: var(--ink-2); }
+  .grt-help li:last-child { margin-bottom: 0; }
+  .grt-help p.grt-cta { margin: 0; font-size: 15px; }
+  .grt-updates { border: 1px dashed var(--rule); border-radius: var(--radius-md); padding: 16px 20px; color: var(--ink-3); font-size: 14.5px; }
+</style>
+{% endblock %}
 
 {% block content %}
   <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › GR Truss</p>
 
+  <p class="eyebrow">Sagamok Anishnawbek · A member's living record</p>
   <h1>GR Truss: bought for $100, then funded</h1>
-  <p class="lead">What the Nation has directed to a company it bought for $100.</p>
+  <p class="lead">This is a living page. Here is what members can establish about GR Truss from the public record today. It will grow as members add what they know and see. If you can help, scroll to the bottom.</p>
 
-  {% set banner_body %}<strong>Member-compiled and unofficial.</strong> This is a member-compiled summary, not an official communication of Sagamok Anishnawbek. Everything here is drawn from the public record. If you can <a href="/about#corrections">show us an inaccuracy</a>, we will correct it.{% endset %}
+  {% set banner_body %}<strong>Member-compiled and unofficial.</strong> This is a member-compiled summary, not an official communication of Sagamok Anishnawbek. Everything here is drawn from the public record or clearly marked as an open question. If you can <a href="/about#corrections">show us an inaccuracy</a>, we will correct it.{% endset %}
   {% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'About this page' } only %}
 
-  <p>The Nation acquired GR Truss (2262012 Ontario Limited), a truss manufacturer, for a total price of $100 on April 1, 2025 (FY2025 audited financial statements, Note 18). The officers of GR Truss are the Chief (President), Councillor Norma Petahtegoose (Treasurer), and Councillor Michael Abitong (Secretary) (Ontario Business Registry; BCR 2025-05-57).</p>
+  {% include 'components/section_heading.html.twig' with { title: 'What it is' } only %}
+  <p>GR Truss (2262012 Ontario Limited) is a truss manufacturer, roof trusses, floor trusses, and wall panels, based at 177 Highway 17B in the Garden River area. It has operated under that name since 2011.</p>
 
-  <p>Since the purchase, Council has directed band money to GR Truss: a $500,000 advance at 4%, repayable March 2026 (Motion 2025/04 #05); a $125,000 economic development equity contribution for a lot in Carling Township, near Parry Sound (Motion 2025/09 #45); a second, identically worded $125,000 (Motion 2026/01 #18) whose status, a distinct contribution or a re-approval, is unclear; and a $150,000 advance for "immediate cashflow needs," repayable in six months, approved in a closed session (Motion 2026/05 #10). That is $775,000 to $900,000 directed to a company bought for $100, plus a pending acquisition of a second truss business. Advances are repayable on paper; the equity contribution is not.</p>
+  {% include 'components/section_heading.html.twig' with { title: 'How the Nation came to own it' } only %}
+  <p>On April 1, 2025, Sagamok acquired 100 percent of GR Truss for a total price of <strong>one hundred dollars</strong>, through two Nation entities: 15558409 Canada Ltd and Sagamok Real Estate Holdings LP. Its board is the Chief (as President) and two councillors, one of whom is the company's Treasurer. (Source: FY2025 audited statements, Note 18; corporate registry.)</p>
 
-  {% include 'components/section_heading.html.twig' with { title: 'Questions members can ask' } only %}
+  {% include 'components/section_heading.html.twig' with { title: 'What the Nation has put in since' } only %}
+  <p>Since the $100 purchase, Council has approved roughly <strong>$775,000 to $900,000</strong> for GR Truss by its own motions: a $500,000 cashflow advance approved the day after the purchase, two $125,000 equity contributions, and a $150,000 advance. Much of it is operating cashflow. (See these decisions in the <a href="/communities/sagamok/conflict-register">Conflict Register</a>.)</p>
+
+  {% include 'components/section_heading.html.twig' with { title: 'What members cannot see' } only %}
+  <p>GR Truss is not named or broken out anywhere in the Nation's audited annual report. Members have no visible figure for its sales, its profit, or its losses.</p>
+
+  {% include 'components/section_heading.html.twig' with { title: 'The expansion' } only %}
+  <p>Council authorized GR Truss to pursue acquiring <strong>Timberfield Roof Truss</strong>, a 40-year manufacturer in London, Ontario, financed by borrowing (First Nations Finance Authority or BMO). Terms have not been shown to members.</p>
+
+  {% include 'components/section_heading.html.twig' with { title: 'The assets, as far as the record shows' } only %}
+  <p>A plant in the Garden River area; a site in the Carling Township Industrial Park near Parry Sound (the Nation funded lot development there); and an 8,000 square foot building acquired as part of the purchase.</p>
+
+  {% include 'components/section_heading.html.twig' with { title: 'Open questions: what we are still finding out' } only %}
   <ul>
-    <li>How much band money has gone into GR Truss, and how much has been or will be repaid?</li>
-    <li>Is it a working business, or does it require ongoing cash?</li>
-    <li>What returns to members, in jobs or dollars?</li>
-    <li>When Council sends money to a company its own members direct, how is that conflict declared and handled?</li>
+    <li>Is GR Truss operating today, and is the Parry Sound / Carling plant built and running?</li>
+    <li>Who supplies its lumber and materials, and who are its customers? Does it buy from or sell to any Nation entity or councillor-linked business?</li>
+    <li>Was the $500,000 advance repaid? It was due March 2026.</li>
+    <li>What is the Timberfield acquisition price, and what is being borrowed, on what security?</li>
+    <li>What did $100 actually buy? What did the audited statements value its assets at?</li>
+    <li>Trade press reported a roughly $315,000 Ontario government investment in the truss maker. Who received it, and when, before or after the Nation's purchase?</li>
   </ul>
 
-  <p>See also <a href="/communities/sagamok/how-its-organized">how Sagamok is organized</a>, which maps GR Truss and the Nation's other enterprises, and the <a href="/standard/records-request">records request</a>, which asks Council directly about the enterprises and the benefit to members.</p>
+  <div class="grt-help">
+    <h3>Help build the picture</h3>
+    <ol>
+      <li>Near the Garden River plant (177 Highway 17B) or the Carling / Parry Sound site? Send a few current, dated photos from the public road: the building, the yard, lumber or finished trusses, trucks, any activity.</li>
+      <li>Have you supplied, bought from, or worked at GR Truss? Tell us whether it is operating and who it deals with.</li>
+      <li>Only what you can share safely: public places only, no trespassing, do not photograph or name any worker, and only your own experience. We verify before we publish.</li>
+    </ol>
+    <p class="grt-cta">Send what you have through the <a href="/contact">contact form</a> and a member will reply.</p>
+  </div>
+
+  {% include 'components/section_heading.html.twig' with { title: 'Updates' } only %}
+  <div class="grt-updates">Member contributions and new records will be added here, dated, as they come in.</div>
+
+  <p>See also <a href="/communities/sagamok/how-its-organized">how Sagamok is organized</a>, which maps GR Truss and the Nation's other enterprises, the <a href="/communities/sagamok/conflict-register">Conflict Register</a>, and the <a href="/standard/records-request">records request</a>, which asks Council directly about the enterprises and the benefit to members.</p>
 
   {% include 'components/section_heading.html.twig' with { title: 'Sources' } only %}
   <ul class="src-links">
     <li><a href="https://www.sagamokanishnawbek.com/annual-report-financial-statements/2025-annual-report" target="_blank" rel="noopener">FY2025 audited financial statements (Note 18)</a></li>
-    <li><a href="https://www.sagamokanishnawbek.com/meeting-minutes/meeting-minutes" target="_blank" rel="noopener">Council minutes and BCRs as cited</a></li>
-    <li><a href="https://www.ontario.ca/page/ontario-business-registry" target="_blank" rel="noopener">Ontario Business Registry</a></li>
+    <li><a href="https://www.ontario.ca/page/ontario-business-registry" target="_blank" rel="noopener">Ontario Business Registry</a> (2262012 Ontario Limited, 15558409 Canada Ltd, Sagamok Real Estate Holdings LP)</li>
+    <li><a href="https://www.sagamokanishnawbek.com/meeting-minutes/meeting-minutes" target="_blank" rel="noopener">Council minutes</a> (Motions 2025/04 #05, 2025/09 #45, 2026/01 #18, 2026/05 #10, 2026/02 #16, 2025/11 #19)</li>
+    <li>Trade press for the reported Ontario government investment</li>
   </ul>
 
-  <p class="cover__byline">A community resource from the Robinson Huron Treaty hub, member-led and independent. Facts are from public sources; the questions are for our leadership. Corrections welcome.</p>
+  <p class="cover__byline">A community resource from the Robinson Huron Treaty hub, member-led and independent. Facts are from cited records; the questions are for our leadership. Corrections welcome.</p>
 {% endblock %}
