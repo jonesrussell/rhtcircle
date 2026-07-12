@@ -54,10 +54,24 @@
   .cr-badge { display: inline-block; background: var(--paper); border: 1px solid var(--coral); color: var(--coral); border-radius: 999px; padding: 3px 10px; font-family: var(--font-sans); font-size: 12px; font-weight: 700; white-space: normal; }
   .cr-badge--abstention { border-color: var(--blue); color: var(--blue); }
 
-  @media (max-width: 560px) {
+  /* Below 760px: the table becomes a stacked list of cards, one per
+     decision, no horizontal scrolling. Each cell keeps its column name as
+     a small label (from its data-label attribute) above the value. */
+  @media (max-width: 760px) {
     .cr-filter__select { min-width: 100%; }
     .cr-filter__group { width: 100%; }
     .cr-filter__reset { width: 100%; }
+
+    .cr-table-wrap { overflow-x: visible; border: none; background: transparent; }
+    .cr-table { min-width: 0; width: 100%; }
+    .cr-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .cr-table, .cr-table tbody, .cr-table tr, .cr-table td { display: block; width: 100%; }
+    .cr-table tbody tr { border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper-2); padding: 12px 14px; margin: 0 0 12px; }
+    .cr-table tbody tr:last-child { margin-bottom: 0; }
+    .cr-table td { border: none; padding: 6px 0; white-space: normal; text-align: left; }
+    .cr-table td[data-label]::before { content: attr(data-label); display: block; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; color: var(--ink-3); margin-bottom: 2px; }
+    .cr-td-entity, .cr-td-date { white-space: normal; }
+    .cr-td-amount, .cr-td-amount.is-none { text-align: left; }
   }
 </style>
 {% endblock %}
@@ -899,8 +913,8 @@
           : '<span class="cr-td-none">not councillor-directed</span>';
 
         var amountCell = d.amount
-          ? '<td class="cr-td-amount">' + esc(fmtMoney(d.amount)) + '</td>'
-          : '<td class="cr-td-amount is-none">not a cash amount</td>';
+          ? '<td class="cr-td-amount" data-label="Amount">' + esc(fmtMoney(d.amount)) + '</td>'
+          : '<td class="cr-td-amount is-none" data-label="Amount">not a cash amount</td>';
 
         var text = d.text.length > 150 ? d.text.slice(0, 150) + '…' : d.text;
 
@@ -912,13 +926,13 @@
           (d.incamera ? '<span class="cr-tag--incamera">in-camera</span>' : '');
 
         return '<tr>' +
-          '<td class="cr-td-date">' + esc(d.date) + dateTags + '</td>' +
-          '<td class="cr-td-entity">' + esc(d.entity) + '</td>' +
-          '<td>' + esc(text) + '</td>' +
+          '<td class="cr-td-date" data-label="Date">' + esc(d.date) + dateTags + '</td>' +
+          '<td class="cr-td-entity" data-label="Company">' + esc(d.entity) + '</td>' +
+          '<td data-label="Decision">' + esc(text) + '</td>' +
           amountCell +
-          '<td>' + esc(d.mover) + ' / ' + esc(d.seconder) + '</td>' +
-          '<td><div class="cr-chips">' + chips + '</div></td>' +
-          '<td>' + recusalCell + '</td>' +
+          '<td data-label="Moved / seconded">' + esc(d.mover) + ' / ' + esc(d.seconder) + '</td>' +
+          '<td data-label="Councillor-directors"><div class="cr-chips">' + chips + '</div></td>' +
+          '<td data-label="Recusal">' + recusalCell + '</td>' +
           '</tr>';
       }).join('');
     }
