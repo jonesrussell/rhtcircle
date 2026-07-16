@@ -78,6 +78,23 @@ final class SiteController
     }
 
     /**
+     * The source-backed Sagamok member accountability resolution. The public
+     * payload is generated from the private campaign source and contains only
+     * the resolution, public dates, and public-safe tracker steps.
+     *
+     * @param array<string, mixed> $data
+     */
+    public function sagamokAccountabilityResolution(array $data): Response
+    {
+        return $this->html(View::render('pages/communities/sagamok/account-or-resign.html.twig', [
+            'campaign' => $data['campaign'] ?? [],
+            'resolution' => $data['resolution'] ?? [],
+            'members_record' => $data['members_record'] ?? [],
+            'public_stages' => $data['public_stages'] ?? [],
+        ]));
+    }
+
+    /**
      * A per-project Land page, rendered from the LandProjects content layer through
      * one shared template. Unknown slug renders the 404 page. Massey keeps its own
      * richer cluster at /land/massey-solar-project and is not served here.

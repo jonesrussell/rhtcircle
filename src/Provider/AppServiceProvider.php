@@ -140,6 +140,15 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 'We, the undersigned members of Sagamok Anishnawbek, declare that we have lost confidence in the current Chief and Council, and we call on them to account fully to the members within thirty days, or resign.',
                 'Sagamok Chief and Council',
             );
+            // The July 23 member resolution is a new consent instrument. Keep
+            // the earlier Account-or-Resign signatures attached to their exact
+            // original statement; never carry them into this campaign.
+            $repo->ensureCampaign(
+                'sagamok-accountability-resolution-2026',
+                'Sagamok Members\' Accountability Resolution',
+                'I support the seven requested actions in the Sagamok Members\' Accountability Resolution displayed at rhtcircle.ca/communities/sagamok/account-or-resign.',
+                'Sagamok Chief and Council',
+            );
         } catch (\Throwable) {
             // Additive feature; never let it break page rendering.
         }
@@ -321,7 +330,8 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'sagamok-play-limited-partnership' => ['/communities/sagamok/play-limited-partnership', 'pages/communities/sagamok/play-limited-partnership.html.twig'],
             'sagamok-espanola-mill-bmi' => ['/communities/sagamok/espanola-mill-bmi', 'pages/communities/sagamok/espanola-mill-bmi.html.twig'],
             'sagamok-one-seat-one-salary' => ['/communities/sagamok/one-seat-one-salary', 'pages/communities/sagamok/one-seat-one-salary.html.twig'],
-            'sagamok-account-or-resign' => ['/communities/sagamok/account-or-resign', 'pages/communities/sagamok/account-or-resign.html.twig'],
+            // sagamok-account-or-resign is registered explicitly below so its
+            // generated, source-backed resolution data reaches the template.
             // The Conflict Register: an interactive tool, filterable by
             // councillor or company, cross-referencing enterprise money
             // votes against councillor-director board seats. First of a
@@ -459,6 +469,17 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 ->controller(fn (Request $request) => $md->wantsMarkdown($request)
                     ? $md->pageResponse('/communities/sagamok/awaiting-council')
                     : $controller->sagamokAwaitingCouncil($this->recordsRequestSignatures()))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+
+        $router->addRoute(
+            'sagamok-account-or-resign',
+            RouteBuilder::create('/communities/sagamok/account-or-resign')
+                ->controller(fn (Request $request) => $md->wantsMarkdown($request)
+                    ? $md->pageResponse('/communities/sagamok/account-or-resign')
+                    : $controller->sagamokAccountabilityResolution($this->sagamokAccountabilityResolutionData()))
                 ->allowAll()
                 ->methods('GET')
                 ->build(),
@@ -715,6 +736,25 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         $adminGet('admin.anokii.module', '/admin/anokii/m/{module}', fn (Request $request, string $module) => $admin->comingSoon($request, $module));
         // The analytics dashboard moved under /admin/anokii; one-hop 301 the old path.
         $adminGet('admin.analytics.redirect', '/admin/analytics', fn (Request $request) => new \Symfony\Component\HttpFoundation\RedirectResponse('/admin/anokii/analytics', 301));
+    }
+
+    /**
+     * Load the generated public subset of the Sagamok member-resolution
+     * campaign source. Generation performs the source-identity leak checks;
+     * this loader fails closed if the committed payload is missing or invalid.
+     *
+     * @return array<string, mixed>
+     */
+    private function sagamokAccountabilityResolutionData(): array
+    {
+        $path = dirname(__DIR__, 2) . '/resources/content/sagamok-accountability-resolution.generated.json';
+        $json = is_file($path) ? file_get_contents($path) : false;
+        $data = is_string($json) ? json_decode($json, true) : null;
+        if (!is_array($data) || !isset($data['campaign'], $data['resolution'], $data['members_record'], $data['public_stages'])) {
+            throw new \RuntimeException('Generated Sagamok accountability resolution data is missing or invalid.');
+        }
+
+        return $data;
     }
 
     /**

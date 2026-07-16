@@ -1,320 +1,202 @@
 {% extends 'base.html.twig' %}
 {% set nav = 'communities' %}
 
-{% block title %}Account, or Resign: a member statement · Robinson Huron Treaty{% endblock %}
-{% block description %}A member-authored statement of no confidence in Sagamok's current Chief and Council, calling on them to account fully to the members within thirty days, or resign. Members can add their name, publicly or to be counted only.{% endblock %}
-{% block og_description %}Members of Sagamok Anishnawbek state that they have lost confidence in the current Chief and Council, and call on them to account fully, or resign.{% endblock %}
+{% block title %}Sagamok Members' Accountability Resolution · Robinson Huron Treaty{% endblock %}
+{% block description %}The exact non-binding member resolution proposed for the July 23, 2026 Sagamok member meeting, with seven documented accountability actions for Chief and Council.{% endblock %}
+{% block og_description %}Read and sign the exact non-binding Sagamok Members' Accountability Resolution proposed for July 23, 2026.{% endblock %}
 {% block body_class %}route-sagamok-account-or-resign{% endblock %}
-{# Wide outer frame (site's shared --max-wide token, same as what-matters/poll)
-   so the timeline section below has real room. Statement/ask/sign-form stay
-   in their own narrower .aor-prose column inside it; only the timeline
-   section breaks out to the full wide frame. #}
 {% block main_class %}wrap wrap--wide{% endblock %}
 
 {% block head_styles %}
 <style>
-  /* Page structure: .aor-prose is the narrow reading column (centered inside
-     the wide .wrap--wide frame set by main_class above); the timeline section
-     sits between two .aor-prose blocks and deliberately has no such wrapper,
-     so it spans the full wide frame per the 2026-07-11 layout request. */
-  .aor-prose { max-width: 780px; margin: 0 auto; }
+  .mar-prose { max-width: 820px; margin: 0 auto; }
+  .mar-banner { margin: 0; background: linear-gradient(120deg, var(--indigo-deep), var(--indigo)); }
+  .mar-banner img { display: block; width: 100%; height: auto; }
+  .mar-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(260px, .8fr); gap: var(--gap-6); align-items: start; margin: var(--gap-6) 0; }
+  .mar-card { background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--radius-lg); padding: 22px; }
+  .mar-card h2, .mar-card h3 { margin-top: 0; }
+  .mar-status { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; background: var(--accent-wash); color: var(--accent-deep); padding: 6px 12px; font: 700 12px/1 var(--font-sans); text-transform: uppercase; letter-spacing: .05em; }
+  .mar-status::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .mar-dates { list-style: none; margin: 16px 0 0; padding: 0; }
+  .mar-dates li { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 9px 0; border-top: 1px solid var(--rule); }
+  .mar-dates time { font-weight: 700; color: var(--ink); }
+  .mar-disclaimer { border-left: 4px solid var(--blue); background: color-mix(in srgb, var(--blue) 8%, var(--paper)); padding: 18px 20px; border-radius: 0 var(--radius-md) var(--radius-md) 0; margin: var(--gap-5) 0; }
+  .mar-disclaimer p { margin: 0; }
+  .mar-resolution { background: var(--paper); border: 1px solid var(--rule-strong); border-radius: var(--radius-lg); padding: clamp(22px, 4vw, 38px); margin: var(--gap-6) 0; }
+  .mar-resolution header { border-bottom: 2px solid var(--ink); padding-bottom: 18px; margin-bottom: 24px; }
+  .mar-resolution header p { margin: 4px 0 0; color: var(--ink-3); }
+  .mar-resolution > p { line-height: 1.7; }
+  .mar-resolved { font-family: var(--font-serif); font-size: clamp(19px, 2.2vw, 24px); color: var(--ink); padding: 18px 0; }
+  .mar-actions { list-style: none; margin: 0; padding: 0; counter-reset: action; }
+  .mar-actions li { position: relative; padding: 18px 0 18px 58px; border-top: 1px solid var(--rule); line-height: 1.62; }
+  .mar-actions li::before { content: counter(action); counter-increment: action; position: absolute; left: 0; top: 18px; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800; }
+  .mar-actions strong { display: block; color: var(--ink); margin-bottom: 3px; }
+  .mar-clause { background: var(--accent-wash); border: 1px solid var(--accent-soft); border-radius: var(--radius-md); padding: 18px 20px; margin-top: 22px; }
+  .mar-clause h3 { margin: 0 0 6px; font: 700 13px var(--font-sans); text-transform: uppercase; letter-spacing: .05em; color: var(--accent-deep); }
+  .mar-clause p { margin: 0; line-height: 1.65; }
+  .mar-why ul { padding-left: 22px; }
+  .mar-why li { margin-bottom: 10px; line-height: 1.6; }
+  .mar-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: var(--gap-5) 0; }
+  .mar-step { background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--radius-md); padding: 16px; }
+  .mar-step time { display: block; font: 700 12px var(--font-sans); color: var(--accent-deep); text-transform: uppercase; letter-spacing: .05em; }
+  .mar-step strong { display: block; margin: 5px 0; }
+  .mar-step p { font-size: 13px; line-height: 1.5; margin: 0; color: var(--ink-2); }
+  .mar-record { margin: var(--gap-6) 0; }
+  .mar-record-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .mar-record-card { display: block; text-decoration: none; background: var(--paper-2); border: 1px solid var(--rule); border-top: 4px solid var(--accent); border-radius: var(--radius-lg); padding: 19px; }
+  .mar-record-card:nth-child(2) { border-top-color: var(--blue); }
+  .mar-record-card:nth-child(3) { border-top-color: var(--coral); }
+  .mar-record-card:hover { border-color: var(--rule-strong); }
+  .mar-record-count { display: block; font-family: var(--font-serif); font-size: 38px; font-weight: 700; line-height: 1; color: var(--accent-deep); font-variant-numeric: tabular-nums; }
+  .mar-record-card:nth-child(2) .mar-record-count { color: var(--blue); }
+  .mar-record-card:nth-child(3) .mar-record-count { color: var(--coral); }
+  .mar-record-label { display: block; margin-top: 8px; color: var(--ink); line-height: 1.45; }
+  .mar-record-note { display: block; margin-top: 8px; color: var(--ink-3); font-size: 12px; line-height: 1.45; }
 
-  /* Inline callout visuals interspersed in the statement (2026-07-11), to
-     break up the wall of text for members who find it harder to read
-     (learning differences, literacy, visual learners). A touch wider than
-     the 74ch prose measure so they read as their own callout rather than
-     squeezed prose, but still comfortably inside .aor-prose's 780px column.
-     Rounded corners + border match the site's existing figure treatment
-     (.rr-illus in the records-request page). Placeholder background shows
-     through with no broken-image look until the real files land. */
-  .aor-visual { margin: var(--gap-5) 0; text-align: center; }
-  .aor-visual img { display: block; width: 100%; max-width: 720px; min-height: 140px; height: auto; margin: 0 auto; padding: 10px; box-sizing: border-box; border-radius: var(--radius-lg); border: 1px solid var(--rule); background: var(--paper-2); color: var(--ink-3); font-family: var(--font-sans); font-size: 13px; }
-
-  /* Full-width header banner (roughly 3:1), above the hero title. Natural
-     width/height scaling (no forced aspect-ratio crop) so it stays correct
-     for whatever the actual supplied image's dimensions are. A soft gradient
-     behind the <img> shows through as a graceful placeholder until the real
-     file is in place, and briefly if the image ever fails to load. */
-  .aor-banner { margin: 0; background: linear-gradient(120deg, var(--indigo-deep), var(--indigo)); }
-  .aor-banner img { display: block; width: 100%; height: auto; }
-
-  /* Statement body + reused sign-card (.aor-stmt is page-local prose framing;
-     .rr-* is the shared petition sign-card, same tokens/markup as the
-     records-request page, just a different campaign slug in the script). */
-  .aor-stmt p { max-width: 74ch; line-height: 1.65; margin: 0 0 var(--gap-4); }
-  .aor-stmt .lead { font-family: var(--font-serif); font-size: clamp(18px, 2vw, 21px); line-height: 1.55; color: var(--ink); }
-  .aor-stmt ul { margin: 0 0 var(--gap-4); padding-left: 22px; max-width: 74ch; }
-  .aor-stmt ul li { margin: 0 0 8px; line-height: 1.6; color: var(--ink-2); }
-  .aor-stmt ul li:last-child { margin-bottom: 0; }
-
-  /* In-statement headings (2026-07-12): three headings inside the reading
-     body itself, deliberately lighter than the page-level section labels
-     (the h2 from components/section_heading.html.twig, e.g. "The statement"
-     and "How we got here") so the hierarchy reads page section > statement >
-     in-statement heading. */
-  .aor-stmt-head { font-family: var(--font-sans); font-size: 15px; font-weight: 600; letter-spacing: 0.01em; text-transform: none; color: var(--ink-2); border: none; padding: 0; margin: var(--gap-6) 0 var(--gap-3); }
-  .aor-ask { margin: var(--gap-5) 0; background: var(--accent-wash); border: 1px solid var(--accent-soft); border-left: 4px solid var(--accent); border-radius: var(--radius-md); padding: 20px 24px; }
-  .aor-ask h3 { font-family: var(--font-sans); font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-deep); margin: 0 0 10px; }
-  .aor-ask ol { margin: 0; padding-left: 22px; max-width: 74ch; }
-  .aor-ask li { margin: 0 0 12px; line-height: 1.6; color: var(--ink-2); }
-  .aor-ask li b { color: var(--ink); }
-  .aor-ask li:last-child { margin-bottom: 0; }
-
-  /* Sign-on card, ported verbatim from the records-request page (.rr-*). */
-  .rr-card { background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--radius-lg); padding: 24px 24px 26px; margin: var(--gap-6) 0; }
-  .rr-card h2 { font-family: var(--font-serif); font-weight: 500; font-size: 22px; margin: 0 0 4px; color: var(--ink); }
-  .rr-count { margin: 0 0 18px; font-size: 15px; color: var(--ink-2); }
-  .rr-count b { font-family: var(--font-sans); font-size: 22px; font-weight: 700; color: var(--accent-deep); font-variant-numeric: tabular-nums; }
-  .rr-paper { margin: -12px 0 18px; font-size: 13px; line-height: 1.5; color: var(--ink-3); max-width: none; }
-  .rr-statement { font-family: var(--font-serif); font-size: clamp(18px, 2vw, 22px); line-height: 1.5; color: var(--ink); border-left: 3px solid var(--accent); background: var(--accent-wash); padding: 18px 22px; border-radius: 0 var(--radius-md) var(--radius-md) 0; margin: 0 0 var(--gap-5); max-width: none; }
+  .rr-card { background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--radius-lg); padding: 24px; margin: var(--gap-6) 0; }
+  .rr-card h2 { font-family: var(--font-serif); font-weight: 500; font-size: 25px; margin: 0 0 4px; }
+  .rr-count { margin: 0 0 18px; color: var(--ink-2); }
+  .rr-count b { font-size: 22px; color: var(--accent-deep); font-variant-numeric: tabular-nums; }
+  .rr-statement { font-family: var(--font-serif); font-size: 19px; line-height: 1.55; border-left: 3px solid var(--accent); background: var(--accent-wash); padding: 18px 20px; margin: 18px 0; }
   .rr-field { margin: 0 0 16px; }
-  .rr-label { display: block; font-family: var(--font-sans); font-size: 13px; font-weight: 600; color: var(--ink); margin: 0 0 5px; }
+  .rr-label { display: block; font: 600 13px var(--font-sans); margin: 0 0 5px; }
   .rr-label .opt { color: var(--ink-3); font-weight: 400; }
   .rr-input, .rr-textarea { width: 100%; background: var(--paper); color: var(--ink); border: 1px solid var(--rule-strong); border-radius: 8px; padding: 10px 12px; font: inherit; }
   .rr-textarea { min-height: 88px; resize: vertical; }
-  .rr-input:focus, .rr-textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+  .rr-input:focus, .rr-textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
   .rr-seg { display: inline-flex; flex-wrap: wrap; gap: 8px; }
   .rr-choice { display: inline-flex; }
-  .rr-choice label { display: inline-block; padding: 8px 14px; font-size: 13.5px; cursor: pointer; color: var(--ink-2); border: 1px solid var(--rule-strong); border-radius: 999px; background: var(--paper); }
+  .rr-choice label { padding: 8px 14px; font-size: 13.5px; cursor: pointer; border: 1px solid var(--rule-strong); border-radius: 999px; background: var(--paper); }
   .rr-choice input { position: absolute; opacity: 0; pointer-events: none; }
   .rr-choice label:has(input:checked) { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
   .rr-consent { border: 1px solid var(--rule); border-radius: var(--radius-md); padding: 14px 16px; margin: 0 0 16px; }
-  .rr-consent .q { font-family: var(--font-sans); font-size: 13.5px; font-weight: 600; color: var(--ink); margin: 0 0 8px; max-width: none; }
+  .rr-consent .q { font: 600 13.5px var(--font-sans); margin: 0 0 8px; }
   .rr-honey { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-  .rr-submit { -webkit-appearance: none; appearance: none; border: none; cursor: pointer; background: var(--accent); color: #fff; font-family: var(--font-sans); font-size: 15px; font-weight: 700; padding: 12px 24px; border-radius: 999px; }
-  .rr-submit:disabled { opacity: 0.6; cursor: default; }
-  .rr-msg { margin: 12px 0 0; font-size: 13.5px; min-height: 1em; max-width: none; }
-  .rr-msg.is-error { color: oklch(0.55 0.16 25); }
-  .rr-fine { margin: 16px 0 0; padding-top: 14px; border-top: 1px solid var(--rule); font-size: 12.5px; color: var(--ink-3); line-height: 1.55; max-width: none; }
+  .rr-submit, .rr-sharebtn { appearance: none; border: none; cursor: pointer; background: var(--accent); color: #fff; font: 700 14px var(--font-sans); padding: 10px 20px; border-radius: 999px; }
+  .rr-submit:disabled { opacity: .6; }
+  .rr-msg { margin: 12px 0 0; font-size: 13.5px; min-height: 1em; }
+  .rr-msg.is-error { color: #9f3029; }
+  .rr-fine { margin: 16px 0 0; padding-top: 14px; border-top: 1px solid var(--rule); font-size: 12.5px; color: var(--ink-3); line-height: 1.55; }
   .rr-done { display: none; }
   .rr-card.is-done .rr-form { display: none; }
   .rr-card.is-done .rr-done { display: block; }
-  .rr-done h3 { font-family: var(--font-serif); font-size: 22px; font-weight: 500; color: var(--ink); margin: 0 0 8px; border: none; padding: 0; text-transform: none; letter-spacing: 0; }
-  .rr-remove { color: var(--ink-3); font-size: 12.5px; max-width: none; }
-  .rr-remove a { color: var(--accent-deep); }
-  .rr-share { margin: 14px 0 0; font-size: 14px; color: var(--ink-2); max-width: none; }
-  .rr-copy { -webkit-appearance: none; appearance: none; cursor: pointer; border: 1px solid var(--accent-soft); background: var(--accent-wash); color: var(--accent-deep); font: inherit; font-size: 13px; font-weight: 600; padding: 5px 12px; border-radius: 999px; margin-left: 4px; }
-  .rr-copy:hover { border-color: var(--accent); }
-  .rr-sharebar { margin: 0 0 18px; font-size: 13.5px; color: var(--ink-2); display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; max-width: none; }
-  .rr-card.is-done .rr-sharebar { display: none; }
-  .rr-sharebtn { -webkit-appearance: none; appearance: none; cursor: pointer; border: none; background: var(--accent); color: #fff; font: inherit; font-size: 13px; font-weight: 700; padding: 6px 16px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px; }
-  .rr-sharebtn:hover { filter: brightness(1.05); }
-  .rr-supporters { margin: var(--gap-5) 0 0; max-width: 820px; }
-  .rr-supporters h3 { font-family: var(--font-sans); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 10px; border: none; padding: 0; }
-  .rr-supporters ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-  .rr-supporters li { font-size: 13px; color: var(--ink-2); background: var(--paper-2); border: 1px solid var(--rule); border-radius: 999px; padding: 4px 12px; }
-
-  /* "The members' record": three stat pills right before the sign form, each
-     a different colour + caption so the three counts are never confused with
-     one another. .aor-stat--primary (this statement, magenta/accent) is the
-     live, highlighted one tied to the sign form below; the other two are
-     reference counts from a different instrument entirely (a different
-     petition/campaign), each linked to its own source. Side by side on
-     desktop, stacked on mobile. */
-  .aor-stats { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 var(--gap-6); }
-  .aor-stat { flex: 1 1 220px; display: block; text-decoration: none; border-radius: var(--radius-lg); border: 1px solid var(--rule); background: var(--paper-2); padding: 16px 18px; }
-  .aor-stat__n { display: block; font-family: var(--font-serif); font-size: 30px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
-  .aor-stat__c { display: block; margin-top: 4px; font-family: var(--font-sans); font-size: 13px; line-height: 1.4; color: var(--ink-2); }
-  .aor-stat--primary { background: var(--accent-wash); border-color: var(--accent-soft); border-left: 4px solid var(--accent); }
-  .aor-stat--primary .aor-stat__n { color: var(--accent-deep); }
-  .aor-stat--records { border-left: 4px solid var(--blue); }
-  .aor-stat--records .aor-stat__n { color: var(--blue); }
-  .aor-stat--audit { border-left: 4px solid var(--coral); }
-  .aor-stat--audit .aor-stat__n { color: var(--coral); }
-  a.aor-stat:hover { border-color: var(--rule-strong); }
-  a.aor-stat--primary:hover { border-color: var(--accent-soft); }
-
-  @media (max-width: 560px) {
-    .aor-stats { flex-direction: column; }
-    .aor-stat { flex: 1 1 auto; }
-  }
-
-  /* "How we got here." timeline: full wide frame (no .aor-prose wrapper
-     around this section, unlike the statement/ask/sign-form above and below
-     it), a genuine two-column "date on one side, event on the other" layout
-     on desktop, using the room the wide frame provides. Event text itself
-     still has its own readable measure (68ch) even at full width; only the
-     spine/date gutter use the extra space. Collapses to a single stacked
-     column (date above event) on mobile. */
-  .aor-timeline-section { margin: var(--gap-7) 0; }
-  .aor-timeline { list-style: none; margin: 0; padding: 0; }
-  .aor-timeline__item {
-    position: relative;
-    display: grid;
-    grid-template-columns: 190px 28px 1fr;
-    column-gap: 4px;
-    padding: 0 0 var(--gap-6);
-    border-bottom: 1px solid var(--rule);
-    margin: 0 0 var(--gap-6);
-  }
-  .aor-timeline__item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-  .aor-timeline__date { font-family: var(--font-sans); font-size: 13px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--accent-deep); padding-top: 3px; }
-  .aor-timeline__marker { position: relative; display: flex; justify-content: center; }
-  .aor-timeline__marker::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid var(--paper); box-shadow: 0 0 0 2px var(--rule); margin-top: 3px; }
-  .aor-timeline__marker::after { content: ''; position: absolute; top: 22px; bottom: calc(-1 * var(--gap-6) - 1px); left: 50%; width: 2px; background: var(--rule); transform: translateX(-50%); }
-  .aor-timeline__item:last-child .aor-timeline__marker::after { display: none; }
-  .aor-timeline__event { font-size: 15px; line-height: 1.65; color: var(--ink-2); max-width: 68ch; }
-  .aor-timeline__event strong { display: block; color: var(--ink); font-family: var(--font-serif); font-size: 17.5px; font-weight: 600; margin: 0 0 4px; }
-
-  @media (max-width: 700px) {
-    .aor-timeline__item { grid-template-columns: 20px 1fr; column-gap: 14px; }
-    .aor-timeline__date { grid-column: 2; grid-row: 1; padding-top: 0; margin-bottom: 4px; }
-    .aor-timeline__marker { grid-column: 1; grid-row: 1 / 3; }
-    .aor-timeline__event { grid-column: 2; grid-row: 2; }
-  }
+  .rr-done h3 { font-family: var(--font-serif); font-size: 22px; font-weight: 500; }
+  .rr-sharebar, .rr-share { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13.5px; }
+  .rr-copy { appearance: none; cursor: pointer; border: 1px solid var(--accent-soft); background: var(--accent-wash); color: var(--accent-deep); font: 600 13px var(--font-sans); padding: 6px 12px; border-radius: 999px; }
+  .rr-supporters ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .rr-supporters li { font-size: 13px; background: var(--paper-2); border: 1px solid var(--rule); border-radius: 999px; padding: 4px 12px; }
+  @media (max-width: 900px) { .mar-grid { grid-template-columns: 1fr; } .mar-steps { grid-template-columns: 1fr 1fr; } .mar-record-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .mar-steps { grid-template-columns: 1fr; } .mar-dates li { grid-template-columns: 1fr; gap: 2px; } .mar-actions li { padding-left: 48px; } }
 </style>
 {% endblock %}
 
 {% block hero %}
-<figure class="aor-banner">
-  {# Placeholder path: Russell, drop the banner file in at
-     public/images/account-or-resign-banner.jpg (roughly 3:1, a generated
-     North Shore landscape) and it will appear here automatically, no
-     template change needed. #}
-  <img src="/images/account-or-resign-banner.jpg?v=1" alt="A North Shore landscape banner for the Sagamok Anishnawbek member statement, Account, or Resign." loading="eager">
+<figure class="mar-banner">
+  <img src="/images/account-or-resign-banner.jpg?v=1" alt="North Shore landscape for the Sagamok Members' Accountability Resolution." loading="eager">
 </figure>
 <section class="hero">
   <div class="wrap wrap--wide">
-    <p class="eyebrow">Sagamok Anishnawbek · A statement from members to Chief and Council</p>
-    <h1>Account, or Resign</h1>
+    <p class="eyebrow">Sagamok Anishnawbek · proposed for the July 23 member meeting</p>
+    <h1>{{ campaign.title }}</h1>
   </div>
 </section>
 {% endblock %}
 
 {% block content %}
-<div class="aor-prose">
-  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › Account, or Resign</p>
+<div class="mar-prose">
+  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › Members' Accountability Resolution</p>
 
-  {% set banner_body %}<strong>A member-authored statement, hosted and carried by the Circle.</strong> This is not the Circle's own characterization of any person; it is a statement members chose to write and sign, reproduced here as written. Everything here is drawn from the public record. If you can <a href="/about#corrections">show us an inaccuracy</a>, we will correct it.{% endset %}
-  {% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'About this statement' } only %}
+  {% set notice_body %}<strong>This is a proposed non-binding member resolution.</strong> It records member will and requests formal Council action. It is not a Band Council Resolution, does not remove anyone from office, and is not a legal recall vote. The text may be amended by members at the July 23 meeting; this page will be reconciled to the wording actually adopted.{% endset %}
+  {% include 'components/notice.html.twig' with { variant: 'caveat', body: notice_body, label: 'What this is' } only %}
 
-  {% include 'components/section_heading.html.twig' with { title: 'The statement', id: 'aor-statement-h' } only %}
-
-  <div class="aor-stmt">
-    <p>We are members of <a href="/communities/sagamok">Sagamok Anishnawbek</a>. We are writing together because we have lost confidence in our Chief and Council, and because we have no other way to say so that carries any weight. Our election law provides members no means to remove leadership between elections. That silence in the law is exactly why this statement is necessary.</p>
-
-    <p>We do not make this statement lightly. We come to it with different feelings. Some of us are angry. Some are disappointed. Some are worried. Some are confused. Some are simply tired of asking and getting no answer. What unites us is not a mood, it is the record.</p>
-
-    <p>We asked for answers, and received none. On June 10, 2026, members submitted a <a href="/standard/records-request">formal records request</a> to Chief and Council, signed by more than one hundred members, asking for specific documents tied to specific decisions. We asked for a response within thirty days. That period closed on July 10 with no records, no accounting, and no substantive reply. And this is not new: one member alone has written to Chief and Council through their office roughly eighteen times since May 2026, and has not received a single substantive answer. One reply promised a response within twenty-four hours. It never came. Here is what the record shows.</p>
-
-    <figure class="aor-visual">
-      <img src="/images/account-or-resign-v1-deadline.png?v=1" loading="lazy" alt="Thirty days. No answer. On June 10 more than one hundred members asked Chief and Council for records; the thirty-day period closed July 10 with no reply.">
-    </figure>
-
-    <h3 class="aor-stmt-head">What the record shows</h3>
-
-    <p>We have not been given an accounting of our settlement. The Nation holds a settlement trust of roughly $219 million (BMO, December 2025). Members cannot see the basic answers:</p>
-    <ul>
-      <li>where the trust is held, and who can authorize moving it;</li>
-      <li>what return it earns for the members;</li>
-      <li>the terms of the roughly $97 million of our settlement that, by the Nation's own audited statements, was loaned to the Nation's own businesses, businesses whose boards and officer positions are held by members of the same Chief and Council.</li>
-    </ul>
-    <p>We have asked these questions. We have not been answered.</p>
-
-    <p>The Nation's financial advisor sits on the board of a company the Nation funds. The Nation's external financial advisor operates through a single-person firm, McLeod Consulting. He also sits on the board of Legend Mining Inc., a Nation-owned company that the Nation financed with a line of credit of up to $1.5 million and that can draw on the Nation's $25 million enterprise facility. Members have not been shown how any conflict of interest here is disclosed and managed, or the advisor's engagement terms and fees.</p>
-
-    <figure class="aor-visual">
-      <img src="/images/account-or-resign-v4-advisor.png?v=1" loading="lazy" alt="Diagram: the Nation's external financial advisor, McLeod Consulting, sits on the board of Legend Mining Inc., a Nation-owned company the Nation financed with a $1.5 million line of credit and a $25 million facility. Members have not been shown how the conflict is managed.">
-    </figure>
-
-    <h3 class="aor-stmt-head">The same people sit on both sides</h3>
-
-    <p>Nine of the thirteen members of Chief and Council hold director or officer seats on the boards of the Nation's companies, ZEI, ZCLP, OCL, GR Truss and others. Some hold four or five. The <strong>Finance and Audit Committee</strong>, the body meant to give independent financial oversight, is made up entirely of councillors who direct the very companies it would review. Members have gone through the Nation's own minutes, decision by decision (you can see them in the <a href="/communities/sagamok/conflict-register">Conflict Register</a>): councillors <strong>do</strong> step out of a vote when the conflict is their <strong>job</strong>, one abstained "as Economic Development Manager." But on the votes that send the Nation's money to the companies those same councillors <strong>direct</strong>, the minutes record no one stepping out at all.</p>
-
-    <figure class="aor-visual">
-      <img src="/images/account-or-resign-v6-bothsides.png?v=1" loading="lazy" alt="The same people sit on both sides. Nine of the thirteen we elected also sit on the boards of the Nation's companies. They step out of a vote about their own job, not a vote to fund a company they direct. The minutes record no director stepping out. See the Conflict Register at rhtcircle.ca.">
-    </figure>
-
-    <p>Decisions are made without us. Major commitments have been made in closed session and disclosed to members late, or not at all, without consultation. Among them:</p>
-    <ul>
-      <li>the <a href="/communities/sagamok/long-term-care">long-term care Memorandum of Understanding</a>, authorized in a closed session and not shown to members until they pressed for it;</li>
-      <li>a truss company called <strong><a href="/communities/sagamok/gr-truss">GR Truss</a>, which the Nation bought outright for one hundred dollars</strong> and whose president is the Chief. Since that $100 purchase, the Nation has put in between roughly $775,000 and $900,000 by its own motions, including a $150,000 advance authorized in a closed session. GR Truss is <strong>not broken out anywhere in the Nation's audited statements</strong>, so members cannot see its sales, its profit, or its losses, and Council has now authorized it to <strong>borrow to buy a much larger company</strong>. Members have not been shown the terms;</li>
-      <li>a term sheet for a "<a href="/communities/sagamok/play-limited-partnership">Play Limited Partnership</a>" that the Chief was authorized to sign in a closed session.</li>
-    </ul>
-    <p>None of these came to the members first.</p>
-
-    <p>We paid seven million dollars for land that had just sold for one. In Sault Ste. Marie, the Nation paid $7 million for a property (registered November 2024, Motion 2024/10 #07). The public land registry for that same property shows it sold for $350,000 in 2018 and for $1.2 million in August 2023, the year before the Nation paid $7 million for it. Members have not been shown an independent appraisal, the rate of return, the security, or who is building on it.</p>
-
-    <figure class="aor-visual">
-      <img src="/images/account-or-resign-v5-land.png?v=1" loading="lazy" alt="Sold for $1.2 million in August 2023. The Nation paid $7 million in November 2024 for the same 201 South Market Street property in Sault Ste. Marie (Motion 2024/10 #07). Members have not been shown an independent appraisal, the rate of return, the security, or who is building on it.">
-    </figure>
-
-    <p>Power and pay are concentrated in a few hands. By the Nation's own public record, <a href="/communities/sagamok/one-seat-one-salary">thirteen elected people hold more than fifty paid roles between them</a>. Councillors draw salaries as employees of the same administration they are elected to oversee, and the honourariums and committee appointments are not made public. The full committee roster is not published, so the real number is higher.</p>
-
-    <p>The office that decides which member businesses receive funding has a <strong>single employee, who is also a sitting councillor</strong>. When a member has a concern about that office, there is no independent person inside the Nation to turn to.</p>
-
-    <figure class="aor-visual">
-      <img src="/images/account-or-resign-v2-concentration.png?v=2" loading="lazy" alt="Thirteen elected people hold at least fifty-five paid roles between them. The full committee list is not published, so the real number is likely higher.">
-    </figure>
-
-    <h3 class="aor-stmt-head">We have no way to remove them</h3>
-
-    <p>There is no recall, no-confidence, or removal provision available to members in our election law, and none in force under the federal Act either. Between now and the next election, members have been left with no formal accountability at all. This silence in the law is why we must speak this way.</p>
-
-    <figure class="aor-visual">
-      <img src="/images/account-or-resign-v3-norecall.png?v=1" loading="lazy" alt="No way to remove them: the election law has no recall or removal provision.">
-    </figure>
-
-    <h3 class="aor-stmt-head">What we are calling for</h3>
-
-    <p>For these reasons, we, the undersigned members of Sagamok Anishnawbek, declare that we have lost confidence in the current Chief and Council, and we call on them to choose one of two honourable paths:</p>
-  </div>
-
-  <div class="aor-ask">
-    <h3>Two paths</h3>
-    <ol>
-      <li><b>Account to the members.</b> Within thirty days of this statement: commit to the <a href="https://www.change.org/p/mandate-independent-financial-audit-for-sagamok-anishnawbek-chief-and-council" target="_blank" rel="noopener">independent financial audit</a> that 276 members petitioned for in February 2024 and that remains unanswered; release the records that were requested; provide a full and detailed accounting of the settlement trust and the returns it earns for members; publish the roles, pay, honourariums, and committee appointments of every Council member; and commit to member consultation on major decisions.</li>
-      <li><b>Or resign.</b> If our leadership will not account to the members, then it has lost the mandate to govern them, and the honourable course is to step down and let the community choose leadership that will.</li>
-    </ol>
-  </div>
-
-  <div class="aor-stmt">
-    <p>We are calling a member-led community meeting, open to every member. The place, date, and time are to be determined, and we will set them with the community. Chief and Council are invited to take part.</p>
-
-    <p>This is a call for accountability, not an accusation against any person. We seek the truth and the records, and we seek a leadership that answers to its members.</p>
-  </div>
-</div>
-
-  <div class="aor-prose">
-  {% include 'components/section_heading.html.twig' with { title: "The members' record", id: 'aor-stats-h' } only %}
-  <div class="aor-stats" aria-labelledby="aor-stats-h">
-    <div class="aor-stat aor-stat--primary">
-      <span class="aor-stat__n" data-aor-stat-primary>0</span>
-      <span class="aor-stat__c">members have signed this statement.</span>
+  <div class="mar-grid">
+    <div>
+      <span class="mar-status">Draft for member consideration</span>
+      <h2>A decision members can put on the record</h2>
+      <p>{{ campaign.purpose }}</p>
+      <p>The resolution asks for records, an independent review, correction of verified gaps, a confidential reporting route, and a recorded Council response. It makes no finding of fraud or personal wrongdoing.</p>
     </div>
-    <a class="aor-stat aor-stat--records" href="/standard/records-request">
-      <span class="aor-stat__n" data-aor-stat-records>&hellip;</span>
-      <span class="aor-stat__c">members signed the June 2026 records request.</span>
-    </a>
-    <a class="aor-stat aor-stat--audit" href="https://www.change.org/p/mandate-independent-financial-audit-for-sagamok-anishnawbek-chief-and-council" target="_blank" rel="noopener">
-      <span class="aor-stat__n">276</span>
-      <span class="aor-stat__c">members signed the 2024 independent financial audit petition.</span>
-    </a>
+    <aside class="mar-card">
+      <h3>Decision calendar</h3>
+      <ul class="mar-dates">
+        <li><time datetime="2026-07-23">July 23</time><span>Members consider, amend, and vote.</span></li>
+        <li><time datetime="2026-07-24">July 24</time><span>Adopted resolution delivered.</span></li>
+        <li><time datetime="2026-07-28">July 28</time><span>Requested Council agenda date.</span></li>
+        <li><time datetime="2026-08-05">August 5</time><span>Requested written-response deadline.</span></li>
+      </ul>
+    </aside>
   </div>
 
-  <section class="rr-card" data-rr aria-labelledby="rr-h">
-    <h2 id="rr-h">Add your name</h2>
-    <p class="rr-count" data-rr-countbox hidden>Joined by <b data-rr-count>0</b> members and supporters so far</p>
-    <p class="rr-paper" data-rr-paper hidden></p>
+  <article class="mar-resolution" id="resolution">
+    <header>
+      <p class="eyebrow">Proposed resolution · working draft dated {{ campaign.last_updated }}</p>
+      <h2>{{ campaign.title }}</h2>
+      <p>For consideration by Sagamok members on July 23, 2026</p>
+    </header>
 
-    <p class="rr-sharebar">Share this page:
-      <button type="button" class="rr-sharebtn" data-rr-share hidden>Share</button>
-      <button type="button" class="rr-copy" data-rr-copy>Copy link</button>
-    </p>
+    {% for paragraph in resolution.preamble %}<p>{{ paragraph }}</p>{% endfor %}
+    <p class="mar-resolved"><strong>Therefore:</strong> {{ resolution.resolved }}</p>
+
+    <ol class="mar-actions">
+      {% for action in resolution.actions %}
+        <li><strong>{{ action.title }}</strong>{{ action.text }}</li>
+      {% endfor %}
+    </ol>
+
+    <div class="mar-clause">
+      <h3>Accountability clause</h3>
+      <p>{{ resolution.accountability_clause }}</p>
+    </div>
+    <div class="mar-clause">
+      <h3>Adoption rule</h3>
+      <p>{{ resolution.adoption_rule }}</p>
+    </div>
+  </article>
+
+  <section class="mar-why" aria-labelledby="why-h">
+    {% include 'components/section_heading.html.twig' with { title: 'Why these seven actions', id: 'why-h' } only %}
+    <p>The current public record confirms overlapping elected, employment, and enterprise roles. It does not yet establish the complete current Finance and Audit Committee roster or whether every required independence statement has been completed. That is why this resolution asks Council to publish the records and authorize an independent review instead of declaring a violation before the evidence is complete.</p>
+    <ul>
+      <li><strong>Financial Administration Law section 11</strong> sets committee eligibility and independence requirements and requires written statements before appointment and annually.</li>
+      <li><strong>Sections 72 to 74</strong> create reporting, inquiry, confidentiality, anti-reprisal, and safeguarding duties for suspected breaches and financial irregularities.</li>
+      <li><strong>Section 75</strong> can make a councillor personally liable for voting to authorize money used contrary to the Financial Administration Law or local revenue law. It is not automatic: the vote, the legal contravention, the amount, and any statutory defence would have to be established.</li>
+    </ul>
+    <p><a href="https://partii-partiii.fng.ca/fng-gpn-ii-iii/pii/en/item/492567/index.do">Read Sagamok's Financial Administration Law in the First Nations Gazette.</a></p>
+  </section>
+
+  {% include 'components/section_heading.html.twig' with { title: 'From meeting to verified response', id: 'steps-h' } only %}
+  <div class="mar-steps" aria-labelledby="steps-h">
+    <div class="mar-step"><time>July 23</time><strong>Adopt</strong><p>Read, amend, vote, and witness the final member record.</p></div>
+    <div class="mar-step"><time>July 24</time><strong>Deliver</strong><p>Send the exact adopted text through official Council channels.</p></div>
+    <div class="mar-step"><time>July 28</time><strong>Decide</strong><p>Ask Council for a recorded motion, votes, owners, and dates.</p></div>
+    <div class="mar-step"><time>August 5</time><strong>Verify</strong><p>Score each requested action as met, partial, unmet, or not verifiable.</p></div>
+  </div>
+
+  <section class="mar-record" aria-labelledby="record-h">
+    {% include 'components/section_heading.html.twig' with { title: "The members' record", id: 'record-h' } only %}
+    <p>Each number belongs to a different member action. They are shown together because they document sustained demand for records, independent review, and accountable government. The signature lists are not merged.</p>
+    <div class="mar-record-grid">
+      {% for item in members_record %}
+        <a class="mar-record-card" href="{{ item.href }}"{% if item.href starts with 'http' %} target="_blank" rel="noopener"{% endif %}>
+          <span class="mar-record-count" data-record-count="{{ item.id }}">{{ item.fallback_count }}</span>
+          <span class="mar-record-label">{{ item.label }}</span>
+          <span class="mar-record-note">{{ item.note }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="rr-card" id="resolution-sign-on" data-rr aria-labelledby="rr-h">
+    <h2 id="rr-h">Add your name to this exact resolution</h2>
+    <p class="rr-count" data-rr-countbox hidden>Joined by <b data-rr-count>0</b> members and supporters so far</p>
+    <p class="rr-sharebar">Share this page: <button type="button" class="rr-sharebtn" data-rr-share hidden>Share</button><button type="button" class="rr-copy" data-rr-copy>Copy link</button></p>
+    <p class="rr-statement">I support the seven requested actions in the {{ campaign.title }} displayed on this page.</p>
+    <div class="mar-disclaimer"><p><strong>Earlier names are not carried over.</strong> {{ campaign.consent_note }}</p></div>
 
     <form class="rr-form" data-rr-form novalidate>
       <div class="rr-honey" aria-hidden="true"><label>Leave blank<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
-
-      <div class="rr-field">
-        <label class="rr-label" for="aor-name">Your name</label>
-        <input class="rr-input" id="aor-name" name="name" type="text" autocomplete="name" maxlength="120" required>
-      </div>
-
-      <div class="rr-field">
-        <label class="rr-label" for="aor-email">Email <span class="opt">(optional)</span></label>
-        <input class="rr-input" id="aor-email" name="email" type="email" autocomplete="email" maxlength="255">
-      </div>
-
+      <div class="rr-field"><label class="rr-label" for="mar-name">Your name</label><input class="rr-input" id="mar-name" name="name" type="text" autocomplete="name" maxlength="120" required></div>
+      <div class="rr-field"><label class="rr-label" for="mar-email">Email <span class="opt">(optional)</span></label><input class="rr-input" id="mar-email" name="email" type="email" autocomplete="email" maxlength="255"></div>
       <div class="rr-field">
         <span class="rr-label">I am a...</span>
         <span class="rr-seg" role="radiogroup" aria-label="Member or supporter">
@@ -322,12 +204,7 @@
           <span class="rr-choice"><label><input type="radio" name="member_flag" value="supporter">Supporter</label></span>
         </span>
       </div>
-
-      <div class="rr-field">
-        <label class="rr-label" for="aor-comment">A concern, question, or experience you want included <span class="opt">(optional)</span></label>
-        <textarea class="rr-textarea" id="aor-comment" name="comment" maxlength="2000"></textarea>
-      </div>
-
+      <div class="rr-field"><label class="rr-label" for="mar-comment">Comment for the member record <span class="opt">(optional)</span></label><textarea class="rr-textarea" id="mar-comment" name="comment" maxlength="2000"></textarea></div>
       <div class="rr-consent">
         <p class="q">Show my name publicly on this site</p>
         <span class="rr-seg" role="radiogroup" aria-label="Show my name publicly">
@@ -335,7 +212,6 @@
           <span class="rr-choice"><label><input type="radio" name="show_name_publicly" value="no" checked>Count me, do not publish my name</label></span>
         </span>
       </div>
-
       <button class="rr-submit" type="submit" data-rr-submit>Add my name</button>
       <p class="rr-msg" data-rr-msg role="status" aria-live="polite"></p>
     </form>
@@ -343,251 +219,112 @@
     <div class="rr-done" data-rr-done aria-live="polite">
       <h3>Miigwech, your name has been added.</h3>
       <p data-rr-donecount></p>
-      <p class="rr-share">Help it grow: ask another member to add their name. <button type="button" class="rr-sharebtn" data-rr-share hidden>Share</button> <button type="button" class="rr-copy" data-rr-copy>Copy link to share</button></p>
-      <p class="rr-remove" data-rr-removewrap hidden>Changed your mind? <a href="#" data-rr-remove>Remove my signature</a>. Keep this link private to you.</p>
+      <p class="rr-share">Ask another member to read and sign the exact resolution. <button type="button" class="rr-sharebtn" data-rr-share hidden>Share</button><button type="button" class="rr-copy" data-rr-copy>Copy link</button></p>
+      <p data-rr-removewrap hidden>Changed your mind? <a href="#" data-rr-remove>Remove my signature</a>. Keep this link private.</p>
     </div>
 
-    <p class="rr-fine">By adding your name you consent to the Circle storing it to present this statement to Chief and Council. Name only (plus your email if you choose to give one), on the Circle's own servers in Canada. No band numbers, no trackers. The Circle is independent of Chief and Council. You can remove yours anytime. This signature count is kept separate from the records-request count; the two are different statements.</p>
+    <p class="rr-fine">By adding your name, you consent to the Circle storing it for this resolution. Name only, plus your email if you choose to give one, on the Circle's own servers in Canada. No band numbers and no advertising trackers. Member and supporter totals must be reported separately when the resolution is presented. You can remove your signature at any time.</p>
   </section>
 
-  <div class="rr-supporters" data-rr-supporters hidden>
-    <h3>Supporters who chose to be named</h3>
-    <ul data-rr-supporters-list></ul>
-  </div>
-  </div>
-
-  <section class="aor-timeline-section" aria-labelledby="aor-timeline-h">
-    {% include 'components/section_heading.html.twig' with { title: 'How we got here.', id: 'aor-timeline-h' } only %}
-    <ol class="aor-timeline">
-      <li class="aor-timeline__item">
-        <span class="aor-timeline__date">2023</span>
-        <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>A failed decision on the Child and Family Advocacy Unit's case-management system.</strong> The unit's own preferred system, a Canadian option designed for First Nations child and family work, was set aside by administration in favour of a United States system that did not fit the unit's needs. The choice was made without the people who do the work, and over the unit's documented preference. Three years later, members are still asking what system the unit uses today and where our most vulnerable families' information is held.</div>
-      </li>
-      <li class="aor-timeline__item">
-        <span class="aor-timeline__date">2023 to 2024</span>
-        <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>The settlement, and the trust.</strong> The Robinson Huron Treaty annuities settlement was received, and about $185 million was placed in a trust. By December 2025 it had grown to roughly $219 million (BMO). Members began asking where it is held, what it earns, and who can move it.</div>
-      </li>
-      <li class="aor-timeline__item">
-        <span class="aor-timeline__date">February 2024</span>
-        <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>A member petition for an audit.</strong> A petition signed by 276 members called for an independent financial audit of the Nation. The petition remains public on Change.org. It has not been answered.</div>
-      </li>
-      <li class="aor-timeline__item">
-        <span class="aor-timeline__date">August 2024</span>
-        <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>A new election system, and still no way to remove leadership.</strong> Sagamok came under the First Nations Election Act on August 9, 2024, a four-year term with the next election around August 2028. A custom community election code is still being developed. Under the current rules, members have no recall, no-confidence, or removal power between elections.</div>
-      </li>
-      <li class="aor-timeline__item">
-        <span class="aor-timeline__date">November 2024</span>
-        <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>Seven million dollars for land that had just sold for one.</strong> The Nation paid $7 million for a property in Sault Ste. Marie (Motion 2024/10 #07). The public land registry for that same property shows it sold for $350,000 in 2018 and for $1.2 million in August 2023, the year before the Nation paid $7 million for it. Members have not been shown an independent appraisal, the rate of return, the security, or who is building on it.</div>
-      </li>
-      <li class="aor-timeline__item">
-        <span class="aor-timeline__date">2025 to 2026</span>
-        <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>The Nation's own companies borrow from the Nation.</strong> By the Nation's own audited statements, about $97 million of the settlement has been loaned to businesses the Nation owns, whose boards and officer positions are held by members of the same Chief and Council. One of them, a truss company called GR Truss whose president is the Chief, received advances and equity contributions that by the Nation's own motions total between roughly $775,000 and $900,000. Members have not been shown the terms.</div>
-      </li>
-      <li class="aor-timeline__item">
-        <span class="aor-timeline__date">2025 to 2026</span>
-        <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>The same councillors sit on the companies' boards.</strong> Nine of the thirteen members of Chief and Council hold seats on the boards of the Nation's companies. On the votes that send those companies the Nation's money, the minutes record no director stepping out of the vote.</div>
-      </li>
-      <li class="aor-timeline__item">
-        <span class="aor-timeline__date">June 10, 2026</span>
-        <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>Members file a formal records request.</strong> More than one hundred members signed <a href="/standard/records-request">a records request</a> to Chief and Council, tied to specific documents and decisions, and asked for a response within thirty days.</div>
-      </li>
-      <li class="aor-timeline__item">
-        <span class="aor-timeline__date">June 26, 2026</span>
-        <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>A major decision, and a request to see it.</strong> Sagamok signed a long-term care Memorandum of Understanding. The next day a member asked for the signed MOU and Council's authorization for it.</div>
-      </li>
-      <li class="aor-timeline__item">
-        <span class="aor-timeline__date">June 29 to July 7, 2026</span>
-        <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>Partial responses.</strong> The Nation replied that the documents would be "posted shortly," and later "when it becomes available," without providing them and without a date.</div>
-      </li>
-      <li class="aor-timeline__item">
-        <span class="aor-timeline__date">July 3, 2026</span>
-        <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>A member-privacy exposure comes to light.</strong> The <a href="/communities/sagamok/members-website-issue">members-only portal</a>, which holds confidential documents and member information, was found to be reachable through public search engines and captured by the Internet Archive. Members raised this with Chief and Council and asked what was exposed, who the Nation's privacy officer is, and what the breach response would be.</div>
-      </li>
-      <li class="aor-timeline__item">
-        <span class="aor-timeline__date">July 10, 2026</span>
-        <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>The deadline passes, and a document appears under pressure.</strong> The thirty-day records-request period closed with no records, no accounting, and no substantive reply. On the same day, the signed MOU and two related minutes were finally posted, documents that were available all along.</div>
-      </li>
-      <li class="aor-timeline__item">
-        <span class="aor-timeline__date">July 2026</span>
-        <span class="aor-timeline__marker"></span>
-        <div class="aor-timeline__event"><strong>Members put the record in front of the community.</strong> Members published, from the Nation's own public record, that <a href="/communities/sagamok/one-seat-one-salary">thirteen elected people hold more than fifty paid roles between them</a>. Members sent Chief and Council a verification request. And members issued this statement: account, or resign.</div>
-      </li>
-    </ol>
-  </section>
-
-<div class="aor-prose">
-  <p class="rr-fine">Published July 11, 2026. See also: <a href="/standard/records-request">the member records request</a> this statement follows up on, and <a href="/communities/sagamok/one-seat-one-salary">Paid at every table</a>, the sourced record of roles and pay behind this statement.</p>
+  <div class="rr-supporters" data-rr-supporters hidden><h3>People who chose to be named</h3><ul data-rr-supporters-list></ul></div>
+  <p class="rr-fine">Working draft published for member consideration. The final public text will be reconciled to any amendments adopted July 23. See also the <a href="/standard/records-request">June 2026 member records request</a> and the <a href="/communities/sagamok/conflict-register">public-record conflict register</a>.</p>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-  (function () {
-    var card = document.querySelector('[data-rr]');
-    if (!card) return;
-    var SLUG = 'account-or-resign';
-    var form = card.querySelector('[data-rr-form]');
-    var msg = card.querySelector('[data-rr-msg]');
-    var submit = card.querySelector('[data-rr-submit]');
-
-    function fmt(n) { try { return Number(n).toLocaleString(); } catch (e) { return String(n); } }
-
-    function setCount(n) {
-      if (n === null || n === undefined) return;
-      var box = card.querySelector('[data-rr-countbox]');
-      var el = card.querySelector('[data-rr-count]');
-      if (el) el.textContent = fmt(n);
-      if (box) box.hidden = false;
-    }
-
-    // "The members' record" stat pills: the primary pill mirrors this
-    // page's own live count (same source as setCount above, just a second
-    // place it's displayed); the records-request pill is a fully separate
-    // fetch against that campaign's own slug, never hardcoded here.
-    function setPrimaryStat(n) {
-      if (n === null || n === undefined) return;
-      var el = document.querySelector('[data-aor-stat-primary]');
-      if (el) el.textContent = fmt(n);
-    }
-
-    function hydrateRecordsStat() {
-      fetch('/api/petition/records-request-support', { headers: { 'Accept': 'application/json' } })
+(function () {
+  var card = document.querySelector('[data-rr]');
+  if (!card) return;
+  var SLUG = 'sagamok-accountability-resolution-2026';
+  var form = card.querySelector('[data-rr-form]');
+  var msg = card.querySelector('[data-rr-msg]');
+  var submit = card.querySelector('[data-rr-submit]');
+  var shareUrl = location.origin + '/communities/sagamok/account-or-resign';
+  function fmt(n) { try { return Number(n).toLocaleString(); } catch (e) { return String(n); } }
+  function setCount(n) {
+    if (n === null || n === undefined) return;
+    var box = card.querySelector('[data-rr-countbox]');
+    var el = card.querySelector('[data-rr-count]');
+    if (el) el.textContent = fmt(n);
+    if (box) box.hidden = false;
+  }
+  function renderSupporters(recent) {
+    if (!recent || !recent.length) return;
+    var wrap = document.querySelector('[data-rr-supporters]');
+    var list = document.querySelector('[data-rr-supporters-list]');
+    if (!wrap || !list) return;
+    list.innerHTML = '';
+    recent.forEach(function (person) { var li = document.createElement('li'); li.textContent = person.name; list.appendChild(li); });
+    wrap.hidden = false;
+  }
+  function setRecordCount(id, value) {
+    if (value === null || value === undefined) return;
+    var el = document.querySelector('[data-record-count="' + id + '"]');
+    if (el) el.textContent = fmt(value);
+  }
+  function hydrateMemberRecord() {
+    // Local development uses a separate SQLite file whose historical campaign
+    // rows do not mirror production. Keep the verified source fallbacks in a
+    // local preview; production hydrates from its own live campaign records.
+    if (location.hostname === '127.0.0.1' || location.hostname === 'localhost') return;
+    [
+      ['original_statement', 'account-or-resign'],
+      ['records_request', 'records-request-support']
+    ].forEach(function (item) {
+      fetch('/api/petition/' + item[1], { headers: { Accept: 'application/json' } })
         .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (d) {
-          var el = document.querySelector('[data-aor-stat-records]');
-          if (el && d && d.ok) el.textContent = fmt(d.count);
-        })
+        .then(function (d) { if (d && d.ok) setRecordCount(item[0], d.count); })
         .catch(function () {});
-    }
-
-    function setPaper(count, note) {
-      if (!count || !note) return;
-      var el = card.querySelector('[data-rr-paper]');
-      if (el) { el.textContent = note; el.hidden = false; }
-    }
-
-    function renderSupporters(recent) {
-      if (!recent || !recent.length) return;
-      var wrap = document.querySelector('[data-rr-supporters]');
-      var list = document.querySelector('[data-rr-supporters-list]');
-      if (!wrap || !list) return;
-      list.innerHTML = '';
-      recent.forEach(function (s) {
-        var li = document.createElement('li');
-        li.textContent = s.name;
-        list.appendChild(li);
-      });
-      wrap.hidden = false;
-    }
-
-    function hydrate() {
-      fetch('/api/petition/' + SLUG, { headers: { 'Accept': 'application/json' } })
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (d) { if (d && d.ok) { setCount(d.count); setPrimaryStat(d.count); setPaper(d.paper_count, d.paper_note); renderSupporters(d.recent); } })
-        .catch(function () {});
-      hydrateRecordsStat();
-    }
-
-    function checked(name) {
-      var el = form.querySelector('input[name="' + name + '"]:checked');
-      return el ? el.value : '';
-    }
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      if (msg) { msg.textContent = ''; msg.classList.remove('is-error'); }
-
-      var payload = {
-        campaign: SLUG,
-        name: (form.elements['name'] || {}).value || '',
-        email: (form.elements['email'] || {}).value || '',
-        member_flag: checked('member_flag') || 'supporter',
-        comment: (form.elements['comment'] || {}).value || '',
-        include_name_on_letter: false,
-        show_name_publicly: checked('show_name_publicly') === 'yes',
-        consent: true,
-        website: (form.elements['website'] || {}).value || ''
-      };
-
-      if (!payload.name.trim()) {
-        if (msg) { msg.textContent = 'Please enter your name.'; msg.classList.add('is-error'); }
-        return;
-      }
-      if (submit) { submit.disabled = true; submit.textContent = 'Adding...'; }
-
-      fetch('/api/petition/sign', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-        .then(function (r) { return r.json().then(function (b) { return b; }); })
-        .then(function (res) {
-          if (!res || !res.ok) {
-            if (msg) { msg.textContent = (res && res.error) || 'Something went wrong. Please try again.'; msg.classList.add('is-error'); }
-            if (submit) { submit.disabled = false; submit.textContent = 'Add my name'; }
-            return;
-          }
-          card.classList.add('is-done');
-          setCount(res.count);
-          setPrimaryStat(res.count);
-          var dc = card.querySelector('[data-rr-donecount]');
-          if (dc && res.count != null) dc.textContent = 'You are one of ' + fmt(res.count) + ' so far.';
-          var rw = card.querySelector('[data-rr-removewrap]');
-          var rl = card.querySelector('[data-rr-remove]');
-          if (rw && rl && res.manage_url) { rl.setAttribute('href', res.manage_url); rw.hidden = false; }
-        })
-        .catch(function () {
-          if (msg) { msg.textContent = 'Could not reach the server. Please try again.'; msg.classList.add('is-error'); }
+    });
+  }
+  fetch('/api/petition/' + SLUG, { headers: { Accept: 'application/json' } })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) { if (d && d.ok) { setCount(d.count); renderSupporters(d.recent); } })
+    .catch(function () {});
+  hydrateMemberRecord();
+  function checked(name) { var el = form.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ''; }
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    if (msg) { msg.textContent = ''; msg.classList.remove('is-error'); }
+    var payload = {
+      campaign: SLUG,
+      name: (form.elements.name || {}).value || '',
+      email: (form.elements.email || {}).value || '',
+      member_flag: checked('member_flag') || 'supporter',
+      comment: (form.elements.comment || {}).value || '',
+      include_name_on_letter: false,
+      show_name_publicly: checked('show_name_publicly') === 'yes',
+      consent: true,
+      website: (form.elements.website || {}).value || ''
+    };
+    if (!payload.name.trim()) { if (msg) { msg.textContent = 'Please enter your name.'; msg.classList.add('is-error'); } return; }
+    if (submit) { submit.disabled = true; submit.textContent = 'Adding...'; }
+    fetch('/api/petition/sign', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (!res || !res.ok) {
+          if (msg) { msg.textContent = (res && res.error) || 'Something went wrong. Please try again.'; msg.classList.add('is-error'); }
           if (submit) { submit.disabled = false; submit.textContent = 'Add my name'; }
-        });
-    });
-
-    var shareUrl = location.origin + '/communities/sagamok/account-or-resign';
-
-    function copyLink(btn) {
-      var orig = btn.getAttribute('data-orig') || btn.textContent;
-      btn.setAttribute('data-orig', orig);
-      var ok = function () { btn.textContent = 'Link copied'; setTimeout(function () { btn.textContent = orig; }, 2000); };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(shareUrl).then(ok).catch(function () { window.prompt('Copy this link:', shareUrl); });
-      } else {
-        window.prompt('Copy this link:', shareUrl);
-      }
-    }
-
-    function nativeShare() {
-      if (!navigator.share) return;
-      navigator.share({
-        title: 'Account, or Resign: a member statement',
-        text: 'Members of Sagamok Anishnawbek call on Chief and Council to account fully, or resign.',
-        url: shareUrl
-      }).catch(function () {});
-    }
-
-    card.querySelectorAll('[data-rr-copy]').forEach(function (btn) {
-      btn.addEventListener('click', function () { copyLink(btn); });
-    });
-
-    if (navigator.share) {
-      card.querySelectorAll('[data-rr-share]').forEach(function (btn) {
-        btn.hidden = false;
-        btn.addEventListener('click', nativeShare);
-      });
-    }
-
-    hydrate();
-  })();
+          return;
+        }
+        card.classList.add('is-done'); setCount(res.count);
+        var doneCount = card.querySelector('[data-rr-donecount]');
+        if (doneCount && res.count != null) doneCount.textContent = 'You are one of ' + fmt(res.count) + ' so far.';
+        var removeWrap = card.querySelector('[data-rr-removewrap]');
+        var removeLink = card.querySelector('[data-rr-remove]');
+        if (removeWrap && removeLink && res.manage_url) { removeLink.href = res.manage_url; removeWrap.hidden = false; }
+      })
+      .catch(function () { if (msg) { msg.textContent = 'Could not reach the server. Please try again.'; msg.classList.add('is-error'); } if (submit) { submit.disabled = false; submit.textContent = 'Add my name'; } });
+  });
+  function copyLink(button) {
+    var original = button.textContent;
+    function ok() { button.textContent = 'Link copied'; setTimeout(function () { button.textContent = original; }, 2000); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(shareUrl).then(ok).catch(function () { window.prompt('Copy this link:', shareUrl); });
+    else window.prompt('Copy this link:', shareUrl);
+  }
+  card.querySelectorAll('[data-rr-copy]').forEach(function (button) { button.addEventListener('click', function () { copyLink(button); }); });
+  if (navigator.share) card.querySelectorAll('[data-rr-share]').forEach(function (button) { button.hidden = false; button.addEventListener('click', function () { navigator.share({ title: "Sagamok Members' Accountability Resolution", text: 'Read the exact non-binding member resolution proposed for July 23.', url: shareUrl }).catch(function () {}); }); });
+})();
 </script>
 {% endblock %}

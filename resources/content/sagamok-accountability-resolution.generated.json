@@ -1,0 +1,294 @@
+{
+  "campaign": {
+    "title": "Sagamok Members' Accountability Resolution",
+    "short_title": "Members' Accountability Resolution",
+    "public_url": "https://rhtcircle.ca/communities/sagamok/account-or-resign",
+    "petition_slug": "sagamok-accountability-resolution-2026",
+    "meeting_date": "2026-07-23",
+    "delivery_date": "2026-07-24",
+    "council_meeting_date": "2026-07-28",
+    "response_deadline": "2026-08-05",
+    "status": "draft",
+    "last_updated": "2026-07-15",
+    "purpose": "Create a clear, non-binding record of member will and require a dated, verifiable response from Chief and Council.",
+    "legal_effect": "This is a non-binding member resolution. It is not a Band Council Resolution, does not remove an elected official, and does not create a legal recall power.",
+    "consent_note": "Signatures from the earlier Account, or Resign campaign are not transferred. Members must separately sign this exact resolution."
+  },
+  "resolution": {
+    "preamble": [
+      "We, members of Sagamok Anishnawbek, affirm that accountable government requires accessible records, independent financial oversight, disclosed conflicts of interest, recorded recusals, and timely answers to members.",
+      "Members have asked for records and answers about governance, financial oversight, enterprise decisions, and conflicts of interest. Important records and the current composition and independence of the Finance and Audit Committee have not been fully confirmed in the public record.",
+      "This resolution makes no finding of fraud, theft, corruption, or personal wrongdoing. It calls for records, independent review, corrective action where required, and a public response."
+    ],
+    "resolved": "We resolve to request that Chief and Council take the following actions and report the results to the membership in writing.",
+    "actions": [
+      {
+        "number": 1,
+        "title": "Publish the current oversight structure",
+        "text": "Publish the current Finance and Audit Committee roster, the resolutions appointing every member, the chair and vice-chair appointments, each member's term, and any vacancy."
+      },
+      {
+        "number": 2,
+        "title": "Confirm independence compliance",
+        "text": "Confirm whether the required pre-appointment and annual independence statements have been completed under section 11 of the Financial Administration Law, and identify the process used to assess each member's eligibility without publishing private personal information."
+      },
+      {
+        "number": 3,
+        "title": "Publish conflict controls",
+        "text": "Publish the current conflict-of-interest policy and the disclosure, recusal, and minute-recording process that applies when elected officials also hold committee, employment, officer, or enterprise-board roles."
+      },
+      {
+        "number": 4,
+        "title": "Commission an independent review",
+        "text": "Retain a qualified reviewer who is independent of Chief and Council, administration, the Finance and Audit Committee, and Nation-owned enterprises to review Finance and Audit Committee composition, independence, disclosures, recusals, and compliance with the Financial Administration Law."
+      },
+      {
+        "number": 5,
+        "title": "Correct any non-compliance",
+        "text": "If the review identifies a vacancy, ineligibility, unmanaged conflict, missing declaration, or other non-compliance, correct it promptly, including reconstituting the committee with qualified independent members where required."
+      },
+      {
+        "number": 6,
+        "title": "Create an independent reporting route",
+        "text": "Publish a confidential reporting route for financial irregularities that remains usable when a report concerns the committee chair, another committee member, or senior administration, together with the anti-reprisal and records-safeguarding procedures required by sections 72 to 74."
+      },
+      {
+        "number": 7,
+        "title": "Put the response on the record",
+        "text": "Place this resolution on the July 28, 2026 Council agenda and publish Council's written response, the motion considered, each recorded vote, and the implementation schedule by August 5, 2026."
+      }
+    ],
+    "accountability_clause": "If Council will not publish the records, permit independent review, correct verified non-compliance, or provide a dated public response, members call on each elected official to state their position publicly and to consider resigning any oversight, enterprise, or elected role that they cannot perform consistently with those duties.",
+    "adoption_rule": "At the July 23 member meeting, the chair reads the resolution, accepts amendments, records the final wording, and asks eligible Sagamok members present to vote. Supporter sign-ons are reported separately from member votes and member signatures."
+  },
+  "members_record": [
+    {
+      "id": "original_statement",
+      "count_source": "live_api",
+      "petition_slug": "account-or-resign",
+      "fallback_count": 13,
+      "label": "signatures on the original Account, or Resign member statement",
+      "href": "/communities/sagamok/account-or-resign#resolution-sign-on",
+      "note": "These signatures remain attached to the original statement and are not transferred to the new resolution."
+    },
+    {
+      "id": "records_request",
+      "count_source": "live_api",
+      "petition_slug": "records-request-support",
+      "fallback_count": 117,
+      "label": "signatures supporting the June 2026 member records request",
+      "href": "/standard/records-request",
+      "note": "The live total includes verified online sign-ons and documented paper signatures."
+    },
+    {
+      "id": "audit_petition",
+      "count_source": "fixed_public_source",
+      "fallback_count": 276,
+      "label": "signatures on the 2024 independent financial audit petition",
+      "href": "https://www.change.org/p/mandate-independent-financial-audit-for-sagamok-anishnawbek-chief-and-council",
+      "note": "Public Change.org count recorded for the February 2024 petition."
+    }
+  ],
+  "public_stages": [
+    {
+      "id": "S1",
+      "name": "Resolution foundation",
+      "objective": "Freeze an accurate, non-defamatory text and a separate consent record.",
+      "status": "in_progress",
+      "due": "2026-07-18",
+      "steps": [
+        {
+          "id": "S1.1",
+          "title": "Create canonical source, plan, and dashboard",
+          "status": "done",
+          "due": "2026-07-15",
+          "completion": "Files build and pass leak checks.",
+          "next_action": "Refine wording in this JSON source."
+        },
+        {
+          "id": "S1.2",
+          "title": "Repurpose the existing public URL",
+          "status": "ready",
+          "due": "2026-07-16",
+          "completion": "Page presents the exact resolution and new sign-on campaign.",
+          "next_action": "Review the local build, then publish only on Russell's direction."
+        },
+        {
+          "id": "S1.4",
+          "title": "Freeze version 1 for the meeting package",
+          "status": "ready",
+          "due": "2026-07-20",
+          "completion": "Version number, date, and checksum recorded; print copy matches web copy.",
+          "next_action": "Freeze only after factual review."
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "name": "July 23 meeting preparation",
+      "objective": "Make adoption orderly, accessible, and verifiable.",
+      "status": "ready",
+      "due": "2026-07-22",
+      "steps": [
+        {
+          "id": "S2.1",
+          "title": "Prepare one-page resolution and source notes",
+          "status": "ready",
+          "due": "2026-07-20",
+          "completion": "Members can read the full ask and verify the cited law.",
+          "next_action": "Generate from frozen source."
+        },
+        {
+          "id": "S2.3",
+          "title": "Set amendment and voting procedure",
+          "status": "ready",
+          "due": "2026-07-22",
+          "completion": "Eligibility, amendments, abstentions, tally, and record retention are announced before the vote.",
+          "next_action": "Use the procedure in the plan."
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "name": "Member adoption",
+      "objective": "Create a trustworthy record of what members actually adopted.",
+      "status": "waiting",
+      "due": "2026-07-23",
+      "steps": [
+        {
+          "id": "S3.1",
+          "title": "Read, amend, and vote on the resolution",
+          "status": "waiting",
+          "due": "2026-07-23",
+          "completion": "Final text and exact member vote tally are recorded.",
+          "next_action": "Do not count supporters as member votes."
+        },
+        {
+          "id": "S3.3",
+          "title": "Open exact-text online sign-on",
+          "status": "hold",
+          "due": "2026-07-23",
+          "completion": "Public page matches adopted wording and uses the new campaign slug.",
+          "next_action": "Publish only after adopted wording is reconciled."
+        }
+      ]
+    },
+    {
+      "id": "S4",
+      "name": "Formal delivery",
+      "objective": "Put the request into Council's official channels without exposing private sources.",
+      "status": "waiting",
+      "due": "2026-07-24",
+      "steps": [
+        {
+          "id": "S4.1",
+          "title": "Deliver the adopted resolution and agenda request",
+          "status": "waiting",
+          "due": "2026-07-24",
+          "completion": "Political Office and administrative routing receive identical signed copies; delivery is documented.",
+          "next_action": "Request written receipt and July 28 agenda placement."
+        },
+        {
+          "id": "S4.2",
+          "title": "Publish the adopted text and aggregate tally",
+          "status": "waiting",
+          "due": "2026-07-24",
+          "completion": "Public copy distinguishes meeting votes, member signatures, and supporter sign-ons.",
+          "next_action": "Publish facts only; do not speculate about motives."
+        }
+      ]
+    },
+    {
+      "id": "S5",
+      "name": "Council decision point",
+      "objective": "Obtain a recorded motion, vote, owner, and delivery dates.",
+      "status": "waiting",
+      "due": "2026-07-28",
+      "steps": [
+        {
+          "id": "S5.2",
+          "title": "Ask Council to move the seven-part corrective motion",
+          "status": "waiting",
+          "due": "2026-07-28",
+          "completion": "Motion text and disposition are recorded.",
+          "next_action": "Ask for named implementation owners and dates."
+        },
+        {
+          "id": "S5.3",
+          "title": "Record each councillor's public position",
+          "status": "waiting",
+          "due": "2026-07-29",
+          "completion": "Only official votes, statements, recusals, absences, or silence are attributed.",
+          "next_action": "Verify against official minutes or direct public record."
+        }
+      ]
+    },
+    {
+      "id": "S6",
+      "name": "Response and verification",
+      "objective": "Measure delivery, not rhetoric.",
+      "status": "waiting",
+      "due": "2026-08-05",
+      "steps": [
+        {
+          "id": "S6.1",
+          "title": "Score Council response against all seven actions",
+          "status": "waiting",
+          "due": "2026-08-05",
+          "completion": "Each item is marked met, partial, unmet, or not verifiable with a source link.",
+          "next_action": "Credit every item that checks out clean."
+        },
+        {
+          "id": "S6.2",
+          "title": "Issue one factual cure notice for partial items",
+          "status": "waiting",
+          "due": "2026-08-06",
+          "completion": "Notice lists missing records and a short cure date without imputing motives.",
+          "next_action": "Skip if response is fully substantive or entirely absent."
+        }
+      ]
+    },
+    {
+      "id": "S7",
+      "name": "Escalation if required",
+      "objective": "Move verified non-compliance or silence to legitimate oversight and public accountability channels.",
+      "status": "hold",
+      "due": "2026-08-12",
+      "steps": [
+        {
+          "id": "S7.3",
+          "title": "Publish evidence-based accountability scorecard",
+          "status": "hold",
+          "due": "2026-08-12",
+          "completion": "The page shows documents received, promises, dates, votes, corrections, and unresolved items.",
+          "next_action": "Use neutral outcome A to E labels."
+        }
+      ]
+    },
+    {
+      "id": "S8",
+      "name": "Structural follow-through",
+      "objective": "Convert the campaign into durable governance protections and electoral accountability.",
+      "status": "waiting",
+      "due": "2028-08-01",
+      "steps": [
+        {
+          "id": "S8.1",
+          "title": "Secure an operational recall provision in the custom election code",
+          "status": "waiting",
+          "due": "2027-06-30",
+          "completion": "Draft contains a lawful petition threshold, verification, hearing, vote, vacancy, and anti-abuse procedure.",
+          "next_action": "Use comparative First Nation codes and legal review."
+        },
+        {
+          "id": "S8.2",
+          "title": "Track implementation and vacancies",
+          "status": "waiting",
+          "due": "2028-08-01",
+          "completion": "Every promised reform, appointment, resignation, vacancy, and by-election decision is verified and dated.",
+          "next_action": "Keep role resignations distinct from elected-office vacancies."
+        }
+      ]
+    }
+  ]
+}
