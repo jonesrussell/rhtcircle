@@ -30,7 +30,7 @@ member-led effort. Apply them to every page and every edit:
    `php bin/lint-copy.php` (run before every commit/deploy).
 
 **Exception (updated 2026-07-15): the Sagamok member accountability resolution.** Rules 1 and 2 are
-the default for every page the Circle writes in its own voice. `/communities/sagamok/account-or-resign`
+the default for every page the Circle writes in its own voice. `/communities/sagamok/member-accountability-resolution`
 is the public home of a proposed, non-binding member resolution for the July 23, 2026 meeting. It asks
 Chief and Council for seven specific records, review, correction, reporting, and response actions. It
 makes no finding of fraud or personal wrongdoing and clearly states that it is not a Band Council

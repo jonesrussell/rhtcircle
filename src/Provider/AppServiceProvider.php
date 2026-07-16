@@ -146,7 +146,13 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             $repo->ensureCampaign(
                 'sagamok-accountability-resolution-2026',
                 'Sagamok Members\' Accountability Resolution',
-                'I support the seven requested actions in the Sagamok Members\' Accountability Resolution displayed at rhtcircle.ca/communities/sagamok/account-or-resign.',
+                'I support the seven requested actions in the Sagamok Members\' Accountability Resolution displayed at rhtcircle.ca/communities/sagamok/member-accountability-resolution.',
+                'Sagamok Chief and Council',
+            );
+            $repo->setCampaignDetails(
+                'sagamok-accountability-resolution-2026',
+                'Sagamok Members\' Accountability Resolution',
+                'I support the seven requested actions in the Sagamok Members\' Accountability Resolution displayed at rhtcircle.ca/communities/sagamok/member-accountability-resolution.',
                 'Sagamok Chief and Council',
             );
         } catch (\Throwable) {
@@ -330,7 +336,8 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'sagamok-play-limited-partnership' => ['/communities/sagamok/play-limited-partnership', 'pages/communities/sagamok/play-limited-partnership.html.twig'],
             'sagamok-espanola-mill-bmi' => ['/communities/sagamok/espanola-mill-bmi', 'pages/communities/sagamok/espanola-mill-bmi.html.twig'],
             'sagamok-one-seat-one-salary' => ['/communities/sagamok/one-seat-one-salary', 'pages/communities/sagamok/one-seat-one-salary.html.twig'],
-            // sagamok-account-or-resign is registered explicitly below so its
+            // The member accountability resolution is registered explicitly
+            // below so its
             // generated, source-backed resolution data reaches the template.
             // The Conflict Register: an interactive tool, filterable by
             // councillor or company, cross-referencing enterprise money
@@ -475,10 +482,10 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         );
 
         $router->addRoute(
-            'sagamok-account-or-resign',
-            RouteBuilder::create('/communities/sagamok/account-or-resign')
+            'sagamok-member-accountability-resolution',
+            RouteBuilder::create('/communities/sagamok/member-accountability-resolution')
                 ->controller(fn (Request $request) => $md->wantsMarkdown($request)
-                    ? $md->pageResponse('/communities/sagamok/account-or-resign')
+                    ? $md->pageResponse('/communities/sagamok/member-accountability-resolution')
                     : $controller->sagamokAccountabilityResolution($this->sagamokAccountabilityResolutionData()))
                 ->allowAll()
                 ->methods('GET')
@@ -524,6 +531,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'redir-massey-climate' => ['/communities/sagamok/massey-climate', '/land/massey-solar-project/climate'],
             'redir-treaty-the-treaty' => ['/treaty-wide/the-treaty', '/treaty'],
             'redir-treaty-distribution-models' => ['/treaty-wide/distribution-models', '/treaty/distribution-models'],
+            'redir-sagamok-account-or-resign' => ['/communities/sagamok/account-or-resign', '/communities/sagamok/member-accountability-resolution'],
             // Community safety moved out of The Land into its own section.
             'redir-territory-and-safety' => ['/land/territory-and-safety', '/safety/hate-and-extremism'],
         ];
