@@ -8,7 +8,7 @@
     "delivery_date": "2026-07-24",
     "council_meeting_date": "2026-07-28",
     "response_deadline": "2026-08-05",
-    "status": "draft",
+    "status": "published_draft",
     "last_updated": "2026-07-15",
     "purpose": "Create a clear, non-binding record of member will and require a dated, verifiable response from Chief and Council.",
     "legal_effect": "This is a non-binding member resolution. It is not a Band Council Resolution, does not remove an elected official, and does not create a legal recall power.",
@@ -108,10 +108,10 @@
         {
           "id": "S1.2",
           "title": "Repurpose the existing public URL",
-          "status": "ready",
+          "status": "done",
           "due": "2026-07-16",
           "completion": "Page presents the exact resolution and new sign-on campaign.",
-          "next_action": "Review the local build, then publish only on Russell's direction."
+          "next_action": "Monitor the live page and reconcile it to any wording adopted July 23."
         },
         {
           "id": "S1.4",
