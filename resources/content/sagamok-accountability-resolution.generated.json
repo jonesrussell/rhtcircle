@@ -2,7 +2,7 @@
   "campaign": {
     "title": "Sagamok Members' Accountability Resolution",
     "short_title": "Members' Accountability Resolution",
-    "public_url": "https://rhtcircle.ca/communities/sagamok/account-or-resign",
+    "public_url": "https://rhtcircle.ca/communities/sagamok/member-accountability-resolution",
     "petition_slug": "sagamok-accountability-resolution-2026",
     "meeting_date": "2026-07-23",
     "delivery_date": "2026-07-24",
@@ -68,7 +68,8 @@
       "petition_slug": "account-or-resign",
       "fallback_count": 13,
       "label": "signatures on the original Account, or Resign member statement",
-      "href": "/communities/sagamok/account-or-resign#resolution-sign-on",
+      "href": "/communities/sagamok/member-accountability-resolution#original-statement-record",
+      "cta": "Read how the 13 are preserved →",
       "note": "These signatures remain attached to the original statement and are not transferred to the new resolution."
     },
     {
@@ -78,6 +79,7 @@
       "fallback_count": 117,
       "label": "signatures supporting the June 2026 member records request",
       "href": "/standard/records-request",
+      "cta": "View the records request →",
       "note": "The live total includes verified online sign-ons and documented paper signatures."
     },
     {
@@ -86,6 +88,7 @@
       "fallback_count": 276,
       "label": "signatures on the 2024 independent financial audit petition",
       "href": "https://www.change.org/p/mandate-independent-financial-audit-for-sagamok-anishnawbek-chief-and-council",
+      "cta": "View the audit petition →",
       "note": "Public Change.org count recorded for the February 2024 petition."
     }
   ],

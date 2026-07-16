@@ -182,11 +182,11 @@ final class CommunityHub
             ],
             [
                 'feature' => true,
-                'tag' => 'A statement from the members',
-                'title' => 'Account, or Resign',
-                'desc' => 'After the records request went unanswered past its 30-day window, members wrote a statement of no confidence in Chief and Council, calling on them to account fully or resign. Add your name.',
-                'go' => 'Read the statement',
-                'href' => '/communities/sagamok/account-or-resign',
+                'tag' => 'A member resolution',
+                'title' => 'Members\' Accountability Resolution',
+                'desc' => 'A proposed non-binding resolution for the July 23 member meeting, asking for seven specific records, review, correction, reporting, and response actions.',
+                'go' => 'Read and sign the resolution',
+                'href' => '/communities/sagamok/member-accountability-resolution',
             ],
             [
                 'feature' => true,

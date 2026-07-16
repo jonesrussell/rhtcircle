@@ -4,7 +4,7 @@
 {% block title %}Sagamok Members' Accountability Resolution · Robinson Huron Treaty{% endblock %}
 {% block description %}The exact non-binding member resolution proposed for the July 23, 2026 Sagamok member meeting, with seven documented accountability actions for Chief and Council.{% endblock %}
 {% block og_description %}Read and sign the exact non-binding Sagamok Members' Accountability Resolution proposed for July 23, 2026.{% endblock %}
-{% block body_class %}route-sagamok-account-or-resign{% endblock %}
+{% block body_class %}route-sagamok-member-accountability-resolution{% endblock %}
 {% block main_class %}wrap wrap--wide{% endblock %}
 
 {% block head_styles %}
@@ -52,6 +52,11 @@
   .mar-record-card:nth-child(3) .mar-record-count { color: var(--coral); }
   .mar-record-label { display: block; margin-top: 8px; color: var(--ink); line-height: 1.45; }
   .mar-record-note { display: block; margin-top: 8px; color: var(--ink-3); font-size: 12px; line-height: 1.45; }
+  .mar-record-cta { display: inline-block; margin-top: 14px; color: var(--accent-deep); font: 700 13px var(--font-sans); }
+  .mar-record-card:nth-child(2) .mar-record-cta { color: var(--blue); }
+  .mar-record-card:nth-child(3) .mar-record-cta { color: var(--coral); }
+  .mar-record-card:hover .mar-record-cta, .mar-record-card:focus-visible .mar-record-cta { text-decoration: underline; text-underline-offset: 3px; }
+  .mar-record-card:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 
   .rr-card { background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--radius-lg); padding: 24px; margin: var(--gap-6) 0; }
   .rr-card h2 { font-family: var(--font-serif); font-weight: 500; font-size: 25px; margin: 0 0 4px; }
@@ -181,6 +186,7 @@
           <span class="mar-record-count" data-record-count="{{ item.id }}">{{ item.fallback_count }}</span>
           <span class="mar-record-label">{{ item.label }}</span>
           <span class="mar-record-note">{{ item.note }}</span>
+          <span class="mar-record-cta">{{ item.cta }}</span>
         </a>
       {% endfor %}
     </div>
@@ -191,7 +197,7 @@
     <p class="rr-count" data-rr-countbox hidden>Joined by <b data-rr-count>0</b> members and supporters so far</p>
     <p class="rr-sharebar">Share this page: <button type="button" class="rr-sharebtn" data-rr-share hidden>Share</button><button type="button" class="rr-copy" data-rr-copy>Copy link</button></p>
     <p class="rr-statement">I support the seven requested actions in the {{ campaign.title }} displayed on this page.</p>
-    <div class="mar-disclaimer"><p><strong>Earlier names are not carried over.</strong> {{ campaign.consent_note }}</p></div>
+    <div class="mar-disclaimer" id="original-statement-record"><p><strong>Earlier names are not carried over.</strong> {{ campaign.consent_note }}</p></div>
 
     <form class="rr-form" data-rr-form novalidate>
       <div class="rr-honey" aria-hidden="true"><label>Leave blank<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
@@ -240,7 +246,7 @@
   var form = card.querySelector('[data-rr-form]');
   var msg = card.querySelector('[data-rr-msg]');
   var submit = card.querySelector('[data-rr-submit]');
-  var shareUrl = location.origin + '/communities/sagamok/account-or-resign';
+  var shareUrl = location.origin + '/communities/sagamok/member-accountability-resolution';
   function fmt(n) { try { return Number(n).toLocaleString(); } catch (e) { return String(n); } }
   function setCount(n) {
     if (n === null || n === undefined) return;

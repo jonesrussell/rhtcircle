@@ -47,6 +47,31 @@ final class PetitionRepository
         );
     }
 
+    /**
+     * Reconcile display metadata without changing the campaign identity or any
+     * signatures. Used for non-substantive corrections such as a canonical URL
+     * move in the ask text. Returns false when the campaign is absent or already
+     * matches, so it is safe to call on every boot.
+     */
+    public function setCampaignDetails(string $slug, string $title, string $ask, string $recipient): bool
+    {
+        $campaign = $this->findCampaign($slug);
+        if ($campaign === null) {
+            return false;
+        }
+        if ((string) $campaign['title'] === $title
+            && (string) $campaign['the_ask'] === $ask
+            && (string) $campaign['recipient'] === $recipient) {
+            return false;
+        }
+        $this->db->query(
+            'UPDATE ' . PetitionSchema::TABLE_CAMPAIGN . ' SET title = ?, the_ask = ?, recipient = ? WHERE slug = ?',
+            [$title, $ask, $recipient, $slug],
+        );
+
+        return true;
+    }
+
     public function setCampaignActive(string $slug, bool $active): void
     {
         $this->db->query(

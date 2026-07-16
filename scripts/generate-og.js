@@ -35,6 +35,8 @@ const imagesDir = path.join(projectRoot, 'public', 'images');
 // mode CI runs so a push never churns every card; it only fills gaps for new
 // pages. Run without the flag locally to deliberately refresh existing cards.
 const onlyMissing = process.argv.includes('--only-missing') || process.env.OG_ONLY_MISSING === '1';
+const onlyTemplateArg = process.argv.find(arg => arg.startsWith('--only-template='));
+const onlyTemplate = onlyTemplateArg ? onlyTemplateArg.slice('--only-template='.length) : null;
 
 function skipBecauseExists(outputAbs, label) {
   if (onlyMissing && fs.existsSync(outputAbs)) {
@@ -61,6 +63,7 @@ const overrides = {
 // the 'pages/' prefix and '.html.twig' stripped.
 const routeOverrides = {
   'pages/home.html.twig': '/',
+  'pages/communities/sagamok/account-or-resign.html.twig': '/communities/sagamok/member-accountability-resolution',
 };
 
 // Files / directories under templates/ to ignore when auto-discovering. These
@@ -202,6 +205,7 @@ async function main() {
 
     // 1. Hand-crafted overrides (use the dedicated template file as-is).
     for (const [key, { template, output }] of Object.entries(overrides)) {
+      if (onlyTemplate !== null && key !== onlyTemplate) continue;
       const tplPath = path.join(scriptDir, template);
       const outPath = path.join(imagesDir, output);
       if (skipBecauseExists(outPath, key === '__default__' ? 'default' : key)) continue;
@@ -212,7 +216,7 @@ async function main() {
 
     // 2. Auto-discovered pages (substitute into og-template-auto.html).
     const autoTemplate = fs.readFileSync(path.join(scriptDir, 'og-template-auto.html'), 'utf-8');
-    const pages = discoverAutoPages();
+    const pages = discoverAutoPages().filter(p => onlyTemplate === null || p.templatePath === onlyTemplate);
     for (const p of pages) {
       const outPath = path.join(imagesDir, p.output);
       if (skipBecauseExists(outPath, p.title.slice(0, 40))) continue;
@@ -224,7 +228,7 @@ async function main() {
       console.log('auto:        ', path.relative(projectRoot, outPath), `(${p.title.slice(0, 50)}${p.title.length > 50 ? '…' : ''})`);
     }
 
-    if (pages.length === 0 && Object.keys(overrides).length === 0) {
+    if (pages.length === 0 && Object.keys(overrides).filter(key => onlyTemplate === null || key === onlyTemplate).length === 0) {
       console.warn('No cards rendered. Check that templates/ has base-extending pages or that overrides is populated.');
     }
   } finally {
