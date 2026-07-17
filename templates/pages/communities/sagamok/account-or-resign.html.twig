@@ -119,7 +119,7 @@
       <span class="mar-status">Draft for member consideration</span>
       <h2>A decision members can put on the record</h2>
       <p>{{ campaign.purpose }}</p>
-      <p>The resolution asks for records, an independent review, correction of verified gaps, a confidential reporting route, and a recorded Council response. It makes no finding of fraud or personal wrongdoing.</p>
+      <p>The resolution asks for records, an independent financial audit, correction of verified gaps, a confidential reporting route, and a recorded Council response. It makes no finding of fraud or personal wrongdoing.</p>
     </div>
     <aside class="mar-card">
       <h3>Decision calendar</h3>
@@ -160,7 +160,7 @@
 
   <section class="mar-why" aria-labelledby="why-h">
     {% include 'components/section_heading.html.twig' with { title: 'Why these seven actions', id: 'why-h' } only %}
-    <p>The current public record confirms overlapping elected, employment, and enterprise roles. It does not yet establish the complete current Finance and Audit Committee roster or whether every required independence statement has been completed. That is why this resolution asks Council to publish the records and authorize an independent review instead of declaring a violation before the evidence is complete.</p>
+    <p>The current public record confirms overlapping elected, employment, and enterprise roles. It does not yet establish the complete current Finance and Audit Committee roster or whether every required independence statement has been completed. That is why this resolution asks Council to publish the records and authorize an independent financial audit instead of declaring a violation before the evidence is complete.</p>
     <ul>
       <li><strong>Financial Administration Law section 11</strong> sets committee eligibility and independence requirements and requires written statements before appointment and annually.</li>
       <li><strong>Sections 72 to 74</strong> create reporting, inquiry, confidentiality, anti-reprisal, and safeguarding duties for suspected breaches and financial irregularities.</li>
@@ -179,7 +179,7 @@
 
   <section class="mar-record" aria-labelledby="record-h">
     {% include 'components/section_heading.html.twig' with { title: "The members' record", id: 'record-h' } only %}
-    <p>Each number belongs to a different member action. They are shown together because they document sustained demand for records, independent review, and accountable government. The signature lists are not merged.</p>
+    <p>Each number belongs to a different member action. They are shown together because they document sustained demand for records, an independent financial audit, and accountable government. The signature lists are not merged.</p>
     <div class="mar-record-grid">
       {% for item in members_record %}
         <a class="mar-record-card" href="{{ item.href }}"{% if item.href starts with 'http' %} target="_blank" rel="noopener"{% endif %}>
