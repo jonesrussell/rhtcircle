@@ -5,7 +5,32 @@
 {% block description %}A member-led resource for the Robinson Huron Treaty and its 21 First Nations: what the 1850 treaty is, the communities of the territory, what is happening on the land, and the member-led transparency work on the shared settlement.{% endblock %}
 {% block og_description %}A member-led resource for the Robinson Huron Treaty and its 21 First Nations: the treaty, the communities, the land, and the transparency work on the shared settlement.{% endblock %}
 
+{% block head_styles %}
+<style>
+  /* TEMPORARY live-meeting banner (remove with the banner markup below once
+     the July 23, 2026 meeting has concluded and /live points at the recording). */
+  .live-strip { display: block; background: linear-gradient(90deg, var(--indigo-deep), var(--magenta)); color: #fff; text-decoration: none; padding: 12px 0; }
+  .live-strip .wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .live-strip__dot { flex: none; width: 10px; height: 10px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6); animation: live-pulse 1.6s ease-out infinite; }
+  @keyframes live-pulse { to { box-shadow: 0 0 0 9px rgba(255, 255, 255, 0); } }
+  @media (prefers-reduced-motion: reduce) { .live-strip__dot { animation: none; } }
+  .live-strip strong { font-weight: 700; color: #fff; }
+  .live-strip__go { margin-left: auto; font-weight: 600; text-decoration: underline; white-space: nowrap; }
+  .live-strip:hover .live-strip__go { text-decoration: none; }
+</style>
+{% endblock %}
+
 {% block hero %}
+{# TEMPORARY: July 23, 2026 members' meeting stream. Remove this banner (and
+   its styles in head_styles above) after the meeting; /live stays up for the
+   recording. #}
+<a class="live-strip" href="/live">
+  <span class="wrap wrap--wide">
+    <span class="live-strip__dot" aria-hidden="true"></span>
+    <span><strong>Today, July 23:</strong> the Sagamok members' meeting is being streamed live by a member.</span>
+    <span class="live-strip__go">Watch the stream</span>
+  </span>
+</a>
 <section class="hero">
   <div class="wrap wrap--wide">
     <p class="eyebrow">A resource for the treaty and its 21 nations</p>
