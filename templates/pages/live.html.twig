@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}Live: the July 23 Sagamok members' meeting · Robinson Huron Treaty{% endblock %}
+{% block description %}A member-run live stream of the July 23, 2026 Sagamok members' meeting, where members consider the proposed Members' Accountability Resolution.{% endblock %}
+{% block og_description %}Watch the July 23, 2026 Sagamok members' meeting live. A member-run stream; the recording will be posted afterward.{% endblock %}
+{% block body_class %}route-live{% endblock %}
+
+{% block head_styles %}
+<style>
+  .live-embed { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #18122b; border-radius: 12px; overflow: hidden; margin: 1.5rem 0 0.75rem; }
+  .live-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .live-fallback { font-size: 0.95rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › Live stream</p>
+
+  <h1>Live: the July 23 members' meeting</h1>
+  <p class="lead">A member-run stream of the Sagamok members' meeting on July 23, 2026, where members consider the proposed <a href="/communities/sagamok/member-accountability-resolution">Members' Accountability Resolution</a>.</p>
+
+  {% set banner_body %}<strong>Member-run and unofficial.</strong> This stream is run by a member so that members who cannot attend in person can still watch. It is not an official broadcast of Sagamok Anishnawbek, and this site is not the Robinson Huron Treaty Litigation Fund. The player shows the stream while it is live; before and after, it shows the channel as offline.{% endset %}
+  {% include 'components/notice.html.twig' with { variant: 'caveat', body: banner_body, label: 'About this stream' } only %}
+
+  <div class="live-embed">
+    <iframe
+      src="https://player.twitch.tv/?channel=jonesrussell42&parent=rhtcircle.ca&parent=www.rhtcircle.ca&parent=localhost&parent=127.0.0.1&autoplay=true&muted=true"
+      title="Live stream of the July 23, 2026 Sagamok members' meeting"
+      allow="autoplay; fullscreen; picture-in-picture"
+      allowfullscreen></iframe>
+  </div>
+  <p class="live-fallback muted">Player not loading? <a href="https://www.twitch.tv/jonesrussell42" target="_blank" rel="noopener">Watch directly on Twitch</a>. The stream starts muted; use the player's volume control.</p>
+
+  {% include 'components/section_heading.html.twig' with { title: 'After the meeting' } only %}
+  <p>A recording will be posted after the meeting so members can watch on their own time, and this page will link to it. The resolution page will be reconciled to the wording members actually adopt; see <a href="/communities/sagamok/member-accountability-resolution">the resolution</a> and <a href="/communities/sagamok/awaiting-council">questions awaiting an answer</a>.</p>
+
+  <p class="cover__byline">A community resource from the Robinson Huron Treaty hub, member-led and independent. Corrections welcome.</p>
+{% endblock %}

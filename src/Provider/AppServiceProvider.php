@@ -274,6 +274,12 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         $pages = [
             'home' => ['/', 'pages/home.html.twig'],
 
+            // Member-run live stream of the July 23, 2026 Sagamok members'
+            // meeting. Top-level /live so the URL can be said out loud in the
+            // room; the Twitch channel embed is permanent, so the page works
+            // before, during, and after the broadcast.
+            'live' => ['/live', 'pages/live.html.twig'],
+
             // The Treaty: orientation pillar. The four-part annuity explainer and
             // its distribution-models companion migrated here from /treaty-wide
             // (301s below); fixed-content pages, no context needed.
