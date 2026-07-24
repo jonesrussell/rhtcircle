@@ -2,8 +2,8 @@
 {% set nav = 'communities' %}
 
 {% block title %}Sagamok Members' Accountability Resolution · Robinson Huron Treaty{% endblock %}
-{% block description %}The exact non-binding member resolution proposed for the July 23, 2026 Sagamok member meeting, with seven documented accountability actions for Chief and Council.{% endblock %}
-{% block og_description %}Read and sign the exact non-binding Sagamok Members' Accountability Resolution proposed for July 23, 2026.{% endblock %}
+{% block description %}The seven-part Sagamok Members' Accountability Resolution submitted to Chief and Council on July 24, 2026. Read it and continue adding your support.{% endblock %}
+{% block og_description %}Submitted to Sagamok Chief and Council on July 24. Read the seven requested actions and continue adding your signature.{% endblock %}
 {% block body_class %}route-sagamok-member-accountability-resolution{% endblock %}
 {% block main_class %}wrap wrap--wide{% endblock %}
 
@@ -22,6 +22,9 @@
   .mar-dates time { font-weight: 700; color: var(--ink); }
   .mar-disclaimer { border-left: 4px solid var(--blue); background: color-mix(in srgb, var(--blue) 8%, var(--paper)); padding: 18px 20px; border-radius: 0 var(--radius-md) var(--radius-md) 0; margin: var(--gap-5) 0; }
   .mar-disclaimer p { margin: 0; }
+  .mar-update { border: 1px solid var(--accent-soft); border-left: 6px solid var(--accent); background: var(--accent-wash); border-radius: var(--radius-md); padding: 19px 21px; margin: var(--gap-5) 0; }
+  .mar-update strong { color: var(--accent-deep); }
+  .mar-update p { margin: 4px 0; }
   .mar-resolution { background: var(--paper); border: 1px solid var(--rule-strong); border-radius: var(--radius-lg); padding: clamp(22px, 4vw, 38px); margin: var(--gap-6) 0; }
   .mar-resolution header { border-bottom: 2px solid var(--ink); padding-bottom: 18px; margin-bottom: 24px; }
   .mar-resolution header p { margin: 4px 0 0; color: var(--ink-3); }
@@ -101,7 +104,7 @@
 </figure>
 <section class="hero">
   <div class="wrap wrap--wide">
-    <p class="eyebrow">Sagamok Anishnawbek · proposed for the July 23 member meeting</p>
+    <p class="eyebrow">Sagamok Anishnawbek · submitted to Chief and Council July 24, 2026</p>
     <h1>{{ campaign.title }}</h1>
   </div>
 </section>
@@ -111,32 +114,38 @@
 <div class="mar-prose">
   <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › Members' Accountability Resolution</p>
 
-  {% set notice_body %}<strong>This is a proposed non-binding member resolution.</strong> It records member will and requests formal Council action. It is not a Band Council Resolution, does not remove anyone from office, and is not a legal recall vote. The text may be amended by members at the July 23 meeting; this page will be reconciled to the wording actually adopted.{% endset %}
+  {% set notice_body %}<strong>This non-binding member resolution was submitted through official Council channels on July 24.</strong> It requests formal Council action. It is not a Band Council Resolution, does not remove anyone from office, and is not a legal recall vote.{% endset %}
   {% include 'components/notice.html.twig' with { variant: 'caveat', body: notice_body, label: 'What this is' } only %}
+
+  <div class="mar-update">
+    <p><strong>Submission update, July 24:</strong> The six-page package was emailed to the Chief, all twelve councillors, Political Office and Council Secretariat.</p>
+    <p>Signatures remain open. You can still add your name below to support the same seven requested actions while Council considers its response.</p>
+  </div>
 
   <div class="mar-grid">
     <div>
-      <span class="mar-status">Draft for member consideration</span>
-      <h2>A decision members can put on the record</h2>
+      <span class="mar-status">Submitted to Council</span>
+      <h2>The request is now in Council's hands</h2>
       <p>{{ campaign.purpose }}</p>
       <p>The resolution asks for records, an independent financial audit, correction of verified gaps, a confidential reporting route, and a recorded Council response. It makes no finding of fraud or personal wrongdoing.</p>
+      <p>The submission asks Council to place the complete resolution on the July 28 agenda, record the mover, seconder, amendments, votes, recusals and absences, and publish its response and delivery dates by August 5.</p>
     </div>
     <aside class="mar-card">
       <h3>Decision calendar</h3>
       <ul class="mar-dates">
-        <li><time datetime="2026-07-23">July 23</time><span>Members consider, amend, and vote.</span></li>
-        <li><time datetime="2026-07-24">July 24</time><span>Adopted resolution delivered.</span></li>
-        <li><time datetime="2026-07-28">July 28</time><span>Requested Council agenda date.</span></li>
-        <li><time datetime="2026-08-05">August 5</time><span>Requested written-response deadline.</span></li>
+        <li><time datetime="2026-07-23">July 23</time><span>Member information session held and attendance recorded.</span></li>
+        <li><time datetime="2026-07-24">July 24</time><span>Resolution package submitted through official channels.</span></li>
+        <li><time datetime="2026-07-28">July 28</time><span>Requested Council agenda and recorded decision date.</span></li>
+        <li><time datetime="2026-08-05">August 5</time><span>Requested written response and delivery schedule.</span></li>
       </ul>
     </aside>
   </div>
 
   <article class="mar-resolution" id="resolution">
     <header>
-      <p class="eyebrow">Proposed resolution · working draft dated {{ campaign.last_updated }}</p>
+      <p class="eyebrow">Submitted resolution · July 24, 2026</p>
       <h2>{{ campaign.title }}</h2>
-      <p>For consideration by Sagamok members on July 23, 2026</p>
+      <p>Sent to the Chief, all twelve councillors, Political Office and Council Secretariat</p>
     </header>
 
     {% for paragraph in resolution.preamble %}<p>{{ paragraph }}</p>{% endfor %}
@@ -153,7 +162,7 @@
       <p>{{ resolution.accountability_clause }}</p>
     </div>
     <div class="mar-clause">
-      <h3>Adoption rule</h3>
+      <h3>July 23 meeting record</h3>
       <p>{{ resolution.adoption_rule }}</p>
     </div>
   </article>
@@ -171,10 +180,10 @@
 
   {% include 'components/section_heading.html.twig' with { title: 'From meeting to verified response', id: 'steps-h' } only %}
   <div class="mar-steps" aria-labelledby="steps-h">
-    <div class="mar-step"><time>July 23</time><strong>Adopt</strong><p>Read, amend, vote, and witness the final member record.</p></div>
-    <div class="mar-step"><time>July 24</time><strong>Deliver</strong><p>Send the exact adopted text through official Council channels.</p></div>
+    <div class="mar-step"><time>July 23</time><strong>Discuss</strong><p>Members met, heard the documented record, and asked questions.</p></div>
+    <div class="mar-step"><time>July 24</time><strong>Delivered</strong><p>The seven-part resolution and support record were sent through official Council channels.</p></div>
     <div class="mar-step"><time>July 28</time><strong>Decide</strong><p>Ask Council for a recorded motion, votes, owners, and dates.</p></div>
-    <div class="mar-step"><time>August 5</time><strong>Verify</strong><p>Score each requested action as met, partial, unmet, or not verifiable.</p></div>
+    <div class="mar-step"><time>August 5</time><strong>Respond</strong><p>Requested deadline for Council's written response and delivery schedule.</p></div>
   </div>
 
   <section class="mar-record" aria-labelledby="record-h">
@@ -193,7 +202,8 @@
   </section>
 
   <section class="rr-card" id="resolution-sign-on" data-rr aria-labelledby="rr-h">
-    <h2 id="rr-h">Add your name to this exact resolution</h2>
+    <h2 id="rr-h">Signatures remain open</h2>
+    <p>You can still add your name to support the exact seven requested actions. New signatures will remain part of the support record while Council considers its response.</p>
     <p class="rr-count" data-rr-countbox hidden>Joined by <b data-rr-count>0</b> members and supporters so far</p>
     <p class="rr-sharebar">Share this page: <button type="button" class="rr-sharebtn" data-rr-share hidden>Share</button><button type="button" class="rr-copy" data-rr-copy>Copy link</button></p>
     <p class="rr-statement">I support the seven requested actions in the {{ campaign.title }} displayed on this page.</p>
@@ -233,7 +243,7 @@
   </section>
 
   <div class="rr-supporters" data-rr-supporters hidden><h3>People who chose to be named</h3><ul data-rr-supporters-list></ul></div>
-  <p class="rr-fine">Working draft published for member consideration. The final public text will be reconciled to any amendments adopted July 23. See also the <a href="/standard/records-request">June 2026 member records request</a> and the <a href="/communities/sagamok/conflict-register">public-record conflict register</a>.</p>
+  <p class="rr-fine">Submitted to Chief and Council on July 24, 2026. Signatures remain open and the live support count will continue to be recorded separately from earlier campaigns. See also the <a href="/standard/records-request">June 2026 member records request</a> and the <a href="/communities/sagamok/conflict-register">public-record conflict register</a>.</p>
 </div>
 {% endblock %}
 
