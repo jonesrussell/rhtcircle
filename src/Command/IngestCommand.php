@@ -75,6 +75,7 @@ final class IngestCommand
         '/communities/sagamok/play-limited-partnership' => 'pages/communities/sagamok/play-limited-partnership.html.twig',
         '/communities/sagamok/espanola-mill-bmi' => 'pages/communities/sagamok/espanola-mill-bmi.html.twig',
         '/communities/sagamok/one-seat-one-salary' => 'pages/communities/sagamok/one-seat-one-salary.html.twig',
+        '/communities/sagamok/write-to-council' => 'pages/communities/sagamok/write-to-council.html.twig',
         '/circle' => 'pages/circle/index.html.twig',
         '/about' => 'pages/about.html.twig',
     ];

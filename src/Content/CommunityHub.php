@@ -184,9 +184,17 @@ final class CommunityHub
                 'feature' => true,
                 'tag' => 'A member resolution',
                 'title' => 'Members\' Accountability Resolution',
-                'desc' => 'A proposed non-binding resolution for the July 23 member meeting, asking for seven specific records, review, correction, reporting, and response actions.',
+                'desc' => 'A non-binding resolution submitted to Chief and Council on July 24, asking for seven specific records, audit, correction, reporting, and response actions. Signatures remain open.',
                 'go' => 'Read and sign the resolution',
                 'href' => '/communities/sagamok/member-accountability-resolution',
+            ],
+            [
+                'feature' => true,
+                'tag' => 'A member writing tool',
+                'title' => 'Write your own letter to Council',
+                'desc' => 'Build a clear concern or records-request letter on your device, download an editable template, and open the finished wording in your own email app.',
+                'go' => 'Build a letter',
+                'href' => '/communities/sagamok/write-to-council',
             ],
             [
                 'feature' => true,

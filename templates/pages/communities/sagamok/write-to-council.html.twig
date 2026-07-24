@@ -1,0 +1,334 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}Write to Sagamok Chief and Council · Member letter builder{% endblock %}
+{% block description %}Build a clear member concern letter in your browser, download an editable template, or open the finished letter in your own email app.{% endblock %}
+{% block og_description %}A private, browser-based tool for Sagamok members to write their own concern, records request, or question to Chief and Council.{% endblock %}
+{% block body_class %}route-sagamok-write-to-council{% endblock %}
+{% block main_class %}wrap wrap--wide{% endblock %}
+
+{% block head_styles %}
+<style>
+  .mlb-shell { max-width: 1120px; margin: 0 auto; }
+  .mlb-intro { max-width: 780px; }
+  .mlb-privacy { margin: 22px 0; padding: 17px 19px; border: 1px solid var(--accent-soft); border-left: 5px solid var(--accent); border-radius: var(--radius-md); background: var(--accent-wash); }
+  .mlb-privacy strong { color: var(--accent-deep); }
+  .mlb-privacy p { margin: 3px 0; }
+  .mlb-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(360px, .9fr); gap: 24px; align-items: start; margin: 28px 0; }
+  .mlb-panel { border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper-2); padding: clamp(20px, 3vw, 28px); }
+  .mlb-panel h2 { margin-top: 0; font-family: var(--font-serif); font-size: clamp(24px, 3vw, 31px); font-weight: 550; }
+  .mlb-field { margin: 0 0 18px; }
+  .mlb-label { display: block; margin: 0 0 6px; color: var(--ink); font: 700 13px/1.35 var(--font-sans); }
+  .mlb-label small { display: block; margin-top: 3px; color: var(--ink-3); font-weight: 450; }
+  .mlb-input, .mlb-select, .mlb-textarea { width: 100%; border: 1px solid var(--rule-strong); border-radius: 9px; background: var(--paper); color: var(--ink); padding: 11px 12px; font: inherit; }
+  .mlb-textarea { min-height: 126px; resize: vertical; line-height: 1.5; }
+  .mlb-textarea.is-short { min-height: 96px; }
+  .mlb-input:focus, .mlb-select:focus, .mlb-textarea:focus { outline: 3px solid color-mix(in srgb, var(--accent) 28%, transparent); border-color: var(--accent); }
+  .mlb-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 18px; }
+  .mlb-button { appearance: none; border: 1px solid var(--accent); border-radius: 999px; background: var(--accent); color: #fff; padding: 10px 18px; font: 750 13px/1.2 var(--font-sans); text-decoration: none; cursor: pointer; }
+  .mlb-button:hover { filter: brightness(.96); }
+  .mlb-button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+  .mlb-button.is-secondary { border-color: var(--rule-strong); background: var(--paper); color: var(--accent-deep); }
+  .mlb-button.is-email { background: var(--indigo-deep); border-color: var(--indigo-deep); }
+  .mlb-status { min-height: 1.25em; margin: 10px 0 0; color: var(--accent-deep); font-size: 13px; }
+  .mlb-preview-wrap { position: sticky; top: 20px; }
+  .mlb-preview-note { margin: 0 0 10px; color: var(--ink-3); font-size: 12.5px; }
+  .mlb-letter { min-height: 650px; border: 1px solid var(--rule-strong); border-radius: 4px; background: #fff; color: #1d1d1d; padding: clamp(22px, 4vw, 38px); box-shadow: 0 12px 30px rgba(35, 29, 58, .08); font-family: Arial, sans-serif; font-size: 14px; line-height: 1.58; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .mlb-downloads { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 24px 0; }
+  .mlb-download { border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper-2); padding: 18px; }
+  .mlb-download h3 { margin: 0 0 6px; }
+  .mlb-download p { margin: 0 0 13px; color: var(--ink-2); font-size: 14px; }
+  .mlb-steps { counter-reset: step; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 22px 0; }
+  .mlb-step { position: relative; border-top: 4px solid var(--accent); background: var(--paper-2); padding: 18px; border-radius: 0 0 var(--radius-md) var(--radius-md); }
+  .mlb-step::before { content: counter(step); counter-increment: step; display: grid; place-items: center; width: 30px; height: 30px; margin-bottom: 10px; border-radius: 50%; background: var(--accent); color: white; font-weight: 800; }
+  .mlb-step strong { display: block; margin-bottom: 5px; }
+  .mlb-step p { margin: 0; color: var(--ink-2); font-size: 13.5px; }
+  .mlb-routing { margin-top: 24px; }
+  .mlb-routing summary { cursor: pointer; color: var(--accent-deep); font-weight: 700; }
+  .mlb-routing p { color: var(--ink-2); font-size: 13px; }
+  @media (max-width: 900px) {
+    .mlb-grid { grid-template-columns: 1fr; }
+    .mlb-preview-wrap { position: static; }
+    .mlb-letter { min-height: 520px; }
+  }
+  @media (max-width: 640px) {
+    .mlb-downloads, .mlb-steps { grid-template-columns: 1fr; }
+    .mlb-button { width: 100%; text-align: center; }
+  }
+  @media print {
+    .site-header, .site-footer, .mlb-intro, .mlb-privacy, .mlb-panel:first-child, .mlb-downloads, .mlb-steps, .mlb-routing, .crumb { display: none !important; }
+    .mlb-grid { display: block; margin: 0; }
+    .mlb-preview-wrap { position: static; }
+    .mlb-panel { border: 0; padding: 0; background: white; }
+    .mlb-panel h2, .mlb-preview-note { display: none; }
+    .mlb-letter { min-height: 0; border: 0; padding: 0; box-shadow: none; }
+  }
+</style>
+{% endblock %}
+
+{% block hero %}
+<section class="hero">
+  <div class="wrap wrap--wide">
+    <p class="eyebrow">Sagamok Anishnawbek · a member tool</p>
+    <h1>Write your own letter.</h1>
+    <p class="lead">Describe what happened, ask for the exact answer or record you need, and request a written reply. The tool builds the letter while you type.</p>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="mlb-shell">
+  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › Write to Chief and Council</p>
+
+  <div class="mlb-intro">
+    <h2>You do not need special wording.</h2>
+    <p>Write what you personally know. Say what answer, document, decision, or follow-up you want. Ask for the response in writing and keep a copy of what you send.</p>
+  </div>
+
+  <div class="mlb-privacy">
+    <p><strong>Your letter stays on your device.</strong></p>
+    <p>Nothing typed into this page is sent to or stored by RHT Circle. The email button opens an editable draft in your own email app. You decide whether to send it.</p>
+  </div>
+
+  <!--email_off-->
+  <div class="mlb-grid">
+    <section class="mlb-panel" aria-labelledby="builder-heading">
+      <h2 id="builder-heading">Build the letter</h2>
+      <form data-letter-form>
+        <div class="mlb-field">
+          <label class="mlb-label" for="mlb-recipient">Who should receive it?</label>
+          <select class="mlb-select" id="mlb-recipient" name="recipient">
+            <option value="council">Chief, all councillors, Political Office and Council Secretariat</option>
+            <option value="political">Political Office and Council Secretariat</option>
+            <option value="blank">I will add the recipients myself</option>
+          </select>
+        </div>
+
+        <div class="mlb-field">
+          <label class="mlb-label" for="mlb-name">Your name</label>
+          <input class="mlb-input" id="mlb-name" name="name" type="text" autocomplete="name" maxlength="120" placeholder="Your full name">
+        </div>
+
+        <div class="mlb-field">
+          <label class="mlb-label" for="mlb-contact">Your email or phone <small>Optional. Include only what you want the recipients to use for their reply.</small></label>
+          <input class="mlb-input" id="mlb-contact" name="contact" type="text" autocomplete="email" maxlength="180" placeholder="Email address or phone number">
+        </div>
+
+        <div class="mlb-field">
+          <label class="mlb-label" for="mlb-subject">What is the letter about?</label>
+          <input class="mlb-input" id="mlb-subject" name="subject" type="text" maxlength="160" placeholder="Example: Economic Development application process">
+        </div>
+
+        <div class="mlb-field">
+          <label class="mlb-label" for="mlb-concern">What happened, or what concerns you? <small>Use plain facts: what you experienced, what decision you heard about, or what information is missing.</small></label>
+          <textarea class="mlb-textarea" id="mlb-concern" name="concern" maxlength="3500" placeholder="I am writing because..."></textarea>
+        </div>
+
+        <div class="mlb-field">
+          <label class="mlb-label" for="mlb-asks">What are you asking for? <small>Put each question, record, or action on its own line. The letter will number them.</small></label>
+          <textarea class="mlb-textarea" id="mlb-asks" name="asks" maxlength="3000" placeholder="A written answer explaining...&#10;A copy of...&#10;The name of the person responsible and the date this will be addressed..."></textarea>
+        </div>
+
+        <div class="mlb-field">
+          <label class="mlb-label" for="mlb-date">When would you like a reply? <small>Optional. Choose a reasonable date.</small></label>
+          <input class="mlb-input" id="mlb-date" name="response_date" type="date">
+        </div>
+
+        <div class="mlb-actions">
+          <button class="mlb-button" type="button" data-copy-letter>Copy letter</button>
+          <button class="mlb-button is-secondary" type="button" data-download-letter>Download my letter</button>
+          <a class="mlb-button is-email" href="#" data-email-letter>Open in my email app</a>
+        </div>
+        <p class="mlb-status" data-letter-status role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="mlb-panel mlb-preview-wrap" aria-labelledby="preview-heading">
+      <h2 id="preview-heading">Your letter</h2>
+      <p class="mlb-preview-note">This preview updates as you type. You can still edit everything in your email app before sending.</p>
+      <div class="mlb-letter" data-letter-preview aria-live="polite"></div>
+    </section>
+  </div>
+  <!--/email_off-->
+
+  <section aria-labelledby="template-heading">
+    {% include 'components/section_heading.html.twig' with { title: 'Start with a blank template', id: 'template-heading' } only %}
+    <div class="mlb-downloads">
+      <div class="mlb-download">
+        <h3>Editable Word template</h3>
+        <p>Download a clean letter with prompts you can replace in Microsoft Word, Google Docs, LibreOffice, or another document app.</p>
+        <a class="mlb-button is-secondary" href="/files/templates/sagamok-member-concern-letter-template.docx" download>Download Word template</a>
+      </div>
+      <div class="mlb-download">
+        <h3>Plain-text template</h3>
+        <p>Use this version when you want to paste the basic wording directly into email, Messenger, Notes, or another app.</p>
+        <a class="mlb-button is-secondary" href="/files/templates/sagamok-member-concern-letter-template.txt" download>Download text template</a>
+      </div>
+    </div>
+  </section>
+
+  {% include 'components/section_heading.html.twig' with { title: 'Three things make the record stronger' } only %}
+  <div class="mlb-steps">
+    <div class="mlb-step"><strong>Be specific</strong><p>Name the service, decision, meeting, document, or experience. Add dates when you know them.</p></div>
+    <div class="mlb-step"><strong>Ask for an answer</strong><p>Request the exact record, explanation, action, responsible office, or completion date you need.</p></div>
+    <div class="mlb-step"><strong>Keep your copy</strong><p>Save the sent email or letter. Follow up using the original date if no written answer arrives.</p></div>
+  </div>
+
+  <!--email_off-->
+  <details class="mlb-routing">
+    <summary>Which official addresses does the email button use?</summary>
+    <p>The full Council option addresses the Chief and all twelve councillors, then copies the Political Office, its administrative assistant, and the Director of Council Secretariat. The Political Office option addresses political_office@sagamok.ca and copies adminassistpo@sagamok.ca and jacobs_andrea@sagamok.ca. You can change any recipient before sending.</p>
+  </details>
+  <!--/email_off-->
+
+  <p class="fineprint">This is a writing tool, not a petition and not legal advice. RHT Circle does not send, receive, store, or review the letter you create here.</p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var form = document.querySelector('[data-letter-form]');
+  var preview = document.querySelector('[data-letter-preview]');
+  var status = document.querySelector('[data-letter-status]');
+  var emailButton = document.querySelector('[data-email-letter]');
+  if (!form || !preview || !emailButton) return;
+
+  var council = [
+    'chief@sagamok.ca',
+    'bennett_arnelda@sagamok.ca',
+    'bennett_leroy@sagamok.ca',
+    'southwind_sadie@sagamok.ca',
+    'owl_dan@sagamok.ca',
+    'toulouse_conrad@sagamok.ca',
+    'toulouse_mckenzie@sagamok.ca',
+    'toulouse_nelson@sagamok.ca',
+    'solomon_lawrence@sagamok.ca',
+    'petahtegoose_norma@sagamok.ca',
+    'eshkakogan_paul@sagamok.ca',
+    'nashkawa_veronica@sagamok.ca',
+    'abitong_mike@sagamok.ca'
+  ];
+  var political = ['political_office@sagamok.ca'];
+  var copiedOffices = ['adminassistpo@sagamok.ca', 'jacobs_andrea@sagamok.ca'];
+
+  function value(name) {
+    var field = form.elements[name];
+    return field ? String(field.value || '').trim() : '';
+  }
+
+  function readableDate(raw) {
+    if (!raw) return '';
+    var bits = raw.split('-').map(Number);
+    if (bits.length !== 3 || !bits[0] || !bits[1] || !bits[2]) return raw;
+    return new Date(bits[0], bits[1] - 1, bits[2]).toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  function today() {
+    return new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  function requests() {
+    return value('asks').split(/\r?\n/).map(function (line) { return line.trim(); }).filter(Boolean);
+  }
+
+  function recipientLabel(mode) {
+    if (mode === 'political') return 'Sagamok Political Office and Council Secretariat';
+    if (mode === 'blank') return '[Add recipients]';
+    return 'Sagamok Chief and Council\nCc: Political Office and Council Secretariat';
+  }
+
+  function buildLetter() {
+    var subject = value('subject') || '[Short description of your concern]';
+    var concern = value('concern') || '[Describe what happened, what you experienced, or what information is missing.]';
+    var asks = requests();
+    var askText = asks.length
+      ? asks.map(function (line, index) { return (index + 1) + '. ' + line; }).join('\n')
+      : '1. [The written answer, record, decision, or action you want.]\n2. [Any second question or document you need.]';
+    var replyDate = readableDate(value('response_date'));
+    var replyLine = replyDate
+      ? 'Please confirm that this letter was received and reply in writing by ' + replyDate + '.'
+      : 'Please confirm that this letter was received and reply in writing.';
+    var name = value('name') || '[Your name]';
+    var contact = value('contact');
+    return [
+      today(),
+      '',
+      'To: ' + recipientLabel(value('recipient')),
+      'Subject: ' + subject,
+      '',
+      'Aanii,',
+      '',
+      'I am a Sagamok member writing about ' + subject + '.',
+      '',
+      concern,
+      '',
+      'I am asking for:',
+      askText,
+      '',
+      replyLine,
+      '',
+      'Miigwech,',
+      name,
+      contact
+    ].filter(function (line, index, all) {
+      return line !== '' || index === 0 || all[index - 1] !== '';
+    }).join('\n');
+  }
+
+  function mailto() {
+    var mode = value('recipient');
+    var to = mode === 'council' ? council : (mode === 'political' ? political : []);
+    var cc = mode === 'blank' ? [] : copiedOffices.concat(mode === 'council' ? political : []);
+    var subject = value('subject') ? 'Member concern: ' + value('subject') : 'Sagamok member concern';
+    return 'mailto:' + to.join(',') +
+      '?cc=' + encodeURIComponent(cc.join(',')) +
+      '&subject=' + encodeURIComponent(subject) +
+      '&body=' + encodeURIComponent(buildLetter());
+  }
+
+  function render() {
+    var letter = buildLetter();
+    preview.textContent = letter;
+    emailButton.href = mailto();
+  }
+
+  function setStatus(message) {
+    status.textContent = message;
+    window.setTimeout(function () { if (status.textContent === message) status.textContent = ''; }, 3500);
+  }
+
+  function copyLetter() {
+    var letter = buildLetter();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(letter).then(function () { setStatus('Letter copied.'); }).catch(function () { window.prompt('Copy your letter:', letter); });
+    } else {
+      window.prompt('Copy your letter:', letter);
+    }
+  }
+
+  function downloadLetter() {
+    var blob = new Blob([buildLetter()], { type: 'text/plain;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = 'my-sagamok-member-letter.txt';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    setStatus('Letter downloaded to your device.');
+  }
+
+  form.addEventListener('input', render);
+  form.addEventListener('change', render);
+  form.querySelector('[data-copy-letter]').addEventListener('click', copyLetter);
+  form.querySelector('[data-download-letter]').addEventListener('click', downloadLetter);
+  emailButton.addEventListener('click', function () {
+    emailButton.href = mailto();
+    setStatus('Opening an editable draft in your email app.');
+  });
+  render();
+})();
+</script>
+{% endblock %}
