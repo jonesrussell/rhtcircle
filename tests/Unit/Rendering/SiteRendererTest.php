@@ -162,7 +162,7 @@ final class SiteRendererTest extends TestCase
         self::assertStringContainsString('<meta property="og:type" content="article">', $html);
         self::assertStringContainsString('<article class="news-article">', $html);
         self::assertStringContainsString('Membership comes before trespass', $html);
-        self::assertStringContainsString('By Laura Owl', $html);
+        self::assertStringContainsString('By Russell Jones', $html);
         self::assertStringContainsString(
             '<meta property="og:image" content="https://rhtcircle.ca/images/news/membership-before-trespass/membership-comes-first.png">',
             $html,
