@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 {% set nav = 'communities' %}
 
-{% block title %}The Conflict Register · Robinson Huron Treaty{% endblock %}
-{% block description %}A member-built tool: pick a Sagamok councillor to see, in plain words, the enterprise money decisions where Council handled business for a company they help run, and whether anyone stepped out of the vote.{% endblock %}
-{% block og_description %}Pick a Sagamok councillor and see their conflicts in plain words: which company they direct, what the decision did, and whether a recusal was recorded.{% endblock %}
+{% block title %}Council-enterprise role overlap and recusal record · Robinson Huron Treaty{% endblock %}
+{% block description %}A member-built record of Sagamok Council decisions involving Nation-owned companies, current councillors' documented enterprise roles, and the participation or recusal notation in the posted minutes.{% endblock %}
+{% block og_description %}See Sagamok Council-enterprise role overlaps, who moved and seconded each motion, and what the posted minutes record about participation or recusal.{% endblock %}
 {% block body_class %}route-sagamok-conflict-register{% endblock %}
 {% block main_class %}wrap wrap--wide{% endblock %}
 
@@ -38,6 +38,8 @@
   .cr-filter__select:focus-visible, .cr-filter__reset:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
   .cr-count { font-family: var(--font-sans); font-size: 13px; color: var(--ink-3); margin: 0 0 var(--gap-4); min-height: 1.4em; }
+  .cr-freshness { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: baseline; margin: 0 0 var(--gap-5); padding: 12px 16px; border: 1px solid var(--accent-soft); border-radius: var(--radius-md); background: var(--accent-wash); font-family: var(--font-sans); color: var(--ink-2); }
+  .cr-freshness strong { color: var(--accent-deep); }
 
   .cr-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; margin: 0 0 var(--gap-6); }
   .cr-card { border: 1px solid var(--rule); border-left: 5px solid var(--coral); border-radius: var(--radius-lg); background: var(--paper-2); padding: 16px 18px; }
@@ -58,9 +60,13 @@
   .cr-chip.is-voter { background: var(--accent-wash); border-color: var(--accent-soft); color: var(--accent-deep); }
   .cr-card__rec { margin-top: 6px; font-family: var(--font-sans); font-size: 13px; font-weight: 700; color: var(--coral); }
   .cr-card__rec.is-ok { color: var(--blue); }
+  .cr-card__participation { margin: 8px 0 0; padding-top: 8px; border-top: 1px solid var(--rule); font-family: var(--font-sans); font-size: 12.5px; line-height: 1.6; color: var(--ink-2); }
+  .cr-card__participation strong { color: var(--ink); }
+  .cr-date-unknown { display: inline-block; margin: 2px 0 8px; padding: 3px 8px; border-radius: 4px; background: var(--paper); border: 1px solid var(--rule-strong); font-family: var(--font-sans); font-size: 12px; font-weight: 700; color: var(--coral); }
 
   .cr-disclaimer { background: var(--paper-2); border-radius: var(--radius-md); padding: 14px 18px; margin: var(--gap-5) 0 0; font-family: var(--font-sans); font-size: 12.5px; line-height: 1.6; color: var(--ink-3); }
   .cr-disclaimer strong { color: var(--ink-2); }
+  .cr-correction { border-left: 4px solid var(--blue); padding: 10px 14px; background: var(--paper-2); font-family: var(--font-sans); font-size: 14px; line-height: 1.55; color: var(--ink-2); }
 
   @media (max-width: 560px) {
     .cr-cards { grid-template-columns: 1fr; }
@@ -70,19 +76,25 @@
 {% endblock %}
 
 {% block content %}
-  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › The Conflict Register</p>
+  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › Council-enterprise role overlap record</p>
 
   <p class="eyebrow">Sagamok Anishnawbek · A member's accountability tool</p>
-  <h1>The Conflict Register</h1>
-  <p class="lead">Councillors sit on the boards of the Nation's companies. Pick a councillor to see the decisions where Council approved money or business for a company they help run, and whether they stepped out of the vote.</p>
+  <h1>Council-enterprise role overlap and recusal record</h1>
+  <p class="lead">Current councillors hold roles with Nation-owned companies. Pick a councillor to see Council decisions involving those companies, who moved and seconded each motion, and what the posted minutes record about participation or recusal.</p>
+
+  <div class="cr-freshness">
+    <strong>Verified through May 19, 2026.</strong>
+    <span>Corporate roster snapshots range from June 3 to July 26, 2026 and are identified in the tool and sources.</span>
+  </div>
 
   <div class="cr-stats" data-cr-stats></div>
 
-  {% include 'components/section_heading.html.twig' with { title: 'Pick a councillor' } only %}
+  {% include 'components/section_heading.html.twig' with { title: 'Pick a current councillor' } only %}
+  <p class="muted">The picker shows the thirteen current members of Chief and Council over a two-term decision ledger. Former councillors are not yet included.</p>
   <div class="cr-people" data-cr-people></div>
   <div class="cr-ctx" data-cr-ctx></div>
 
-  <form class="cr-filter" aria-label="Filter the conflict register" data-cr-filter onsubmit="return false">
+  <form class="cr-filter" aria-label="Filter the role-overlap and recusal record" data-cr-filter onsubmit="return false">
     <select class="cr-filter__select" id="cr-company" data-cr-company aria-label="Filter by company">
       <option value="">All companies</option>
     </select>
@@ -104,17 +116,18 @@
   <div class="cr-cards" data-cr-cards></div>
 
   <div class="cr-disclaimer">
-    <strong>How to read this.</strong> Every figure is from the Nation's own Council minutes and the corporate registry, and dollar amounts are what the motion <em>approved or authorized</em>, not proof the money was paid out. "No recusal is recorded" means the minutes do not show a councillor stepping out over a board seat, a question for Council, not a finding of wrongdoing. The minutes do record six abstentions across both terms, and nearly all are a councillor stepping out over her own <em>employment</em> (for example "as Economic Development Manager"), not over a company she directs. In-camera and prior-term rows (before the August 2024 election) are marked, and a councillor is only shown as a director on dates their board seat was actually held.
+    <strong>How to read this.</strong> Every figure is from the Nation's Council minutes and corporate records, and dollar amounts are what a motion <em>approved or authorized</em>, not proof the money was paid out. A Council role and an enterprise role establish an overlap, not a legal conflict by themselves. The governing policy, annual disclosures and decision-specific declarations are still being requested. The tool keeps explicit recusal, abstention, A/O or opposition, and no individual participation notation separate. It does not infer an individual roll-call vote. In-camera and prior-term rows, before the August 2024 election, are marked. Where a corporate record does not establish when a current board seat began, the historical row says so and does not project the current roster backward.
   </div>
 
   {% include 'components/section_heading.html.twig' with { title: 'Right of reply' } only %}
   <p>Chief and Council have been asked to confirm this information and submit corrections. Any correction will be reflected here.</p>
+  <p class="cr-correction"><strong>Correction, July 26, 2026:</strong> This page was reframed as a role-overlap and recusal record. It now distinguishes mover, seconder, A/O, abstention and recusal, and no longer applies current corporate rosters to earlier decisions when board start dates are not established.</p>
 
   {% include 'components/section_heading.html.twig' with { title: 'Sources' } only %}
   <ul class="src-links">
     <li>The Nation's Council minutes, cited by motion number and date</li>
-    <li><a href="https://www.ontario.ca/page/ontario-business-registry" target="_blank" rel="noopener">Ontario Business Registry</a> and Corporations Canada's <a href="https://ised-isde.canada.ca/cc/lgcy/fdrlCrpDtls.html?corpId=11017624" target="_blank" rel="noopener">federal corporate registry</a> (board and officer roles)</li>
-    <li><a href="https://zgamok.ca/our-team" target="_blank" rel="noopener">zgamok.ca, our team</a> (board and officer roles)</li>
+    <li><a href="https://www.ontario.ca/page/ontario-business-registry" target="_blank" rel="noopener">Ontario Business Registry</a> and Corporations Canada's <a href="https://ised-isde.canada.ca/cc/lgcy/fdrlCrpDtls.html?corpId=11017624" target="_blank" rel="noopener">federal corporate registry</a> (corporate roster snapshots dated June 3 to July 10, 2026)</li>
+    <li><a href="https://zgamok.ca/our-team" target="_blank" rel="noopener">zgamok.ca, our team</a> (current ZEI roster checked July 26, 2026; seat start dates not established)</li>
     <li>Financial Administration Law, sections 21 and 22 (conflict declaration and recusal) and section 11 (Finance and Audit Committee independence)</li>
   </ul>
 
@@ -201,7 +214,8 @@
     "term": "prior",
     "incamera": false,
     "text": "Sagamok Chief & Council motion to appoint Meggan McCracken as an officer and Director of the Sagamok Development Corporation.",
-    "abstention": "Arnelda Bennett"
+    "abstention": "1 - AB",
+    "notation_type": "A/O"
   },
   {
     "date": "2023-01-10",
@@ -213,7 +227,8 @@
     "term": "prior",
     "incamera": false,
     "text": "Sagamok Chief & Council motion to pass BCR 2023-01-10X – SDC Board of Directors.",
-    "abstention": "Arnelda Bennett"
+    "abstention": "1 - AB",
+    "notation_type": "A/O"
   },
   {
     "date": "2023-01-24",
@@ -225,7 +240,8 @@
     "term": "prior",
     "incamera": false,
     "text": "Sagamok Chief & Council motion to approve BCR 2023-01-114 FNFA Borrowing Law – OR 2023, to secure funding for ZCLP.",
-    "abstention": "1 – Nicole Eshkakogan"
+    "abstention": "1 – Nicole Eshkakogan",
+    "notation_type": "A/O"
   },
   {
     "date": "2023-01-24",
@@ -297,7 +313,8 @@
     "term": "prior",
     "incamera": false,
     "text": "Sagamok Chief & Council motion to acknowledge the 2023 Holiday Schedule excepting Ritchie Falls until reviewed.",
-    "abstention": "2 – Arnelda Bennett and Anna Marie Abitong as employees"
+    "abstention": "2 – Arnelda Bennett and Anna Marie Abitong as employees",
+    "notation_type": "A/O"
   },
   {
     "date": "2023-12-19",
@@ -321,7 +338,8 @@
     "term": "prior",
     "incamera": false,
     "text": "Sagamok Chief and Council motion to approve the proposed SDC Strategic Plan with revised mandate; and to implement the proposed organizational changes and change management plan.",
-    "abstention": "1 – Arnelda Bennett, as Economic Development Manager"
+    "abstention": "1 – Arnelda Bennett, as Economic Development Manager",
+    "notation_type": "A/O"
   },
   {
     "date": "2024-03-26",
@@ -597,7 +615,8 @@
     "term": "current",
     "incamera": true,
     "text": "Sagamok Chief & Council motion to continue to have Claims and Negotiations Department, Sagamok Development Corporation, and SA Manager of Economic Development, pursue the opportunity with SA (25%) and WFN (25%) as equity",
-    "abstention": "Arnelda Bennett, Paul Eshkakogan"
+    "abstention": "Arnelda Bennett, Paul Eshkakogan",
+    "notation_type": "Abstentions"
   },
   {
     "date": "2025-09-23",
@@ -785,8 +804,24 @@
 ],
   "effective": {
     "GR Truss": "2025-04-01",
+    "ZCLP": "2018-09-28",
+    "OCL": "2024-04-10",
     "Sagamok Real Estate": "2025-05-27",
-    "15558409": "2023-11-27"
+    "Legend Mining": "2025-04-01",
+    "15558409": "2023-11-27",
+    "Ritchie Falls": "2016-01-01"
+  },
+  "snapshots": {
+    "GR Truss": "June 3, 2026",
+    "ZEI": "July 26, 2026",
+    "ZCLP": "July 4, 2026",
+    "OCL": "July 4, 2026",
+    "Sagamok Real Estate": "May 27, 2025 appointment record",
+    "Legend Mining": "July 4, 2026",
+    "SDC": "June 7, 2026",
+    "15558409": "June 7, 2026",
+    "Ritchie Falls": "June 3, 2026",
+    "1534 Kanata": "July 10, 2026"
   }
 };
 
@@ -801,25 +836,42 @@
       var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML;
     }
 
-    function boardEff(k) {
-      return (DATA.effective && DATA.effective[k]) ? DATA.effective[k] : '0000-00-00';
-    }
-
-    // date, when given, excludes a board whose seat was not yet appointed
-    // on that decision's date (e.g. Sagamok Real Estate's board was not
-    // appointed until 2025-05-27; a 2024 decision naming that company
-    // shows no directors for it, since none held the seat yet).
-    function dget(entity, date) {
-      var out = {};
+    function matchedBoardKeys(entity) {
+      var keys = [];
       (entity || '').split('/').forEach(function (part) {
         var p = part.trim();
         Object.keys(boards).forEach(function (k) {
-          if ((p === k || p.indexOf(k) === 0 || k.indexOf(p) === 0) && (!date || date >= boardEff(k))) {
-            Object.keys(boards[k]).forEach(function (n) { out[n] = boards[k][n]; });
+          if ((p === k || p.indexOf(k) === 0 || k.indexOf(p) === 0) && keys.indexOf(k) === -1) {
+            keys.push(k);
           }
         });
       });
-      return out;
+      return keys;
+    }
+
+    // A current roster is applied to a historical decision only when a
+    // certified record establishes that the seat had begun by that date.
+    function boardState(entity, date) {
+      var directors = {};
+      var unknownDates = [];
+      var notYetEffective = [];
+      matchedBoardKeys(entity).forEach(function (k) {
+        var effective = DATA.effective && DATA.effective[k];
+        if (!effective) {
+          unknownDates.push(k);
+          return;
+        }
+        if (date && date < effective) {
+          notYetEffective.push(k);
+          return;
+        }
+        Object.keys(boards[k]).forEach(function (n) { directors[n] = boards[k][n]; });
+      });
+      return { directors: directors, unknownDates: unknownDates, notYetEffective: notYetEffective };
+    }
+
+    function dget(entity, date) {
+      return boardState(entity, date).directors;
     }
 
     // Unlike dget(), not date-scoped: this is the councillor's full,
@@ -827,7 +879,13 @@
     function seatsOf(name) {
       var out = {};
       Object.keys(boards).forEach(function (e) {
-        if (Object.prototype.hasOwnProperty.call(boards[e], name)) out[e] = boards[e][name];
+        if (Object.prototype.hasOwnProperty.call(boards[e], name)) {
+          out[e] = {
+            role: boards[e][name],
+            effective: DATA.effective && DATA.effective[e],
+            snapshot: DATA.snapshots && DATA.snapshots[e]
+          };
+        }
       });
       return out;
     }
@@ -862,7 +920,7 @@
         btn.type = 'button';
         btn.className = 'cr-person' + (c === 0 ? ' is-zero' : '');
         btn.dataset.name = n;
-        btn.innerHTML = esc(n) + ' <small>(' + c + ')</small>';
+        btn.innerHTML = esc(n) + ' <small>(' + c + ' dated)</small>';
         btn.addEventListener('click', function () {
           sel = (sel === n) ? '' : n;
           render();
@@ -871,9 +929,9 @@
       });
 
     function involvement(d, name) {
-      if (d.mover === name) return 'moved this vote';
-      if (d.seconder === name) return 'seconded this vote';
-      return 'sat on the Council that passed it';
+      if (d.mover === name) return 'was a member of Council and moved the motion';
+      if (d.seconder === name) return 'was a member of Council and seconded the motion';
+      return 'was a member of Council when Council approved the motion; the posted minute does not provide an individual roll-call vote';
     }
 
     function coNameOf(entity) { return entity.split('/')[0].trim(); }
@@ -901,13 +959,13 @@
       });
 
       var total = list.filter(function (d) { return d.amount; }).reduce(function (sum, d) { return sum + d.amount; }, 0);
-      var abstentionCount = list.filter(function (d) { return d.abstention; }).length;
+      var notationCount = list.filter(function (d) { return d.abstention; }).length;
 
       if (statsEl) {
         statsEl.innerHTML =
           '<div class="cr-stat"><span class="cr-stat__n">' + list.length + '</span><span class="cr-stat__l">decisions shown</span></div>' +
           '<div class="cr-stat"><span class="cr-stat__n">' + esc(money(total)) + '</span><span class="cr-stat__l">approved for these companies (in motions)</span></div>' +
-          '<div class="cr-stat"><span class="cr-stat__n">' + abstentionCount + '</span><span class="cr-stat__l">abstentions recorded</span></div>';
+          '<div class="cr-stat"><span class="cr-stat__n">' + notationCount + '</span><span class="cr-stat__l">A/O or abstention notations</span></div>';
       }
 
       if (ctxEl) {
@@ -916,10 +974,14 @@
           var seatNames = Object.keys(seats);
           ctxEl.style.display = 'block';
           if (seatNames.length) {
-            var chips = seatNames.map(function (e) { return '<span class="cr-seat">' + esc(e) + ' · ' + esc(seats[e]) + '</span>'; }).join('');
-            ctxEl.innerHTML = '<strong>' + esc(sel) + '</strong> holds seats on the Nation\'s companies: ' + chips + '<br>Below: every decision where Council approved money or business for one of those companies, on dates the seat was held.';
+            var chips = seatNames.map(function (e) {
+              var timing = seats[e].effective ? ('since ' + seats[e].effective) : 'start date not established';
+              var snapshot = seats[e].snapshot ? ('; roster ' + seats[e].snapshot) : '';
+              return '<span class="cr-seat">' + esc(e) + ' · ' + esc(seats[e].role) + ' · ' + esc(timing + snapshot) + '</span>';
+            }).join('');
+            ctxEl.innerHTML = '<strong>' + esc(sel) + '</strong> appears on current corporate rosters: ' + chips + '<br>Historical decisions are matched only where a documented seat start date applies.';
           } else {
-            ctxEl.innerHTML = '<strong>' + esc(sel) + '</strong> holds no seat on any of the Nation\'s companies. No conflict decisions to show, and that is the point of showing it.';
+            ctxEl.innerHTML = '<strong>' + esc(sel) + '</strong> does not appear on the current corporate rosters used by this tool.';
           }
         } else {
           ctxEl.style.display = 'none';
@@ -928,19 +990,23 @@
 
       if (countEl) {
         countEl.textContent = sel
-          ? (list.length + ' decisions involving companies ' + sel + ' helps run')
-          : (list.length + ' decisions. Pick a councillor to see their conflicts in plain words.');
+          ? (list.length + ' decisions with a documented Council-enterprise role overlap for ' + sel)
+          : (list.length + ' decisions. Pick a current councillor to see documented role overlaps.');
       }
 
       cardsEl.innerHTML = list.map(function (d) {
-        var dirs = dget(d.entity, d.date);
+        var state = boardState(d.entity, d.date);
+        var dirs = state.directors;
         var co = coNameOf(d.entity);
-        var ab = d.abstention;
+        var notation = d.abstention;
+        var timingNote = state.unknownDates.length
+          ? '<span class="cr-date-unknown">Board dates not established for this period: ' + esc(state.unknownDates.join(', ')) + '</span>'
+          : '';
 
         var why;
         if (sel) {
           var role = dirs[sel] || 'a director';
-          why = '<p class="cr-card__why"><strong>' + esc(sel) + '</strong> is ' + esc(role) + ' of ' + esc(co) + '. This decision ' + esc(whatDid(d)) + ', and ' + esc(sel) + ' ' + esc(involvement(d, sel)) + '.</p>';
+          why = '<p class="cr-card__why"><strong>' + esc(sel) + '</strong> held the documented role of ' + esc(role) + ' with ' + esc(co) + ' on this date. This decision ' + esc(whatDid(d)) + '. ' + esc(sel) + ' ' + esc(involvement(d, sel)) + '.</p>';
         } else {
           var dirNames = Object.keys(dirs);
           var chips = dirNames.length
@@ -948,15 +1014,21 @@
                 var hl = (n === d.mover || n === d.seconder);
                 return '<span class="cr-chip' + (hl ? ' is-voter' : '') + '">' + esc(n) + ' · ' + esc(dirs[n]) + '</span>';
               }).join('')
-            : '<span class="cr-td-none">no councillor held a seat on this company on this date</span>';
-          why = '<p class="cr-card__dirlabel"><strong>Councillors who help run ' + esc(co) + ':</strong></p>' +
+            : (state.unknownDates.length ? '' : '<span class="cr-td-none">no documented current seat applies on this date</span>');
+          why = timingNote +
+            '<p class="cr-card__dirlabel"><strong>Documented councillor enterprise roles on this date:</strong></p>' +
             '<div class="cr-chips">' + chips + '</div>' +
-            '<p class="cr-card__why">This decision ' + esc(whatDid(d)) + '. The people who govern ' + esc(co) + ' are among those who voted on it.</p>';
+            '<p class="cr-card__why">This decision ' + esc(whatDid(d)) + '. The posted minute does not provide an individual roll-call vote.</p>';
         }
 
-        var rec = ab
-          ? '<p class="cr-card__rec is-ok">Abstention recorded: ' + esc(ab) + '</p>'
-          : '<p class="cr-card__rec">No recusal is recorded in the minutes.</p>';
+        var participation =
+          '<div class="cr-card__participation"><div><strong>Mover:</strong> ' + esc(d.mover) + '</div>' +
+          '<div><strong>Seconder:</strong> ' + esc(d.seconder) + '</div>' +
+          (notation
+            ? '<div><strong>' + esc(d.notation_type || 'Posted minute notation') + ':</strong> ' + esc(notation) + '</div>'
+            : '<div><strong>Individual participation notation:</strong> none in the posted minute</div>') +
+          '</div>';
+        var rec = '<p class="cr-card__rec">Explicit recusal: none recorded in the posted minute.</p>';
 
         var amtHtml = d.amount
           ? '<span class="cr-card__amt">' + esc(money(d.amount)) + '</span>'
@@ -965,10 +1037,10 @@
         var tags = (d.term === 'prior' ? '<span class="cr-tag--prior">prior term</span>' : '') +
           (d.incamera ? '<span class="cr-tag--incamera">in-camera</span>' : '');
 
-        return '<article class="cr-card' + (ab ? ' is-ok' : '') + '">' +
+        return '<article class="cr-card">' +
           '<div class="cr-card__head"><span class="cr-card__co">' + esc(co) + '</span>' + amtHtml + '</div>' +
           '<p class="cr-card__meta">' + esc(d.date) + ' · ' + esc(d.motion) + tags + '</p>' +
-          why + rec +
+          why + participation + rec +
           '</article>';
       }).join('');
     }
