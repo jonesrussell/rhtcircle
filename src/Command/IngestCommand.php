@@ -9,6 +9,7 @@ use App\Anokii\GraphSeedData;
 use App\Content\CommunityHub;
 use App\Content\LandProjects;
 use App\Content\Nations;
+use App\Content\NewsFeed;
 use App\Petition\PetitionRepository;
 use App\Support\ChunkData;
 use App\Support\DocChunker;
@@ -44,6 +45,7 @@ final class IngestCommand
         '/treaty/language' => 'pages/treaty/language.html.twig',
         '/treaty/settlement-where-it-goes' => 'pages/treaty/settlement-where-it-goes.html.twig',
         '/myth-versus-record' => 'pages/myth-versus-record.html.twig',
+        '/news/inside-sagamoks-gr-truss-deal' => 'pages/news/inside-sagamoks-gr-truss-deal.html.twig',
         '/treaty-wide' => 'pages/treaty-wide.html.twig',
         '/standard' => 'pages/standard.html.twig',
         '/standard/records-request' => 'pages/standard/records-request.html.twig',
@@ -160,6 +162,10 @@ final class IngestCommand
         foreach (self::PAGES as $sourceUrl => $template) {
             $render($sourceUrl, $template, []);
         }
+
+        $render('/news', 'pages/news/index.html.twig', [
+            'stories' => NewsFeed::recentExternalStories(),
+        ]);
 
         $render('/communities/sagamok/awaiting-council', 'pages/communities/sagamok/awaiting-council.html.twig', [
             'signatures' => $signatures,
