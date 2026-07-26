@@ -580,7 +580,10 @@ li { margin: 0 0 9px; }
 
 /* Sagamok accountability desk: a dedicated index so the community profile can
    remain a balanced community page instead of carrying every worked record. */
-.accountability-hub .cover { padding-bottom: var(--gap-6); }
+.accountability-hub .cover {
+  max-width: var(--max-wide);
+  padding-bottom: var(--gap-6);
+}
 .accountability-hub .page { max-width: var(--max-wide); }
 .accountability-jump {
   display: flex;

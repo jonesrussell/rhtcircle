@@ -101,6 +101,39 @@ final class SiteRendererTest extends TestCase
         self::assertStringContainsString('id="member-tools"', $html);
         self::assertSame(17, substr_count($html, '<a class="tile-card'));
         self::assertStringContainsString('Back to the Sagamok community page', $html);
+        self::assertMatchesRegularExpression(
+            '~<main id="main">\s*<div class="wrap wrap--wide">~',
+            $html,
+        );
+    }
+
+    public function testNoPageCanSelectTheNarrowReadingWrapperAsItsMainLayout(): void
+    {
+        $root = \dirname(__DIR__, 3);
+        $base = file_get_contents($root . '/templates/base.html.twig');
+
+        self::assertIsString($base);
+        self::assertStringContainsString(
+            '{% block main_class %}wrap wrap--wide{% endblock %}',
+            $base,
+        );
+
+        $files = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($root . '/templates/pages'),
+        );
+        foreach ($files as $file) {
+            if (!$file->isFile() || $file->getExtension() !== 'twig') {
+                continue;
+            }
+
+            $template = file_get_contents($file->getPathname());
+            self::assertIsString($template);
+            self::assertStringNotContainsString(
+                '{% block main_class %}wrap{% endblock %}',
+                $template,
+                $file->getPathname() . ' selects the forbidden narrow page shell.',
+            );
+        }
     }
 
     public function testInvestigationUsesTheNewsArticleLayout(): void

@@ -63,6 +63,9 @@ oriented; this app uses a small plain-Twig layer instead:
 - `src/Controller/SiteController.php` — one thin method per page, returns an HTML `Response`.
 - `src/Provider/AppServiceProvider.php` — routes (a name => [path, action] table).
 - Add a page = new `templates/pages/*.twig` + a `SiteController` method + a route row.
+- The route-level `<main>` shell is always `wrap wrap--wide` on desktop. Do not use the
+  720px `.wrap` reading measure as a page layout or override `main_class` with `wrap` alone.
+  Long-form prose may use an internal `.measure` element inside the wide page shell.
 
 ## Dev server
 
