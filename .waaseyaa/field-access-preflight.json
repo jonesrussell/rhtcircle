@@ -1,8 +1,15 @@
 {
-    "framework_version": "dev@128748a797de3f54@classification-d735b49056f20152",
+    "framework_version": "dev@393447d4eba54261@classification-d735b49056f20152",
     "schema_fingerprint": "0475a761100041e5b556ca1c8df7c64151dabf1f60ba9fa58e157238551935c0",
     "scanner_version": 1,
     "fields": {
+        "agent_audit_log|*|bundle": "public:framework_default",
+        "agent_audit_log|*|event_type": "internal:classification_artifact",
+        "agent_audit_log|*|id": "public:structural",
+        "agent_audit_log|*|langcode": "public:framework_default",
+        "agent_run|*|bundle": "public:framework_default",
+        "agent_run|*|id": "public:structural",
+        "agent_run|*|langcode": "public:framework_default",
         "attachment|*|bundle": "public:framework_default",
         "attachment|*|checksum": "internal:definition",
         "attachment|*|content_type": "protected:definition",
@@ -220,6 +227,11 @@
         "topic|*|name": "public:classification_artifact",
         "topic|*|slug": "public:classification_artifact",
         "topic|*|uuid": "public:structural",
+        "trace|*|bundle": "public:framework_default",
+        "trace|*|id": "public:structural",
+        "trace|*|label": "internal:classification_artifact",
+        "trace|*|langcode": "public:framework_default",
+        "trace|*|uuid": "public:structural",
         "user_block|*|blocked_id": "protected:definition",
         "user_block|*|blocker_id": "protected:definition",
         "user_block|*|bundle": "public:framework_default",
@@ -260,5 +272,5 @@
     "legacy_payloads": [],
     "legacy_payload_count": 0,
     "ready": true,
-    "checksum": "925af148a52600d88635c61c9944df251bbc14d832e1d7a7dcd4f9f55d7cadbf"
+    "checksum": "9c806df45c7815946e213645b9cc254a4b02b51cb7627d033ee0543a97ceb3c6"
 }
