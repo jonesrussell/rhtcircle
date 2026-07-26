@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Content\CommunityHub;
 use App\Content\LandProjects;
 use App\Content\Nations;
+use App\Content\NewsFeed;
 use App\Support\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,6 +32,16 @@ final class SiteController
         $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
 
         return $response;
+    }
+
+    /**
+     * Original RHT Circle reporting and a hand-reviewed external news digest.
+     */
+    public function newsIndex(): Response
+    {
+        return $this->html(View::render('pages/news/index.html.twig', [
+            'stories' => NewsFeed::recentExternalStories(),
+        ]));
     }
 
     /**

@@ -292,6 +292,10 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             // (/myth-versus-record is registered explicitly below: it renders from
             // the managed myth_entry content type, not a static template.)
 
+            // Original member-led reporting. /news itself is registered below
+            // because its digest is supplied by App\Content\NewsFeed.
+            'news-gr-truss-investigation' => ['/news/inside-sagamoks-gr-truss-deal', 'pages/news/inside-sagamoks-gr-truss-deal.html.twig'],
+
             // Transparency: the settlement asks and the shared standard.
             'treaty-wide' => ['/treaty-wide', 'pages/treaty-wide.html.twig'],
             'standard' => ['/standard', 'pages/standard.html.twig'],
@@ -381,6 +385,17 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                     ->build(),
             );
         }
+
+        $router->addRoute(
+            'news',
+            RouteBuilder::create('/news')
+                ->controller(fn (Request $request) => $md->wantsMarkdown($request)
+                    ? $md->pageResponse('/news')
+                    : $controller->newsIndex())
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
 
         // Unlisted editorial review copy. Deliberately excluded from navigation,
         // sitemap.xml and the machine-readable Markdown index.
