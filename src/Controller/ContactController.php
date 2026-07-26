@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Contact\ContactRepository;
-use App\Support\View;
+use App\Rendering\SiteRenderer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,16 +27,15 @@ final class ContactController
     private const int NAME_MAX = 120;
     private const int MESSAGE_MAX = 4000;
 
-    public function __construct(private readonly ContactRepository $contact) {}
+    public function __construct(
+        private readonly ContactRepository $contact,
+        private readonly SiteRenderer $renderer,
+    ) {}
 
     /** GET /contact — render the form page. */
     public function page(): Response
     {
-        return new Response(
-            View::render('pages/contact.html.twig'),
-            200,
-            ['Content-Type' => 'text/html; charset=UTF-8'],
-        );
+        return $this->renderer->html('pages/contact.html.twig');
     }
 
     /**

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Poll\PollRepository;
-use App\Support\View;
+use App\Rendering\SiteRenderer;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +26,10 @@ final class PollController
     private const COOKIE_PREFIX = 'poll_v_';
     private const COOKIE_TTL_DAYS = 365;
 
-    public function __construct(private readonly PollRepository $polls) {}
+    public function __construct(
+        private readonly PollRepository $polls,
+        private readonly SiteRenderer $renderer,
+    ) {}
 
     /** GET a poll page. $template is the Twig template for this specific poll. */
     public function page(Request $request, string $slug, string $template): Response
@@ -170,10 +173,6 @@ final class PollController
     /** @param array<string, mixed> $context */
     private function render(string $template, array $context): Response
     {
-        return new Response(
-            View::render($template, $context),
-            200,
-            ['Content-Type' => 'text/html; charset=UTF-8'],
-        );
+        return $this->renderer->html($template, $context);
     }
 }

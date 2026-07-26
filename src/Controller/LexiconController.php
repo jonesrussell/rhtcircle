@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Lexicon\LexiconClient;
-use App\Support\View;
+use App\Rendering\SiteRenderer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,7 +22,10 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class LexiconController
 {
-    public function __construct(private readonly LexiconClient $client) {}
+    public function __construct(
+        private readonly LexiconClient $client,
+        private readonly SiteRenderer $renderer,
+    ) {}
 
     /** GET /treaty/language — the page, plus results when ?q= is present. */
     public function page(Request $request): Response
@@ -38,10 +41,6 @@ final class LexiconController
             $lookup['result'] = $this->client->lookup($query, dir: $dir);
         }
 
-        return new Response(
-            View::render('pages/treaty/language.html.twig', ['lookup' => $lookup]),
-            200,
-            ['Content-Type' => 'text/html; charset=UTF-8'],
-        );
+        return $this->renderer->html('pages/treaty/language.html.twig', ['lookup' => $lookup]);
     }
 }

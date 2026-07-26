@@ -5,20 +5,22 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Analytics\AnalyticsReport;
-use App\Support\View;
+use App\Rendering\SiteRenderer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Renders the analytics dashboard.
  *
- * At the app layer this route is public; it is gated in production by Caddy
- * basic auth on /admin/* (see waaseyaa-infra). Renders through the app's own
- * plain-Twig View layer (the editorial site does not use the SSR package).
+ * At the app layer this route is public; the admin gate protects it in
+ * production. It renders through the shared framework-owned Twig environment.
  */
 final class AnalyticsDashboardController
 {
-    public function __construct(private readonly AnalyticsReport $report) {}
+    public function __construct(
+        private readonly AnalyticsReport $report,
+        private readonly SiteRenderer $renderer,
+    ) {}
 
     public function index(Request $request): Response
     {
@@ -26,7 +28,7 @@ final class AnalyticsDashboardController
         $from = $this->cleanDate($request->query->get('from'), gmdate('Y-m-d', strtotime('-29 days')));
         $to = $this->cleanDate($request->query->get('to'), $today);
 
-        $html = View::render('admin/analytics.html.twig', [
+        $html = $this->renderer->render('admin/analytics.html.twig', [
             'report' => $this->report->summary($from, $to),
             'range' => ['from' => $from, 'to' => $to],
         ]);

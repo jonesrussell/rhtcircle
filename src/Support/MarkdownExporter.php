@@ -14,8 +14,8 @@ use Waaseyaa\Seo\Llms\LlmsTxtGenerator;
 /**
  * The site's machine-readable Markdown layer, advertised in /llms.txt.
  *
- * rhtcircle is a hand-authored plain-Twig app: it does not mount the framework's
- * SSR entity router, so the framework's default agent surface (/{type}/{id}
+ * rhtcircle uses framework-owned Twig for its hand-authored pages but does not
+ * mount the framework's SSR entity router, so the default agent surface (/{type}/{id}
  * ?format=md, and a generic /llms.txt) never resolved here. This exporter
  * implements the surface from rhtcircle's real content instead:
  *

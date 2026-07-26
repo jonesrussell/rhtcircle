@@ -1,50 +1,11 @@
 {% extends 'base.html.twig' %}
 {% set nav = 'news' %}
 
-{% block title %}News and reporting · Robinson Huron Treaty{% endblock %}
+{% block title %}News and reporting | Robinson Huron Treaty{% endblock %}
 {% block description %}Original RHT Circle reporting and a hand-reviewed digest of recent Robinson Huron Treaty news from community, regional and official sources.{% endblock %}
 {% block og_description %}Original member-led reporting, plus recent news and official updates from across Robinson Huron Treaty territory.{% endblock %}
 {% block body_class %}route-news{% endblock %}
-
-{% block head_styles %}
-<style>
-  .news-head { max-width: 850px; padding: var(--gap-5) 0 var(--gap-4); }
-  .news-head h1 { margin-bottom: var(--gap-3); }
-  .news-kicker { color: var(--accent); font-family: var(--font-sans); font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-  .news-feature { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(280px, .88fr); overflow: hidden; margin: 0 0 var(--gap-6); background: var(--ink); border-radius: var(--radius-lg); box-shadow: 0 14px 42px rgba(34, 29, 51, .16); }
-  .news-feature__image { min-height: 430px; background: #eee8f4; }
-  .news-feature__image img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
-  .news-feature__copy { display: flex; flex-direction: column; justify-content: center; padding: clamp(28px, 5vw, 56px); color: #fff; }
-  .news-feature__meta { margin: 0 0 16px; color: #f39bcf; font-family: var(--font-sans); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-  .news-feature h2 { margin: 0 0 18px; color: #fff; font-size: clamp(34px, 5vw, 58px); line-height: 1; }
-  .news-feature__deck { margin: 0 0 25px; color: #eee9f3; font-size: 18px; line-height: 1.55; }
-  .news-feature__byline { margin: 0 0 24px; color: #cfc5d8; font-family: var(--font-sans); font-size: 14px; }
-  .news-feature__link { align-self: flex-start; display: inline-flex; padding: 11px 17px; color: #fff; background: var(--magenta); border-radius: 999px; font-family: var(--font-sans); font-size: 14px; font-weight: 700; text-decoration: none; }
-  .news-feature__link:hover { color: #fff; background: #a91475; }
-  .news-section-head { display: flex; align-items: end; justify-content: space-between; gap: var(--gap-4); margin: var(--gap-6) 0 var(--gap-4); padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
-  .news-section-head h2 { margin: 0; }
-  .news-section-head p { max-width: 460px; margin: 0; color: var(--ink-3); font-size: 14px; }
-  .news-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap-4); margin-bottom: var(--gap-6); }
-  .news-card { display: flex; flex-direction: column; min-height: 270px; padding: 25px; background: var(--paper); border: 1px solid var(--rule); border-top: 5px solid var(--indigo); border-radius: var(--radius-md); }
-  .news-card:nth-child(3n + 2) { border-top-color: var(--magenta); }
-  .news-card:nth-child(3n) { border-top-color: var(--coral); }
-  .news-card__meta { display: flex; flex-wrap: wrap; gap: 7px 12px; margin-bottom: 14px; color: var(--ink-3); font-family: var(--font-sans); font-size: 12px; font-weight: 600; }
-  .news-card__topic { color: var(--accent-deep); text-transform: uppercase; letter-spacing: .06em; }
-  .news-card h3 { margin: 0 0 12px; font-size: 25px; line-height: 1.15; }
-  .news-card h3 a { color: var(--ink); text-decoration: none; }
-  .news-card h3 a:hover { color: var(--indigo); text-decoration: underline; }
-  .news-card p { margin: 0 0 20px; color: var(--ink-2); line-height: 1.6; }
-  .news-card__source { margin-top: auto; font-family: var(--font-sans); font-size: 13px; font-weight: 700; }
-  .news-note { margin-bottom: var(--gap-6); padding: 18px 21px; background: var(--accent-wash); border-left: 4px solid var(--accent); color: var(--ink-2); font-size: 14px; }
-  @media (max-width: 820px) {
-    .news-feature { grid-template-columns: 1fr; }
-    .news-feature__image { min-height: 0; max-height: 620px; }
-    .news-grid { grid-template-columns: 1fr; }
-    .news-section-head { display: block; }
-    .news-section-head p { margin-top: 10px; }
-  }
-</style>
-{% endblock %}
+{% block main_class %}wrap wrap--wide{% endblock %}
 
 {% block content %}
   <header class="news-head">
@@ -53,18 +14,23 @@
     <p class="lead">Original reporting from RHT Circle, plus recent coverage and official updates from across Robinson Huron Treaty territory.</p>
   </header>
 
-  <article class="news-feature">
-    <a class="news-feature__image" href="/news/inside-sagamoks-gr-truss-deal" aria-label="Read Inside Sagamok's GR Truss deal">
-      <img src="/images/news/gr-truss/gr-truss-story-2-of-3.png" alt="The March 2026 repayment deadline for Sagamok's 500,000 dollar GR Truss advance has passed.">
-    </a>
-    <div class="news-feature__copy">
-      <p class="news-feature__meta">RHT Circle investigation · July 25, 2026</p>
-      <h2>Inside Sagamok's GR Truss deal</h2>
-      <p class="news-feature__deck">A $100 purchase, $900,000 in Council approvals and one direct question: was the original $500,000 plus 4 per cent paid back?</p>
-      <p class="news-feature__byline">By Laura Owl</p>
-      <a class="news-feature__link" href="/news/inside-sagamoks-gr-truss-deal">Read the investigation</a>
-    </div>
-  </article>
+  {% include 'components/news_feature.html.twig' with {
+    story: {
+      href: '/news/inside-sagamoks-gr-truss-deal',
+      image: {
+        src: '/images/news/gr-truss/gr-truss-story-2-of-3.png',
+        width: 1080,
+        height: 1350,
+        alt: "The March 2026 repayment deadline for Sagamok's 500,000 dollar GR Truss advance has passed."
+      },
+      section: 'RHT Circle investigation',
+      date: 'July 25, 2026',
+      title: "Inside Sagamok's GR Truss deal",
+      deck: 'A $100 purchase, $900,000 in Council approvals and one direct question: was the original $500,000 plus 4 per cent paid back?',
+      author: 'Laura Owl',
+      action: 'Read the investigation'
+    }
+  } only %}
 
   <div class="news-section-head">
     <h2>Recent across the territory</h2>
@@ -73,15 +39,7 @@
 
   <div class="news-grid">
     {% for story in stories %}
-      <article class="news-card">
-        <div class="news-card__meta">
-          <span class="news-card__topic">{{ story.topic }}</span>
-          <time datetime="{{ story.date_iso }}">{{ story.date }}</time>
-        </div>
-        <h3><a href="{{ story.url }}" target="_blank" rel="noopener external">{{ story.title }}</a></h3>
-        <p>{{ story.summary }}</p>
-        <a class="news-card__source" href="{{ story.url }}" target="_blank" rel="noopener external">Read at {{ story.source }} ↗</a>
-      </article>
+      {% include 'components/news_card.html.twig' with { story: story } only %}
     {% endfor %}
   </div>
 

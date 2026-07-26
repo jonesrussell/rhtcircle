@@ -11,9 +11,9 @@ use App\Content\LandProjects;
 use App\Content\Nations;
 use App\Content\NewsFeed;
 use App\Petition\PetitionRepository;
+use App\Rendering\SiteRenderer;
 use App\Support\ChunkData;
 use App\Support\DocChunker;
-use App\Support\View;
 use Waaseyaa\CLI\Command\SymfonyCommandIO;
 use Waaseyaa\Entity\Repository\EntityRepositoryInterface;
 
@@ -85,6 +85,7 @@ final class IngestCommand
     public function __construct(
         private readonly EntityRepositoryInterface $chunks,
         private readonly PetitionRepository $petitions,
+        private readonly SiteRenderer $renderer,
         private readonly DocChunker $chunker = new DocChunker(),
     ) {}
 
@@ -142,7 +143,7 @@ final class IngestCommand
 
         $render = function (string $sourceUrl, string $template, array $context) use (&$chunks, &$sources, $io): void {
             try {
-                $html = View::render($template, $context);
+                $html = $this->renderer->render($template, $context);
             } catch (\Throwable $e) {
                 $io->error(sprintf('Skipped %s: %s', $sourceUrl, $e->getMessage()));
 

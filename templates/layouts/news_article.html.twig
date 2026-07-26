@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'news' %}
+
+{% block og_type %}article{% endblock %}
+{% block body_class %}route-news route-news-article{% endblock %}
+{% block main_class %}wrap wrap--wide{% endblock %}
+
+{% block content %}
+  <article class="news-article">
+    <header class="news-article__header">
+      <p class="news-kicker">{{ article.kicker }}</p>
+      <h1>{{ article.title }}</h1>
+      <p class="news-article__deck">{{ article.deck }}</p>
+      <p class="news-article__byline">
+        <strong>By {{ article.author }}</strong><br>
+        <time datetime="{{ article.date_iso }}">{{ article.date }}</time> | {{ article.section }}
+      </p>
+    </header>
+
+    <figure class="news-article__hero">
+      <img src="{{ article.hero.src }}" width="{{ article.hero.width }}" height="{{ article.hero.height }}" alt="{{ article.hero.alt }}">
+      <figcaption>{{ article.hero.caption }}</figcaption>
+    </figure>
+
+    <div class="news-article__grid">
+      <div class="news-article__story">
+        {% block article_body %}{% endblock %}
+      </div>
+      <aside class="news-article__aside" aria-label="Key facts and timeline">
+        <div class="news-article__sticky">
+          {% block article_sidebar %}{% endblock %}
+        </div>
+      </aside>
+    </div>
+
+    <section class="news-article__sources" aria-label="Sources and limits">
+      {% block article_sources %}{% endblock %}
+    </section>
+  </article>
+{% endblock %}

@@ -1,0 +1,12 @@
+<article class="news-feature">
+  <a class="news-feature__image" href="{{ story.href }}" aria-label="Read {{ story.title }}">
+    <img src="{{ story.image.src }}" width="{{ story.image.width }}" height="{{ story.image.height }}" alt="{{ story.image.alt }}">
+  </a>
+  <div class="news-feature__copy">
+    <p class="news-feature__meta">{{ story.section }} | {{ story.date }}</p>
+    <h2><a href="{{ story.href }}">{{ story.title }}</a></h2>
+    <p class="news-feature__deck">{{ story.deck }}</p>
+    <p class="news-feature__byline">By {{ story.author }}</p>
+    <a class="news-feature__link" href="{{ story.href }}">{{ story.action }}</a>
+  </div>
+</article>

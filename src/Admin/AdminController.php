@@ -10,7 +10,7 @@ use Anokii\Admin\AdminModules;
 use Anokii\Admin\AdminShell;
 use Anokii\Dashboard\DashboardGate;
 use App\Analytics\AnalyticsReport;
-use App\Support\View;
+use App\Rendering\SiteRenderer;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,6 +46,7 @@ final class AdminController extends DashboardGate
         ?EntityTypeManager $entityTypeManager,
         private readonly DatabaseInterface $db,
         private readonly AnalyticsReport $report,
+        private readonly SiteRenderer $renderer,
     ) {
         parent::__construct($entityTypeManager);
     }
@@ -65,11 +66,11 @@ final class AdminController extends DashboardGate
             return $gate;
         }
 
-        return $this->html(View::render('anokii/admin/home.html.twig', $this->shell('dashboard', [
+        return $this->renderer->html('anokii/admin/home.html.twig', $this->shell('dashboard', [
             'page_title' => 'Anokii admin · Robinson Huron Treaty',
             'hero_lead' => 'The Robinson Huron Treaty resource hub workspace, running on Anokii. This public install holds only the shared, public graph: the 21 nations, the land and safety pages, and the corpus the chat answers from. No member data lives here.',
             'hero_chips' => ['Shared public graph', 'Co-Intelligence live', 'Member-led', 'More tools coming'],
-        ])));
+        ]));
     }
 
     /** Co-Intelligence: graph counts + the no-PII recent-questions log. */
@@ -81,11 +82,11 @@ final class AdminController extends DashboardGate
         }
         $data = new AdminData($this->db);
 
-        return $this->html(View::render('anokii/admin/cointelligence.html.twig', $this->shell('cointelligence', [
+        return $this->renderer->html('anokii/admin/cointelligence.html.twig', $this->shell('cointelligence', [
             'page_title' => 'Co-Intelligence · Anokii admin',
             'counts' => $data->graphCounts(),
             'log_rows' => $data->recentQuestions(200),
-        ])));
+        ]));
     }
 
     /** Analytics: the first-party analytics dashboard, in the shared shell. */
@@ -99,11 +100,11 @@ final class AdminController extends DashboardGate
         $from = $this->cleanDate($request->query->get('from'), gmdate('Y-m-d', strtotime('-29 days')));
         $to = $this->cleanDate($request->query->get('to'), $today);
 
-        return $this->html(View::render('admin/analytics.html.twig', $this->shell('analytics', [
+        return $this->renderer->html('admin/analytics.html.twig', $this->shell('analytics', [
             'page_title' => 'Analytics · Anokii admin',
             'report' => $this->report->summary($from, $to),
             'range' => ['from' => $from, 'to' => $to],
-        ])));
+        ]));
     }
 
     /** Contact messages from the public /contact form (no mailer wired yet). */
@@ -114,11 +115,11 @@ final class AdminController extends DashboardGate
             return $gate;
         }
 
-        return $this->html(View::render('admin/contact.html.twig', $this->shell('contact', [
+        return $this->renderer->html('admin/contact.html.twig', $this->shell('contact', [
             'page_title' => 'Contact messages · Anokii admin',
             'messages' => $contact->recent(200),
             'total' => $contact->count(),
-        ])));
+        ]));
     }
 
     /** Product-preview placeholder for a not-yet-live module. */
@@ -133,10 +134,10 @@ final class AdminController extends DashboardGate
             return new RedirectResponse(self::HOME_PATH);
         }
 
-        return $this->html(View::render('anokii/admin/coming_soon.html.twig', $this->shell($module, [
+        return $this->renderer->html('anokii/admin/coming_soon.html.twig', $this->shell($module, [
             'page_title' => $m['label'] . ' · Anokii admin',
             'module' => $m,
-        ])));
+        ]));
     }
 
     // --- helpers -----------------------------------------------------------

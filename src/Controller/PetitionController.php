@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Petition\PetitionRepository;
+use App\Rendering\SiteRenderer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Support\View;
 
 /**
  * Public surface for the "Add your voice" petition system.
@@ -24,7 +24,10 @@ final class PetitionController
     private const NAME_MAX = 120;
     private const COMMENT_MAX = 2000;
 
-    public function __construct(private readonly PetitionRepository $petitions) {}
+    public function __construct(
+        private readonly PetitionRepository $petitions,
+        private readonly SiteRenderer $renderer,
+    ) {}
 
     /**
      * POST /api/petition/sign — store a signature, return the live count and a
@@ -164,10 +167,6 @@ final class PetitionController
     /** @param array<string, mixed> $context */
     private function render(string $template, array $context): Response
     {
-        return new Response(
-            View::render($template, $context),
-            200,
-            ['Content-Type' => 'text/html; charset=UTF-8'],
-        );
+        return $this->renderer->html($template, $context);
     }
 }

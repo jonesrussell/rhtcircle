@@ -8,7 +8,7 @@ use App\Content\CommunityHub;
 use App\Content\LandProjects;
 use App\Content\Nations;
 use App\Content\NewsFeed;
-use App\Support\View;
+use App\Rendering\SiteRenderer;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,9 +18,11 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class SiteController
 {
+    public function __construct(private readonly SiteRenderer $renderer) {}
+
     public function page(string $template): Response
     {
-        return $this->html(View::render($template));
+        return $this->renderer->html($template);
     }
 
     /**
@@ -28,7 +30,7 @@ final class SiteController
      */
     public function reviewPage(string $template): Response
     {
-        $response = $this->html(View::render($template));
+        $response = $this->renderer->html($template);
         $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
 
         return $response;
@@ -39,9 +41,9 @@ final class SiteController
      */
     public function newsIndex(): Response
     {
-        return $this->html(View::render('pages/news/index.html.twig', [
+        return $this->renderer->html('pages/news/index.html.twig', [
             'stories' => NewsFeed::recentExternalStories(),
-        ]));
+        ]);
     }
 
     /**
@@ -51,10 +53,10 @@ final class SiteController
      */
     public function communitiesIndex(): Response
     {
-        return $this->html(View::render('pages/communities/index.html.twig', [
+        return $this->renderer->html('pages/communities/index.html.twig', [
             'regions' => Nations::regions(),
             'byRegion' => Nations::byRegion(),
-        ]));
+        ]);
     }
 
     /**
@@ -74,13 +76,13 @@ final class SiteController
     {
         $nation = Nations::find($slug);
         if ($nation === null) {
-            return $this->html(View::render('404.html.twig', ['path' => '/communities/' . $slug]), 404);
+            return $this->renderer->html('404.html.twig', ['path' => '/communities/' . $slug], 404);
         }
 
-        return $this->html(View::render('pages/communities/nation.html.twig', [
+        return $this->renderer->html('pages/communities/nation.html.twig', [
             'nation' => $nation,
             ...CommunityHub::context($slug, $nation, $signatures),
-        ]));
+        ]);
     }
 
     /**
@@ -94,9 +96,9 @@ final class SiteController
      */
     public function sagamokAwaitingCouncil(array $signatures): Response
     {
-        return $this->html(View::render('pages/communities/sagamok/awaiting-council.html.twig', [
+        return $this->renderer->html('pages/communities/sagamok/awaiting-council.html.twig', [
             'signatures' => $signatures,
-        ]));
+        ]);
     }
 
     /**
@@ -108,12 +110,12 @@ final class SiteController
      */
     public function sagamokAccountabilityResolution(array $data): Response
     {
-        return $this->html(View::render('pages/communities/sagamok/account-or-resign.html.twig', [
+        return $this->renderer->html('pages/communities/sagamok/account-or-resign.html.twig', [
             'campaign' => $data['campaign'] ?? [],
             'resolution' => $data['resolution'] ?? [],
             'members_record' => $data['members_record'] ?? [],
             'public_stages' => $data['public_stages'] ?? [],
-        ]));
+        ]);
     }
 
     /**
@@ -125,10 +127,10 @@ final class SiteController
     {
         $project = LandProjects::find($slug);
         if ($project === null) {
-            return $this->html(View::render('404.html.twig', ['path' => '/land/' . $slug]), 404);
+            return $this->renderer->html('404.html.twig', ['path' => '/land/' . $slug], 404);
         }
 
-        return $this->html(View::render('pages/land/project.html.twig', ['project' => $project]));
+        return $this->renderer->html('pages/land/project.html.twig', ['project' => $project]);
     }
 
     /**
@@ -143,11 +145,11 @@ final class SiteController
      */
     public function resourcesIndex(array $groups, array $regions, array $categories): Response
     {
-        return $this->html(View::render('pages/resources/index.html.twig', [
+        return $this->renderer->html('pages/resources/index.html.twig', [
             'groups' => $groups,
             'regions' => $regions,
             'categories' => $categories,
-        ]));
+        ]);
     }
 
     /**
@@ -160,7 +162,7 @@ final class SiteController
      */
     public function mythVersusRecord(array $entries): Response
     {
-        return $this->html(View::render('pages/myth-versus-record.html.twig', ['myth_entries' => $entries]));
+        return $this->renderer->html('pages/myth-versus-record.html.twig', ['myth_entries' => $entries]);
     }
 
     /** Permanent (301) redirect, for routes that have moved. */
@@ -169,8 +171,4 @@ final class SiteController
         return new RedirectResponse($to, 301);
     }
 
-    private function html(string $body, int $status = 200): Response
-    {
-        return new Response($body, $status, ['Content-Type' => 'text/html; charset=UTF-8']);
-    }
 }

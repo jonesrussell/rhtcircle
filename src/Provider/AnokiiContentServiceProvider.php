@@ -7,6 +7,7 @@ namespace App\Provider;
 use App\Command\IngestCommand;
 use App\Command\SeedGraphCommand;
 use App\Petition\PetitionRepository;
+use App\Rendering\SiteRenderer;
 use Waaseyaa\CLI\Command\HandlerCommand;
 use Waaseyaa\CLI\Command\HandlerOption;
 use Waaseyaa\CLI\Command\HandlerOptionMode;
@@ -55,7 +56,7 @@ final class AnokiiContentServiceProvider extends ServiceProvider implements Prov
                     return 1;
                 }
 
-                return new IngestCommand($etm->getRepository('doc_chunk'), $this->petitionRepository())->run($io);
+                return new IngestCommand($etm->getRepository('doc_chunk'), $this->petitionRepository(), $this->renderer())->run($io);
             },
         );
 
@@ -88,7 +89,7 @@ final class AnokiiContentServiceProvider extends ServiceProvider implements Prov
 
                     return 1;
                 }
-                $ingest = new IngestCommand($etm->getRepository('doc_chunk'), $this->petitionRepository())->run($io);
+                $ingest = new IngestCommand($etm->getRepository('doc_chunk'), $this->petitionRepository(), $this->renderer())->run($io);
                 if ($ingest !== 0) {
                     return $ingest;
                 }
@@ -109,6 +110,11 @@ final class AnokiiContentServiceProvider extends ServiceProvider implements Prov
         }
 
         return $repos;
+    }
+
+    private function renderer(): SiteRenderer
+    {
+        return $this->resolve(SiteRenderer::class);
     }
 
     private function entityTypeManager(): ?EntityTypeManager

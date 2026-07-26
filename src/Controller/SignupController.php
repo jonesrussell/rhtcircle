@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Signup\SignupRepository;
-use App\Support\View;
+use App\Rendering\SiteRenderer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,18 +32,17 @@ final class SignupController
         'Yes, send me updates from the RHT Circle about accountability and our shared settlement. '
         . 'I can unsubscribe anytime.';
 
-    public function __construct(private readonly SignupRepository $signup) {}
+    public function __construct(
+        private readonly SignupRepository $signup,
+        private readonly SiteRenderer $renderer,
+    ) {}
 
     /** GET /updates — render the dedicated signup page. */
     public function page(): Response
     {
-        return new Response(
-            View::render('pages/signup.html.twig', [
+        return $this->renderer->html('pages/signup.html.twig', [
                 'consent_text' => self::CONSENT_TEXT,
-            ]),
-            200,
-            ['Content-Type' => 'text/html; charset=UTF-8'],
-        );
+            ]);
     }
 
     /**
@@ -118,11 +117,7 @@ final class SignupController
 
         $removed = $this->signup->removeByToken($token);
 
-        return new Response(
-            View::render('pages/signup-removed.html.twig', ['removed' => $removed]),
-            200,
-            ['Content-Type' => 'text/html; charset=UTF-8'],
-        );
+        return $this->renderer->html('pages/signup-removed.html.twig', ['removed' => $removed]);
     }
 
     private function fail(string $message, int $statusCode = 422): JsonResponse

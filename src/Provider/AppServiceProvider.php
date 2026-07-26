@@ -28,6 +28,7 @@ use App\Petition\PetitionSchema;
 use App\Controller\PollController;
 use App\Poll\PollRepository;
 use App\Poll\PollSchema;
+use App\Rendering\SiteRenderer;
 use App\Controller\SignupController;
 use App\Signup\SignupRepository;
 use App\Signup\SignupSchema;
@@ -258,11 +259,12 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
 
     public function routes(WaaseyaaRouter $router, ?\Waaseyaa\Entity\EntityTypeManager $entityTypeManager = null): void
     {
-        $controller = new SiteController();
-        $petition = new PetitionController($this->petitionRepository());
-        $contact = new ContactController($this->contactRepository());
-        $poll = new PollController($this->pollRepository());
-        $signup = new SignupController($this->signupRepository());
+        $renderer = $this->resolve(SiteRenderer::class);
+        $controller = new SiteController($renderer);
+        $petition = new PetitionController($this->petitionRepository(), $renderer);
+        $contact = new ContactController($this->contactRepository(), $renderer);
+        $poll = new PollController($this->pollRepository(), $renderer);
+        $signup = new SignupController($this->signupRepository(), $renderer);
         // Machine-readable Markdown layer (advertised in /llms.txt): pages honor
         // ?format=md / Accept: text/markdown, and the graph entities are fetchable
         // as Markdown. Reads the persistent file (route-build resolve() can be
@@ -444,7 +446,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         // the controller reads ?q= and calls Minoo's language API server-to-server
         // (Minoo has no CORS), fail-soft, with attribution rendered. Still honors
         // ?format=md for the base page, like the other content pages.
-        $lexicon = new LexiconController($this->lexiconClient());
+        $lexicon = new LexiconController($this->lexiconClient(), $renderer);
         $router->addRoute(
             'treaty-language',
             RouteBuilder::create('/treaty/language')
@@ -736,7 +738,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         // disabled in config/anokii.yaml) so it goes through the same gate as
         // /admin/analytics. priority(100) beats the framework admin SPA catch-all
         // at /admin/{path} (priority 0).
-        $admin = new AdminController($entityTypeManager, $database, $report);
+        $admin = new AdminController($entityTypeManager, $database, $report, $renderer);
 
         // Login surface from the shared package (Anokii\Dashboard\AdminLoginController),
         // branded for rhtcircle and gating on the package admin permission. Replaces

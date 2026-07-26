@@ -57,7 +57,9 @@ if (is_dir($scanDir)) {
         if (!$file->isFile() || !str_ends_with($file->getFilename(), '.twig')) {
             continue;
         }
-        $rel = ltrim(str_replace($root . '/templates/', '', $file->getPathname()), '\\/');
+        $normalizedPath = str_replace('\\', '/', $file->getPathname());
+        $normalizedRoot = rtrim(str_replace('\\', '/', $root), '/');
+        $rel = ltrim(str_replace($normalizedRoot . '/templates/', '', $normalizedPath), '/');
         $allowedSnippets = $allowlist[$rel] ?? [];
 
         $lines = file($file->getPathname(), FILE_IGNORE_NEW_LINES);
