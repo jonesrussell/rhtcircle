@@ -274,8 +274,6 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         $directory = new \App\Content\ResourcesDirectory($this->persistentDatabase());
 
         $pages = [
-            'home' => ['/', 'pages/home.html.twig'],
-
             // Member-run live stream of the July 23, 2026 Sagamok members'
             // meeting. Top-level /live so the URL can be said out loud in the
             // room; the Twitch channel embed is permanent, so the page works
@@ -387,6 +385,17 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                     ->build(),
             );
         }
+
+        $router->addRoute(
+            'home',
+            RouteBuilder::create('/')
+                ->controller(fn (Request $request) => $md->wantsMarkdown($request)
+                    ? $md->pageResponse('/')
+                    : $controller->home())
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
 
         $router->addRoute(
             'news',

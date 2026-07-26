@@ -37,6 +37,24 @@ final class SiteController
     }
 
     /**
+     * Publication front page with current reporting and the 21 community desks.
+     */
+    public function home(): Response
+    {
+        $nationNames = [];
+        foreach (Nations::all() as $nation) {
+            $nationNames[(string) $nation['slug']] = (string) $nation['name'];
+        }
+
+        return $this->renderer->html('pages/home.html.twig', [
+            'stories' => NewsFeed::recentExternalStories(),
+            'regions' => Nations::regions(),
+            'communities_by_region' => Nations::byRegion(),
+            'nation_names' => $nationNames,
+        ]);
+    }
+
+    /**
      * Original RHT Circle reporting and a hand-reviewed external news digest.
      */
     public function newsIndex(): Response

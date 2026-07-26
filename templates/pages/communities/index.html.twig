@@ -21,7 +21,7 @@
   </div>
 
   {% for key, name in regions %}
-  <h2>{{ name }}</h2>
+  <h2 id="{{ key }}">{{ name }}</h2>
   <ul class="community-grid">
     {% for nation in byRegion[key] %}
     <li><a class="community-card" href="/communities/{{ nation.slug }}">

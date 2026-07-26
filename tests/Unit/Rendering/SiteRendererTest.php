@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Rendering;
 
 use App\Content\NewsFeed;
+use App\Content\Nations;
 use App\Rendering\PublicAssetVersioner;
 use App\Rendering\SiteRenderer;
 use PHPUnit\Framework\TestCase;
@@ -36,6 +37,38 @@ final class SiteRendererTest extends TestCase
         self::assertStringContainsString('class="wrap wrap--wide"', $html);
         self::assertStringNotContainsString('<style>', $html);
         self::assertSame(1, substr_count(strtolower($html), '<!doctype html>'));
+    }
+
+    public function testHomepageIsAThreeLayerPublicationFrontDoor(): void
+    {
+        $_SERVER['REQUEST_URI'] = '/';
+        $nationNames = [];
+        foreach (Nations::all() as $nation) {
+            $nationNames[(string) $nation['slug']] = (string) $nation['name'];
+        }
+
+        $html = $this->renderer->render('pages/home.html.twig', [
+            'stories' => NewsFeed::recentExternalStories(),
+            'regions' => Nations::regions(),
+            'communities_by_region' => Nations::byRegion(),
+            'nation_names' => $nationNames,
+        ]);
+
+        self::assertStringContainsString('News and public records members can use.', $html);
+        self::assertSame(3, substr_count($html, '<article class="news-card">'));
+        self::assertStringContainsString('One Treaty, 21 community desks', $html);
+        self::assertStringContainsString('Find the right doorway.', $html);
+        self::assertStringNotContainsString('Today, July 23', $html);
+    }
+
+    public function testSharedHeaderUsesFocusedDesktopAndMobileNavigation(): void
+    {
+        $html = $this->renderer->render('pages/about.html.twig');
+
+        self::assertStringContainsString('class="site-nav site-nav--desktop"', $html);
+        self::assertStringContainsString('<details class="mobile-menu">', $html);
+        self::assertStringContainsString('>21 Nations</a>', $html);
+        self::assertStringContainsString('>Help &amp; resources</a>', $html);
     }
 
     public function testInvestigationUsesTheNewsArticleLayout(): void

@@ -1,79 +1,127 @@
 {% extends 'base.html.twig' %}
 {% set nav = 'home' %}
 
-{% block title %}Robinson Huron Treaty · A member resource for the treaty and its 21 nations{% endblock %}
-{% block description %}A member-led resource for the Robinson Huron Treaty and its 21 First Nations: what the 1850 treaty is, the communities of the territory, what is happening on the land, and the member-led transparency work on the shared settlement.{% endblock %}
-{% block og_description %}A member-led resource for the Robinson Huron Treaty and its 21 First Nations: the treaty, the communities, the land, and the transparency work on the shared settlement.{% endblock %}
-
-{% block head_styles %}
-<style>
-  /* TEMPORARY live-meeting banner (remove with the banner markup below once
-     the July 23, 2026 meeting has concluded and /live points at the recording). */
-  .live-strip { display: block; background: linear-gradient(90deg, var(--indigo-deep), var(--magenta)); color: #fff; text-decoration: none; padding: 12px 0; }
-  .live-strip .wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .live-strip__dot { flex: none; width: 10px; height: 10px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6); animation: live-pulse 1.6s ease-out infinite; }
-  @keyframes live-pulse { to { box-shadow: 0 0 0 9px rgba(255, 255, 255, 0); } }
-  @media (prefers-reduced-motion: reduce) { .live-strip__dot { animation: none; } }
-  .live-strip strong { font-weight: 700; color: #fff; }
-  .live-strip__go { margin-left: auto; font-weight: 600; text-decoration: underline; white-space: nowrap; }
-  .live-strip:hover .live-strip__go { text-decoration: none; }
-</style>
-{% endblock %}
+{% block title %}RHT Circle · Member-led news across 21 Nations{% endblock %}
+{% block description %}Member-led news, public records and practical resources across the 21 Robinson Huron Treaty First Nations.{% endblock %}
+{% block og_description %}News, public records, community knowledge and practical resources across the 21 Robinson Huron Treaty First Nations.{% endblock %}
+{% block body_class %}route-home{% endblock %}
+{% block main_class %}wrap wrap--wide{% endblock %}
 
 {% block hero %}
-{# TEMPORARY: July 23, 2026 members' meeting stream. Remove this banner (and
-   its styles in head_styles above) after the meeting; /live stays up for the
-   recording. #}
-<a class="live-strip" href="/live">
-  <span class="wrap wrap--wide">
-    <span class="live-strip__dot" aria-hidden="true"></span>
-    <span><strong>Today, July 23:</strong> the Sagamok members' meeting is being streamed live by a member.</span>
-    <span class="live-strip__go">Watch the stream</span>
-  </span>
-</a>
-<section class="hero">
+<section class="home-hero">
   <div class="wrap wrap--wide">
-    <p class="eyebrow">A resource for the treaty and its 21 nations</p>
-    <h1>The Robinson Huron Treaty, in one place.</h1>
-    <p class="lead">The Robinson Huron Treaty is more than the settlement. It is a living relationship to the land, its resources, and the 21 First Nations of the territory. This is a member-led resource for anyone in or asking about the treaty: what it is, who the communities are, what is happening on the land, and how members are working together on transparency.</p>
-    <form id="rht-ask-hero" class="hero-ask" role="search">
-      <label class="hero-ask__label" for="rht-ask-hero-input">Aanii. Ask a question to get started</label>
+    <div class="home-hero__grid">
+      <div>
+        <p class="eyebrow">Member-led · sourced · across 21 Nations</p>
+        <h1>News and public records members can use.</h1>
+        <p class="lead">RHT Circle connects community reporting, the Treaty, land and water decisions, public records and practical help across Robinson Huron Treaty territory.</p>
+        <div class="btn-row">
+          <a class="btn" href="/news">Read the latest</a>
+          <a class="btn btn--alt" href="/communities">Find your Nation</a>
+        </div>
+      </div>
+
+      <a class="home-lead-story" href="/news/inside-sagamoks-gr-truss-deal">
+        <span class="home-lead-story__label">RHT Circle investigation</span>
+        <strong>Inside Sagamok’s GR Truss deal</strong>
+        <span>A $100 purchase, $900,000 in Council approvals and one unanswered repayment question.</span>
+        <span class="home-lead-story__go">Read the investigation</span>
+      </a>
+    </div>
+
+    <form id="rht-ask-hero" class="hero-ask home-ask" role="search">
+      <label class="hero-ask__label" for="rht-ask-hero-input">Aanii. Ask this resource a question</label>
       <div class="hero-ask__row">
-        <input id="rht-ask-hero-input" type="text" autocomplete="off" maxlength="500" placeholder="What is the settlement? Mental health help near me? Find my nation.">
+        <input id="rht-ask-hero-input" type="text" autocomplete="off" maxlength="500" placeholder="What is the settlement? Find my Nation. Where can I get help?">
         <button type="submit">Ask</button>
       </div>
-      <p class="hero-ask__note">Plain, cited answers from this hub's pages. A community resource, not the Nation or the Fund.</p>
+      <p class="hero-ask__note">Plain, cited answers from RHT Circle’s pages. This is a community resource, not a Nation or the Litigation Fund.</p>
     </form>
   </div>
 </section>
 {% endblock %}
 
 {% block content %}
-  <h2>Start here</h2>
-  <ul class="community-grid">
-    <li><a class="community-card" href="/treaty">
-      <p class="name">The Treaty</p>
-      <p class="pillar-desc">What the 1850 treaty is, the $4 annuity, the 2023 settlement, and the 2024 Supreme Court decision, in plain language.</p>
-    </a></li>
-    <li><a class="community-card" href="/communities">
-      <p class="name">Communities</p>
-      <p class="pillar-desc">The 21 signatory First Nations of the territory, one page each, grouped by region.</p>
-    </a></li>
-    <li><a class="community-card" href="/land">
-      <p class="name">The Land</p>
-      <p class="pillar-desc">Decisions on the territory: energy and resource projects, the environment, and member wellbeing.</p>
-    </a></li>
-    <li><a class="community-card" href="/standard">
-      <p class="name">Transparency</p>
-      <p class="pillar-desc">The member-led work on the shared settlement: the standard any member can use, and the treaty-wide ask.</p>
-    </a></li>
-  </ul>
+  <section class="home-section">
+    <div class="home-section__head">
+      <div>
+        <p class="eyebrow">Current public record</p>
+        <h2>Across the territory</h2>
+      </div>
+      <a href="/news">All news and reporting</a>
+    </div>
+    <div class="news-grid home-news-grid">
+      {% for story in stories|slice(0, 3) %}
+        {% include 'components/news_card.html.twig' with { story: story, nation_names: nation_names } only %}
+      {% endfor %}
+    </div>
+  </section>
 
-  <h2>The member-led Circle</h2>
-  <p>Inside this resource is the member-led Circle: members and beneficiaries from across the treaty, asking clear, respectful questions together about how our shared settlement is governed. The Circle is one part of the hub, the part where members organize and act. Everything else here, the treaty orientation, the community pages, and the land section, is open to anyone.</p>
+  <section class="home-community-band">
+    <div class="home-community-band__intro">
+      <p class="eyebrow">One Treaty, 21 community desks</p>
+      <h2>Start with the Nation you know.</h2>
+      <p>Every community has a sourced profile, its official public updates and reporting connected to that Nation. Local knowledge makes each desk stronger.</p>
+      <div class="btn-row">
+        <a class="btn" href="/communities">See all 21 Nations</a>
+        <a class="btn btn--alt" href="/get-involved">Help keep one current</a>
+      </div>
+    </div>
+    <div class="home-region-list">
+      {% for region_key, communities in communities_by_region %}
+        <a href="/communities#{{ region_key }}">
+          <strong>{{ regions[region_key] }}</strong>
+          <span>{{ communities|length }} Nations</span>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
 
-  <div class="btn-row">
-    <a class="btn" href="/circle">Meet the Circle</a>
-    <a class="btn btn--alt" href="/treaty">Start with the treaty</a>
-  </div>
+  <section class="home-section">
+    <div class="home-section__head">
+      <div>
+        <p class="eyebrow">Use the site</p>
+        <h2>Find the right doorway.</h2>
+      </div>
+    </div>
+    <div class="tile-grid home-doorways">
+      {% include 'components/tile_card.html.twig' with {
+        tag: 'Understand',
+        title: 'The Treaty and settlement',
+        desc: 'The 1850 promise, the annuity, the settlement, distribution models and what is still being decided.',
+        go: 'Start with the Treaty',
+        href: '/treaty'
+      } only %}
+      {% include 'components/tile_card.html.twig' with {
+        tag: 'Follow',
+        title: 'Land and water',
+        desc: 'Energy, mining, infrastructure, claims and environmental decisions across the territory.',
+        go: 'See the project map',
+        href: '/land'
+      } only %}
+      {% include 'components/tile_card.html.twig' with {
+        tag: 'Use',
+        title: 'Accountability tools',
+        desc: 'Public-record questions, records requests and a shared transparency standard members can adapt locally.',
+        go: 'Open the standard',
+        href: '/standard'
+      } only %}
+      {% include 'components/tile_card.html.twig' with {
+        tag: 'Get help',
+        title: 'Services and safety',
+        desc: 'Practical service directories, crisis support, education help and community-safety resources.',
+        go: 'Find resources',
+        href: '/resources'
+      } only %}
+    </div>
+  </section>
+
+  <section class="home-contribute">
+    <div>
+      <p class="eyebrow">The Circle is a contributor network</p>
+      <h2>Bring the community or subject you know.</h2>
+      <p>You do not need a finished article. Help keep a Nation page current, follow a beat, bring a public record, review sources or work with an editor on a piece.</p>
+    </div>
+    <a class="btn" href="/get-involved">See how to contribute</a>
+  </section>
 {% endblock %}
