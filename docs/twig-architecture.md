@@ -48,9 +48,12 @@ classification. The application-owned classification document is
   `public` because they contain the same published site content exposed by the
   public search and chat surfaces.
 - Operational audit, pipeline, and trace labels remain `internal`.
-- Run `APP_ENV=local vendor/bin/waaseyaa field-access:preflight` after changing
-  entity models or framework packages. A deploy is ready only when the report
-  has zero unclassified entries and `ready` is `true`.
+- Run `APP_ENV=local vendor/bin/waaseyaa field-access:preflight
+  --write-artifact` after changing entity models, classifications, or framework
+  packages. Commit `.waaseyaa/field-access-preflight.json` with the change.
+  Production checks its checksum, framework identity, and schema fingerprint
+  before booting. A deploy is ready only when the report has zero unclassified
+  entries and `ready` is `true`.
 
 ## News workflow
 
