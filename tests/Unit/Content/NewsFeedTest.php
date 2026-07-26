@@ -65,7 +65,7 @@ final class NewsFeedTest extends TestCase
         $groups = SagamokAccountabilityHub::groups(['total' => 40, 'online' => 11, 'paper' => 29]);
 
         self::assertSame(['start-here', 'follow-the-record', 'member-tools'], array_column($groups, 'id'));
-        self::assertSame(17, array_sum(array_map(
+        self::assertSame(18, array_sum(array_map(
             static fn (array $group): int => count($group['cards']),
             $groups,
         )));

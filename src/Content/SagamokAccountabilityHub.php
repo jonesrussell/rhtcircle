@@ -31,6 +31,7 @@ final class SagamokAccountabilityHub
             'title' => 'Follow the record',
             'intro' => 'Worked examples drawn from public records, organized by the decision or system members are trying to understand.',
             'hrefs' => [
+                '/news/sagamok-membership-before-trespass',
                 '/communities/sagamok/gr-truss',
                 '/communities/sagamok/one-seat-one-salary',
                 '/communities/sagamok/it-accountability',

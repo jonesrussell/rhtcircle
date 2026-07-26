@@ -16,21 +16,42 @@
 
   {% include 'components/news_feature.html.twig' with {
     story: {
-      href: '/news/inside-sagamoks-gr-truss-deal',
+      href: '/news/sagamok-membership-before-trespass',
       image: {
-        src: '/images/news/gr-truss/gr-truss-story-2-of-3.png',
-        width: 1080,
-        height: 1350,
-        alt: "The March 2026 repayment deadline for Sagamok's 500,000 dollar GR Truss advance has passed."
+        src: '/images/news/membership-before-trespass/membership-comes-first.png',
+        width: 1672,
+        height: 941,
+        alt: 'Membership Law shown before the Trespass By-law.'
       },
-      section: 'RHT Circle investigation',
-      date: 'July 25, 2026',
-      title: "Inside Sagamok's GR Truss deal",
-      deck: 'A $100 purchase, $900,000 in Council approvals and one direct question: was the original $500,000 plus 4 per cent paid back?',
+      section: 'RHT Circle analysis',
+      date: 'July 26, 2026',
+      title: 'Membership comes before trespass',
+      deck: 'Sagamok is advancing an enforcement law before members have seen the replacement law that will control the membership list it relies on.',
       author: 'Laura Owl',
-      action: 'Read the investigation'
+      action: 'Read the analysis'
     }
   } only %}
+
+  <div class="news-section-head">
+    <h2>RHT Circle reporting</h2>
+    <p>Original reporting and analysis built from the public record.</p>
+  </div>
+
+  <div class="news-grid">
+    {% include 'components/news_card.html.twig' with {
+      story: {
+        url: '/news/inside-sagamoks-gr-truss-deal',
+        topic: 'Investigation',
+        date: 'July 25, 2026',
+        date_iso: '2026-07-25',
+        title: "Inside Sagamok's GR Truss deal",
+        summary: 'A $100 purchase, $900,000 in Council approvals and one unanswered repayment question.',
+        source: 'RHT Circle',
+        nations: ['sagamok'],
+        internal: true
+      }
+    } only %}
+  </div>
 
   <div class="news-section-head">
     <h2>Recent across the territory</h2>

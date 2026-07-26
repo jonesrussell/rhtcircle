@@ -46,6 +46,7 @@ final class IngestCommand
         '/treaty/language' => 'pages/treaty/language.html.twig',
         '/treaty/settlement-where-it-goes' => 'pages/treaty/settlement-where-it-goes.html.twig',
         '/myth-versus-record' => 'pages/myth-versus-record.html.twig',
+        '/news/sagamok-membership-before-trespass' => 'pages/news/sagamok-membership-before-trespass.html.twig',
         '/news/inside-sagamoks-gr-truss-deal' => 'pages/news/inside-sagamoks-gr-truss-deal.html.twig',
         '/treaty-wide' => 'pages/treaty-wide.html.twig',
         '/standard' => 'pages/standard.html.twig',

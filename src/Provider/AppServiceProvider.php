@@ -294,6 +294,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
 
             // Original member-led reporting. /news itself is registered below
             // because its digest is supplied by App\Content\NewsFeed.
+            'news-membership-before-trespass' => ['/news/sagamok-membership-before-trespass', 'pages/news/sagamok-membership-before-trespass.html.twig'],
             'news-gr-truss-investigation' => ['/news/inside-sagamoks-gr-truss-deal', 'pages/news/inside-sagamoks-gr-truss-deal.html.twig'],
 
             // Transparency: the settlement asks and the shared standard.

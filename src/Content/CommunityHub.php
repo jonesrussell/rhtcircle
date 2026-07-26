@@ -120,6 +120,14 @@ final class CommunityHub
 
         return [
             [
+                'feature' => true,
+                'tag' => 'RHT Circle analysis',
+                'title' => 'Membership comes before trespass',
+                'desc' => 'Sagamok is advancing an enforcement law before members have seen the replacement law that will control the membership list it relies on.',
+                'go' => 'Read the analysis',
+                'href' => '/news/sagamok-membership-before-trespass',
+            ],
+            [
                 'tag' => 'An informal member poll',
                 'title' => 'What matters most to you right now?',
                 'desc' => 'Anonymous, single select: what should our leadership be focused on? No personal data is collected, and results are shown right after you vote.',

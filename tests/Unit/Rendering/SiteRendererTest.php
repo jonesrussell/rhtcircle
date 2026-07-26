@@ -100,7 +100,7 @@ final class SiteRendererTest extends TestCase
         self::assertStringContainsString('id="start-here"', $html);
         self::assertStringContainsString('id="follow-the-record"', $html);
         self::assertStringContainsString('id="member-tools"', $html);
-        self::assertSame(17, substr_count($html, '<a class="tile-card'));
+        self::assertSame(18, substr_count($html, '<a class="tile-card'));
         self::assertStringContainsString('Back to the Sagamok community page', $html);
         self::assertMatchesRegularExpression(
             '~<main id="main">\s*<div class="wrap wrap--wide">~',
@@ -151,6 +151,23 @@ final class SiteRendererTest extends TestCase
             $html,
         );
         self::assertStringNotContainsString('<style>', $html);
+        self::assertSame(1, substr_count(strtolower($html), '<!doctype html>'));
+    }
+
+    public function testMembershipBeforeTrespassUsesArticleLayoutAndEditorialImage(): void
+    {
+        $_SERVER['REQUEST_URI'] = '/news/sagamok-membership-before-trespass';
+        $html = $this->renderer->render('pages/news/sagamok-membership-before-trespass.html.twig');
+
+        self::assertStringContainsString('<meta property="og:type" content="article">', $html);
+        self::assertStringContainsString('<article class="news-article">', $html);
+        self::assertStringContainsString('Membership comes before trespass', $html);
+        self::assertStringContainsString('By Laura Owl', $html);
+        self::assertStringContainsString(
+            '<meta property="og:image" content="https://rhtcircle.ca/images/news/membership-before-trespass/membership-comes-first.png">',
+            $html,
+        );
+        self::assertStringContainsString('The chronology does not prove', $html);
         self::assertSame(1, substr_count(strtolower($html), '<!doctype html>'));
     }
 

@@ -3,7 +3,7 @@
     <span class="news-card__topic">{{ story.topic }}</span>
     <time datetime="{{ story.date_iso }}">{{ story.date }}</time>
   </div>
-  <h3><a href="{{ story.url }}" target="_blank" rel="noopener external">{{ story.title }}</a></h3>
+  <h3><a href="{{ story.url }}"{% if not story.internal|default(false) %} target="_blank" rel="noopener external"{% endif %}>{{ story.title }}</a></h3>
   <p>{{ story.summary }}</p>
   {% if story.nations is not empty %}
     <div class="news-card__communities" aria-label="Communities connected to this story">
@@ -14,5 +14,5 @@
   {% else %}
     <div class="news-card__communities"><span>All 21 Nations</span></div>
   {% endif %}
-  <a class="news-card__source" href="{{ story.url }}" target="_blank" rel="noopener external">Read at {{ story.source }} <span aria-hidden="true">&nearr;</span></a>
+  <a class="news-card__source" href="{{ story.url }}"{% if not story.internal|default(false) %} target="_blank" rel="noopener external"{% endif %}>{% if story.internal|default(false) %}Read the {{ story.topic|lower }}{% else %}Read at {{ story.source }} <span aria-hidden="true">&nearr;</span>{% endif %}</a>
 </article>
