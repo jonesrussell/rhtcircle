@@ -1,6 +1,6 @@
 {
     "framework_version": "dev@128748a797de3f54@classification-d735b49056f20152",
-    "schema_fingerprint": "5474dd7d6b5fb2640c32fe65fc5600167d5e2362ffda449ed749ea8219c352d8",
+    "schema_fingerprint": "0475a761100041e5b556ca1c8df7c64151dabf1f60ba9fa58e157238551935c0",
     "scanner_version": 1,
     "fields": {
         "attachment|*|bundle": "public:framework_default",
@@ -260,5 +260,5 @@
     "legacy_payloads": [],
     "legacy_payload_count": 0,
     "ready": true,
-    "checksum": "3b50a694086efcc9f84e342b38b70476ef2ea342b1f05b354b91d549e70d53dc"
+    "checksum": "925af148a52600d88635c61c9944df251bbc14d832e1d7a7dcd4f9f55d7cadbf"
 }
