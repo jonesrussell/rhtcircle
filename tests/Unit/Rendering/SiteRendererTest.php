@@ -164,7 +164,7 @@ final class SiteRendererTest extends TestCase
         self::assertStringContainsString('Membership should come before trespass', $html);
         self::assertStringContainsString('By Russell Jones', $html);
         self::assertStringContainsString(
-            '<meta property="og:image" content="https://rhtcircle.ca/images/news/membership-before-trespass/membership-comes-first.png">',
+            '<meta property="og:image" content="https://rhtcircle.ca/images/news/membership-before-trespass/laws-out-of-order-warning.png">',
             $html,
         );
         self::assertStringContainsString('The chronology does not prove', $html);
