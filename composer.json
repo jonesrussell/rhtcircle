@@ -53,6 +53,7 @@
         },
         "waaseyaa": {
             "providers": [
+                "App\\Provider\\FieldAccessClassificationProvider",
                 "App\\Provider\\RenderingServiceProvider",
                 "App\\Provider\\AppServiceProvider",
                 "App\\Provider\\CmsContentServiceProvider",

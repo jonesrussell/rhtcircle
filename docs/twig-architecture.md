@@ -38,6 +38,20 @@ does not use a static rendering facade.
 - Layouts must have no horizontal overflow at 360, 768, 1024, and 1440 CSS
   pixels.
 
+## Field-read boundary
+
+Waaseyaa alpha.274 fails closed for entity fields that do not declare a read
+classification. The application-owned classification document is
+`.waaseyaa/field-access-classification.json`.
+
+- Public Anokii graph and document-chunk fields are explicitly classified
+  `public` because they contain the same published site content exposed by the
+  public search and chat surfaces.
+- Operational audit, pipeline, and trace labels remain `internal`.
+- Run `APP_ENV=local vendor/bin/waaseyaa field-access:preflight` after changing
+  entity models or framework packages. A deploy is ready only when the report
+  has zero unclassified entries and `ready` is `true`.
+
 ## News workflow
 
 To publish another investigation:
