@@ -32,7 +32,7 @@ final class CommunityHub
      *   supplied by every caller (SiteController, IngestCommand) so the
      *   records-request card never hardcodes a number that can go stale
      *
-     * @return array{transparency: list<array<string, string|bool>>, territory: list<array<string, string|bool>>, community_life: list<array<string, string|bool>>, lede: string, tsub: string}
+     * @return array{transparency: list<array<string, string|bool>>, territory: list<array<string, string|bool>>, community_life: list<array<string, string|bool>>, current_updates: list<array<string, string|bool>>, lede: string, tsub: string}
      */
     public static function context(string $slug, array $nation, array $signatures): array
     {
@@ -42,11 +42,49 @@ final class CommunityHub
             'transparency' => $transparency,
             'territory' => self::territoryCards($slug),
             'community_life' => self::communityLife($slug),
+            'current_updates' => self::currentUpdates($slug, $nation),
             'lede' => self::lede((string) $nation['name'], $transparency !== []),
             'tsub' => $slug === 'sagamok'
                 ? 'Sagamok is where the shared standard became a worked example. These pages are members putting that standard into practice. They are the work of members, not of Chief and Council.'
-                : 'The shared standard, the same fair questions every member can put to their own Chief and Council, is ready to be brought home here.',
+                : 'The shared standard, the same plain questions every member can put to their own Chief and Council, is ready to be brought home here.',
         ];
+    }
+
+    /**
+     * Current, hand-reviewed public reporting connected to this Nation.
+     *
+     * @param array<string, mixed> $nation
+     *
+     * @return list<array<string, string|bool>>
+     */
+    private static function currentUpdates(string $slug, array $nation): array
+    {
+        $cards = [];
+
+        if (($nation['website'] ?? null) !== null) {
+            $cards[] = [
+                'feature' => true,
+                'tag' => "The Nation's own public record",
+                'title' => 'Official notices and community updates',
+                'desc' => 'Go directly to ' . (string) $nation['name'] . ' for current notices, programs, meetings, services and community announcements.',
+                'go' => 'Visit the official website',
+                'href' => (string) $nation['website'],
+                'external' => true,
+            ];
+        }
+
+        foreach (NewsFeed::forNation($slug) as $story) {
+            $cards[] = [
+                'tag' => (string) $story['topic'] . ' · ' . (string) $story['date'],
+                'title' => (string) $story['title'],
+                'desc' => (string) $story['summary'],
+                'go' => 'Read at ' . (string) $story['source'],
+                'href' => (string) $story['url'],
+                'external' => true,
+            ];
+        }
+
+        return $cards;
     }
 
     /**

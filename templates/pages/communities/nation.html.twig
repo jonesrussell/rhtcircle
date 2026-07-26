@@ -84,13 +84,21 @@
       {% endif %}
 
       <section>
+        <h2>Current public updates</h2>
+        <p class="muted">The Nation’s own public communications first, followed by hand-reviewed reporting connected to this community and the shared Treaty. RHT Circle summarizes outside coverage and links readers to the original source.</p>
+        <div class="tile-grid">
+          {% for t in current_updates %}{% include 'components/tile_card.html.twig' with t only %}{% endfor %}
+        </div>
+      </section>
+
+      <section>
         <h2>Member transparency resources</h2>
         <p class="muted">{{ tsub }}</p>
         <div class="tile-grid">
           {% if transparency is not empty %}
             {% for t in transparency %}{% include 'components/tile_card.html.twig' with t only %}{% endfor %}
           {% else %}
-            {% include 'components/tile_card.html.twig' with { invite: true, tag: 'Start it here', title: 'Bring the shared standard home', desc: 'No member transparency work has been started for ' ~ nation.name ~ ' yet. The shared standard is ready for any member to bring to their own Chief and Council. Be the first local contact.', go: 'Join the Circle', href: '/circle' } only %}
+            {% include 'components/tile_card.html.twig' with { invite: true, tag: 'Help build this community desk', title: 'Keep this page current', desc: 'Members know what matters locally. Help review public sources, suggest corrections, follow a community issue or contribute reporting from ' ~ nation.name ~ '. You can use your name, a byline, or work privately with an editor.', go: 'See contributor roles', href: '/get-involved' } only %}
           {% endif %}
         </div>
       </section>
@@ -110,7 +118,7 @@
       <section>
         <div class="btn-row">
           <a class="btn" href="/standard">The full shared standard</a>
-          <a class="btn btn--alt" href="/circle">Be a local contact</a>
+          <a class="btn btn--alt" href="/get-involved">Help with this community desk</a>
         </div>
       </section>
     </div>

@@ -43,5 +43,24 @@
     {% endfor %}
   </div>
 
-  <p class="news-note"><strong>About this digest:</strong> RHT Circle writes the short summaries and links directly to the original reporting or official notice. Inclusion is not endorsement. Dates shown are publication dates. Last reviewed July 25, 2026.</p>
+  <section class="news-community-desks">
+    <div class="news-section-head">
+      <h2>Community desks</h2>
+      <p>Every Nation has a sourced profile and a place for current public updates. Choose a community, or help keep its page current.</p>
+    </div>
+    {% for region_key, communities in communities_by_region %}
+      <h3>{{ regions[region_key] }}</h3>
+      <div class="news-community-links">
+        {% for nation in communities %}
+          <a href="/communities/{{ nation.slug }}">{{ nation.name }}</a>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    <div class="btn-row">
+      <a class="btn" href="/get-involved">Help with a community desk</a>
+      <a class="btn btn--alt" href="/communities">See all 21 profiles</a>
+    </div>
+  </section>
+
+  <p class="news-note"><strong>About this digest:</strong> RHT Circle writes the short summaries and links directly to the original reporting or official notice. Inclusion is not endorsement. Dates shown are publication dates. Last reviewed July 26, 2026.</p>
 {% endblock %}

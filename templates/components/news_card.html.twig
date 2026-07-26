@@ -5,5 +5,14 @@
   </div>
   <h3><a href="{{ story.url }}" target="_blank" rel="noopener external">{{ story.title }}</a></h3>
   <p>{{ story.summary }}</p>
+  {% if story.nations is not empty %}
+    <div class="news-card__communities" aria-label="Communities connected to this story">
+      {% for slug in story.nations %}
+        <a href="/communities/{{ slug }}">{{ nation_names[slug]|default(slug|replace({'-': ' '})|title) }}</a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="news-card__communities"><span>All 21 Nations</span></div>
+  {% endif %}
   <a class="news-card__source" href="{{ story.url }}" target="_blank" rel="noopener external">Read at {{ story.source }} <span aria-hidden="true">&nearr;</span></a>
 </article>

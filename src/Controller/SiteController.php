@@ -41,8 +41,16 @@ final class SiteController
      */
     public function newsIndex(): Response
     {
+        $nationNames = [];
+        foreach (Nations::all() as $nation) {
+            $nationNames[(string) $nation['slug']] = (string) $nation['name'];
+        }
+
         return $this->renderer->html('pages/news/index.html.twig', [
             'stories' => NewsFeed::recentExternalStories(),
+            'regions' => Nations::regions(),
+            'communities_by_region' => Nations::byRegion(),
+            'nation_names' => $nationNames,
         ]);
     }
 
