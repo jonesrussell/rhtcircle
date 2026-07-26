@@ -167,7 +167,7 @@
   function injectStyles() {
     if (document.getElementById('rht-furniture-style')) return;
     var css =
-      '.rht-share{margin-top:40px;padding-top:24px;border-top:1px solid var(--line,#e4def2);' +
+      '.rht-share{margin-top:28px;padding-top:18px;border-top:1px solid var(--line,#e4def2);' +
       'display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;' +
       'font-family:var(--sans,system-ui,sans-serif)}' +
       '.rht-share__count{font-size:13px;color:var(--ink-3,#6f6688);font-variant-numeric:tabular-nums}' +
@@ -190,6 +190,7 @@
     if (document.querySelector('[data-rr]')) return;
     var main = document.querySelector('main') || document.body;
     if (!main) return;
+    var host = document.getElementById('rht-furniture-host') || main;
 
     injectStyles();
 
@@ -211,7 +212,7 @@
 
     bar.appendChild(count);
     bar.appendChild(button);
-    main.appendChild(bar);
+    host.appendChild(bar);
 
     fetch('/api/page-stats?path=' + encodeURIComponent(location.pathname), {
       credentials: 'omit',

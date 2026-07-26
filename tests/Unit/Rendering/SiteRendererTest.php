@@ -68,6 +68,7 @@ final class SiteRendererTest extends TestCase
 
         self::assertStringContainsString('class="site-nav site-nav--desktop"', $html);
         self::assertStringContainsString('<details class="mobile-menu">', $html);
+        self::assertStringContainsString('<div id="rht-furniture-host"></div>', $html);
         self::assertStringContainsString('>21 Nations</a>', $html);
         self::assertStringContainsString('>Help &amp; resources</a>', $html);
     }
