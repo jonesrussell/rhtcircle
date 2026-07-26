@@ -32,7 +32,7 @@ final class CommunityHub
      *   supplied by every caller (SiteController, IngestCommand) so the
      *   records-request card never hardcodes a number that can go stale
      *
-     * @return array{transparency: list<array<string, string|bool>>, territory: list<array<string, string|bool>>, community_life: list<array<string, string|bool>>, current_updates: list<array<string, string|bool>>, lede: string, tsub: string}
+     * @return array{transparency: list<array<string, string|bool>>, transparency_title: string, territory: list<array<string, string|bool>>, community_life: list<array<string, string|bool>>, current_updates: list<array<string, string|bool>>, lede: string, tsub: string}
      */
     public static function context(string $slug, array $nation, array $signatures): array
     {
@@ -40,12 +40,15 @@ final class CommunityHub
 
         return [
             'transparency' => $transparency,
+            'transparency_title' => $slug === 'sagamok' ? 'Member accountability' : 'Member transparency resources',
             'territory' => self::territoryCards($slug),
             'community_life' => self::communityLife($slug),
             'current_updates' => self::currentUpdates($slug, $nation),
-            'lede' => self::lede((string) $nation['name'], $transparency !== []),
+            'lede' => $slug === 'sagamok'
+                ? 'A member-compiled profile of Sagamok Anishnawbek: its history, community updates, life on the territory, and a clear doorway into the separate member accountability desk.'
+                : self::lede((string) $nation['name'], $transparency !== []),
             'tsub' => $slug === 'sagamok'
-                ? 'Sagamok is where the shared standard became a worked example. These pages are members putting that standard into practice. They are the work of members, not of Chief and Council.'
+                ? 'The worked accountability record now has its own section, leaving this page focused on Sagamok as a community.'
                 : 'The shared standard, the same plain questions every member can put to their own Chief and Council, is ready to be brought home here.',
         ];
     }
@@ -107,7 +110,11 @@ final class CommunityHub
             ];
         }
 
-        if ($slug !== 'sagamok') {
+        if ($slug === 'sagamok') {
+            return [SagamokAccountabilityHub::doorway()];
+        }
+
+        if ($slug !== 'sagamok-accountability') {
             return [];
         }
 
@@ -243,6 +250,20 @@ final class CommunityHub
                 'href' => '/communities/sagamok/conflict-register',
             ],
         ];
+    }
+
+    /**
+     * The worked Sagamok accountability catalogue, kept here as the canonical
+     * card source while SagamokAccountabilityHub supplies its publication
+     * structure.
+     *
+     * @param array{total: int, online: int, paper: int} $signatures
+     *
+     * @return list<array<string, string|bool>>
+     */
+    public static function sagamokAccountabilityCards(array $signatures): array
+    {
+        return self::transparencyCards('sagamok-accountability', $signatures);
     }
 
     /** @return list<array<string, string|bool>> */

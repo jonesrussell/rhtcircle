@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}Sagamok member accountability · RHT Circle{% endblock %}
+{% block description %}Sagamok member accountability records, unanswered questions, business decisions, member tools and ways to take part, organized in one place.{% endblock %}
+{% block og_description %}Public records, questions awaiting answers and practical member tools from the Sagamok accountability desk.{% endblock %}
+{% block body_class %}route-sagamok-accountability{% endblock %}
+
+{% block content %}
+<article class="accountability-hub">
+  <header class="cover">
+    <p class="cover__eyebrow"><a href="/communities/sagamok">Sagamok Anishnawbek</a> · Member accountability</p>
+    <h1 class="cover__title">Follow the record. Find the question. Take the next step.</h1>
+    <p class="cover__lede">The Sagamok accountability work had outgrown the community profile. It now lives here: records, unanswered questions, business decisions and practical tools, organized by what members need to do.</p>
+    <p class="cover__byline">Member-compiled and unofficial. This is the work of members, not an official communication of Sagamok Anishnawbek or its Chief and Council.</p>
+  </header>
+
+  <div class="page">
+    <div class="notice">
+      <strong>What this section does.</strong>
+      Each page separates what the available records establish from what remains unanswered. The latest audited financial statements received a clean, unmodified opinion. These pages document decisions and ask for records; they do not establish wrongdoing.
+    </div>
+
+    <nav class="accountability-jump" aria-label="On this page">
+      <span>On this page</span>
+      {% for group in groups %}<a href="#{{ group.id }}">{{ group.title }}</a>{% endfor %}
+    </nav>
+
+    {% for group in groups %}
+      <section id="{{ group.id }}" class="accountability-group">
+        <p class="eyebrow">{{ group.eyebrow }}</p>
+        <h2>{{ group.title }}</h2>
+        <p class="muted">{{ group.intro }}</p>
+        <div class="tile-grid">
+          {% for t in group.cards %}{% include 'components/tile_card.html.twig' with t only %}{% endfor %}
+        </div>
+      </section>
+    {% endfor %}
+
+    <section class="accountability-return">
+      <p class="eyebrow">The broader community desk</p>
+      <h2>Sagamok is more than its accountability record.</h2>
+      <p>Return to the community page for Sagamok history, official public updates, community life, land and resource decisions, and the Nation's own website.</p>
+      <a class="btn" href="/communities/sagamok">Back to the Sagamok community page</a>
+    </section>
+  </div>
+</article>
+{% endblock %}

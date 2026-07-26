@@ -10,6 +10,7 @@ use App\Content\CommunityHub;
 use App\Content\LandProjects;
 use App\Content\Nations;
 use App\Content\NewsFeed;
+use App\Content\SagamokAccountabilityHub;
 use App\Petition\PetitionRepository;
 use App\Rendering\SiteRenderer;
 use App\Support\ChunkData;
@@ -170,6 +171,9 @@ final class IngestCommand
 
         $render('/communities/sagamok/awaiting-council', 'pages/communities/sagamok/awaiting-council.html.twig', [
             'signatures' => $signatures,
+        ]);
+        $render('/communities/sagamok/accountability', 'pages/communities/sagamok/accountability.html.twig', [
+            'groups' => SagamokAccountabilityHub::groups($signatures),
         ]);
 
         // The Land project pages are data-driven: render each profile through the

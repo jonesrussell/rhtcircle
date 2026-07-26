@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Rendering;
 
 use App\Content\NewsFeed;
 use App\Content\Nations;
+use App\Content\SagamokAccountabilityHub;
 use App\Rendering\PublicAssetVersioner;
 use App\Rendering\SiteRenderer;
 use PHPUnit\Framework\TestCase;
@@ -69,6 +70,21 @@ final class SiteRendererTest extends TestCase
         self::assertStringContainsString('<details class="mobile-menu">', $html);
         self::assertStringContainsString('>21 Nations</a>', $html);
         self::assertStringContainsString('>Help &amp; resources</a>', $html);
+    }
+
+    public function testSagamokAccountabilityDeskIsOrganizedAsItsOwnPage(): void
+    {
+        $_SERVER['REQUEST_URI'] = '/communities/sagamok/accountability';
+        $html = $this->renderer->render('pages/communities/sagamok/accountability.html.twig', [
+            'groups' => SagamokAccountabilityHub::groups(['total' => 40, 'online' => 11, 'paper' => 29]),
+        ]);
+
+        self::assertStringContainsString('Follow the record. Find the question. Take the next step.', $html);
+        self::assertStringContainsString('id="start-here"', $html);
+        self::assertStringContainsString('id="follow-the-record"', $html);
+        self::assertStringContainsString('id="member-tools"', $html);
+        self::assertSame(17, substr_count($html, '<a class="tile-card'));
+        self::assertStringContainsString('Back to the Sagamok community page', $html);
     }
 
     public function testInvestigationUsesTheNewsArticleLayout(): void

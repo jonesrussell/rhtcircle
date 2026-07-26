@@ -578,6 +578,40 @@ li { margin: 0 0 9px; }
 .sources-band h2 { font-family: var(--serif); font-size: 18px; color: var(--indigo-deep); margin: 0 0 12px; }
 .sources-list { display: flex; flex-wrap: wrap; gap: 10px 26px; font-size: 14px; margin: 0; padding: 0; list-style: none; }
 
+/* Sagamok accountability desk: a dedicated index so the community profile can
+   remain a balanced community page instead of carrying every worked record. */
+.accountability-hub .cover { padding-bottom: var(--gap-6); }
+.accountability-hub .page { max-width: var(--max-wide); }
+.accountability-jump {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  margin: var(--gap-5) 0 var(--gap-7);
+  padding: 15px 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper-2);
+  font-family: var(--sans);
+  font-size: 14px;
+}
+.accountability-jump span { color: var(--ink-3); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; font-size: 11px; }
+.accountability-jump a { font-weight: 650; }
+.accountability-group { scroll-margin-top: 24px; margin: 0 0 var(--gap-8); }
+.accountability-group > h2 { margin-top: 0; }
+.accountability-group > .eyebrow { margin-bottom: 8px; }
+.accountability-return {
+  margin-top: var(--gap-8);
+  padding: clamp(24px, 4vw, 42px);
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--indigo-deep), #3e256c);
+  color: #fff;
+}
+.accountability-return h2,
+.accountability-return .eyebrow { color: #fff; }
+.accountability-return p:not(.eyebrow) { max-width: 760px; color: rgba(255, 255, 255, .86); }
+.accountability-return .btn { background: #fff; color: var(--indigo-deep); border-color: #fff; }
+
 /* Poll option + result bar (interactive template). */
 .poll-options { display: flex; flex-direction: column; gap: 10px; }
 .poll-opt { display: flex; align-items: flex-start; gap: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 13px 16px; cursor: pointer; background: #fff; }

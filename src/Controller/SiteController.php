@@ -8,6 +8,7 @@ use App\Content\CommunityHub;
 use App\Content\LandProjects;
 use App\Content\Nations;
 use App\Content\NewsFeed;
+use App\Content\SagamokAccountabilityHub;
 use App\Rendering\SiteRenderer;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -124,6 +125,20 @@ final class SiteController
     {
         return $this->renderer->html('pages/communities/sagamok/awaiting-council.html.twig', [
             'signatures' => $signatures,
+        ]);
+    }
+
+    /**
+     * Dedicated Sagamok accountability desk. The community profile links here
+     * through one doorway instead of rendering the complete accountability
+     * catalogue alongside community news, history, and land.
+     *
+     * @param array{total: int, online: int, paper: int} $signatures
+     */
+    public function sagamokAccountability(array $signatures): Response
+    {
+        return $this->renderer->html('pages/communities/sagamok/accountability.html.twig', [
+            'groups' => SagamokAccountabilityHub::groups($signatures),
         ]);
     }
 

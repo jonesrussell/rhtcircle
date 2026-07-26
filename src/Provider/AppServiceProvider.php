@@ -510,6 +510,17 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 ->build(),
         );
 
+        $router->addRoute(
+            'sagamok-accountability',
+            RouteBuilder::create('/communities/sagamok/accountability')
+                ->controller(fn (Request $request) => $md->wantsMarkdown($request)
+                    ? $md->pageResponse('/communities/sagamok/accountability')
+                    : $controller->sagamokAccountability($this->recordsRequestSignatures()))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+
         // The awaiting-council page states the records-request signature count
         // in prose ("Carried by N signatures..."). Registered as its own route
         // (not through the generic $pages loop above) so it can carry that live

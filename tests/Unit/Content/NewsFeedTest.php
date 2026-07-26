@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Content;
 use App\Content\CommunityHub;
 use App\Content\Nations;
 use App\Content\NewsFeed;
+use App\Content\SagamokAccountabilityHub;
 use PHPUnit\Framework\TestCase;
 
 final class NewsFeedTest extends TestCase
@@ -41,5 +42,32 @@ final class NewsFeedTest extends TestCase
                 (string) $nation['name'] . ' should have a current public update stream',
             );
         }
+    }
+
+    public function testSagamokCommunityPageUsesOneAccountabilityDoorway(): void
+    {
+        $nation = Nations::find('sagamok');
+        self::assertNotNull($nation);
+
+        $context = CommunityHub::context(
+            'sagamok',
+            $nation,
+            ['total' => 40, 'online' => 11, 'paper' => 29],
+        );
+
+        self::assertSame('Member accountability', $context['transparency_title']);
+        self::assertCount(1, $context['transparency']);
+        self::assertSame('/communities/sagamok/accountability', $context['transparency'][0]['href']);
+    }
+
+    public function testDedicatedSagamokAccountabilityHubKeepsEveryWorkedResource(): void
+    {
+        $groups = SagamokAccountabilityHub::groups(['total' => 40, 'online' => 11, 'paper' => 29]);
+
+        self::assertSame(['start-here', 'follow-the-record', 'member-tools'], array_column($groups, 'id'));
+        self::assertSame(17, array_sum(array_map(
+            static fn (array $group): int => count($group['cards']),
+            $groups,
+        )));
     }
 }
