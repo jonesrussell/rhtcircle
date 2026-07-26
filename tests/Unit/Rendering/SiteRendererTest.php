@@ -72,6 +72,22 @@ final class SiteRendererTest extends TestCase
         self::assertStringContainsString('>Help &amp; resources</a>', $html);
     }
 
+    public function testGetInvolvedUsesTheWidePublicationDoorwayLayout(): void
+    {
+        $_SERVER['REQUEST_URI'] = '/get-involved';
+        $html = $this->renderer->render('pages/get-involved.html.twig');
+
+        self::assertStringContainsString('<body class="route-get-involved">', $html);
+        self::assertStringContainsString('<main id="main">', $html);
+        self::assertMatchesRegularExpression(
+            '~<main id="main">\s*<div class="wrap wrap--wide">~',
+            $html,
+        );
+        self::assertSame(5, substr_count($html, '<a class="tile-card'));
+        self::assertStringContainsString('class="contribute-layout"', $html);
+        self::assertStringContainsString('class="contribute-support"', $html);
+    }
+
     public function testSagamokAccountabilityDeskIsOrganizedAsItsOwnPage(): void
     {
         $_SERVER['REQUEST_URI'] = '/communities/sagamok/accountability';

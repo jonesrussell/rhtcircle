@@ -612,6 +612,41 @@ li { margin: 0 0 9px; }
 .accountability-return p:not(.eyebrow) { max-width: 760px; color: rgba(255, 255, 255, .86); }
 .accountability-return .btn { background: #fff; color: var(--indigo-deep); border-color: #fff; }
 
+/* Contribution page: this is a publication doorway, not a long-form article.
+   Keep the full desktop shell, give the five roles a real card grid, and place
+   the workflow beside the support offer instead of collapsing both into the
+   site's narrow reading measure. */
+.route-get-involved main .wrap--wide { padding-top: var(--gap-7); }
+.route-get-involved main h2:first-child { margin-top: 0; }
+@media (min-width: 1024px) {
+  .route-get-involved .tile-grid { grid-template-columns: repeat(6, 1fr); }
+  .route-get-involved .tile-card:nth-child(-n + 3) { grid-column: span 2; }
+  .route-get-involved .tile-card:nth-child(n + 4) { grid-column: span 3; }
+}
+.contribute-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr);
+  gap: clamp(32px, 5vw, 64px);
+  align-items: start;
+  margin-top: var(--gap-8);
+}
+.contribute-layout h2 { margin-top: 0; }
+.contribute-flow ol { max-width: 72ch; }
+.contribute-support {
+  padding: clamp(24px, 3vw, 34px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper-2);
+}
+.contribute-support .btn-row { align-items: flex-start; }
+
+@media (max-width: 900px) {
+  .contribute-layout {
+    grid-template-columns: 1fr;
+    margin-top: var(--gap-7);
+  }
+}
+
 /* Poll option + result bar (interactive template). */
 .poll-options { display: flex; flex-direction: column; gap: 10px; }
 .poll-opt { display: flex; align-items: flex-start; gap: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 13px 16px; cursor: pointer; background: #fff; }
