@@ -123,7 +123,7 @@ final class CommunityHub
                 'feature' => true,
                 'tag' => 'RHT Circle analysis',
                 'title' => 'Membership comes before trespass',
-                'desc' => 'Sagamok is advancing an enforcement law before members have seen the replacement law that will control the membership list it relies on.',
+                'desc' => 'Sagamok is moving ahead with an enforcement by-law before members have seen the new membership law that will decide who counts as a member.',
                 'go' => 'Read the analysis',
                 'href' => '/news/sagamok-membership-before-trespass',
             ],
