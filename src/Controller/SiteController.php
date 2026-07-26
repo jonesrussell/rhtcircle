@@ -23,6 +23,17 @@ final class SiteController
     }
 
     /**
+     * Render an unlisted editorial review page and keep it out of search indexes.
+     */
+    public function reviewPage(string $template): Response
+    {
+        $response = $this->html(View::render($template));
+        $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
+
+        return $response;
+    }
+
+    /**
      * The /communities index: the 21 nations grouped by sub-region. Built from
      * the Nations content layer so the index and the per-nation pages stay in
      * sync from one source.

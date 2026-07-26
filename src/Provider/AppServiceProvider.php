@@ -382,6 +382,17 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             );
         }
 
+        // Unlisted editorial review copy. Deliberately excluded from navigation,
+        // sitemap.xml and the machine-readable Markdown index.
+        $router->addRoute(
+            'review-gr-truss-investigation-2026-07-25',
+            RouteBuilder::create('/review/gr-truss-investigation-2026-07-25')
+                ->controller(fn () => $controller->reviewPage('pages/review/gr-truss-investigation-2026-07-25.html.twig'))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+
         // The Land: each new project profile is data-driven from App\Content\LandProjects
         // through one shared template. Registered as explicit paths (not a /land/{slug}
         // param route) so they never shadow the Massey cluster registered above.
