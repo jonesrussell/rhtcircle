@@ -65,4 +65,28 @@ To publish another investigation:
    `article_sidebar`, and `article_sources`.
 4. Add its route and machine-readable index entry.
 5. Add it to the News index through a reusable component, not copied markup.
-6. Run PHPUnit, the copy lints, a dry-run ingest, and responsive browser checks.
+6. Push the page normally. The OG-card workflow discovers templates through
+   inherited layouts and generates a 1200 x 630 card from `og_title` and
+   `og_description`, falling back to `title` and `description`.
+7. Run PHPUnit, the copy lints, a dry-run ingest, and responsive browser checks.
+
+## Social images
+
+Every static page that ultimately inherits `base.html.twig` receives a
+generated social image under `public/images/og/`. The generator reruns after
+page edits, so changing a page headline or social description also refreshes
+the card. `SiteRenderer` selects the matching card automatically and uses the
+site card only while a page-specific image is unavailable.
+
+Editors can override the generated card without changing the site-wide
+behavior:
+
+- Set `social_image`, `social_image_alt`, `social_image_width`, and
+  `social_image_height` in the page or article editing data.
+- Supply `og_image_override` in the page render context for an editor-selected
+  image.
+- For a permanently bespoke template, override Twig's `og_image` block.
+- For a designed card generated from its own HTML, register the page in
+  `scripts/generate-og.js` under `overrides`.
+
+The same resolved image is emitted for Open Graph and the large Twitter/X card.

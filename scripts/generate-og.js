@@ -5,9 +5,9 @@
 // Two sources of cards:
 //   1. Hand-crafted overrides - bespoke layouts, listed in `overrides` below by
 //      template path. The site default (og-default.png) is rendered this way.
-//   2. Auto-discovered pages - every templates/**/*.html.twig that extends
-//      base.html.twig and isn't ignored gets a generic card rendered from
-//      og-template-auto.html, using the page's own {% block title %} and
+//   2. Auto-discovered pages - every templates/**/*.html.twig that ultimately
+//      inherits base.html.twig and isn't ignored gets a generic card rendered
+//      from og-template-auto.html, using the page's own {% block title %} and
 //      {% block description %} content.
 //
 // Add a hand-crafted card by creating its template file and registering it in
@@ -31,9 +31,9 @@ const scriptDir = __dirname;
 const imagesDir = path.join(projectRoot, 'public', 'images');
 
 // --only-missing (or OG_ONLY_MISSING=1): render only cards whose PNG does not
-// already exist, leaving existing cards byte-for-byte untouched. This is the
-// mode CI runs so a push never churns every card; it only fills gaps for new
-// pages. Run without the flag locally to deliberately refresh existing cards.
+// already exist, leaving existing cards byte-for-byte untouched. This is useful
+// for a one-time backfill. CI deliberately runs without it so headline and
+// description edits refresh their cards automatically.
 const onlyMissing = process.argv.includes('--only-missing') || process.env.OG_ONLY_MISSING === '1';
 const onlyTemplateArg = process.argv.find(arg => arg.startsWith('--only-template='));
 const onlyTemplate = onlyTemplateArg ? onlyTemplateArg.slice('--only-template='.length) : null;
@@ -72,6 +72,7 @@ const routeOverrides = {
 const ignoreTemplatePatterns = [
   /^_/,                                   // leading underscore = partial convention
   /^admin\//,                             // admin views - internal, not socially shared
+  /^layouts\//,                           // inherited shells, not standalone routes
   /^petition\//,                          // dynamic petition result shell
   /(^|\/)_/,                              // any partial dir
   /pages\/communities\/nation\.html\.twig$/, // per-nation shell (21 nations)
@@ -101,6 +102,29 @@ function extendsBase(html) {
   return /\{%\s*extends\s+['"]base\.html\.twig['"]\s*%\}/.test(html);
 }
 
+function parentTemplate(html) {
+  const match = html.match(/\{%\s*extends\s+['"]([^'"]+)['"]\s*%\}/);
+  return match ? match[1] : null;
+}
+
+function inheritsBase(relPath, visited = new Set()) {
+  if (visited.has(relPath)) {
+    throw new Error(`Circular Twig inheritance while resolving ${relPath}`);
+  }
+  visited.add(relPath);
+
+  const absolute = path.join(templatesDir, relPath);
+  if (!fs.existsSync(absolute)) return false;
+
+  const html = fs.readFileSync(absolute, 'utf-8');
+  if (extendsBase(html)) return true;
+
+  const parent = parentTemplate(html);
+  if (!parent || parent === relPath) return false;
+
+  return inheritsBase(parent, visited);
+}
+
 function readBlock(html, blockName) {
   const rx = new RegExp(`\\{%\\s*block\\s+${blockName}\\s*%\\}([\\s\\S]*?)\\{%\\s*endblock(?:\\s+${blockName})?\\s*%\\}`);
   const m = html.match(rx);
@@ -113,6 +137,7 @@ function cleanTitle(raw) {
   return raw
     .replace(/\s*·\s*Robinson Huron Treaty\s*$/i, '')
     .replace(/\s*·\s*RHT.*$/i, '')
+    .replace(/\s*\|\s*(?:RHT Circle|Robinson Huron Treaty)\s*$/i, '')
     .replace(/&amp;/g, '&')
     .replace(/&nbsp;/g, ' ')
     .trim();
@@ -161,9 +186,13 @@ function discoverAutoPages() {
     if (overrideKeys.has(rel)) continue;
     if (rel === 'base.html.twig') continue;
     const html = fs.readFileSync(path.join(templatesDir, rel), 'utf-8');
-    if (!extendsBase(html)) continue;
-    const titleRaw = readBlock(html, 'title');
-    const descRaw = readBlock(html, 'description');
+    if (!inheritsBase(rel)) continue;
+    if (readBlock(html, 'og_image')) {
+      console.log('skip (page override):', rel);
+      continue;
+    }
+    const titleRaw = readBlock(html, 'og_title') || readBlock(html, 'title');
+    const descRaw = readBlock(html, 'og_description') || readBlock(html, 'description');
     if (!titleRaw || !descRaw) {
       console.warn('skip (missing title/description block):', rel);
       continue;

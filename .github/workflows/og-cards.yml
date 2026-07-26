@@ -4,15 +4,11 @@ name: OG cards
 #
 # scripts/generate-og.js auto-discovers any base-extending page and renders a
 # 1200x630 card to public/images/og/. The app serves the per-page card if it
-# exists, else falls back to og-default.png, so a new page with no card silently
-# loses its social preview. This workflow closes that gap: on any template or
-# generator change it renders ONLY the missing cards (no churn to existing ones)
-# on a hosted Linux runner and commits them back, so the next image build bakes
-# them in. Chromium never runs on the Pi.
-#
-# Note: this runs in --only-missing mode, so it never refreshes an existing card
-# after a title/description edit. To refresh one, delete its PNG (the next run
-# regenerates it) or run `node scripts/generate-og.js` locally.
+# exists, else falls back to og-default.png. On every page or generator edit,
+# this workflow regenerates cards for changed pages and commits changed images.
+# New pages gain a card and headline/description edits refresh existing cards
+# automatically. Generator or card-template changes rebuild the complete set.
+# Chromium never runs on the Pi.
 
 on:
   push:
@@ -36,6 +32,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - uses: actions/setup-node@v4
         with:
@@ -46,8 +44,34 @@ jobs:
           npm install playwright@^1.60.0 --no-save
           npx playwright install --with-deps chromium
 
-      - name: Generate any missing cards
-        run: node scripts/generate-og.js --only-missing
+      - name: Generate social cards
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          before="${{ github.event.before }}"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]] \
+            || [[ -z "$before" ]] \
+            || [[ "$before" == "0000000000000000000000000000000000000000" ]] \
+            || git diff --name-only "$before" "$GITHUB_SHA" -- \
+                 scripts/generate-og.js 'scripts/og-template*.html' | grep -q .; then
+            node scripts/generate-og.js
+            exit 0
+          fi
+
+          while IFS= read -r file; do
+            [[ -z "$file" ]] && continue
+            template="${file#templates/}"
+            node scripts/generate-og.js "--only-template=$template"
+          done < <(git diff --name-only --diff-filter=ACMRT "$before" "$GITHUB_SHA" -- 'templates/**/*.html.twig')
+
+          while IFS= read -r file; do
+            [[ -z "$file" ]] && continue
+            template="${file#templates/}"
+            slug="${template%.html.twig}"
+            slug="${slug//\//-}"
+            rm -f "public/images/og/$slug.png"
+          done < <(git diff --name-only --diff-filter=D "$before" "$GITHUB_SHA" -- 'templates/**/*.html.twig')
 
       - name: Commit new cards
         run: |
