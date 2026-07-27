@@ -76,10 +76,15 @@ final class NewsFeedTest extends TestCase
         );
 
         self::assertSame(['start-here', 'follow-the-record', 'member-tools'], array_column($groups, 'id'));
-        self::assertSame(20, array_sum(array_map(
+        self::assertSame(21, array_sum(array_map(
             static fn (array $group): int => count($group['cards']),
             $groups,
         )));
+        $followTheRecord = $groups[1]['cards'];
+        self::assertContains(
+            '/news/sagamok-south-market-land-deal',
+            array_column($followTheRecord, 'href'),
+        );
     }
 
     public function testPublicationSeedsTrackPublishedAndRefreshedArticles(): void
@@ -88,6 +93,7 @@ final class NewsFeedTest extends TestCase
 
         self::assertContains('aging-well-starts-before-long-term-care', array_column($seeds, 'slug'));
         self::assertContains('waasmoowin-deal-public-record', array_column($seeds, 'slug'));
+        self::assertContains('sagamok-south-market-land-deal', array_column($seeds, 'slug'));
         self::assertNotContains('waasmoowin-deal-public-record', ArticleSeedData::unpublishedSlugs());
         self::assertContains('waasmoowin-deal-public-record', ArticleSeedData::publicationRefreshSlugs());
         self::assertContains('aging-well-starts-before-long-term-care', ArticleSeedData::metadataRefreshSlugs());

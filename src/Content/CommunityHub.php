@@ -120,30 +120,6 @@ final class CommunityHub
 
         return [
             [
-                'feature' => true,
-                'tag' => 'RHT Circle analysis',
-                'title' => 'Membership should come before trespass',
-                'desc' => 'Sagamok is moving ahead with an enforcement by-law before members have seen the new membership law that will decide who counts as a member.',
-                'go' => 'Read the analysis',
-                'href' => '/news/sagamok-membership-before-trespass',
-            ],
-            [
-                'feature' => true,
-                'tag' => 'RHT Circle analysis',
-                'title' => 'Who holds Sagamok\'s Waasmoowin roles?',
-                'desc' => 'The public record identifies four Sagamok role lanes. The Nation\'s ownership, borrowing, procurement and return terms remain unseen.',
-                'go' => 'Read the analysis',
-                'href' => '/news/waasmoowin-deal-public-record',
-            ],
-            [
-                'feature' => true,
-                'tag' => 'RHT Circle investigation',
-                'title' => 'Inside Sagamok\'s GR Truss deal',
-                'desc' => 'A $100 purchase, $900,000 in Council approvals and one unanswered repayment question.',
-                'go' => 'Read the investigation',
-                'href' => '/news/inside-sagamoks-gr-truss-deal',
-            ],
-            [
                 'tag' => 'An informal member poll',
                 'title' => 'What matters most to you right now?',
                 'desc' => 'Anonymous, single select: what should our leadership be focused on? No personal data is collected, and results are shown right after you vote.',

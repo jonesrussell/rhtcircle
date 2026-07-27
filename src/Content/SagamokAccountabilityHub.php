@@ -31,6 +31,7 @@ final class SagamokAccountabilityHub
             'title' => 'Follow the record',
             'intro' => 'Worked examples drawn from public records, organized by the decision or system members are trying to understand.',
             'hrefs' => [
+                '/news/sagamok-south-market-land-deal',
                 '/news/sagamok-membership-before-trespass',
                 '/news/waasmoowin-deal-public-record',
                 '/news/inside-sagamoks-gr-truss-deal',
@@ -68,11 +69,25 @@ final class SagamokAccountabilityHub
      *   cards: list<array<string, string|bool>>
      * }>
      */
-    public static function groups(array $signatures): array
+    public static function groups(array $signatures, array $articles = []): array
     {
         $cardsByHref = [];
         foreach (CommunityHub::sagamokAccountabilityCards($signatures) as $card) {
             $cardsByHref[(string) $card['href']] = $card;
+        }
+        foreach ($articles as $article) {
+            $href = (string) ($article['href'] ?? '');
+            if ($href === '') {
+                continue;
+            }
+            $cardsByHref[$href] = [
+                'feature' => true,
+                'tag' => (string) ($article['kicker'] ?? 'RHT Circle reporting'),
+                'title' => (string) ($article['title'] ?? ''),
+                'desc' => (string) ($article['summary'] ?? $article['deck'] ?? ''),
+                'go' => (string) ($article['action'] ?? 'Read the article'),
+                'href' => $href,
+            ];
         }
 
         $groups = [];

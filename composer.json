@@ -9,8 +9,8 @@
         "ext-sqlite3": "*",
         "symfony/dotenv": "^8.0",
         "waaseyaa/anokii": "^0.1.0-alpha.11",
-        "waaseyaa/ai-agent": "0.1.0-alpha.274",
-        "waaseyaa/framework": "0.1.0-alpha.274"
+        "waaseyaa/ai-agent": "0.1.0-alpha.275",
+        "waaseyaa/framework": "0.1.0-alpha.275"
     },
     "autoload": {
         "psr-4": {

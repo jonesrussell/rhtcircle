@@ -58,6 +58,9 @@ const overrides = {
   // Contributor commentary on aging, community supports and long-term care.
   '__aging_well_article__':
     { template: 'og-template-aging-well.html', output: 'news/aging-well/aging-well-starts-before-long-term-care.png' },
+  // South Market land-price investigation.
+  '__south_market_article__':
+    { template: 'og-template-south-market.html', output: 'news/south-market/south-market-land-deal.png' },
   // Bespoke card for the youth baseball league: a baseball motif + the three
   // participating communities, on-brand (not the mockup teal).
   'pages/community-life/indigenous-baseball-league.html.twig':

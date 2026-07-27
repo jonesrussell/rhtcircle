@@ -21,12 +21,15 @@
         </div>
       </div>
 
-      <a class="home-lead-story" href="/news/sagamok-membership-before-trespass">
-        <span class="home-lead-story__label">RHT Circle analysis</span>
-        <strong>Membership should come before trespass</strong>
-        <span>One law decides who belongs. The other decides who may be removed.</span>
-        <span class="home-lead-story__go">Read the analysis</span>
-      </a>
+      {% if featured_articles is not empty %}
+        {% set lead_article = featured_articles[0] %}
+        <a class="home-lead-story" href="{{ lead_article.href }}">
+          <span class="home-lead-story__label">{{ lead_article.section }}</span>
+          <strong>{{ lead_article.title }}</strong>
+          <span>{{ lead_article.summary }}</span>
+          <span class="home-lead-story__go">{{ lead_article.action }}</span>
+        </a>
+      {% endif %}
     </div>
 
     <form id="rht-ask-hero" class="hero-ask home-ask" role="search">
