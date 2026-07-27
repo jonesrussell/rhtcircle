@@ -23,7 +23,7 @@ final class ArticleSeeder
     ) {}
 
     /**
-     * @return array{created: int, skipped: int}
+     * @return array{created: int, skipped: int, unpublished: int}
      */
     public function seed(): array
     {
@@ -40,7 +40,20 @@ final class ArticleSeeder
 
         $existing = [];
         foreach ($this->nodes->findBy(['type' => ArticleFields::BUNDLE]) as $node) {
-            $existing[(string) $node->get('slug')] = true;
+            $existing[(string) $node->get('slug')] = $node;
+        }
+
+        $unpublished = 0;
+        foreach (ArticleSeedData::unpublishedSlugs() as $slug) {
+            $node = $existing[$slug] ?? null;
+            if ($node === null || !(bool) $node->get('status')) {
+                continue;
+            }
+
+            $node->set('status', false);
+            $node->setRevisionLog('Unpublished by editorial direction.');
+            $this->nodes->save($node);
+            $unpublished++;
         }
 
         $created = 0;
@@ -65,6 +78,6 @@ final class ArticleSeeder
             $created++;
         }
 
-        return ['created' => $created, 'skipped' => $skipped];
+        return ['created' => $created, 'skipped' => $skipped, 'unpublished' => $unpublished];
     }
 }

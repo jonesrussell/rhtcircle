@@ -69,31 +69,41 @@ final class ArticleSeedData
                 'sticky' => false,
             ]),
             self::withBlocks($projectRoot, [
-                'slug' => 'waasmoowin-deal-public-record',
-                'title' => 'The Waasmoowin deal, in the public record',
-                'community_slug' => 'sagamok',
-                'kicker' => 'Analysis | Sagamok',
-                'deck' => 'Eight First Nations can collectively invest in up to half of two Hydro One transmission lines. The opportunity is public. Sagamok\'s ownership, borrowing, cost-sharing and procurement terms are not.',
-                'summary' => 'The opportunity is public. Sagamok\'s ownership, borrowing, cost-sharing and procurement terms are not.',
-                'author' => 'Russell Jones',
+                'slug' => 'aging-well-starts-before-long-term-care',
+                'title' => 'Aging well starts before long-term care',
+                'community_slug' => 'circle',
+                'kicker' => 'Commentary | Elders and health',
+                'deck' => 'A new regional long-term-care proposal has reopened a larger question: are our communities investing enough in what helps Elders remain connected to family, land, language and community before institutional care becomes necessary?',
+                'summary' => 'Long-term care may be necessary for some people. Aging well begins much earlier, in the homes, relationships and communities that help people remain well and connected.',
+                'author' => 'Windigo Kaan',
                 'date_display' => 'July 26, 2026',
                 'date_iso' => '2026-07-26',
-                'section' => 'RHT Circle analysis',
-                'action_label' => 'Read the analysis',
-                'og_description' => 'The Waasmoowin opportunity is public. Sagamok\'s ownership, borrowing, cost-sharing and procurement terms are not.',
-                'social_image' => 'https://rhtcircle.ca/images/news/waasmoowin/waasmoowin-public-record.png',
-                'social_image_alt' => 'Diagram showing eight First Nations working through Waasmoowin on the North Shore Link and Northeast Power Line, with an opportunity for up to 50 per cent ownership.',
+                'section' => 'RHT Circle commentary',
+                'action_label' => 'Read the commentary',
+                'og_description' => 'A contributor commentary on the supports, relationships and community choices that help Elders remain well and connected before institutional care becomes necessary.',
+                'social_image' => 'https://rhtcircle.ca/images/og-default.png',
+                'social_image_alt' => 'RHT Circle.',
                 'social_image_width' => 1200,
                 'social_image_height' => 630,
-                'hero_src' => '/images/news/waasmoowin/waasmoowin-public-record.png',
-                'hero_width' => 1200,
-                'hero_height' => 630,
-                'hero_alt' => 'Diagram showing eight First Nations working through Waasmoowin on the North Shore Link and Northeast Power Line, with an opportunity for up to 50 per cent ownership.',
-                'hero_caption' => 'The public structure and the OEB development-budget record. The $67.2 million increase is a Hydro One figure, not Sagamok\'s stated exposure.',
+                'hero_src' => '',
+                'hero_width' => 0,
+                'hero_height' => 0,
+                'hero_alt' => '',
+                'hero_caption' => '',
                 'promote' => true,
                 'sticky' => false,
             ]),
         ];
+    }
+
+    /**
+     * Existing CMS records that must remain stored but unavailable publicly.
+     *
+     * @return list<string>
+     */
+    public static function unpublishedSlugs(): array
+    {
+        return ['waasmoowin-deal-public-record'];
     }
 
     /**

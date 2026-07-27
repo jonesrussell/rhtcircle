@@ -17,10 +17,12 @@
       </p>
     </header>
 
-    <figure class="news-article__hero">
-      <img src="{{ article.hero.src }}" width="{{ article.hero.width }}" height="{{ article.hero.height }}" alt="{{ article.hero.alt }}">
-      <figcaption>{{ article.hero.caption }}</figcaption>
-    </figure>
+    {% if article.hero.src %}
+      <figure class="news-article__hero">
+        <img src="{{ article.hero.src }}" width="{{ article.hero.width }}" height="{{ article.hero.height }}" alt="{{ article.hero.alt }}">
+        <figcaption>{{ article.hero.caption }}</figcaption>
+      </figure>
+    {% endif %}
 
     <div class="news-article__grid">
       <div class="news-article__story">

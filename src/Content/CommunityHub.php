@@ -129,14 +129,6 @@ final class CommunityHub
             ],
             [
                 'feature' => true,
-                'tag' => 'RHT Circle analysis',
-                'title' => 'The Waasmoowin deal, in the public record',
-                'desc' => 'The opportunity is public. Sagamok\'s ownership, borrowing, cost-sharing and procurement terms are not.',
-                'go' => 'Read the analysis',
-                'href' => '/news/waasmoowin-deal-public-record',
-            ],
-            [
-                'feature' => true,
                 'tag' => 'RHT Circle investigation',
                 'title' => 'Inside Sagamok\'s GR Truss deal',
                 'desc' => 'A $100 purchase, $900,000 in Council approvals and one unanswered repayment question.',
