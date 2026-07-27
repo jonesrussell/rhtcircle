@@ -45,8 +45,13 @@ final class ArticleSeeder
 
         $unpublished = 0;
         foreach (ArticleSeedData::unpublishedSlugs() as $slug) {
-            $node = $existing[$slug] ?? null;
-            if ($node === null || !(bool) $node->get('status')) {
+            $published = $this->nodes->findBy([
+                'type' => ArticleFields::BUNDLE,
+                'slug' => $slug,
+                'status' => true,
+            ], limit: 1);
+            $node = $published[0] ?? null;
+            if ($node === null) {
                 continue;
             }
 
