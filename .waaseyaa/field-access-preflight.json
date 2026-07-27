@@ -1,6 +1,6 @@
 {
     "framework_version": "dev@9564fe9a0ceea56f@classification-d735b49056f20152",
-    "schema_fingerprint": "f17372e6b6cc5cce004d62ad98e0d217de6dcf670a7c765917e3d8ae13534a94",
+    "schema_fingerprint": "cd88fa8455e543e3cb267795f4e1c1fbd971020ed3db2f31d8cb8c61aeedecb7",
     "scanner_version": 1,
     "fields": {
         "agent_audit_log|*|bundle": "public:framework_default",
@@ -66,19 +66,11 @@
         "media_type|*|id": "public:structural",
         "media_type|*|label": "public:framework_default",
         "media_type|*|langcode": "public:framework_default",
-        "media_version|*|blob_uri": "internal:framework_default",
         "media_version|*|bundle": "public:framework_default",
-        "media_version|*|created_at": "internal:framework_default",
-        "media_version|*|created_by": "internal:framework_default",
         "media_version|*|id": "public:structural",
         "media_version|*|label": "internal:framework_default",
         "media_version|*|langcode": "public:framework_default",
-        "media_version|*|media_uuid": "internal:framework_default",
-        "media_version|*|mime": "internal:framework_default",
-        "media_version|*|sha256": "internal:framework_default",
-        "media_version|*|size": "internal:framework_default",
         "media_version|*|uuid": "public:structural",
-        "media_version|*|vid": "internal:framework_default",
         "media|*|bundle": "public:framework_default",
         "media|*|changed": "public:definition",
         "media|*|created": "public:definition",
@@ -303,5 +295,5 @@
     "legacy_payloads": [],
     "legacy_payload_count": 0,
     "ready": true,
-    "checksum": "384701da106b46e2dbb47dd04062f22646e2d75c697ca2ddd4652ae58ea42408"
+    "checksum": "6fe2fe9871cba66b0b4969454f69cda8c470bb45a8b5c3c88d51d4821a463c06"
 }
