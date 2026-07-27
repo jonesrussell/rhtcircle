@@ -49,7 +49,7 @@ final class ArticleSeedData
                 'title' => "Who holds Sagamok's Waasmoowin roles?",
                 'community_slug' => 'sagamok',
                 'kicker' => 'Analysis | Sagamok',
-                'deck' => 'Waasmoowin puts eight First Nations into two Hydro One transmission projects. Four Sagamok role lanes are visible. The Nation\'s terms are not.',
+                'deck' => 'Waasmoowin brings eight First Nations together around two Hydro One transmission projects. Four Sagamok role lanes are visible. The Nation\'s terms are not.',
                 'summary' => 'What Waasmoowin is, who carries Sagamok\'s work and which ownership, borrowing and procurement terms remain unseen.',
                 'author' => 'Russell Jones',
                 'date_display' => 'July 27, 2026',
