@@ -14,9 +14,23 @@
     <p class="lead">Original reporting from RHT Circle, plus recent coverage and official updates from across Robinson Huron Treaty territory.</p>
   </header>
 
-  {% if feature_article %}
-    {% include 'components/news_feature.html.twig' with { story: feature_article } only %}
-  {% endif %}
+  {% include 'components/news_feature.html.twig' with {
+    story: {
+      href: '/news/sagamok-membership-before-trespass',
+      image: {
+        src: '/images/news/membership-before-trespass/laws-out-of-order-warning.png',
+        width: 1672,
+        height: 941,
+        alt: 'The Trespass By-law draft shown before an unreleased Membership Law.'
+      },
+      section: 'RHT Circle analysis',
+      date: 'July 26, 2026',
+      title: 'Membership should come before trespass',
+      deck: 'Sagamok is moving ahead with an enforcement by-law before members have seen the new membership law that will decide who counts as a member.',
+      author: 'Russell Jones',
+      action: 'Read the analysis'
+    }
+  } only %}
 
   <div class="news-section-head">
     <h2>RHT Circle reporting</h2>
@@ -24,9 +38,33 @@
   </div>
 
   <div class="news-grid">
-    {% for article in reporting_articles %}
-      {% include 'components/news_card.html.twig' with { story: article, nation_names: nation_names } only %}
-    {% endfor %}
+    {% include 'components/news_card.html.twig' with {
+      story: {
+        url: '/news/waasmoowin-deal-public-record',
+        topic: 'Analysis',
+        date: 'July 26, 2026',
+        date_iso: '2026-07-26',
+        title: 'The Waasmoowin deal, in the public record',
+        summary: "The opportunity is public. Sagamok's ownership, borrowing, cost-sharing and procurement terms are not.",
+        source: 'RHT Circle',
+        nations: ['sagamok'],
+        internal: true
+      }
+    } only %}
+
+    {% include 'components/news_card.html.twig' with {
+      story: {
+        url: '/news/inside-sagamoks-gr-truss-deal',
+        topic: 'Investigation',
+        date: 'July 25, 2026',
+        date_iso: '2026-07-25',
+        title: "Inside Sagamok's GR Truss deal",
+        summary: 'A $100 purchase, $900,000 in Council approvals and one unanswered repayment question.',
+        source: 'RHT Circle',
+        nations: ['sagamok'],
+        internal: true
+      }
+    } only %}
   </div>
 
   <div class="news-section-head">
