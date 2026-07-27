@@ -135,6 +135,7 @@ HTML,
 <p>These are Hydro One development budgets. They are not the total project costs, the price of the First Nations' ownership interests or Sagamok's stated exposure. The signed financing and cost-sharing agreements are needed to show whether any part of the increase can reach the partner Nations.</p>
 <h3>What members still need</h3>
 <p>The public record does not show how much each Nation may borrow or contribute, the security for that money, how cost increases are divided, how jobs and contracts are allocated, or how ownership income will reach members. Those answers belong in the signed Cooperation and Support Agreement, capacity-funding agreement, partnership agreements, financing terms and procurement rules.</p>
+<p><a href="/news/waasmoowin-deal-public-record">Read the full analysis of Sagamok's Waasmoowin roles and the records that remain unavailable.</a></p>
 HTML,
                 'caveat' => 'Capacities, costs and the construction timeline are point-in-time public facts. The reported development budgets are Hydro One figures, not Sagamok liabilities. The dollar amount and financing terms of each Nation\'s stake are not public.',
                 'related' => [

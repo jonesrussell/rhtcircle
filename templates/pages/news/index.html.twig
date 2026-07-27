@@ -40,6 +40,20 @@
   <div class="news-grid">
     {% include 'components/news_card.html.twig' with {
       story: {
+        url: '/news/waasmoowin-deal-public-record',
+        topic: 'Analysis',
+        date: 'July 27, 2026',
+        date_iso: '2026-07-27',
+        title: "Who holds Sagamok's Waasmoowin roles?",
+        summary: "The public record identifies four Sagamok role lanes. The Nation's ownership, borrowing, procurement and return terms remain unseen.",
+        source: 'RHT Circle',
+        nations: ['sagamok'],
+        internal: true
+      }
+    } only %}
+
+    {% include 'components/news_card.html.twig' with {
+      story: {
         url: '/news/aging-well-starts-before-long-term-care',
         topic: 'Commentary',
         date: 'July 26, 2026',

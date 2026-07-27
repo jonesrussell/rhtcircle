@@ -110,7 +110,7 @@ final class SiteRendererTest extends TestCase
         self::assertStringContainsString('id="start-here"', $html);
         self::assertStringContainsString('id="follow-the-record"', $html);
         self::assertStringContainsString('id="member-tools"', $html);
-        self::assertSame(19, substr_count($html, '<a class="tile-card'));
+        self::assertSame(20, substr_count($html, '<a class="tile-card'));
         self::assertStringContainsString('Back to the Sagamok community page', $html);
         self::assertMatchesRegularExpression(
             '~<main id="main">\s*<div class="wrap wrap--wide">~',

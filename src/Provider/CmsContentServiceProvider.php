@@ -142,10 +142,11 @@ final class CmsContentServiceProvider extends ServiceProvider implements Provide
                     $this->projectRoot,
                 )->seed();
                 $io->writeln(sprintf(
-                    'article: %d created; %d existing CMS records left unchanged; %d unpublished; %d metadata refreshed.',
+                    'article: %d created; %d existing CMS records left unchanged; %d unpublished; %d publication refreshed; %d metadata refreshed.',
                     $result['created'],
                     $result['skipped'],
                     $result['unpublished'],
+                    $result['published'],
                     $result['refreshed'],
                 ));
 

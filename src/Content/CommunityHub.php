@@ -129,6 +129,14 @@ final class CommunityHub
             ],
             [
                 'feature' => true,
+                'tag' => 'RHT Circle analysis',
+                'title' => 'Who holds Sagamok\'s Waasmoowin roles?',
+                'desc' => 'The public record identifies four Sagamok role lanes. The Nation\'s ownership, borrowing, procurement and return terms remain unseen.',
+                'go' => 'Read the analysis',
+                'href' => '/news/waasmoowin-deal-public-record',
+            ],
+            [
+                'feature' => true,
                 'tag' => 'RHT Circle investigation',
                 'title' => 'Inside Sagamok\'s GR Truss deal',
                 'desc' => 'A $100 purchase, $900,000 in Council approvals and one unanswered repayment question.',

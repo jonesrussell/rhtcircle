@@ -11,8 +11,9 @@ use Waaseyaa\Node\NodeType;
 /**
  * Creates the article bundle and missing migrated articles.
  *
- * Existing slugs are deliberately left untouched. CMS edits and revisions are
- * authoritative after the initial conversion.
+ * Existing slugs are deliberately left untouched unless ArticleSeedData names
+ * one for a controlled publication or metadata refresh. CMS edits and
+ * revisions remain authoritative for every other article.
  */
 final class ArticleSeeder
 {
@@ -23,7 +24,7 @@ final class ArticleSeeder
     ) {}
 
     /**
-     * @return array{created: int, skipped: int, unpublished: int, refreshed: int}
+     * @return array{created: int, skipped: int, unpublished: int, published: int, refreshed: int}
      */
     public function seed(): array
     {
@@ -65,6 +66,40 @@ final class ArticleSeeder
             $node->setRevisionLog('Unpublished by editorial direction.');
             $this->nodes->save($node);
             $unpublished++;
+        }
+
+        $published = 0;
+        foreach (ArticleSeedData::publicationRefreshSlugs() as $slug) {
+            $node = $existing[$slug] ?? null;
+            $article = $articlesBySlug[$slug] ?? null;
+            if ($node === null || $article === null) {
+                continue;
+            }
+
+            $changed = false;
+            foreach ($article as $field => $value) {
+                if ($node->get($field) === $value) {
+                    continue;
+                }
+                $node->set($field, $value);
+                $changed = true;
+            }
+
+            $unpublishedRows = $this->nodes->findBy([
+                'type' => ArticleFields::BUNDLE,
+                'slug' => $slug,
+                'status' => false,
+            ], limit: 1);
+            if (isset($unpublishedRows[0])) {
+                $node->set('status', true);
+                $changed = true;
+            }
+
+            if ($changed) {
+                $node->setRevisionLog('Republished after editorial review and source update.');
+                $this->nodes->save($node);
+                $published++;
+            }
         }
 
         $refreshed = 0;
@@ -123,6 +158,7 @@ final class ArticleSeeder
             'created' => $created,
             'skipped' => $skipped,
             'unpublished' => $unpublished,
+            'published' => $published,
             'refreshed' => $refreshed,
         ];
     }

@@ -8,7 +8,8 @@ namespace App\Cms;
  * One-time bootstrap metadata for managed RHT Circle articles.
  *
  * The long-form HTML is read from resources/content/article-seeds/*.html.twig.
- * Once a slug exists in the CMS, the seeder never updates it.
+ * Once a slug exists in the CMS, the seeder leaves it untouched unless the
+ * slug is explicitly named for a controlled publication or metadata refresh.
  */
 final class ArticleSeedData
 {
@@ -42,6 +43,31 @@ final class ArticleSeedData
                 'hero_caption' => 'The Trespass draft is already written. The replacement Membership Law draft has not been released.',
                 'promote' => true,
                 'sticky' => true,
+            ]),
+            self::withBlocks($projectRoot, [
+                'slug' => 'waasmoowin-deal-public-record',
+                'title' => "Who holds Sagamok's Waasmoowin roles?",
+                'community_slug' => 'sagamok',
+                'kicker' => 'Analysis | Sagamok',
+                'deck' => 'Waasmoowin puts eight First Nations into two Hydro One transmission projects. Four Sagamok role lanes are visible. The Nation\'s terms are not.',
+                'summary' => 'What Waasmoowin is, who carries Sagamok\'s work and which ownership, borrowing and procurement terms remain unseen.',
+                'author' => 'Russell Jones',
+                'date_display' => 'July 27, 2026',
+                'date_iso' => '2026-07-27',
+                'section' => 'RHT Circle analysis',
+                'action_label' => 'Read the analysis',
+                'og_description' => 'What Waasmoowin is, who carries Sagamok\'s work and which ownership, borrowing and procurement terms remain unseen.',
+                'social_image' => 'https://rhtcircle.ca/images/news/waasmoowin/waasmoowin-public-record.png',
+                'social_image_alt' => 'Role map identifying Angus Toulouse, Michelle Toulouse, Evan O\'Leary and Ryan McLeod in Sagamok\'s Waasmoowin work.',
+                'social_image_width' => 1200,
+                'social_image_height' => 630,
+                'hero_src' => '/images/news/waasmoowin/waasmoowin-public-record.png',
+                'hero_width' => 1200,
+                'hero_height' => 630,
+                'hero_alt' => 'Role map identifying Angus Toulouse, Michelle Toulouse, Evan O\'Leary and Ryan McLeod in Sagamok\'s Waasmoowin work.',
+                'hero_caption' => 'The public record identifies four Sagamok role lanes. The five SDC directors provide separate corporate oversight.',
+                'promote' => false,
+                'sticky' => false,
             ]),
             self::withBlocks($projectRoot, [
                 'slug' => 'inside-sagamoks-gr-truss-deal',
@@ -102,6 +128,16 @@ final class ArticleSeedData
      * @return list<string>
      */
     public static function unpublishedSlugs(): array
+    {
+        return [];
+    }
+
+    /**
+     * Existing records intentionally republished from their reviewed source.
+     *
+     * @return list<string>
+     */
+    public static function publicationRefreshSlugs(): array
     {
         return ['waasmoowin-deal-public-record'];
     }

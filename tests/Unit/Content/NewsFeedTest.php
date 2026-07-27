@@ -76,19 +76,20 @@ final class NewsFeedTest extends TestCase
         );
 
         self::assertSame(['start-here', 'follow-the-record', 'member-tools'], array_column($groups, 'id'));
-        self::assertSame(19, array_sum(array_map(
+        self::assertSame(20, array_sum(array_map(
             static fn (array $group): int => count($group['cards']),
             $groups,
         )));
     }
 
-    public function testPublicationSeedsReplaceUnpublishedWaasmoowinArticleWithWindigoKaanCommentary(): void
+    public function testPublicationSeedsTrackPublishedAndRefreshedArticles(): void
     {
         $seeds = ArticleSeedData::all(\dirname(__DIR__, 3));
 
         self::assertContains('aging-well-starts-before-long-term-care', array_column($seeds, 'slug'));
-        self::assertNotContains('waasmoowin-deal-public-record', array_column($seeds, 'slug'));
-        self::assertContains('waasmoowin-deal-public-record', ArticleSeedData::unpublishedSlugs());
+        self::assertContains('waasmoowin-deal-public-record', array_column($seeds, 'slug'));
+        self::assertNotContains('waasmoowin-deal-public-record', ArticleSeedData::unpublishedSlugs());
+        self::assertContains('waasmoowin-deal-public-record', ArticleSeedData::publicationRefreshSlugs());
         self::assertContains('aging-well-starts-before-long-term-care', ArticleSeedData::metadataRefreshSlugs());
     }
 }

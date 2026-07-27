@@ -32,6 +32,7 @@ final class SagamokAccountabilityHub
             'intro' => 'Worked examples drawn from public records, organized by the decision or system members are trying to understand.',
             'hrefs' => [
                 '/news/sagamok-membership-before-trespass',
+                '/news/waasmoowin-deal-public-record',
                 '/news/inside-sagamoks-gr-truss-deal',
                 '/communities/sagamok/gr-truss',
                 '/communities/sagamok/one-seat-one-salary',
