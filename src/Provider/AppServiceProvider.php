@@ -789,7 +789,14 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         // disabled in config/anokii.yaml) so it goes through the same gate as
         // /admin/analytics. priority(100) beats the framework admin SPA catch-all
         // at /admin/{path} (priority 0).
-        $admin = new AdminController($entityTypeManager, $database, $report, $renderer);
+        // Audited authority for User internals (framework >= alpha.269 seals
+        // roles/permissions/credentials; the sealed entity can no longer answer
+        // hasPermission()/checkPassword() itself). Bound by the framework's
+        // audit package; the gate, login, and create-admin all require it.
+        $internalFieldReader = $this->resolve(\Waaseyaa\Access\User\UserInternalFieldReaderInterface::class);
+        \assert($internalFieldReader instanceof \Waaseyaa\Access\User\UserInternalFieldReaderInterface);
+
+        $admin = new AdminController($entityTypeManager, $database, $report, $renderer, $internalFieldReader);
 
         // Login surface from the shared package (Anokii\Dashboard\AdminLoginController),
         // branded for rhtcircle and gating on the package admin permission. Replaces
@@ -808,6 +815,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 backHref: '/',
                 backLabel: 'Back to the public site',
             ),
+            $internalFieldReader,
             '/admin',
         );
 
@@ -889,7 +897,10 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                     return 1;
                 }
 
-                return new CreateAdminHandler($etm, new AdminRoles(), 'RHTCIRCLE_ADMIN_PASSWORD', AdminRoles::ROLE_ADMIN, '/admin/login')->run($io);
+                $reader = $this->resolve(\Waaseyaa\Access\User\UserInternalFieldReaderInterface::class);
+                \assert($reader instanceof \Waaseyaa\Access\User\UserInternalFieldReaderInterface);
+
+                return new CreateAdminHandler($etm, new AdminRoles(), 'RHTCIRCLE_ADMIN_PASSWORD', AdminRoles::ROLE_ADMIN, '/admin/login', $reader)->run($io);
             },
         );
     }
