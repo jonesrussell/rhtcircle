@@ -1,0 +1,216 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --paper: #fbf9f4;
+      --ink: #211a35;
+      --muted: #625a71;
+      --indigo: #38217f;
+      --violet: #5d35c7;
+      --magenta: #c41d8f;
+      --coral: #ef7356;
+      --gold: #e7b83f;
+      --green: #4d9d72;
+      --line: #d8d0e7;
+      --rainbow: linear-gradient(90deg, #cc2484, #7130d7, #3e68c7, #17a8ba, #66b574, #f4ca52, #ef5f32);
+    }
+    body {
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, system-ui, sans-serif;
+      position: relative;
+    }
+    .rainbow { height: 12px; background: var(--rainbow); }
+    main {
+      height: 618px;
+      display: grid;
+      grid-template-columns: 720px 1fr;
+      gap: 42px;
+      padding: 52px 58px 42px 66px;
+    }
+    .copy { display: flex; flex-direction: column; min-width: 0; }
+    .eyebrow {
+      color: var(--magenta);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .115em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    h1 {
+      max-width: 700px;
+      color: var(--indigo);
+      font: 650 66px/.98 Fraunces, Georgia, serif;
+      letter-spacing: -1.8px;
+    }
+    .quote {
+      max-width: 660px;
+      margin-top: 28px;
+      padding-left: 20px;
+      border-left: 5px solid var(--coral);
+      color: var(--muted);
+      font: 500 25px/1.32 Fraunces, Georgia, serif;
+    }
+    .credit {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .author { color: var(--ink); }
+    .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--line); }
+    .url { color: var(--magenta); }
+    .visual {
+      position: relative;
+      align-self: stretch;
+      overflow: hidden;
+      border-radius: 28px;
+      background: linear-gradient(155deg, #4d2ca8 0%, #38217f 68%, #29175e 100%);
+      box-shadow: 0 20px 44px rgba(56, 33, 127, .18);
+    }
+    .sun {
+      position: absolute;
+      top: 44px;
+      right: 48px;
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 13px rgba(231, 184, 63, .16);
+    }
+    .land {
+      position: absolute;
+      left: -42px;
+      right: -42px;
+      bottom: -58px;
+      height: 210px;
+      border-radius: 50% 50% 0 0;
+      background: #4b9a70;
+    }
+    .land::before {
+      content: "";
+      position: absolute;
+      left: -15px;
+      right: -15px;
+      top: 34px;
+      height: 170px;
+      border-radius: 50% 50% 0 0;
+      background: #347c61;
+    }
+    .home {
+      position: absolute;
+      left: 25px;
+      top: 170px;
+      width: 264px;
+      height: 234px;
+    }
+    .roof {
+      position: absolute;
+      left: 39px;
+      top: 20px;
+      width: 186px;
+      height: 186px;
+      border-left: 12px solid white;
+      border-top: 12px solid white;
+      border-radius: 8px;
+      transform: rotate(45deg);
+    }
+    .walls {
+      position: absolute;
+      left: 52px;
+      top: 101px;
+      width: 160px;
+      height: 128px;
+      border: 12px solid white;
+      border-top: 0;
+      border-radius: 0 0 10px 10px;
+    }
+    .people {
+      position: absolute;
+      left: 68px;
+      top: 125px;
+      display: flex;
+      align-items: end;
+      gap: 12px;
+      z-index: 2;
+    }
+    .person { display: grid; justify-items: center; gap: 7px; }
+    .head { width: 32px; height: 32px; border-radius: 50%; background: white; }
+    .body { width: 45px; height: 58px; border-radius: 24px 24px 9px 9px; background: white; }
+    .person--elder .head { width: 39px; height: 39px; }
+    .person--elder .body { width: 55px; height: 69px; }
+    .rings {
+      position: absolute;
+      left: 2px;
+      top: 134px;
+      width: 310px;
+      height: 310px;
+      border: 2px solid rgba(255,255,255,.18);
+      border-radius: 50%;
+    }
+    .rings::before,
+    .rings::after {
+      content: "";
+      position: absolute;
+      border: 2px solid rgba(255,255,255,.13);
+      border-radius: 50%;
+    }
+    .rings::before { inset: 28px; }
+    .rings::after { inset: 60px; }
+    .label {
+      position: absolute;
+      left: 28px;
+      right: 28px;
+      bottom: 24px;
+      z-index: 4;
+      color: rgba(255,255,255,.94);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="rainbow"></div>
+  <main>
+    <section class="copy">
+      <p class="eyebrow">Commentary · Elders and health</p>
+      <h1>Aging well starts before long-term care</h1>
+      <p class="quote">A bed cannot be our whole strategy for aging.</p>
+      <div class="credit">
+        <span class="author">By Windigo Kaan</span>
+        <span class="dot"></span>
+        <span class="url">rhtcircle.ca</span>
+      </div>
+    </section>
+    <section class="visual" aria-label="Three generations together inside a home, connected to land and community">
+      <div class="sun"></div>
+      <div class="rings"></div>
+      <div class="home">
+        <div class="roof"></div>
+        <div class="walls"></div>
+        <div class="people">
+          <div class="person"><div class="head"></div><div class="body"></div></div>
+          <div class="person person--elder"><div class="head"></div><div class="body"></div></div>
+          <div class="person"><div class="head"></div><div class="body"></div></div>
+        </div>
+      </div>
+      <div class="land"></div>
+      <p class="label">Family · Land · Language · Community</p>
+    </section>
+  </main>
+</body>
+</html>

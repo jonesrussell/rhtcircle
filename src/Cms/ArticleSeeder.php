@@ -23,7 +23,7 @@ final class ArticleSeeder
     ) {}
 
     /**
-     * @return array{created: int, skipped: int, unpublished: int}
+     * @return array{created: int, skipped: int, unpublished: int, refreshed: int}
      */
     public function seed(): array
     {
@@ -36,6 +36,12 @@ final class ArticleSeeder
                 'display_submitted' => true,
                 'status' => true,
             ]));
+        }
+
+        $articles = ArticleSeedData::all($this->projectRoot);
+        $articlesBySlug = [];
+        foreach ($articles as $article) {
+            $articlesBySlug[(string) $article['slug']] = $article;
         }
 
         $existing = [];
@@ -61,9 +67,39 @@ final class ArticleSeeder
             $unpublished++;
         }
 
+        $refreshed = 0;
+        $refreshFields = [
+            'social_image',
+            'social_image_alt',
+            'social_image_width',
+            'social_image_height',
+        ];
+        foreach (ArticleSeedData::metadataRefreshSlugs() as $slug) {
+            $node = $existing[$slug] ?? null;
+            $article = $articlesBySlug[$slug] ?? null;
+            if ($node === null || $article === null) {
+                continue;
+            }
+
+            $changed = false;
+            foreach ($refreshFields as $field) {
+                if ($node->get($field) === $article[$field]) {
+                    continue;
+                }
+                $node->set($field, $article[$field]);
+                $changed = true;
+            }
+
+            if ($changed) {
+                $node->setRevisionLog('Updated the published social card.');
+                $this->nodes->save($node);
+                $refreshed++;
+            }
+        }
+
         $created = 0;
         $skipped = 0;
-        foreach (ArticleSeedData::all($this->projectRoot) as $article) {
+        foreach ($articles as $article) {
             $slug = (string) $article['slug'];
             if (isset($existing[$slug])) {
                 $skipped++;
@@ -83,6 +119,11 @@ final class ArticleSeeder
             $created++;
         }
 
-        return ['created' => $created, 'skipped' => $skipped, 'unpublished' => $unpublished];
+        return [
+            'created' => $created,
+            'skipped' => $skipped,
+            'unpublished' => $unpublished,
+            'refreshed' => $refreshed,
+        ];
     }
 }

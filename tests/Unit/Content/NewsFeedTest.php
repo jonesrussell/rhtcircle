@@ -89,5 +89,6 @@ final class NewsFeedTest extends TestCase
         self::assertContains('aging-well-starts-before-long-term-care', array_column($seeds, 'slug'));
         self::assertNotContains('waasmoowin-deal-public-record', array_column($seeds, 'slug'));
         self::assertContains('waasmoowin-deal-public-record', ArticleSeedData::unpublishedSlugs());
+        self::assertContains('aging-well-starts-before-long-term-care', ArticleSeedData::metadataRefreshSlugs());
     }
 }

@@ -55,6 +55,9 @@ const overrides = {
   // Managed Waasmoowin article: a compact structure and budget card.
   '__waasmoowin_article__':
     { template: 'og-template-waasmoowin.html', output: 'news/waasmoowin/waasmoowin-public-record.png' },
+  // Contributor commentary on aging, community supports and long-term care.
+  '__aging_well_article__':
+    { template: 'og-template-aging-well.html', output: 'news/aging-well/aging-well-starts-before-long-term-care.png' },
   // Bespoke card for the youth baseball league: a baseball motif + the three
   // participating communities, on-brand (not the mockup teal).
   'pages/community-life/indigenous-baseball-league.html.twig':

@@ -81,8 +81,8 @@ final class ArticleSeedData
                 'section' => 'RHT Circle commentary',
                 'action_label' => 'Read the commentary',
                 'og_description' => 'A contributor commentary on the supports, relationships and community choices that help Elders remain well and connected before institutional care becomes necessary.',
-                'social_image' => 'https://rhtcircle.ca/images/og-default.png',
-                'social_image_alt' => 'RHT Circle.',
+                'social_image' => 'https://rhtcircle.ca/images/news/aging-well/aging-well-starts-before-long-term-care.png',
+                'social_image_alt' => 'Aging well starts before long-term care. Commentary by Windigo Kaan.',
                 'social_image_width' => 1200,
                 'social_image_height' => 630,
                 'hero_src' => '',
@@ -104,6 +104,17 @@ final class ArticleSeedData
     public static function unpublishedSlugs(): array
     {
         return ['waasmoowin-deal-public-record'];
+    }
+
+    /**
+     * Seeded records whose selected publication metadata is intentionally
+     * refreshed after initial migration.
+     *
+     * @return list<string>
+     */
+    public static function metadataRefreshSlugs(): array
+    {
+        return ['aging-well-starts-before-long-term-care'];
     }
 
     /**
