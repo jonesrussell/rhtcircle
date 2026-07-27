@@ -47,8 +47,9 @@ final class AdminController extends DashboardGate
         private readonly DatabaseInterface $db,
         private readonly AnalyticsReport $report,
         private readonly SiteRenderer $renderer,
+        ?\Waaseyaa\Access\User\UserInternalFieldReaderInterface $internalFieldReader = null,
     ) {
-        parent::__construct($entityTypeManager);
+        parent::__construct($entityTypeManager, $internalFieldReader);
     }
 
     protected function loginPath(): string
