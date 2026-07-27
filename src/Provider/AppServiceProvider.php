@@ -419,6 +419,14 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 ->methods('GET')
                 ->build(),
         );
+        $router->addRoute(
+            'review-aging-well-starts-at-home-2026-07-26',
+            RouteBuilder::create('/review/aging-well-starts-at-home-2026-07-26')
+                ->controller(fn () => $controller->reviewPage('pages/review/aging-well-starts-at-home-2026-07-26.html.twig'))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
 
         // The Land: each new project profile is data-driven from App\Content\LandProjects
         // through one shared template. Registered as explicit paths (not a /land/{slug}
