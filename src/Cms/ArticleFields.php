@@ -46,6 +46,7 @@ final class ArticleFields
             self::data('body_html', 'text', 'Article body', 60),
             self::data('sidebar_html', 'text', 'Article sidebar', 61),
             self::data('sources_html', 'text', 'Sources and limits', 62),
+            self::data('revision_log', 'text', 'Revision log', 63, FieldReadLevel::Internal),
         ];
     }
 
@@ -54,6 +55,7 @@ final class ArticleFields
         string $type,
         string $label,
         int $weight,
+        FieldReadLevel $read = FieldReadLevel::Public,
     ): FieldDefinition {
         return new FieldDefinition(
             name: $name,
@@ -64,7 +66,7 @@ final class ArticleFields
             revisionable: true,
             label: $label,
             stored: FieldStorage::Data,
-            read: FieldReadLevel::Public,
+            read: $read,
         );
     }
 
