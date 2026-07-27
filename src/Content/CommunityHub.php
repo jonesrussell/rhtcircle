@@ -34,7 +34,7 @@ final class CommunityHub
      *
      * @return array{transparency: list<array<string, string|bool>>, transparency_title: string, territory: list<array<string, string|bool>>, community_life: list<array<string, string|bool>>, current_updates: list<array<string, string|bool>>, lede: string, tsub: string}
      */
-    public static function context(string $slug, array $nation, array $signatures): array
+    public static function context(string $slug, array $nation, array $signatures, array $articles = []): array
     {
         $transparency = self::transparencyCards($slug, $signatures);
 
@@ -43,7 +43,7 @@ final class CommunityHub
             'transparency_title' => $slug === 'sagamok' ? 'Member accountability' : 'Member transparency resources',
             'territory' => self::territoryCards($slug),
             'community_life' => self::communityLife($slug),
-            'current_updates' => self::currentUpdates($slug, $nation),
+            'current_updates' => self::currentUpdates($slug, $nation, $articles),
             'lede' => $slug === 'sagamok'
                 ? 'A member-compiled profile of Sagamok Anishnawbek: its history, community updates, life on the territory, and a clear doorway into the separate member accountability desk.'
                 : self::lede((string) $nation['name'], $transparency !== []),
@@ -60,7 +60,7 @@ final class CommunityHub
      *
      * @return list<array<string, string|bool>>
      */
-    private static function currentUpdates(string $slug, array $nation): array
+    private static function currentUpdates(string $slug, array $nation, array $articles = []): array
     {
         $cards = [];
 
@@ -73,6 +73,17 @@ final class CommunityHub
                 'go' => 'Visit the official website',
                 'href' => (string) $nation['website'],
                 'external' => true,
+            ];
+        }
+
+        foreach ($articles as $article) {
+            $cards[] = [
+                'feature' => true,
+                'tag' => (string) ($article['section'] ?? 'RHT Circle reporting') . ' · ' . (string) ($article['date'] ?? ''),
+                'title' => (string) ($article['title'] ?? ''),
+                'desc' => (string) ($article['summary'] ?? $article['deck'] ?? ''),
+                'go' => (string) ($article['action'] ?? 'Read the article'),
+                'href' => (string) ($article['href'] ?? ''),
             ];
         }
 
@@ -119,14 +130,6 @@ final class CommunityHub
         }
 
         return [
-            [
-                'feature' => true,
-                'tag' => 'RHT Circle analysis',
-                'title' => 'Membership should come before trespass',
-                'desc' => 'Sagamok is moving ahead with an enforcement by-law before members have seen the new membership law that will decide who counts as a member.',
-                'go' => 'Read the analysis',
-                'href' => '/news/sagamok-membership-before-trespass',
-            ],
             [
                 'tag' => 'An informal member poll',
                 'title' => 'What matters most to you right now?',

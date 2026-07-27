@@ -129,9 +129,15 @@ HTML,
 <h3>The nations' role</h3>
 <p>Under Hydro One's 50-50 First Nation equity partnership model (introduced in 2022 and applied to new transmission lines over $100 million), proximate First Nations can hold a 50 percent equity stake in each line. Eight RHT nations are participating together through Waasmoowin, a collective partnership organized into the Waasmoowin Opportunities and Consultation Council (consultation, lands and waters, jobs and training) and a Waasmoowin General Partner (the equity side), with a board of the partner nations' Chiefs or Councillors and a Council of Elders.</p>
 <p>The eight are Atikameksheng Anishnawbek, Batchewana, Mississauga, Sagamok Anishnawbek (a founding signatory), Serpent River, Thessalon, Wahnapitae, and Whitefish River. Garden River First Nation withdrew from Waasmoowin on June 10, 2025.</p>
-<p>Equity of this kind is typically financed through loan-guarantee programs: Ontario's program (renamed in 2025 to the Indigenous Opportunities Financing Program, tripled to $3 billion) and Canada's Indigenous Loan Guarantee Program (doubled to $10 billion in March 2025). Which instrument finances the Waasmoowin stakes, and the dollar amounts, are not yet public.</p>
+<p>Public reporting identifies two limited partnerships, Waasmoowin NSL LP and Waasmoowin NEPL LP, as the bodies intended to hold the ownership interests. The partnership agreements, ownership schedule, voting rules and each Nation's share have not been published.</p>
+<h3>The development budgets</h3>
+<p>On December 11, 2025, the Ontario Energy Board recorded that Hydro One's North Shore Link development budget had risen from $52.7 million to $82.3 million, a 56.1 percent increase. The Northeast Power Line development budget had risen from $50.5 million to $88.1 million, a 74.5 percent increase. Together, the increases total $67.2 million.</p>
+<p>These are Hydro One development budgets. They are not the total project costs, the price of the First Nations' ownership interests or Sagamok's stated exposure. The signed financing and cost-sharing agreements are needed to show whether any part of the increase can reach the partner Nations.</p>
+<h3>What members still need</h3>
+<p>The public record does not show how much each Nation may borrow or contribute, the security for that money, how cost increases are divided, how jobs and contracts are allocated, or how ownership income will reach members. Those answers belong in the signed Cooperation and Support Agreement, capacity-funding agreement, partnership agreements, financing terms and procurement rules.</p>
+<p><a href="/news/waasmoowin-deal-public-record">Read the full Waasmoowin record and the six documents that would show Sagamok's terms.</a></p>
 HTML,
-                'caveat' => 'Capacities, costs, the construction timeline, and the financing instrument for the Waasmoowin stakes are point-in-time public facts. The dollar amounts of the stakes are not yet public. Verify before relying on any figure.',
+                'caveat' => 'Capacities, costs and the construction timeline are point-in-time public facts. The reported development budgets are Hydro One figures, not Sagamok liabilities. The dollar amount and financing terms of each Nation\'s stake are not public.',
                 'related' => [
                     ['slug' => 'atikameksheng', 'name' => 'Atikameksheng Anishnawbek'],
                     ['slug' => 'batchewana', 'name' => 'Batchewana First Nation'],
@@ -144,7 +150,12 @@ HTML,
                 ],
                 'sources' => [
                     ['label' => 'Hydro One, Northeast Power Line', 'url' => 'https://www.hydroone.com/about/corporate-information/major-projects/northeast-power-line'],
+                    ['label' => 'Hydro One, North Shore Link', 'url' => 'https://www.hydroone.com/abouthydroone/CorporateInformation/majorprojects/NorthShoreLink/Pages/default.aspx'],
                     ['label' => 'Hydro One OEB filing (May 19, 2026)', 'url' => 'https://www.newswire.ca/news-releases/hydro-one-seeks-approval-from-the-ontario-energy-board-to-build-the-northeast-power-line-and-the-longwood-to-lakeshore-transmission-line-838198305.html'],
+                    ['label' => 'Ontario Energy Board, development-budget increases (December 11, 2025)', 'url' => 'https://www.rds.oeb.ca/CMWebDrawer/Record/925314/File/document'],
+                    ['label' => 'Ontario Energy Board case EB-2026-0154', 'url' => 'https://www.oeb.ca/applications/applications-oeb/current-major-applications/eb-2026-0154'],
+                    ['label' => 'Waasmoowin project newsletter, 2025 to 2026', 'url' => 'https://wahnapitaefirstnation.com/images/2026/Newsletter-Notices/february2026/Hydro_NSL-NEP_Newslttr___Web.pdf'],
+                    ['label' => 'Waasmoowin legal structure (SooToday)', 'url' => 'https://www.sootoday.com/local-news/first-nations-create-structure-to-participate-in-north-shore-link-and-northeast-powerline-projects-11089523'],
                     ['label' => 'First Nations sign agreement with Hydro One (SooToday)', 'url' => 'https://www.sootoday.com/local-news/true-partnership-first-nations-sign-agreement-with-hydro-one-on-transmission-lines-11925255'],
                     ['label' => 'Hydro One signs agreement with eight First Nations (ElliotLakeToday)', 'url' => 'https://www.elliotlaketoday.com/local-news/hydro-one-signs-agreement-with-eight-first-nations-on-two-northeastern-ontario-transmission-projects-11923404'],
                 ],

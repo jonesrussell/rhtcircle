@@ -52,6 +52,9 @@ function skipBecauseExists(outputAbs, label) {
 const overrides = {
   // Site default (the failsafe card, not tied to a single template).
   '__default__': { template: 'og-template.html', output: 'og-default.png' },
+  // Managed Waasmoowin article: a compact structure and budget card.
+  '__waasmoowin_article__':
+    { template: 'og-template-waasmoowin.html', output: 'news/waasmoowin/waasmoowin-public-record.png' },
   // Bespoke card for the youth baseball league: a baseball motif + the three
   // participating communities, on-brand (not the mockup teal).
   'pages/community-life/indigenous-baseball-league.html.twig':

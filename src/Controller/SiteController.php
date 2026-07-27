@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Cms\ArticleRepository;
 use App\Content\CommunityHub;
 use App\Content\LandProjects;
 use App\Content\Nations;
@@ -19,7 +20,10 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class SiteController
 {
-    public function __construct(private readonly SiteRenderer $renderer) {}
+    public function __construct(
+        private readonly SiteRenderer $renderer,
+        private readonly ?ArticleRepository $articles = null,
+    ) {}
 
     public function page(string $template): Response
     {
@@ -49,6 +53,7 @@ final class SiteController
 
         return $this->renderer->html('pages/home.html.twig', [
             'stories' => NewsFeed::recentExternalStories(),
+            'featured_articles' => $this->articles?->promoted() ?? [],
             'regions' => Nations::regions(),
             'communities_by_region' => Nations::byRegion(),
             'nation_names' => $nationNames,
@@ -65,12 +70,26 @@ final class SiteController
             $nationNames[(string) $nation['slug']] = (string) $nation['name'];
         }
 
+        $articles = $this->articles?->published() ?? [];
+
         return $this->renderer->html('pages/news/index.html.twig', [
             'stories' => NewsFeed::recentExternalStories(),
+            'feature_article' => $articles[0] ?? null,
+            'reporting_articles' => array_slice($articles, 1),
             'regions' => Nations::regions(),
             'communities_by_region' => Nations::byRegion(),
             'nation_names' => $nationNames,
         ]);
+    }
+
+    public function article(string $slug): Response
+    {
+        $article = $this->articles?->findPublished($slug);
+        if ($article === null) {
+            return $this->renderer->html('404.html.twig', ['path' => '/news/' . $slug], 404);
+        }
+
+        return $this->renderer->html('pages/news/article.html.twig', ['article' => $article]);
     }
 
     /**
@@ -108,7 +127,12 @@ final class SiteController
 
         return $this->renderer->html('pages/communities/nation.html.twig', [
             'nation' => $nation,
-            ...CommunityHub::context($slug, $nation, $signatures),
+            ...CommunityHub::context(
+                $slug,
+                $nation,
+                $signatures,
+                $slug === 'sagamok' ? ($this->articles?->forSagamok() ?? []) : [],
+            ),
         ]);
     }
 
@@ -138,7 +162,10 @@ final class SiteController
     public function sagamokAccountability(array $signatures): Response
     {
         return $this->renderer->html('pages/communities/sagamok/accountability.html.twig', [
-            'groups' => SagamokAccountabilityHub::groups($signatures),
+            'groups' => SagamokAccountabilityHub::groups(
+                $signatures,
+                $this->articles?->forSagamok() ?? [],
+            ),
         ]);
     }
 

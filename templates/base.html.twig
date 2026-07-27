@@ -21,7 +21,7 @@
      back to the site default. Page/article editing data can supply social_image;
      render context can supply og_image_override; a bespoke template can still
      override block og_image. #}
-  {% set resolved_og_image = article.social_image|default(page.social_image|default(og_image_override|default(og_image_url|default('https://rhtcircle.ca/images/og-default.png')))) %}
+  {% set resolved_og_image = og_image_override|default(article.social_image|default(page.social_image|default(og_image_url|default('https://rhtcircle.ca/images/og-default.png')))) %}
   {% set resolved_og_image_alt = article.social_image_alt|default(page.social_image_alt|default(og_image_alt|default(block('og_title')))) %}
   {% set resolved_og_image_width = article.social_image_width|default(page.social_image_width|default(og_image_width|default(1200))) %}
   {% set resolved_og_image_height = article.social_image_height|default(page.social_image_height|default(og_image_height|default(630))) %}

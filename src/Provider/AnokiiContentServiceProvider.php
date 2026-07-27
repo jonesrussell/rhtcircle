@@ -6,6 +6,8 @@ namespace App\Provider;
 
 use App\Command\IngestCommand;
 use App\Command\SeedGraphCommand;
+use App\Cms\ArticleRepository;
+use App\Cms\ArticleSeeder;
 use App\Petition\PetitionRepository;
 use App\Rendering\SiteRenderer;
 use Waaseyaa\CLI\Command\HandlerCommand;
@@ -16,6 +18,8 @@ use Waaseyaa\Database\DBALDatabase;
 use Waaseyaa\Entity\EntityTypeManager;
 use Waaseyaa\Foundation\ServiceProvider\Capability\ProvidesConsoleCommandsInterface;
 use Waaseyaa\Foundation\ServiceProvider\ServiceProvider;
+use Waaseyaa\Listing\ListingDefinitionRegistry;
+use Waaseyaa\Listing\ListingResolver;
 
 /**
  * Registers the RHT graph content commands that fill the Anokii Co-Intelligence
@@ -23,7 +27,7 @@ use Waaseyaa\Foundation\ServiceProvider\ServiceProvider;
  *
  *   - app:ingest      render the hub pages into doc_chunk (the retrieval corpus)
  *   - app:seed-graph  seed the relational graph and link the page chunks
- *   - app:reindex     ingest then seed-graph (the convenience re-index)
+ *   - app:reindex     seed managed articles, ingest, then seed-graph
  *
  * The engine, entities, and public chat surface come from the waaseyaa/anokii
  * package; this provider only supplies rhtcircle's content seed and ingest.
@@ -56,7 +60,12 @@ final class AnokiiContentServiceProvider extends ServiceProvider implements Prov
                     return 1;
                 }
 
-                return new IngestCommand($etm->getRepository('doc_chunk'), $this->petitionRepository(), $this->renderer())->run($io);
+                return new IngestCommand(
+                    $etm->getRepository('doc_chunk'),
+                    $this->petitionRepository(),
+                    $this->renderer(),
+                    $this->articleRepository($etm),
+                )->run($io);
             },
         );
 
@@ -80,7 +89,7 @@ final class AnokiiContentServiceProvider extends ServiceProvider implements Prov
 
         yield new HandlerCommand(
             name: 'app:reindex',
-            description: 'Re-index: run app:ingest then app:seed-graph so the chat reflects the current pages and graph. Idempotent.',
+            description: 'Re-index: seed managed articles, then run app:ingest and app:seed-graph. Idempotent.',
             options: [],
             handler: function (SymfonyCommandIO $io): int {
                 $etm = $this->entityTypeManager();
@@ -89,7 +98,24 @@ final class AnokiiContentServiceProvider extends ServiceProvider implements Prov
 
                     return 1;
                 }
-                $ingest = new IngestCommand($etm->getRepository('doc_chunk'), $this->petitionRepository(), $this->renderer())->run($io);
+
+                $articles = new ArticleSeeder(
+                    $etm->getRepository('node'),
+                    $etm->getRepository('node_type'),
+                    $this->projectRoot,
+                )->seed();
+                $io->writeln(sprintf(
+                    'article: %d created; %d existing CMS records left unchanged.',
+                    $articles['created'],
+                    $articles['skipped'],
+                ));
+
+                $ingest = new IngestCommand(
+                    $etm->getRepository('doc_chunk'),
+                    $this->petitionRepository(),
+                    $this->renderer(),
+                    $this->articleRepository($etm),
+                )->run($io);
                 if ($ingest !== 0) {
                     return $ingest;
                 }
@@ -115,6 +141,22 @@ final class AnokiiContentServiceProvider extends ServiceProvider implements Prov
     private function renderer(): SiteRenderer
     {
         return $this->resolve(SiteRenderer::class);
+    }
+
+    private function articleRepository(EntityTypeManager $etm): ?ArticleRepository
+    {
+        try {
+            $definitions = $this->resolve(ListingDefinitionRegistry::class);
+            $resolver = $this->resolve(ListingResolver::class);
+
+            if (!$definitions instanceof ListingDefinitionRegistry || !$resolver instanceof ListingResolver) {
+                return null;
+            }
+
+            return new ArticleRepository($etm, $definitions, $resolver);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     private function entityTypeManager(): ?EntityTypeManager

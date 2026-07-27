@@ -1,0 +1,18 @@
+{% extends 'layouts/news_article.html.twig' %}
+
+{% block title %}{{ article.title }} | RHT Circle{% endblock %}
+{% block description %}{{ article.deck }}{% endblock %}
+{% block og_title %}{{ article.title }}{% endblock %}
+{% block og_description %}{{ article.og_description ?: article.deck }}{% endblock %}
+
+{% block article_body %}
+  {{ article.body_html|raw }}
+{% endblock %}
+
+{% block article_sidebar %}
+  {{ article.sidebar_html|raw }}
+{% endblock %}
+
+{% block article_sources %}
+  {{ article.sources_html|raw }}
+{% endblock %}

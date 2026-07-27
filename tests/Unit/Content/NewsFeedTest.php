@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Content;
 
+use App\Cms\ArticleSeedData;
 use App\Content\CommunityHub;
 use App\Content\Nations;
 use App\Content\NewsFeed;
@@ -62,10 +63,20 @@ final class NewsFeedTest extends TestCase
 
     public function testDedicatedSagamokAccountabilityHubKeepsEveryWorkedResource(): void
     {
-        $groups = SagamokAccountabilityHub::groups(['total' => 40, 'online' => 11, 'paper' => 29]);
+        $articles = array_map(
+            static fn (array $article): array => $article + [
+                'href' => '/news/' . $article['slug'],
+                'action' => $article['action_label'],
+            ],
+            ArticleSeedData::all(\dirname(__DIR__, 3)),
+        );
+        $groups = SagamokAccountabilityHub::groups(
+            ['total' => 40, 'online' => 11, 'paper' => 29],
+            $articles,
+        );
 
         self::assertSame(['start-here', 'follow-the-record', 'member-tools'], array_column($groups, 'id'));
-        self::assertSame(18, array_sum(array_map(
+        self::assertSame(20, array_sum(array_map(
             static fn (array $group): int => count($group['cards']),
             $groups,
         )));

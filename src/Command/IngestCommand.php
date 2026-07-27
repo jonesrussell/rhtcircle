@@ -6,6 +6,7 @@ namespace App\Command;
 
 use Anokii\Entity\DocChunk;
 use App\Anokii\GraphSeedData;
+use App\Cms\ArticleRepository;
 use App\Content\CommunityHub;
 use App\Content\LandProjects;
 use App\Content\Nations;
@@ -46,8 +47,6 @@ final class IngestCommand
         '/treaty/language' => 'pages/treaty/language.html.twig',
         '/treaty/settlement-where-it-goes' => 'pages/treaty/settlement-where-it-goes.html.twig',
         '/myth-versus-record' => 'pages/myth-versus-record.html.twig',
-        '/news/sagamok-membership-before-trespass' => 'pages/news/sagamok-membership-before-trespass.html.twig',
-        '/news/inside-sagamoks-gr-truss-deal' => 'pages/news/inside-sagamoks-gr-truss-deal.html.twig',
         '/treaty-wide' => 'pages/treaty-wide.html.twig',
         '/standard' => 'pages/standard.html.twig',
         '/standard/records-request' => 'pages/standard/records-request.html.twig',
@@ -88,6 +87,7 @@ final class IngestCommand
         private readonly EntityRepositoryInterface $chunks,
         private readonly PetitionRepository $petitions,
         private readonly SiteRenderer $renderer,
+        private readonly ?ArticleRepository $articles = null,
         private readonly DocChunker $chunker = new DocChunker(),
     ) {}
 
@@ -161,6 +161,8 @@ final class IngestCommand
         };
 
         $signatures = $this->recordsRequestSignatures();
+        $articles = $this->articles?->published() ?? [];
+        $sagamokArticles = $this->articles?->forSagamok() ?? [];
 
         foreach (self::PAGES as $sourceUrl => $template) {
             $render($sourceUrl, $template, []);
@@ -168,13 +170,21 @@ final class IngestCommand
 
         $render('/news', 'pages/news/index.html.twig', [
             'stories' => NewsFeed::recentExternalStories(),
+            'feature_article' => $articles[0] ?? null,
+            'reporting_articles' => array_slice($articles, 1),
+            'regions' => Nations::regions(),
+            'communities_by_region' => Nations::byRegion(),
+            'nation_names' => array_column(Nations::all(), 'name', 'slug'),
         ]);
+        foreach ($articles as $article) {
+            $render((string) $article['href'], 'pages/news/article.html.twig', ['article' => $article]);
+        }
 
         $render('/communities/sagamok/awaiting-council', 'pages/communities/sagamok/awaiting-council.html.twig', [
             'signatures' => $signatures,
         ]);
         $render('/communities/sagamok/accountability', 'pages/communities/sagamok/accountability.html.twig', [
-            'groups' => SagamokAccountabilityHub::groups($signatures),
+            'groups' => SagamokAccountabilityHub::groups($signatures, $sagamokArticles),
         ]);
 
         // The Land project pages are data-driven: render each profile through the
@@ -190,7 +200,12 @@ final class IngestCommand
             $slug = (string) $nation['slug'];
             $render('/communities/' . $slug, 'pages/communities/nation.html.twig', [
                 'nation' => $nation,
-                ...CommunityHub::context($slug, $nation, $signatures),
+                ...CommunityHub::context(
+                    $slug,
+                    $nation,
+                    $signatures,
+                    $slug === 'sagamok' ? $sagamokArticles : [],
+                ),
             ]);
         }
 

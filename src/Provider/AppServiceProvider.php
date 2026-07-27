@@ -260,7 +260,22 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
     public function routes(WaaseyaaRouter $router, ?\Waaseyaa\Entity\EntityTypeManager $entityTypeManager = null): void
     {
         $renderer = $this->resolve(SiteRenderer::class);
-        $controller = new SiteController($renderer);
+        $articleRepository = null;
+        if ($entityTypeManager !== null) {
+            $definitions = $this->resolveOptional(\Waaseyaa\Listing\ListingDefinitionRegistry::class);
+            $listingResolver = $this->resolveOptional(\Waaseyaa\Listing\ListingResolver::class);
+            if (
+                $definitions instanceof \Waaseyaa\Listing\ListingDefinitionRegistry
+                && $listingResolver instanceof \Waaseyaa\Listing\ListingResolver
+            ) {
+                $articleRepository = new \App\Cms\ArticleRepository(
+                    $entityTypeManager,
+                    $definitions,
+                    $listingResolver,
+                );
+            }
+        }
+        $controller = new SiteController($renderer, $articleRepository);
         $petition = new PetitionController($this->petitionRepository(), $renderer);
         $contact = new ContactController($this->contactRepository(), $renderer);
         $poll = new PollController($this->pollRepository(), $renderer);
@@ -292,10 +307,8 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             // (/myth-versus-record is registered explicitly below: it renders from
             // the managed myth_entry content type, not a static template.)
 
-            // Original member-led reporting. /news itself is registered below
-            // because its digest is supplied by App\Content\NewsFeed.
-            'news-membership-before-trespass' => ['/news/sagamok-membership-before-trespass', 'pages/news/sagamok-membership-before-trespass.html.twig'],
-            'news-gr-truss-investigation' => ['/news/inside-sagamoks-gr-truss-deal', 'pages/news/inside-sagamoks-gr-truss-deal.html.twig'],
+            // Original member-led reporting is managed node/article content.
+            // /news and /news/{slug} are registered explicitly below.
 
             // Transparency: the settlement asks and the shared standard.
             'treaty-wide' => ['/treaty-wide', 'pages/treaty-wide.html.twig'],
@@ -404,6 +417,15 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 ->controller(fn (Request $request) => $md->wantsMarkdown($request)
                     ? $md->pageResponse('/news')
                     : $controller->newsIndex())
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+
+        $router->addRoute(
+            'news-article',
+            RouteBuilder::create('/news/{slug}')
+                ->controller(fn (Request $request, string $slug) => $controller->article($slug))
                 ->allowAll()
                 ->methods('GET')
                 ->build(),

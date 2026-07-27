@@ -66,11 +66,23 @@ final class SagamokAccountabilityHub
      *   cards: list<array<string, string|bool>>
      * }>
      */
-    public static function groups(array $signatures): array
+    public static function groups(array $signatures, array $articles = []): array
     {
         $cardsByHref = [];
         foreach (CommunityHub::sagamokAccountabilityCards($signatures) as $card) {
             $cardsByHref[(string) $card['href']] = $card;
+        }
+
+        $articleCards = [];
+        foreach ($articles as $article) {
+            $articleCards[] = [
+                'feature' => true,
+                'tag' => (string) ($article['section'] ?? 'RHT Circle reporting'),
+                'title' => (string) ($article['title'] ?? ''),
+                'desc' => (string) ($article['summary'] ?? $article['deck'] ?? ''),
+                'go' => (string) ($article['action'] ?? 'Read the article'),
+                'href' => (string) ($article['href'] ?? ''),
+            ];
         }
 
         $groups = [];
@@ -80,6 +92,9 @@ final class SagamokAccountabilityHub
                 if (isset($cardsByHref[$href])) {
                     $cards[] = $cardsByHref[$href];
                 }
+            }
+            if ($id === 'follow-the-record') {
+                $cards = [...$articleCards, ...$cards];
             }
 
             $groups[] = [

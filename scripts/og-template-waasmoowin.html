@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --paper: #fbfaff;
+      --ink: #201936;
+      --muted: #655b7a;
+      --indigo: #38217f;
+      --violet: #5d35c7;
+      --magenta: #c41d8f;
+      --cyan: #159caf;
+      --coral: #ed694e;
+      --line: #dcd4ed;
+      --rainbow: linear-gradient(90deg, #cc2484, #7130d7, #3e68c7, #17a8ba, #66b574, #f4ca52, #ef5f32);
+    }
+    body {
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, system-ui, sans-serif;
+    }
+    .rainbow { height: 12px; background: var(--rainbow); }
+    main { height: 618px; padding: 40px 58px 38px; display: grid; grid-template-rows: auto 1fr auto; gap: 24px; }
+    header { display: flex; align-items: start; justify-content: space-between; gap: 30px; }
+    h1 { font: 650 48px/1.02 Fraunces, Georgia, serif; color: var(--indigo); max-width: 760px; letter-spacing: -1px; }
+    .brand { color: var(--magenta); font-size: 15px; font-weight: 700; padding-top: 9px; }
+    .flow { display: grid; grid-template-columns: 230px 50px 275px 50px 1fr; align-items: center; }
+    .box { min-height: 174px; border: 2px solid var(--line); border-radius: 20px; padding: 22px; background: white; display: flex; flex-direction: column; justify-content: center; }
+    .box strong { font: 650 30px/1.08 Fraunces, Georgia, serif; color: var(--indigo); }
+    .box span { margin-top: 12px; color: var(--muted); font-size: 16px; line-height: 1.35; }
+    .box--centre { border-color: #a792df; box-shadow: 0 12px 28px rgba(56, 33, 127, 0.10); }
+    .projects { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .project { min-height: 174px; border-radius: 20px; padding: 22px 18px; color: white; display: flex; flex-direction: column; justify-content: center; }
+    .project:first-child { background: linear-gradient(145deg, var(--violet), var(--indigo)); }
+    .project:last-child { background: linear-gradient(145deg, var(--cyan), #126b8c); }
+    .project strong { font: 650 24px/1.1 Fraunces, Georgia, serif; }
+    .project span { margin-top: 10px; font-size: 14px; line-height: 1.35; opacity: .94; }
+    .arrow { color: var(--magenta); font-size: 32px; text-align: center; font-weight: 700; }
+    footer { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .fact { border-top: 4px solid var(--magenta); padding: 13px 16px 0; }
+    .fact:last-child { border-color: var(--coral); }
+    .fact strong { font: 650 28px/1 Fraunces, Georgia, serif; color: var(--indigo); }
+    .fact p { margin-top: 7px; color: var(--muted); font-size: 14px; line-height: 1.3; }
+  </style>
+</head>
+<body>
+  <div class="rainbow"></div>
+  <main>
+    <header>
+      <h1>The Waasmoowin deal, in the public record</h1>
+      <div class="brand">RHT Circle</div>
+    </header>
+    <section class="flow" aria-label="Eight Nations working through Waasmoowin on two transmission lines">
+      <div class="box">
+        <strong>8 First Nations</strong>
+        <span>Working together on ownership, consultation, jobs and land protection.</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="box box--centre">
+        <strong>Waasmoowin</strong>
+        <span>Community work, procurement and the ownership structure.</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="projects">
+        <div class="project">
+          <strong>North Shore Link</strong>
+          <span>230 kV<br>Sault Ste. Marie to Wharncliffe</span>
+        </div>
+        <div class="project">
+          <strong>Northeast Power Line</strong>
+          <span>500 kV<br>Wharncliffe to Greater Sudbury</span>
+        </div>
+      </div>
+    </section>
+    <footer>
+      <div class="fact">
+        <strong>Up to 50% ownership</strong>
+        <p>The collective opportunity in the transmission-line parts of the projects.</p>
+      </div>
+      <div class="fact">
+        <strong>$67.2M development-budget increase</strong>
+        <p>A Hydro One figure across both projects, not Sagamok's stated exposure. Sagamok's terms are not public.</p>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>

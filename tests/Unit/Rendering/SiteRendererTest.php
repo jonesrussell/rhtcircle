@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Rendering;
 
+use App\Cms\ArticleSeedData;
 use App\Content\NewsFeed;
 use App\Content\Nations;
 use App\Content\SagamokAccountabilityHub;
@@ -29,8 +30,14 @@ final class SiteRendererTest extends TestCase
 
     public function testNewsIndexUsesTheSharedShellAndComponents(): void
     {
+        $articles = $this->articles();
         $html = $this->renderer->render('pages/news/index.html.twig', [
             'stories' => NewsFeed::recentExternalStories(),
+            'feature_article' => $articles[0],
+            'reporting_articles' => array_slice($articles, 1),
+            'regions' => Nations::regions(),
+            'communities_by_region' => Nations::byRegion(),
+            'nation_names' => array_column(Nations::all(), 'name', 'slug'),
         ]);
 
         self::assertStringContainsString('<header class="site-head">', $html);
@@ -93,14 +100,17 @@ final class SiteRendererTest extends TestCase
     {
         $_SERVER['REQUEST_URI'] = '/communities/sagamok/accountability';
         $html = $this->renderer->render('pages/communities/sagamok/accountability.html.twig', [
-            'groups' => SagamokAccountabilityHub::groups(['total' => 40, 'online' => 11, 'paper' => 29]),
+            'groups' => SagamokAccountabilityHub::groups(
+                ['total' => 40, 'online' => 11, 'paper' => 29],
+                $this->articles(),
+            ),
         ]);
 
         self::assertStringContainsString('Follow the record. Find the question. Take the next step.', $html);
         self::assertStringContainsString('id="start-here"', $html);
         self::assertStringContainsString('id="follow-the-record"', $html);
         self::assertStringContainsString('id="member-tools"', $html);
-        self::assertSame(18, substr_count($html, '<a class="tile-card'));
+        self::assertSame(20, substr_count($html, '<a class="tile-card'));
         self::assertStringContainsString('Back to the Sagamok community page', $html);
         self::assertMatchesRegularExpression(
             '~<main id="main">\s*<div class="wrap wrap--wide">~',
@@ -140,14 +150,16 @@ final class SiteRendererTest extends TestCase
     public function testInvestigationUsesTheNewsArticleLayout(): void
     {
         $_SERVER['REQUEST_URI'] = '/news/inside-sagamoks-gr-truss-deal';
-        $html = $this->renderer->render('pages/news/inside-sagamoks-gr-truss-deal.html.twig');
+        $html = $this->renderer->render('pages/news/article.html.twig', [
+            'article' => $this->article('inside-sagamoks-gr-truss-deal'),
+        ]);
 
         self::assertStringContainsString('<meta property="og:type" content="article">', $html);
         self::assertStringContainsString('<header class="site-head">', $html);
         self::assertStringContainsString('<article class="news-article">', $html);
         self::assertStringContainsString('By Laura Owl', $html);
-        self::assertMatchesRegularExpression(
-            '~<meta property="og:image" content="https://rhtcircle\.ca/images/og/pages-news-inside-sagamoks-gr-truss-deal\.png\?v=[a-f0-9]{8}">~',
+        self::assertStringContainsString(
+            '<meta property="og:image" content="https://rhtcircle.ca/images/news/gr-truss/gr-truss-story-2-of-3.png">',
             $html,
         );
         self::assertStringNotContainsString('<style>', $html);
@@ -157,7 +169,9 @@ final class SiteRendererTest extends TestCase
     public function testMembershipBeforeTrespassUsesArticleLayoutAndEditorialImage(): void
     {
         $_SERVER['REQUEST_URI'] = '/news/sagamok-membership-before-trespass';
-        $html = $this->renderer->render('pages/news/sagamok-membership-before-trespass.html.twig');
+        $html = $this->renderer->render('pages/news/article.html.twig', [
+            'article' => $this->article('sagamok-membership-before-trespass'),
+        ]);
 
         self::assertStringContainsString('<meta property="og:type" content="article">', $html);
         self::assertStringContainsString('<article class="news-article">', $html);
@@ -173,7 +187,8 @@ final class SiteRendererTest extends TestCase
 
     public function testEditorCanOverrideTheGeneratedSocialImage(): void
     {
-        $html = $this->renderer->render('pages/news/inside-sagamoks-gr-truss-deal.html.twig', [
+        $html = $this->renderer->render('pages/news/article.html.twig', [
+            'article' => $this->article('inside-sagamoks-gr-truss-deal'),
             'og_image_override' => 'https://rhtcircle.ca/images/editorial/custom-social-card.png',
         ]);
 
@@ -206,5 +221,54 @@ final class SiteRendererTest extends TestCase
         self::assertStringContainsString('<meta property="og:image:width" content="1600">', $html);
         self::assertStringContainsString('<meta property="og:image:height" content="900">', $html);
         self::assertStringContainsString('<meta property="og:image:alt" content="The RHT Circle news desk.">', $html);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function articles(): array
+    {
+        $articles = [];
+        foreach (ArticleSeedData::all(\dirname(__DIR__, 3)) as $seed) {
+            $articles[] = $this->articleView($seed);
+        }
+
+        return $articles;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function article(string $slug): array
+    {
+        foreach (ArticleSeedData::all(\dirname(__DIR__, 3)) as $seed) {
+            if ($seed['slug'] === $slug) {
+                return $this->articleView($seed);
+            }
+        }
+
+        self::fail('Missing article fixture: ' . $slug);
+    }
+
+    /**
+     * @param array<string, mixed> $seed
+     * @return array<string, mixed>
+     */
+    private function articleView(array $seed): array
+    {
+        return $seed + [
+            'href' => '/news/' . $seed['slug'],
+            'url' => '/news/' . $seed['slug'],
+            'internal' => true,
+            'date' => $seed['date_display'],
+            'action' => $seed['action_label'],
+            'hero' => [
+                'src' => $seed['hero_src'],
+                'width' => $seed['hero_width'],
+                'height' => $seed['hero_height'],
+                'alt' => $seed['hero_alt'],
+                'caption' => $seed['hero_caption'],
+            ],
+        ];
     }
 }
