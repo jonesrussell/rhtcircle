@@ -191,7 +191,10 @@ final class ArticleSeedData
      */
     public static function publicationRefreshSlugs(): array
     {
-        return ['waasmoowin-deal-public-record'];
+        return [
+            'waasmoowin-deal-public-record',
+            'sagamok-trespass-bylaw-session-was-backwards',
+        ];
     }
 
     /**
