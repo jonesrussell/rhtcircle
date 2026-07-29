@@ -67,16 +67,24 @@ final class AnonymousArticleListingTest extends TestCase
         self::assertInstanceOf(ListingResolver::class, $resolver);
 
         $articles = new ArticleRepository($kernel->getEntityTypeManager(), $definitions, $resolver);
-        self::assertCount(6, $articles->published());
-        self::assertCount(5, $articles->forSagamok());
+        // Data-driven expectations: the seed catalogue is the source of truth,
+        // so publishing MORE articles (via seeds or the MCP workflow) never
+        // requires editing this test.
+        $seeds = \App\Cms\ArticleSeedData::all($this->projectRoot);
+        $unpublished = \App\Cms\ArticleSeedData::unpublishedSlugs();
+        $expectedPublished = \count(array_filter($seeds, static fn(array $seed): bool => !\in_array($seed['slug'], $unpublished, true)));
+        $expectedSagamok = \count(array_filter($seeds, static fn(array $seed): bool => ($seed['community_slug'] ?? null) === 'sagamok' && !\in_array($seed['slug'], $unpublished, true)));
+
+        self::assertCount($expectedPublished, $articles->published());
+        self::assertCount($expectedSagamok, $articles->forSagamok());
 
         $published = $resolver->resolve($definitions->get(ArticleRepository::LISTING_ALL));
-        self::assertCount(6, $published->rows);
-        self::assertSame(6, $published->pagination->totalRows);
+        self::assertCount($expectedPublished, $published->rows);
+        self::assertSame($expectedPublished, $published->pagination->totalRows);
 
         $sagamok = $resolver->resolve($definitions->get(ArticleRepository::LISTING_SAGAMOK));
-        self::assertCount(5, $sagamok->rows);
-        self::assertSame(5, $sagamok->pagination->totalRows);
+        self::assertCount($expectedSagamok, $sagamok->rows);
+        self::assertSame($expectedSagamok, $sagamok->pagination->totalRows);
 
         $news = $this->request('/news');
         self::assertSame(200, $news->getStatusCode());

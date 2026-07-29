@@ -105,4 +105,18 @@ return [
             'node' => ['title', 'body'],
         ],
     ],
+
+    // MCP publishing surface (#2136): the article.* / asset.* tool set is
+    // reachable only through /mcp/write under this capability allowlist,
+    // authenticated by the RHTCIRCLE_MCP_PUBLISHER_TOKEN bearer binding
+    // (PublishingServiceProvider). Rate limit protects agent misuse.
+    'mcp' => [
+        'write_tier' => [
+            'capabilities' => ['publish rht articles'],
+        ],
+        'rate_limit' => [
+            'max_requests' => 120,
+            'window_seconds' => 60,
+        ],
+    ],
 ];

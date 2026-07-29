@@ -12,7 +12,13 @@
 .env
 .phpunit.cache/
 composer.local.json
+composer.ci.json
 
 # Node (OG card generator deps; browsers are managed by Playwright)
 node_modules/
 package-lock.json
+storage/media-uploads/
+/public/media/uploads/
+.playwright-mcp/
+*.bak
+.framework/

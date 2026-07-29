@@ -43,8 +43,10 @@ jobs:
       - name: Authenticate composer to GitHub
         run: composer config -g github-oauth.github.com "${{ secrets.GITHUB_TOKEN }}"
 
+      # waaseyaa/framework v0.1.0-alpha.277 is on Packagist: install straight
+      # from the committed lock (the pre-release path-repository bridge is gone).
       - name: Install dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress
+        run: composer install --no-interaction --no-progress
 
       - name: Copy lint (no em dashes in templates)
         run: php bin/lint-copy.php
