@@ -103,6 +103,30 @@ final class PublishingServiceProvider extends ServiceProvider
             ->priority(50)
             ->build());
 
+        $router->addRoute('media-uploads', RouteBuilder::create('/media/uploads/{name}')
+            ->controller(function (string $name): \Symfony\Component\HttpFoundation\Response {
+                // Content-addressed names only — the pattern IS the authorization
+                // (published asset URLs are public); no traversal is expressible.
+                if (preg_match('/^[a-f0-9]{64}\\.(png|jpg|webp)$/', $name) !== 1) {
+                    return new \Symfony\Component\HttpFoundation\Response('Not found', 404);
+                }
+                $file = $this->uploadsDir() . '/' . $name;
+                if (!is_file($file)) {
+                    return new \Symfony\Component\HttpFoundation\Response('Not found', 404);
+                }
+                $mime = ['png' => 'image/png', 'jpg' => 'image/jpeg', 'webp' => 'image/webp'][pathinfo($name, PATHINFO_EXTENSION)];
+
+                return new \Symfony\Component\HttpFoundation\BinaryFileResponse($file, 200, [
+                    'Content-Type' => $mime,
+                    'Cache-Control' => 'public, max-age=31536000, immutable',
+                    'X-Content-Type-Options' => 'nosniff',
+                ]);
+            })
+            ->allowAll()
+            ->methods('GET')
+            ->priority(60)
+            ->build());
+
         $router->addRoute('news-article-preview', RouteBuilder::create('/news/preview/{nid}')
             ->controller(function (Request $request, string $nid) use ($entityTypeManager): \Symfony\Component\HttpFoundation\Response {
                 $renderer = $this->resolve(SiteRenderer::class);
@@ -166,8 +190,22 @@ final class PublishingServiceProvider extends ServiceProvider
         return $etm;
     }
 
+    /**
+     * Persistent uploads directory: lives on the storage/ volume (the same
+     * persisted mount as the SQLite database), NEVER inside the rebuildable
+     * application tree. Explicitly created on wiring; override with
+     * WAASEYAA_MEDIA_UPLOADS_DIR for bespoke mounts.
+     */
     private function uploadsDir(): string
     {
-        return \dirname(__DIR__, 2) . '/public/media/uploads';
+        $dir = (string) (getenv('WAASEYAA_MEDIA_UPLOADS_DIR') ?: \dirname(__DIR__, 2) . '/storage/media-uploads');
+        if (!is_dir($dir) && !mkdir($dir, 0o755, true) && !is_dir($dir)) {
+            throw new \RuntimeException('Media uploads directory could not be created: ' . $dir);
+        }
+        if (!is_writable($dir)) {
+            throw new \RuntimeException('Media uploads directory is not writable: ' . $dir);
+        }
+
+        return $dir;
     }
 }

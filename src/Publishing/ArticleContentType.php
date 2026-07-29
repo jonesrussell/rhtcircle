@@ -9,7 +9,7 @@ use App\Publishing\Validator\ImageAltTextValidator;
 use App\Publishing\Validator\IsoDateValidator;
 use App\Publishing\Validator\NoEmDashValidator;
 use App\Publishing\Validator\SlugShapeValidator;
-use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
+use App\Publishing\ArticleHtmlSanitizer;
 use Waaseyaa\Publishing\ContentTypeDescriptor;
 use Waaseyaa\Publishing\FieldSpec;
 
@@ -63,7 +63,7 @@ final class ArticleContentType
                 'sidebar_html' => new FieldSpec(type: 'text', html: true),
                 'sources_html' => new FieldSpec(type: 'text', required: true, html: true),
             ],
-            sanitizerConfig: self::sanitizerConfig(),
+            htmlSanitizer: new ArticleHtmlSanitizer(),
             validators: [
                 new NoEmDashValidator(),
                 new ImageAltTextValidator(),
@@ -74,27 +74,4 @@ final class ArticleContentType
         );
     }
 
-    /**
-     * The explicit editorial allowlist for article HTML fields. Derived from
-     * the markup the news layout actually renders; anything else is stripped
-     * BEFORE persistence. `class` survives on structural elements because the
-     * article/sidebar/sources partials style through classes; no event
-     * handlers, no scripts, no styles, no iframes — ever.
-     */
-    private static function sanitizerConfig(): HtmlSanitizerConfig
-    {
-        $config = new HtmlSanitizerConfig()
-            ->allowRelativeLinks()
-            ->allowRelativeMedias()
-            ->forceHttpsUrls();
-
-        foreach (['p', 'h2', 'h3', 'ul', 'ol', 'li', 'blockquote', 'figure', 'figcaption', 'aside', 'div', 'section', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'strong', 'em', 'span', 'small', 'cite'] as $element) {
-            $config = $config->allowElement($element, ['class']);
-        }
-
-        return $config
-            ->allowElement('a', ['href', 'class', 'rel', 'title'])
-            ->allowElement('img', ['src', 'alt', 'width', 'height', 'loading', 'class'])
-            ->allowElement('br');
-    }
 }
