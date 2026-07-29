@@ -17,6 +17,7 @@ composer.local.json
 node_modules/
 package-lock.json
 storage/media-uploads/
+/public/media/uploads/
 .playwright-mcp/
 *.bak
 .framework/
