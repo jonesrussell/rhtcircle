@@ -57,10 +57,10 @@ jobs:
           path: .framework
 
       - name: Link framework path repositories
-        run: php bin/devtools-link-framework.php .framework
+        run: php bin/devtools-link-framework.php .framework --ci
 
       - name: Install dependencies
-        run: composer update --no-interaction --no-progress
+        run: COMPOSER=composer.ci.json composer update --no-interaction --no-progress
 
       - name: Copy lint (no em dashes in templates)
         run: php bin/lint-copy.php
