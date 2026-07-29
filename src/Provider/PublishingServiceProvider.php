@@ -104,7 +104,7 @@ final class PublishingServiceProvider extends ServiceProvider
             ->build());
 
         $router->addRoute('media-uploads', RouteBuilder::create('/media/uploads/{name}')
-            ->controller(function (string $name): \Symfony\Component\HttpFoundation\Response {
+            ->controller(function (Request $request, string $name): \Symfony\Component\HttpFoundation\Response {
                 // Content-addressed names only — the pattern IS the authorization
                 // (published asset URLs are public); no traversal is expressible.
                 if (preg_match('/^[a-f0-9]{64}\\.(png|jpg|webp)$/', $name) !== 1) {
