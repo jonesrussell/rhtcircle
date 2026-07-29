@@ -110,7 +110,8 @@ final class SiteRendererTest extends TestCase
         self::assertStringContainsString('id="start-here"', $html);
         self::assertStringContainsString('id="follow-the-record"', $html);
         self::assertStringContainsString('id="member-tools"', $html);
-        self::assertSame(21, substr_count($html, '<a class="tile-card'));
+        self::assertSame(22, substr_count($html, '<a class="tile-card'));
+        self::assertStringContainsString('/news/sagamok-trespass-bylaw-session-was-backwards', $html);
         self::assertStringContainsString('/news/sagamok-south-market-land-deal', $html);
         self::assertStringContainsString('Back to the Sagamok community page', $html);
         self::assertMatchesRegularExpression(
@@ -183,6 +184,25 @@ final class SiteRendererTest extends TestCase
             $html,
         );
         self::assertStringContainsString('The chronology does not prove', $html);
+        self::assertSame(1, substr_count(strtolower($html), '<!doctype html>'));
+    }
+
+    public function testTrespassSessionAnalysisUsesArticleLayoutAndDedicatedSocialCard(): void
+    {
+        $_SERVER['REQUEST_URI'] = '/news/sagamok-trespass-bylaw-session-was-backwards';
+        $html = $this->renderer->render('pages/news/article.html.twig', [
+            'article' => $this->article('sagamok-trespass-bylaw-session-was-backwards'),
+        ]);
+
+        self::assertStringContainsString('<meta property="og:type" content="article">', $html);
+        self::assertStringContainsString('<article class="news-article">', $html);
+        self::assertStringContainsString('The Trespass By-law session was backwards', $html);
+        self::assertStringContainsString('By Russell Jones', $html);
+        self::assertStringContainsString(
+            '<meta property="og:image" content="https://rhtcircle.ca/images/news/trespass-session/trespass-session-was-backwards.png">',
+            $html,
+        );
+        self::assertStringContainsString('The session had the people who wrote the by-law.', $html);
         self::assertSame(1, substr_count(strtolower($html), '<!doctype html>'));
     }
 

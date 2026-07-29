@@ -67,23 +67,25 @@ final class AnonymousArticleListingTest extends TestCase
         self::assertInstanceOf(ListingResolver::class, $resolver);
 
         $articles = new ArticleRepository($kernel->getEntityTypeManager(), $definitions, $resolver);
-        self::assertCount(5, $articles->published());
-        self::assertCount(4, $articles->forSagamok());
+        self::assertCount(6, $articles->published());
+        self::assertCount(5, $articles->forSagamok());
 
         $published = $resolver->resolve($definitions->get(ArticleRepository::LISTING_ALL));
-        self::assertCount(5, $published->rows);
-        self::assertSame(5, $published->pagination->totalRows);
+        self::assertCount(6, $published->rows);
+        self::assertSame(6, $published->pagination->totalRows);
 
         $sagamok = $resolver->resolve($definitions->get(ArticleRepository::LISTING_SAGAMOK));
-        self::assertCount(4, $sagamok->rows);
-        self::assertSame(4, $sagamok->pagination->totalRows);
+        self::assertCount(5, $sagamok->rows);
+        self::assertSame(5, $sagamok->pagination->totalRows);
 
         $news = $this->request('/news');
         self::assertSame(200, $news->getStatusCode());
+        self::assertStringContainsString('/news/sagamok-trespass-bylaw-session-was-backwards', (string) $news->getContent());
         self::assertStringContainsString('/news/sagamok-south-market-land-deal', (string) $news->getContent());
 
         $hub = $this->request('/communities/sagamok/accountability');
         self::assertSame(200, $hub->getStatusCode());
+        self::assertStringContainsString('/news/sagamok-trespass-bylaw-session-was-backwards', (string) $hub->getContent());
         self::assertStringContainsString('/news/sagamok-south-market-land-deal', (string) $hub->getContent());
     }
 
