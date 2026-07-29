@@ -109,6 +109,32 @@ final class SagamokAccountabilityHub
             ];
         }
 
+        // Data-driven default placement: any published Sagamok article whose
+        // href is NOT hand-curated into a group above lands in the
+        // follow-the-record group automatically (newest first, matching the
+        // listing order). Publishing an article must never require adding a
+        // hardcoded card here.
+        $curated = [];
+        foreach (self::GROUPS as $group) {
+            foreach ($group['hrefs'] as $href) {
+                $curated[$href] = true;
+            }
+        }
+        $uncurated = [];
+        foreach ($articles as $article) {
+            $href = (string) ($article['href'] ?? '');
+            if ($href !== '' && !isset($curated[$href]) && isset($cardsByHref[$href])) {
+                $uncurated[] = $cardsByHref[$href];
+            }
+        }
+        if ($uncurated !== []) {
+            foreach ($groups as $i => $group) {
+                if ($group['id'] === 'follow-the-record') {
+                    $groups[$i]['cards'] = array_merge($uncurated, $group['cards']);
+                }
+            }
+        }
+
         return $groups;
     }
 

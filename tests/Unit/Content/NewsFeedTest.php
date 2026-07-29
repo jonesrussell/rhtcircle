@@ -76,10 +76,17 @@ final class NewsFeedTest extends TestCase
         );
 
         self::assertSame(['start-here', 'follow-the-record', 'member-tools'], array_column($groups, 'id'));
-        self::assertSame(22, array_sum(array_map(
-            static fn (array $group): int => count($group['cards']),
-            $groups,
-        )));
+        // Data-driven: every published Sagamok article yields exactly one
+        // tile (curated slot or the automatic follow-the-record placement),
+        // on top of the non-article curated tiles — publishing an article
+        // never requires editing this expectation.
+        $articleHrefs = array_column($articles, 'href');
+        $allCards = array_merge(...array_map(static fn (array $group): array => $group['cards'], $groups));
+        $cardHrefs = array_column($allCards, 'href');
+        foreach ($articleHrefs as $href) {
+            self::assertContains($href, $cardHrefs, $href . ' must surface as a tile automatically.');
+        }
+        self::assertSame(\count($cardHrefs), \count(array_unique($cardHrefs)), 'No article may be tiled twice.');
         $followTheRecord = $groups[1]['cards'];
         self::assertContains(
             '/news/sagamok-trespass-bylaw-session-was-backwards',

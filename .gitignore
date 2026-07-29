@@ -16,3 +16,4 @@ composer.local.json
 # Node (OG card generator deps; browsers are managed by Playwright)
 node_modules/
 package-lock.json
+public/media/uploads/

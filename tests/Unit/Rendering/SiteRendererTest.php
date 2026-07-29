@@ -110,7 +110,16 @@ final class SiteRendererTest extends TestCase
         self::assertStringContainsString('id="start-here"', $html);
         self::assertStringContainsString('id="follow-the-record"', $html);
         self::assertStringContainsString('id="member-tools"', $html);
-        self::assertSame(22, substr_count($html, '<a class="tile-card'));
+        // Data-driven: the template renders exactly one tile per card in the
+        // groups model (which itself auto-places every published article).
+        $expectedTiles = array_sum(array_map(
+            static fn (array $group): int => \count($group['cards']),
+            \App\Content\SagamokAccountabilityHub::groups(
+                ['total' => 40, 'online' => 11, 'paper' => 29],
+                $this->articles(),
+            ),
+        ));
+        self::assertSame($expectedTiles, substr_count($html, '<a class="tile-card'));
         self::assertStringContainsString('/news/sagamok-trespass-bylaw-session-was-backwards', $html);
         self::assertStringContainsString('/news/sagamok-south-market-land-deal', $html);
         self::assertStringContainsString('Back to the Sagamok community page', $html);

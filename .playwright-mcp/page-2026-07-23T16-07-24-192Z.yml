@@ -1,0 +1,109 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - separator [ref=e3]
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - paragraph [ref=e6]:
+        - link "Robinson Huron Treaty" [ref=e7] [cursor=pointer]:
+          - /url: /
+      - paragraph [ref=e8]: A member resource for the treaty and its 21 nations.
+      - navigation "Primary" [ref=e9]:
+        - link "The Treaty" [ref=e10] [cursor=pointer]:
+          - /url: /treaty
+        - link "Communities" [ref=e11] [cursor=pointer]:
+          - /url: /communities
+        - link "The Land" [ref=e12] [cursor=pointer]:
+          - /url: /land
+        - link "Community Safety" [ref=e13] [cursor=pointer]:
+          - /url: /safety
+        - link "Resources" [ref=e14] [cursor=pointer]:
+          - /url: /resources
+        - link "Transparency" [ref=e15] [cursor=pointer]:
+          - /url: /standard
+        - link "The Circle" [ref=e16] [cursor=pointer]:
+          - /url: /circle
+        - link "About" [ref=e17] [cursor=pointer]:
+          - /url: /about
+  - main [ref=e18]:
+    - generic [ref=e19]:
+      - paragraph [ref=e20]:
+        - link "Communities" [ref=e21] [cursor=pointer]:
+          - /url: /communities
+        - text: ›
+        - link "Sagamok Anishnawbek" [ref=e22] [cursor=pointer]:
+          - /url: /communities/sagamok
+        - text: › Live stream
+      - 'heading "Live: the July 23 members'' meeting" [level=1] [ref=e23]'
+      - paragraph [ref=e24]:
+        - text: A member-run stream of the Sagamok members' meeting on July 23, 2026, where members consider the proposed
+        - link "Members' Accountability Resolution" [ref=e25] [cursor=pointer]:
+          - /url: /communities/sagamok/member-accountability-resolution
+        - text: .
+      - note "About this stream" [ref=e26]:
+        - strong [ref=e27]: Member-run and unofficial.
+        - text: This stream is run by a member so that members who cannot attend in person can still watch. It is not an official broadcast of Sagamok Anishnawbek, and this site is not the Robinson Huron Treaty Litigation Fund. The player shows the stream while it is live; before and after, it shows the channel as offline.
+      - iframe [ref=e29]:
+        - generic [ref=f1e1]:
+          - generic [ref=f1e2]:
+            - generic [ref=f1e7]:
+              - generic "Twitch video player" [ref=f1e8]
+              - generic [ref=f1e9]:
+                - generic [ref=f1e17]:
+                  - generic [ref=f1e19]:
+                    - heading [level=2] [ref=f1e21]:
+                      - link "jonesrussell42" [ref=f1e22] [cursor=pointer]:
+                        - /url: https://www.twitch.tv/jonesrussell42?tt_content=offline_embed_channel_name&tt_medium=embed
+                      - text: is offline.
+                    - heading "Learn more about them on their channel!" [level=2] [ref=f1e24]
+                  - link "Visit jonesrussell42" [ref=f1e31] [cursor=pointer]:
+                    - /url: https://www.twitch.tv/jonesrussell42?tt_content=embed_visit_channel&tt_medium=embed
+                - region "Player Controls" [ref=f1e33]:
+                  - generic [ref=f1e35]:
+                    - button "Settings" [ref=f1e40]
+                    - button "Watch on Twitch" [ref=f1e43]
+            - status [ref=f1e48]
+            - alert [ref=f1e49]
+          - iframe [ref=f1e50]:
+            
+      - paragraph [ref=e30]:
+        - text: Player not loading?
+        - link "Watch directly on Twitch" [ref=e31] [cursor=pointer]:
+          - /url: https://www.twitch.tv/jonesrussell42
+        - text: . The stream starts muted; use the player's volume control.
+      - heading "After the meeting" [level=2] [ref=e33]
+      - paragraph [ref=e34]:
+        - text: A recording will be posted after the meeting so members can watch on their own time, and this page will link to it. The resolution page will be reconciled to the wording members actually adopt; see
+        - link "the resolution" [ref=e35] [cursor=pointer]:
+          - /url: /communities/sagamok/member-accountability-resolution
+        - text: and
+        - link "questions awaiting an answer" [ref=e36] [cursor=pointer]:
+          - /url: /communities/sagamok/awaiting-council
+        - text: .
+      - paragraph [ref=e37]: A community resource from the Robinson Huron Treaty hub, member-led and independent. Corrections welcome.
+  - contentinfo [ref=e38]:
+    - generic [ref=e39]:
+      - navigation "Footer" [ref=e40]:
+        - link "The Treaty" [ref=e41] [cursor=pointer]:
+          - /url: /treaty
+        - link "Communities" [ref=e42] [cursor=pointer]:
+          - /url: /communities
+        - link "The Land" [ref=e43] [cursor=pointer]:
+          - /url: /land
+        - link "Community Safety" [ref=e44] [cursor=pointer]:
+          - /url: /safety
+        - link "Resources" [ref=e45] [cursor=pointer]:
+          - /url: /resources
+        - link "Transparency" [ref=e46] [cursor=pointer]:
+          - /url: /standard
+        - link "The Circle" [ref=e47] [cursor=pointer]:
+          - /url: /circle
+        - link "About" [ref=e48] [cursor=pointer]:
+          - /url: /about
+        - link "Contact" [ref=e49] [cursor=pointer]:
+          - /url: /contact
+      - paragraph [ref=e50]:
+        - strong [ref=e51]: Members run this.
+        - text: This is a member-led resource for the Robinson Huron Treaty and its 21 First Nations. It is not the Robinson Huron Treaty Litigation Fund. The Circle within it works from sourced facts and asks questions, it does not make accusations.
+      - paragraph [ref=e52]: Prepared by members, for members.
+  - button "Aanii. Ask about the treaty" [ref=e53] [cursor=pointer]
