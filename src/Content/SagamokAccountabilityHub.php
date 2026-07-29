@@ -31,6 +31,7 @@ final class SagamokAccountabilityHub
             'title' => 'Follow the record',
             'intro' => 'Worked examples drawn from public records, organized by the decision or system members are trying to understand.',
             'hrefs' => [
+                '/news/sagamok-trespass-bylaw-session-was-backwards',
                 '/news/sagamok-south-market-land-deal',
                 '/news/sagamok-membership-before-trespass',
                 '/news/waasmoowin-deal-public-record',

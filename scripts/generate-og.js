@@ -61,6 +61,9 @@ const overrides = {
   // South Market land-price investigation.
   '__south_market_article__':
     { template: 'og-template-south-market.html', output: 'news/south-market/south-market-land-deal.png' },
+  // July 28 Sagamok Trespass By-law engagement analysis.
+  '__trespass_session_article__':
+    { template: 'og-template-trespass-session.html', output: 'news/trespass-session/trespass-session-was-backwards.png' },
   // Bespoke card for the youth baseball league: a baseball motif + the three
   // participating communities, on-brand (not the mockup teal).
   'pages/community-life/indigenous-baseball-league.html.twig':
