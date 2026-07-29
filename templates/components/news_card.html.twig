@@ -8,7 +8,14 @@
   {% if story.nations is not empty %}
     <div class="news-card__communities" aria-label="Communities connected to this story">
       {% for slug in story.nations %}
-        <a href="/communities/{{ slug }}">{{ nation_names[slug]|default(slug|replace({'-': ' '})|title) }}</a>
+        {# Only the 21 nations have /communities/ hub pages. A Circle-wide
+           story tagged with a non-nation slug (e.g. "circle") renders as a
+           plain label instead of a broken link. #}
+        {% if nation_names[slug] is defined %}
+          <a href="/communities/{{ slug }}">{{ nation_names[slug] }}</a>
+        {% else %}
+          <span>{{ slug == 'circle' ? 'Treaty-wide' : slug|replace({'-': ' '})|title }}</span>
+        {% endif %}
       {% endfor %}
     </div>
   {% else %}
