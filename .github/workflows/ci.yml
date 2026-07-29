@@ -43,24 +43,10 @@ jobs:
       - name: Authenticate composer to GitHub
         run: composer config -g github-oauth.github.com "${{ secrets.GITHUB_TOKEN }}"
 
-      # Pre-release coordination (waaseyaa/framework#2136): until
-      # v0.1.0-alpha.277 exists on Packagist, resolve the waaseyaa/* pins from
-      # a framework checkout via generated path repositories. No lock file is
-      # committed during this window (a lock would embed local paths); the
-      # release flip restores `composer install` against a Packagist lock and
-      # removes this block.
-      - name: Checkout framework (pre-release coordination)
-        uses: actions/checkout@v4
-        with:
-          repository: waaseyaa/framework
-          ref: main
-          path: .framework
-
-      - name: Link framework path repositories
-        run: php bin/devtools-link-framework.php .framework --ci
-
+      # waaseyaa/framework v0.1.0-alpha.277 is on Packagist: install straight
+      # from the committed lock (the pre-release path-repository bridge is gone).
       - name: Install dependencies
-        run: COMPOSER=composer.ci.json composer update --no-interaction --no-progress
+        run: composer install --no-interaction --no-progress
 
       - name: Copy lint (no em dashes in templates)
         run: php bin/lint-copy.php
