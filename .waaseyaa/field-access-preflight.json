@@ -1,6 +1,6 @@
 {
     "framework_version": "dev@51042b48491f288f@classification-d735b49056f20152",
-    "schema_fingerprint": "fb03c20bb23eac13542fe16fbb984261e698d4bebdefd4c0d9035c8996edf722",
+    "schema_fingerprint": "cd88fa8455e543e3cb267795f4e1c1fbd971020ed3db2f31d8cb8c61aeedecb7",
     "scanner_version": 1,
     "fields": {
         "agent_audit_log|*|bundle": "public:framework_default",
@@ -295,5 +295,5 @@
     "legacy_payloads": [],
     "legacy_payload_count": 0,
     "ready": true,
-    "checksum": "f32d262b53f4a1cb374fef699ce6a6c6490ce7e99014bc648bf1cb9e8f254cca"
+    "checksum": "e05432dc7f7e9ef5aa944c0da118c5334803b38d9c8215cfcba14b28b49189cc"
 }
