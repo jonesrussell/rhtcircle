@@ -3,63 +3,86 @@
 **Branch:** `feat/stateless-public-surfaces`
 **Framework:** `0.1.0-alpha.278` → `0.1.0-alpha.279`
 
-## THIS BRANCH IS NOT DEPLOYABLE AS-IS
+## Preflight artifact: DONE (rehearsed against the production schema)
 
-`.waaseyaa/field-access-preflight.json` is **stale for this commit** and must be
-regenerated before deploy, or **production will refuse to boot** with
-`Field-read activation preflight is stale for the current framework or schema.`
+`.waaseyaa/field-access-preflight.json` **has been regenerated and committed** on
+this branch. It carries the production fingerprint, so this branch no longer
+blocks on it.
 
-Why: the artifact binds to `framework_version`, which the kernel computes as
+Why it needed regenerating: the artifact binds to `framework_version`, which the
+kernel computes as
 `<VERSION>@<first 16 hex of sha256(composer.lock)>@<classification hash>`
 (`AbstractKernel::assertFieldAccessActivationReady()`). This branch changes
-`composer.lock` (69 package upgrades), so the bound value changes:
+`composer.lock` (69 package upgrades), so the bound value changed, and a stale
+artifact makes production refuse to boot with
+`Field-read activation preflight is stale for the current framework or schema.`
 
 | | value |
 |---|---|
-| committed artifact | `dev@4af485fbd8a5cf53@classification-d735b49056f20152` |
-| this commit needs | `dev@8d740a66fcc5afc2@classification-d735b49056f20152` |
+| before (alpha.278) | `dev@4af485fbd8a5cf53@classification-d735b49056f20152` |
+| now (alpha.279) | `dev@8d740a66fcc5afc2@classification-d735b49056f20152` |
 
-The preflight runs only when `!isDevelopmentMode()`, which is why local
-`APP_ENV=testing` boots fine and gives no warning. **Local success proves
-nothing about this.**
+### How it was rehearsed (2026-07-30)
 
-### It must be regenerated against the PRODUCTION schema
+Regenerating from a fresh install would have produced an artifact that never
+activates in production, so the rehearsal used the real schema without moving any
+member data off the Pi:
 
-Do **not** regenerate from a fresh install. Verified on 2026-07-30:
+1. `VACUUM INTO` a consistent snapshot of the live DB **inside the container**.
+2. Ran `field-access:preflight` against that snapshot with the **currently
+   deployed alpha.278** code, to establish the live reference. It reproduced the
+   committed artifact exactly: fingerprint `ba027c5a5507…`, 281 field entries.
+3. Exported **schema DDL only** (`sqlite_master.sql`: 78 tables, 130 indexes,
+   **zero rows** — no petition signatures, contact submissions, or signup
+   emails left the host) and rebuilt a schema-only database locally.
+4. Confirmed fidelity on the detail that distinguishes production from a fresh
+   install: `media_version` has the parked pre-DIR-005 shape
+   (`id, uuid, bundle, label, langcode, _data`), with no `blob_uri`,
+   `created_at`, `created_by`, `media_uuid`, or `mime`.
+5. Ran `field-access:preflight --write-artifact` on **alpha.279** against that
+   schema. Result: fingerprint `ba027c5a5507…` (**identical to live
+   production**) and **281** entries (a fresh install gives `975afa367ab4c5ea…`
+   and 289).
+6. Deleted the snapshot from the Pi.
 
-| | field entries | `media_version` columns |
-|---|---|---|
-| production-derived (committed) | 281 | absent — parked pre-DIR-005 shape |
-| fresh local install | 289 | `blob_uri`, `created_at`, `created_by`, `media_uuid`, `mime` |
+The committed diff is exactly two lines: `framework_version` and its `checksum`.
+Every one of the 281 field entries is byte-identical to the production-derived
+artifact, which is the strongest available evidence that only the framework
+version changed.
 
-Production's `media_version` table keeps its pre-DIR-005 column shape and
-nothing migrates it, so a fresh-install fingerprint
-(`975afa367ab4c5ea…`) will never match the live schema
-(`ba027c5a5507…`) and the artifact will not activate.
+### Verified with the preflight ACTIVE
 
-### Required pre-deploy step
+The preflight runs only when `!isDevelopmentMode()`, so `APP_ENV=testing` proves
+nothing about it. The acceptance below was therefore re-run with
+**`APP_ENV=production`** against the production-shaped schema:
 
-On the Pi, or against a copy of the production database:
+- `GET /` → 200. **Zero** `preflight is stale` or boot-failure lines.
+- Stable across first-use lazy table creation (the #2143 class): three plain
+  requests, a rate-limited `/mcp/write` `tools/list` (creates `rate_limits`), and
+  a further request all returned 200 with the artifact still valid.
+- MCP publishing acceptance **14/14**.
+- Cookies still correct in production mode: `/`, `/news`,
+  `/communities/sagamok`, `/sitemap.xml` set none; `/admin/login` sets
+  `PHPSESSID` + `XSRF-TOKEN`.
+
+### If you ever need to redo this
 
 ```bash
-# 1. Take a backup first.
-cp /srv/www/rhtcircle/storage/waaseyaa.sqlite \
-   /srv/backups/rhtcircle/pre-alpha279-$(date +%Y%m%d-%H%M%S).sqlite
+# On the Pi: consistent snapshot inside the container, then the live reference.
+docker exec rhtcircle-app php -r '$p=new PDO("sqlite:/app/storage/waaseyaa.sqlite");
+  $p->exec("VACUUM INTO '"'"'/tmp/rehearsal.sqlite'"'"'");'
+docker exec -e WAASEYAA_DB=/tmp/rehearsal.sqlite rhtcircle-app \
+  sh -c 'cd /app && ./vendor/bin/waaseyaa field-access:preflight'   # note the fingerprint
 
-# 2. With THIS branch checked out and `composer install --no-dev` run
-#    (so composer.lock is the deployed one), against the production DB:
-WAASEYAA_DB=/srv/www/rhtcircle/storage/waaseyaa.sqlite \
-  ./vendor/bin/waaseyaa field-access:preflight --write-artifact
-
-# 3. Confirm the artifact now carries the expected framework_version and the
-#    PRODUCTION fingerprint, then commit it on this branch:
-python3 -c "import json; d=json.load(open('.waaseyaa/field-access-preflight.json')); \
-  print(d['framework_version'], d['schema_fingerprint'], len(d['fields']))"
-# expect: dev@8d740a66fcc5afc2@classification-…  ba027c5a5507…  281
+# Export DDL only (no rows), rebuild locally, regenerate on the new framework,
+# then assert the fingerprint matches the one you just noted. If it does not,
+# STOP: the DB you generated against is not production-shaped.
+docker exec rhtcircle-app rm -f /tmp/rehearsal.sqlite   # clean up
 ```
 
-If the fingerprint comes back as anything other than the production one, stop:
-the DB you generated against is not production-shaped.
+**Access note:** the Pi is `oiatc@192.168.0.131`. `runbooks/07-…` in
+`waaseyaa-infra` names `~/.ssh/oiatc_pi`, but that key is rejected; the host
+currently accepts `~/.ssh/id_ed25519`. Worth correcting in that runbook.
 
 ---
 
