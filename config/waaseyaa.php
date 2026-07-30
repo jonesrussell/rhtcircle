@@ -106,6 +106,63 @@ return [
         ],
     ],
 
+    // Session handling.
+    //
+    // Anonymous GET/HEAD requests to these paths never start a PHP session, so
+    // they set no PHPSESSID and (with no session to hold a token) no
+    // XSRF-TOKEN either. That makes the public site shared-cache friendly and
+    // stops every crawler hit from burning a server-side session file.
+    //
+    // This is an ALLOWLIST, and three framework guards bound it, so the
+    // surfaces that need a session keep one without being named here:
+    //   - only GET/HEAD is ever stateless (every form POST gets a session);
+    //   - a request already carrying PHPSESSID resumes its session normally,
+    //     so a signed-in admin keeps their identity while browsing the site;
+    //   - anything not listed is unaffected: /admin and /admin/login (the
+    //     login form must mint a CSRF token), /api/*, /mcp, /mcp/write.
+    //
+    // Prefix matching is exact-segment: '/news' covers /news and /news/x but
+    // never /newsletter. '/' means the ROOT PATH ONLY (framework #2154) -- it
+    // is deliberately not a prefix of everything.
+    //
+    // Safe to include even though they carry forms or act on a token, because
+    // none of this app's own code reads the session (grep: no $_SESSION, no
+    // _account outside the framework's admin auth):
+    //   - /contact, /updates, /standard/records-request and the Sagamok poll
+    //     and petition pages submit JSON via fetch(), which CsrfMiddleware
+    //     exempts by content type, and no script reads the XSRF cookie;
+    //   - /news/preview/{nid} is authorized by a short-lived HMAC grant, not a
+    //     session, and already sends `private, no-store` + noindex;
+    //   - /updates/remove and /petition/remove/{token} are GET one-click
+    //     actions authorized by the token in the URL.
+    'session' => [
+        'stateless_paths' => [
+            '/',                   // homepage (root path only)
+            '/about',
+            '/circle',
+            '/communities',        // every community hub, incl. /communities/sagamok/*
+            '/community-life',
+            '/contact',
+            '/get-involved',
+            '/land',
+            '/live',
+            '/llms.txt',
+            '/media',              // /media/uploads/* served images
+            '/myth-versus-record',
+            '/news',               // index, articles, and signed previews
+            '/petition',           // token-authorized removal link
+            '/public',
+            '/resources',
+            '/review',
+            '/safety',
+            '/sitemap.xml',
+            '/standard',
+            '/treaty',
+            '/treaty-wide',
+            '/updates',
+        ],
+    ],
+
     // MCP publishing surface (#2136): the article.* / asset.* tool set is
     // reachable only through /mcp/write under this capability allowlist,
     // authenticated by the RHTCIRCLE_MCP_PUBLISHER_TOKEN bearer binding
