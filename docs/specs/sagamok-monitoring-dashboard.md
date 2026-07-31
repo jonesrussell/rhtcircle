@@ -64,8 +64,17 @@ in this feature may contain a data literal, in PHP or in Twig.
 
 Two framework constraints that shape the field design:
 
-- **Rule G:** a field used in a Listing `filters` or `sorts` must be
-  `FieldStorage::Column`. `_data`-blob fields raise `UnsupportedListingException`
+- **Rule G, and an open framework gap:** a field used in a Listing `filters`
+  or `sorts` must be declared `FieldStorage::Column`.
+  **However** (verified 2026-07-31, framework v0.1.0-alpha.279, filed as
+  waaseyaa/framework#2157): for an app-defined entity type that declaration
+  does NOT produce a physical column or index. `EntityType::fromClass()`
+  cannot select the `sql-column` backend, only `sql-column` materialises real
+  columns, and the constructor slot that could supply both is `@internal`.
+  Every facet therefore lives in `_data` and is filtered via the JSON blob.
+  This is pre-existing and already true of the app's shipped
+  `node.community_slug` article facet. Raw SQL indexes are NOT an acceptable
+  workaround. Revisit when #2157 lands. `_data`-blob fields raise `UnsupportedListingException`
   at boot (`ListingDefinitionValidator`). Note the validator enforces *Column*
   only — `->indexed()` is a performance requirement, not a framework-enforced
   one, so an unindexed facet will validate and then scan. Index them anyway, and
@@ -87,7 +96,7 @@ fields must be registered before Listing validation runs.
 
 ## 3. Entity model
 
-Six entity types, registered in a new `SagamokMonitorServiceProvider`
+Seven entity types, registered in a new `SagamokMonitorServiceProvider`
 (`src/Provider/SagamokMonitorServiceProvider.php`) declared in `composer.json`
 `extra.waaseyaa.providers` **after** `CmsContentServiceProvider`. Each is an
 attribute-driven `ContentEntityBase` subclass in `src/Entity/`, following
@@ -211,15 +220,23 @@ machine-observed record and to official public updates.
 |---|---|---|---|
 | `slug` | Column, indexed | Public | |
 | `title` | Column | Public | Framed as a question or a neutral statement of what is outstanding |
-| `status` | Column, indexed | Public | `open` \| `awaiting_response` \| `partly_answered` \| `resolved` \| `withdrawn` |
+| `issue_state` | Column, indexed | Public | `open` \| `awaiting_response` \| `partly_answered` \| `resolved` \| `withdrawn`. **Deliberately not named `status`** — see the note below |
 | `opened_at` | Column, indexed | Public | |
 | `status_changed_at` | Column, indexed | Public | |
-| `closed_at` | Column, indexed | Public | Required when `status = resolved` |
+| `closed_at` | Column, indexed | Public | Required when `issue_state = resolved` |
 | `summary` | Data | Public | Short member-facing text |
 | `what_is_asked` | Data | Public | The specific ask |
 | `related_article_slugs` | Data | Public | Links to `node`/`article` records by slug |
 | `related_item_public_refs` | Data | Public | **Opaque refs only** (§3.0) |
 | `severity` | Column | **Internal** | `information` \| `concern` \| `urgent`. Editorial triage state. Internal, and therefore unreadable without the §6.4 audited path — not merely unrendered |
+
+**Why `issue_state` and not `status`.** An earlier revision of this table
+called this field `status`, which contradicted §6.2 rule 3 — no monitor type
+may declare a `status` field, because `WorkflowVisibility::isEntityPublic()`
+keys on exactly that name and a truthy value would open the
+`/api/discovery/*` routes. The safety rule controls: the field keeps its
+semantics under a name the framework does not recognise. Asserted by
+`NoAutoExposureTest::testNoMonitorTypeDeclaresAStatusField`.
 
 `severity` is **Internal and is not a listing facet.** It orders the maintainer's
 own CLI report (§6.4), never a public list. A public list sorted by an editorial
@@ -267,7 +284,9 @@ monitor_collector_state
   item_public_ref  TEXT NOT NULL   -- the opaque ref exposed on the entity
   content_hash     TEXT NOT NULL
   normalized_bytes INTEGER
-  snapshot         BLOB            -- capped; pruned past the retention window
+  snapshot         BLOB            -- capped at 2 MB; retained 90 days, max 3 per item
+  snapshot_taken_at INTEGER        -- drives the 90-day prune
+  absent_runs      INTEGER NOT NULL DEFAULT 0  -- consecutive runs this item was absent
   updated_at       INTEGER NOT NULL
   PRIMARY KEY (source_key, item_key)
 ```
@@ -285,6 +304,12 @@ Why a side table rather than `Internal` entity fields:
   structural rather than enforced.
 - `item_key` → `item_public_ref` mapping lives here, so the opaque ref has
   somewhere to be resolved without exposing the key.
+- **`absent_runs` lives here too, and this is not incidental.** The
+  two-consecutive-absence rule of §4.3 step 7 needs a counter the collector
+  reads and increments on every run. As an `Internal` entity field it would
+  have been unreadable without an audited capability — the collector could
+  not have read its own counter — which is the exact trap this section
+  exists to avoid. Covered by the two-run disappearance tests in §9.4.
 
 The side table is **not** an entity, so it has no `FieldReadLevel`, appears in no
 listing, and is unreachable through MCP, GraphQL, JSON:API, SSR, or Discovery.
@@ -387,8 +412,8 @@ Public** per §6.3.
 | `sagamok_monitor_items` | `monitor_item` | `source_key = sagamok_public_site` | `last_seen` desc | 25 | Tracked-pages table |
 | `sagamok_monitor_changes` | `monitor_item` | `change_status IN (new, changed, disappeared, reappeared)` | `changed_at` desc | 25 | "What changed" |
 | `sagamok_monitor_timeline` | `monitor_event` | `redacted_at IS NULL` | `observed_at` desc | 50 | Change timeline |
-| `sagamok_monitor_issues_open` | `monitor_issue` | `status IN (open, awaiting_response, partly_answered)` | `opened_at` desc | 25 | Current-issues tracker |
-| `sagamok_monitor_issues_resolved` | `monitor_issue` | `status = resolved` | `closed_at` desc | 25 | Resolved archive |
+| `sagamok_monitor_issues_open` | `monitor_issue` | `issue_state IN (open, awaiting_response, partly_answered)` | `opened_at` desc | 25 | Current-issues tracker |
+| `sagamok_monitor_issues_resolved` | `monitor_issue` | `issue_state = resolved` | `closed_at` desc | 25 | Resolved archive |
 | `sagamok_monitor_updates` | `monitor_official_update` | none | `published_at` desc | 25 | Official-updates rail |
 
 Every definition sets **`accessOps: ['monitor.dashboard_read']`** — see §6.2. No
@@ -529,7 +554,7 @@ requires redoing the §6.0 composition analysis.
   `first_seen`, `last_seen`, `changed_at`, `disappeared_at`, `event_count`.
 - **Event:** `item_public_ref`, `event_type`, `observed_at`, `effective_at`,
   `evidence_kind`, `evidence_url`, `evidence_captured_at`.
-- **Issue:** `slug`, `title`, `status`, `opened_at`, `status_changed_at`,
+- **Issue:** `slug`, `title`, `issue_state`, `opened_at`, `status_changed_at`,
   `closed_at`, `summary`, `what_is_asked`, `related_article_slugs`,
   `related_item_public_refs`.
 - **Official update:** `issue_slug`, `published_at`, `source_label`,
@@ -702,7 +727,7 @@ important one here.
 
 `tests/Integration/SagamokMonitor/PublicProjectionTest.php`
 
-- For **each** of the six entity types, the projection emitted by `view()` is
+- For **each** of the seven entity types, the projection emitted by `view()` is
   asserted as a **set equality** against the §6.3 closed list. Adding a key
   anywhere fails until someone revisits §6.0.
 - Seed every Internal field (`severity`, `answers_ask`, `last_error`, `notes`,
