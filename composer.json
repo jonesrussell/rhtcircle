@@ -60,6 +60,7 @@
                 "App\\Provider\\AppServiceProvider",
                 "App\\Provider\\PublishingServiceProvider",
                 "App\\Provider\\CmsContentServiceProvider",
+                "App\\Provider\\SagamokMonitorServiceProvider",
                 "App\\Provider\\AnokiiContentServiceProvider",
                 "Anokii\\Provider\\CoIntelligenceServiceProvider"
             ]
