@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+$environment = getenv('APP_ENV') ?: 'production';
+
+// rhtcircle.ca is HTTPS-only: Cloudflare enforces Always Use HTTPS at the edge.
+// Deployed environments therefore require Secure cookies; local development over
+// http://127.0.0.1 must not, or the browser would discard every cookie and the
+// admin login would be untestable.
+$httpsOnly = \in_array($environment, ['production', 'staging'], true);
+
 return [
     // Debug mode. Controls error detail display, debug toolbar, and debug headers.
     // Override with APP_DEBUG env var. MUST be false in production.
@@ -106,6 +114,25 @@ return [
         ],
     ],
 
+    // Trusted reverse proxy (issue #13).
+    //
+    // Cloudflare terminates TLS at its edge and forwards plain HTTP through
+    // cloudflared to Caddy, which speaks FastCGI to this app. The app therefore
+    // never sees a TLS connection and $_SERVER['HTTPS'] is never 'on', so the
+    // framework's fail-closed `secure => 'auto'` detection cannot prove HTTPS on
+    // its own and correctly refuses to mark cookies Secure.
+    //
+    // 'REMOTE_ADDR' is Symfony's sentinel for "trust the single connecting peer,
+    // resolved per request". It is deliberately NOT a CIDR range: the peer here
+    // is always the Caddy container on the internal docker network, and this
+    // container publishes no ports (9000/tcp is unmapped), so nothing outside
+    // that network can reach php-fpm to forge X-Forwarded-*. Cloudflare sends
+    // X-Forwarded-Proto: https, which is what makes Request::isSecure() true.
+    //
+    // Empty outside deployed environments, so local development keeps Symfony's
+    // default of ignoring every X-Forwarded-* header.
+    'trusted_proxies' => $httpsOnly ? ['REMOTE_ADDR'] : [],
+
     // Session handling.
     //
     // Anonymous GET/HEAD requests to these paths never start a PHP session, so
@@ -136,6 +163,19 @@ return [
     //   - /updates/remove and /petition/remove/{token} are GET one-click
     //     actions authorized by the token in the URL.
     'session' => [
+        // Cookie policy (issue #13). PHPSESSID gets Secure explicitly rather
+        // than via `secure => 'auto'` detection, so it stays Secure in a
+        // deployed environment even if a proxy header is ever missing or
+        // changed. 'auto' locally keeps http://127.0.0.1 development working.
+        //
+        // The companion XSRF-TOKEN cookie has no equivalent switch: CsrfMiddleware
+        // builds it with `->withSecure($request->isSecure())`, so the only lever
+        // for it is the `trusted_proxies` setting above. Both cookies are asserted
+        // in tests/Integration/Http/SecureCookiePolicyTest.php.
+        'cookie' => [
+            'secure' => $httpsOnly ? true : 'auto',
+        ],
+
         'stateless_paths' => [
             '/',                   // homepage (root path only)
             '/about',
