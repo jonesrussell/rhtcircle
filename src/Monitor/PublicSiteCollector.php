@@ -330,9 +330,12 @@ final class PublicSiteCollector
         }
 
         $report['health'] = $this->healthFor($report);
-        if ($report['observed'] === 0) {
-            // Non-zero so a scheduled run surfaces in whatever watches exit
-            // codes, rather than failing silently every hour.
+
+        // Non-zero when nothing could be read at all, so a scheduled run
+        // surfaces in whatever watches exit codes rather than failing silently
+        // every hour. An all-excluded or all-absent run is NOT this case: the
+        // site answered, and the events carry the finding.
+        if ($report['observed'] === 0 && $report['fetch_failures'] > 0) {
             $report['exit_code'] = 1;
         }
 
@@ -370,11 +373,18 @@ final class PublicSiteCollector
 
     private function healthFor(array $report): string
     {
-        // Nothing was successfully read. Whether that is because every fetch
-        // failed, or because every target was absent or excluded, the run did
-        // not verify anything — and reporting `ok` would put a "Checking
-        // normally" badge on a dashboard backed by no observation at all.
-        if ($report['observed'] === 0) {
+        // Health answers one question: is the MONITORING working? It is not a
+        // verdict on what the monitoring found.
+        //
+        // A run where every page turned out to be absent, gated or noindex read
+        // nothing — but the site answered every request, so the monitor is
+        // healthy and the findings are carried by the events. Reporting
+        // `failing` there would put an alarm on the dashboard about our own
+        // infrastructure because someone else published a `noindex` tag.
+        //
+        // The genuinely empty case — no targets at all — is handled before any
+        // fetch happens, and exits non-zero.
+        if ($report['fetch_failures'] > 0 && $report['observed'] === 0) {
             return 'failing';
         }
         if ($report['fetch_failures'] > 0) {

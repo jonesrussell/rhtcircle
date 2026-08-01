@@ -97,6 +97,19 @@ final class MonitorPublicCommand
             $discovery['truncated'] ? sprintf(' (truncated at the %d ceiling)', $this->configuration->maxUrlsPerRun) : '',
         ));
 
+        if ($discovery['reachable'] === 0) {
+            // Every seed was unreachable, so the crawl has no targets. This is
+            // a configuration or connectivity failure, not a finding about the
+            // Nation's site, and it must not be recorded as a successful check.
+            $io->error(
+                'Discovery reached no readable page from any configured seed. Nothing was collected and no '
+                . 'successful check was recorded: reporting health for a run that read nothing would tell '
+                . 'members the site is being watched when it is not.',
+            );
+
+            return 1;
+        }
+
         // --- collection ------------------------------------------------------
         $collector = new PublicSiteCollector(
             $this->entityTypes->getRepository(MonitorEntityTypes::SOURCE),

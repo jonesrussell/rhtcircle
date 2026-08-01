@@ -26,7 +26,7 @@ final class PublicSiteCrawler
 
     /**
      * @param list<string> $seedUrls
-     * @return array{urls: list<string>, fetched: int, truncated: bool}
+     * @return array{urls: list<string>, fetched: int, reachable: int, truncated: bool}
      */
     public function discover(array $seedUrls, string $origin, int $maxUrls, int $maxDepth): array
     {
@@ -45,6 +45,7 @@ final class PublicSiteCrawler
         }
 
         $fetched = 0;
+        $reachable = 0;
         $truncated = false;
 
         while ($queue !== []) {
@@ -70,6 +71,12 @@ final class PublicSiteCrawler
             if (!$result->ok || $result->statusCode !== 200) {
                 continue;
             }
+
+            // Something answered with a real page. Counted so the caller can
+            // tell "the crawl found nothing reachable" (a configuration or
+            // connectivity failure worth exiting non-zero for) from "the crawl
+            // found pages and they were all excluded" (a finding, not a fault).
+            ++$reachable;
             if (GateDetector::isExcluded($result->statusCode, $result->finalUrl, $result->body, $result->headers)) {
                 continue;
             }
@@ -91,6 +98,7 @@ final class PublicSiteCrawler
         return [
             'urls' => array_values($seen),
             'fetched' => $fetched,
+            'reachable' => $reachable,
             'truncated' => $truncated,
         ];
     }
