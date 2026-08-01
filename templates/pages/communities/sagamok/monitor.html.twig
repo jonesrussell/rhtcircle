@@ -108,6 +108,10 @@
           </table>
         </div>
         <p class="monitor-footnote">
+          Showing the most recent {{ changes|length }} of {{ changes_pagination.total_rows|default(changes|length) }}.
+          <a href="{{ changes_url }}">See every recorded change</a>.
+        </p>
+        <p class="monitor-footnote">
           &ldquo;{{ exclusion_labels.not_for_retention }}&rdquo; means the publisher asked that the page not be stored or indexed. The page itself may still be public; this is a statement about what we keep, not about who may read it.
         </p>
       {% endif %}
@@ -144,6 +148,7 @@
       {% else %}
         <p class="monitor-footnote">
           {{ tracked_pagination.total_rows|default(tracked|length) }} public page(s) tracked on this source.
+          <a href="{{ pages_url }}">See every page being watched</a>.
         </p>
         <ul class="monitor-issues__list">
           {% for doc in tracked %}

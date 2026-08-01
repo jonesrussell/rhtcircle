@@ -32,23 +32,26 @@ final class MonitorDashboardController
         private readonly SagamokMonitorRepository $projection,
     ) {}
 
-    public function dashboard(int $now, int $page = 1): Response
+    public function dashboard(int $now): Response
     {
         // All seven registered listings are consumed here. A definition with no
         // consumer is dead weight; DashboardListingTest asserts the two lists
         // match exactly.
-        $sources = $this->listing(SagamokMonitorServiceProvider::LISTING_SOURCES, 1, $now);
-        $timeline = $this->listing(SagamokMonitorServiceProvider::LISTING_TIMELINE, $page, $now);
-        $items = $this->listing(SagamokMonitorServiceProvider::LISTING_ITEMS, 1, $now);
-        $changed = $this->listing(SagamokMonitorServiceProvider::LISTING_CHANGES, 1, $now);
-        $issues = $this->listing(SagamokMonitorServiceProvider::LISTING_ISSUES_OPEN, 1, $now);
-        $answered = $this->listing(SagamokMonitorServiceProvider::LISTING_ISSUES_RESOLVED, 1, $now);
-        $updates = $this->listing(SagamokMonitorServiceProvider::LISTING_UPDATES, 1, $now);
+        $sources = $this->listing(SagamokMonitorServiceProvider::LISTING_SOURCES, $now);
+        $timeline = $this->listing(SagamokMonitorServiceProvider::LISTING_TIMELINE, $now);
+        $items = $this->listing(SagamokMonitorServiceProvider::LISTING_ITEMS, $now);
+        $changed = $this->listing(SagamokMonitorServiceProvider::LISTING_CHANGES, $now);
+        $issues = $this->listing(SagamokMonitorServiceProvider::LISTING_ISSUES_OPEN, $now);
+        $answered = $this->listing(SagamokMonitorServiceProvider::LISTING_ISSUES_RESOLVED, $now);
+        $updates = $this->listing(SagamokMonitorServiceProvider::LISTING_UPDATES, $now);
 
         return $this->renderer->html('pages/communities/sagamok/monitor.html.twig', [
             'sources' => $sources['rows'],
             'changes' => $timeline['rows'],
             'changes_pagination' => $timeline['pagination'],
+            // Deep links to the two routes where a listing is genuinely paged.
+            'changes_url' => '/communities/sagamok/monitor/changes',
+            'pages_url' => '/communities/sagamok/monitor/pages',
             'tracked' => $items['rows'],
             'tracked_pagination' => $items['pagination'],
             'changed_documents' => $changed['rows'],
@@ -100,9 +103,49 @@ final class MonitorDashboardController
      *
      * @return array{rows: list<array<string, scalar>>, pagination: array<string, mixed>}
      */
-    private function listing(string $listingId, int $page = 1, int $now = 0): array
+    private function listing(string $listingId, int $now = 0): array
     {
-        return $this->projection->resolveListing($listingId, $page, $now);
+        return $this->projection->resolveListing($listingId, $now);
+    }
+
+    /**
+     * The full change timeline, paginated. The **only** listing resolved on
+     * this route, so `?page=` means exactly one thing.
+     */
+    public function changes(int $now): Response
+    {
+        $result = $this->listing(SagamokMonitorServiceProvider::LISTING_TIMELINE, $now);
+
+        return $this->renderer->html('pages/communities/sagamok/monitor-listing.html.twig', [
+            'heading' => 'Every recorded change',
+            'lede' => 'The complete change log for the Sagamok public website, newest first.',
+            'kind' => 'events',
+            'rows' => $result['rows'],
+            'pagination' => $result['pagination'],
+            'base_path' => '/communities/sagamok/monitor/changes',
+            'exclusion_labels' => [
+                ExclusionKind::AuthRequired->value => ExclusionKind::AuthRequired->publicLabel(),
+                ExclusionKind::NotForRetention->value => ExclusionKind::NotForRetention->publicLabel(),
+            ],
+        ]);
+    }
+
+    /**
+     * Every tracked page, paginated. Again the only listing on the route.
+     */
+    public function pages(int $now): Response
+    {
+        $result = $this->listing(SagamokMonitorServiceProvider::LISTING_ITEMS, $now);
+
+        return $this->renderer->html('pages/communities/sagamok/monitor-listing.html.twig', [
+            'heading' => 'Every page being watched',
+            'lede' => 'Public pages this monitor checks on the Sagamok website.',
+            'kind' => 'items',
+            'rows' => $result['rows'],
+            'pagination' => $result['pagination'],
+            'base_path' => '/communities/sagamok/monitor/pages',
+            'exclusion_labels' => [],
+        ]);
     }
 
     /** @return array<string, scalar>|null */

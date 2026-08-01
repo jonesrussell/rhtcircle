@@ -91,9 +91,20 @@ final class SagamokMonitorRepository
      * entities directly would bypass all of it and leave the definitions as
      * decoration.
      *
+     * **There is deliberately no `$page` argument.** `ListingResolver` reads
+     * `?page=` from the request, and a `RequestContext` is per-request and
+     * `final readonly` — so every listing resolved during one request shares
+     * one page number. An argument here would look like it selected a page and
+     * silently do nothing, which is what it used to do.
+     *
+     * The app design that follows from that constraint: **exactly one paginated
+     * listing per route.** The dashboard's sections are bounded previews and it
+     * rejects `?page=`; the two listings that grow have their own routes, where
+     * each is the only listing resolved and `?page=` means precisely one thing.
+     *
      * @return array{rows: list<array<string, scalar>>, pagination: array<string, mixed>}
      */
-    public function resolveListing(string $listingId, int $page = 1, int $now = 0): array
+    public function resolveListing(string $listingId, int $now = 0): array
     {
         if ($this->listings === null || $this->resolver === null) {
             throw new \LogicException(sprintf(
@@ -103,11 +114,6 @@ final class SagamokMonitorRepository
         }
 
         $definition = $this->listings->get($listingId);
-
-        // Pagination is read by the resolver from the request's `?page=`
-        // parameter, so it is not threaded through here. `$page` is retained on
-        // the signature because callers reason in pages and the returned
-        // pagination block is what templates render.
         $result = $this->resolver->resolve($definition);
 
         $rows = [];

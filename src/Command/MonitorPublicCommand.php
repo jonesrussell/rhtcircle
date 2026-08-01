@@ -11,6 +11,7 @@ use App\Monitor\MonitorEntityTypes;
 use App\Monitor\PageFetcherInterface;
 use App\Monitor\PublicSiteCollector;
 use App\Monitor\PublicSiteCrawler;
+use App\Monitor\UrlNormalizer;
 use Waaseyaa\CLI\Command\SymfonyCommandIO;
 use Waaseyaa\Database\DatabaseInterface;
 use Waaseyaa\Entity\EntityTypeManager;
@@ -110,6 +111,26 @@ final class MonitorPublicCommand
             return 1;
         }
 
+        // --- target set: already-tracked URLs UNION newly discovered ---------
+        //
+        // Discovery alone is not enough. If a publisher removes both a page and
+        // every link to it, the page vanishes from the crawl — so the tracked
+        // URL would never be requested again and the two-run disappearance rule
+        // could never fire. The removal would simply go unreported, which is
+        // the opposite of what this dashboard exists to do.
+        //
+        // Tracked URLs come FIRST in the budget, deterministically, so a growing
+        // site can never push existing records out of monitoring.
+        $targets = $this->unionTargets($discovery['urls']);
+
+        $io->writeln(sprintf(
+            'target set: %d tracked + %d newly discovered = %d URL(s)%s.',
+            $targets['tracked_count'],
+            $targets['new_count'],
+            count($targets['urls']),
+            $targets['truncated'] ? sprintf(' (capped at %d; tracked URLs kept first)', $this->configuration->maxUrlsPerRun) : '',
+        ));
+
         // --- collection ------------------------------------------------------
         $collector = new PublicSiteCollector(
             $this->entityTypes->getRepository(MonitorEntityTypes::SOURCE),
@@ -119,7 +140,7 @@ final class MonitorPublicCommand
             $this->fetcher,
         );
 
-        $report = $collector->run($source, $discovery['urls'], $now, $dryRun);
+        $report = $collector->run($source, $targets['urls'], $now, $dryRun);
 
         $this->summarise($io, $report);
 
@@ -132,6 +153,69 @@ final class MonitorPublicCommand
         }
 
         return (int) $report['exit_code'];
+    }
+
+    /**
+     * Previously tracked public URLs, then newly discovered ones, bounded by the
+     * per-run ceiling.
+     *
+     * Ordering is deliberate and deterministic: an item already under
+     * observation keeps its place in the budget, so a site that publishes a
+     * hundred new pages cannot silently drop existing records out of
+     * monitoring. Same-origin is re-checked here because a tracked URL is
+     * historical data — the configured origin may have changed since it was
+     * recorded.
+     *
+     * @param list<string> $discovered
+     * @return array{urls: list<string>, tracked_count: int, new_count: int, truncated: bool}
+     */
+    private function unionTargets(array $discovered): array
+    {
+        $origin = $this->configuration->originUrl;
+        $ceiling = $this->configuration->maxUrlsPerRun;
+
+        $urls = [];
+        $tracked = 0;
+
+        // The public URL lives on the monitor_item entity, not the side table:
+        // the side table holds the opaque identity key, and deliberately no
+        // locator. This is the supported read of what we are already watching.
+        $items = $this->entityTypes->getRepository(MonitorEntityTypes::ITEM)
+            ->findBy(['source_key' => $this->configuration->sourceKey]);
+
+        foreach ($items as $item) {
+            $url = (string) $item->get('public_url');
+            if ($url === '' || !UrlNormalizer::isSameOrigin($url, $origin)) {
+                continue;
+            }
+            $key = UrlNormalizer::itemKey($url);
+            if (!isset($urls[$key]) && count($urls) < $ceiling) {
+                $urls[$key] = $url;
+                ++$tracked;
+            }
+        }
+
+        $new = 0;
+        $truncated = false;
+        foreach ($discovered as $url) {
+            $key = UrlNormalizer::itemKey($url);
+            if (isset($urls[$key])) {
+                continue;
+            }
+            if (count($urls) >= $ceiling) {
+                $truncated = true;
+                break;
+            }
+            $urls[$key] = $url;
+            ++$new;
+        }
+
+        return [
+            'urls' => array_values($urls),
+            'tracked_count' => $tracked,
+            'new_count' => $new,
+            'truncated' => $truncated,
+        ];
     }
 
     /**

@@ -566,7 +566,33 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         $router->addRoute(
             'sagamok-monitor',
             RouteBuilder::create('/communities/sagamok/monitor')
-                ->controller(fn (Request $request) => $monitorDashboard->dashboard(time(), max(1, (int) $request->query->get('page', 1))))
+                // The dashboard resolves SEVEN listings, and ListingResolver
+                // reads one global `?page=` per request — so a page parameter
+                // here would page every section at once and empty the small
+                // ones. The dashboard is therefore the canonical un-paged view;
+                // `?page=` redirects to it, and the two listings that grow have
+                // their own routes where each is the only listing resolved.
+                ->controller(fn (Request $request) => $request->query->has('page')
+                    ? new \Symfony\Component\HttpFoundation\RedirectResponse('/communities/sagamok/monitor', 302)
+                    : $monitorDashboard->dashboard(time()))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+
+        $router->addRoute(
+            'sagamok-monitor-changes',
+            RouteBuilder::create('/communities/sagamok/monitor/changes')
+                ->controller(fn (Request $request) => $monitorDashboard->changes(time()))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+
+        $router->addRoute(
+            'sagamok-monitor-pages',
+            RouteBuilder::create('/communities/sagamok/monitor/pages')
+                ->controller(fn (Request $request) => $monitorDashboard->pages(time()))
                 ->allowAll()
                 ->methods('GET')
                 ->build(),

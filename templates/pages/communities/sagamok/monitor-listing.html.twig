@@ -1,0 +1,100 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}{{ heading }} · Sagamok public-website monitor · RHT Circle{% endblock %}
+{% block description %}{{ lede }}{% endblock %}
+{% block body_class %}route-sagamok-monitor-listing{% endblock %}
+
+{% block content %}
+<article class="monitor">
+  <header class="cover">
+    <p class="cover__eyebrow"><a href="/communities/sagamok/monitor">Public-website monitor</a></p>
+    <h1 class="cover__title">{{ heading }}</h1>
+    <p class="cover__lede">{{ lede }}</p>
+    <p class="cover__byline">Member-compiled and unofficial. This is the work of members, not an official communication of Sagamok Anishnawbek or its Chief and Council.</p>
+  </header>
+
+  <div class="page">
+    {% if rows is empty %}
+      <p class="monitor-empty">Nothing to show yet.</p>
+    {% else %}
+      {% if kind == 'events' %}
+        <div class="monitor-table-scroll">
+          <table class="monitor-table">
+            <caption class="visually-hidden">Recorded changes to public pages, newest first</caption>
+            <thead>
+              <tr>
+                <th scope="col">Observed</th>
+                <th scope="col">What happened</th>
+                <th scope="col">Evidence</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in rows %}
+                <tr>
+                  <td>{{ row.observed_at|date('j M Y') }}</td>
+                  <td>
+                    {% if row.event_type == 'appeared' %}First observed by this monitor
+                    {% elseif row.event_type == 'content_changed' %}Page content changed
+                    {% elseif row.event_type == 'disappeared' %}No longer reachable
+                    {% elseif row.event_type == 'reappeared' %}Reachable again
+                    {% elseif row.event_type == 'became_retainable' %}Publicly retainable again
+                    {% elseif row.event_type == 'became_gated' %}{{ exclusion_labels.auth_required }}
+                    {% elseif row.event_type == 'became_noindex' %}{{ exclusion_labels.not_for_retention }}
+                    {% else %}{{ row.event_type }}
+                    {% endif %}
+                  </td>
+                  <td>
+                    {{ row.evidence_kind|replace({'_': ' '}) }}
+                    {% if row.evidence_captured_at %}
+                      <span class="monitor-table__meta">captured {{ row.evidence_captured_at|date('j M Y') }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <ul class="monitor-issues__list">
+          {% for row in rows %}
+            <li class="monitor-issue">
+              <h2>{{ row.title }}</h2>
+              <p class="monitor-issue__meta">
+                Last seen {{ row.last_seen|date('j F Y') }}
+                {% if row.doc_kind == 'document' %} &middot; document{% endif %}
+                {% if row.change_status %} &middot; {{ row.change_status|replace({'_': ' '}) }}{% endif %}
+              </p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {# The pager. This route resolves exactly one listing, so `?page=`
+         addresses that listing and nothing else. #}
+      {% if pagination.total_pages is not null and pagination.total_pages > 1 %}
+        <nav class="monitor-pager" aria-label="Pagination">
+          {% if pagination.has_prev %}
+            <a class="monitor-pager__link" rel="prev" href="{{ base_path }}?page={{ pagination.page - 1 }}">Previous</a>
+          {% else %}
+            <span class="monitor-pager__link monitor-pager__link--off" aria-hidden="true">Previous</span>
+          {% endif %}
+
+          <span class="monitor-pager__status" role="status">
+            Page {{ pagination.page }} of {{ pagination.total_pages }}
+            {% if pagination.total_rows is not null %} &middot; {{ pagination.total_rows }} row(s){% endif %}
+          </span>
+
+          {% if pagination.has_next %}
+            <a class="monitor-pager__link" rel="next" href="{{ base_path }}?page={{ pagination.page + 1 }}">Next</a>
+          {% else %}
+            <span class="monitor-pager__link monitor-pager__link--off" aria-hidden="true">Next</span>
+          {% endif %}
+        </nav>
+      {% endif %}
+    {% endif %}
+
+    <p class="monitor-issue-page__back"><a href="/communities/sagamok/monitor">Back to the monitor</a></p>
+  </div>
+</article>
+{% endblock %}
