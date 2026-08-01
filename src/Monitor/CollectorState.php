@@ -35,6 +35,19 @@ final class CollectorState
     public function __construct(private readonly DatabaseInterface $database) {}
 
     /**
+     * Whether the side table has been created yet.
+     *
+     * Every read path checks this, because a **dry run must create nothing** —
+     * including this table. Reading before any live run has happened is a
+     * legitimate empty result, not an error, and making that explicit here
+     * keeps `--dry-run` honestly write-free rather than write-free-except-DDL.
+     */
+    private function tableExists(): bool
+    {
+        return $this->database->schema()->tableExists(self::TABLE);
+    }
+
+    /**
      * Create the table if absent. Called by the collector rather than schema
      * sync, because this is not an entity type and `db:init` does not know it.
      */
@@ -75,6 +88,10 @@ final class CollectorState
      */
     public function allForSource(string $sourceKey): array
     {
+        if (!$this->tableExists()) {
+            return [];
+        }
+
         $rows = $this->database->select(self::TABLE)
             ->fields(self::TABLE, [
                 'item_key', 'item_public_ref', 'content_hash',
@@ -112,6 +129,10 @@ final class CollectorState
      */
     public function findByContentHash(string $sourceKey, string $contentHash, string $exceptItemKey): ?array
     {
+        if (!$this->tableExists()) {
+            return null;
+        }
+
         $rows = $this->database->select(self::TABLE)
             ->fields(self::TABLE, ['item_key', 'item_public_ref'])
             ->condition('source_key', $sourceKey)
@@ -132,6 +153,10 @@ final class CollectorState
 
     public function exists(string $sourceKey, string $itemKey): bool
     {
+        if (!$this->tableExists()) {
+            return false;
+        }
+
         foreach (
             $this->database->select(self::TABLE)
                 ->fields(self::TABLE, ['item_key'])
@@ -234,6 +259,10 @@ final class CollectorState
      */
     public function pruneExpiredSnapshots(int $now): int
     {
+        if (!$this->tableExists()) {
+            return 0;
+        }
+
         $cutoff = $now - (self::SNAPSHOT_RETENTION_DAYS * 86_400);
 
         $stale = $this->database->select(self::TABLE)
@@ -262,6 +291,10 @@ final class CollectorState
      */
     public function itemKeyForPublicRef(string $sourceKey, string $publicRef): ?string
     {
+        if (!$this->tableExists()) {
+            return null;
+        }
+
         foreach (
             $this->database->select(self::TABLE)
                 ->fields(self::TABLE, ['item_key'])

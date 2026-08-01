@@ -191,6 +191,21 @@ final class PublicSiteCollector
                 continue;
             }
 
+            // Seen again after one or more absent runs → a return, even though
+            // the bytes are unchanged. Without this the item keeps its
+            // `disappeared` status and stale `disappeared_at` forever while
+            // plainly being served again, which is a false statement on the
+            // dashboard.
+            if ($existing['absent_runs'] > 0) {
+                $report['events'][] = ['type' => 'reappeared', 'item' => $existing['item_public_ref']];
+                if (!$dryRun) {
+                    $this->state->clearAbsent($sourceKey, $itemKey, $now);
+                    $this->touchItem($sourceKey, $existing['item_public_ref'], $url, $hash, $now, 'reappeared');
+                    $this->recordEvent($sourceKey, $existing['item_public_ref'], 'reappeared', $now, 'direct_fetch', $url);
+                }
+                continue;
+            }
+
             // Hash equal → no event. Refresh last_seen only (spec §4.3 step 6).
             // This branch is what makes the run idempotent.
             if (!$dryRun) {
@@ -207,7 +222,10 @@ final class PublicSiteCollector
 
             $absentRuns = $dryRun ? $row['absent_runs'] + 1 : $this->state->incrementAbsent($sourceKey, $itemKey, $now);
 
-            if ($absentRuns >= 2) {
+            // Exactly at the transition, not on every later run: a removal is
+            // announced once. `>= 2` would re-announce the same disappearance
+            // every hour for as long as the page stayed gone.
+            if ($absentRuns === 2) {
                 $disappearedThisRun[] = $row['item_public_ref'];
                 $report['events'][] = ['type' => 'disappeared', 'item' => $row['item_public_ref'], 'absent_runs' => $absentRuns];
                 if (!$dryRun) {
