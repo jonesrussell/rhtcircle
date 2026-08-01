@@ -5,8 +5,14 @@ declare(strict_types=1);
 namespace App\Monitor;
 
 /**
- * Decides whether a fetched page is still genuinely public (spec §4.3,
+ * Decides whether a fetched page may still be collected (spec §4.3,
  * "Re-gating gate").
+ *
+ * Returns an {@see ExclusionKind}, because there are **two** distinct reasons
+ * to decline and they must never be reported as one another:
+ * `AuthRequired` (the page now demands a login) and `NotForRetention`
+ * (`noindex` — the publisher asks us not to retain it, while the page itself
+ * may remain perfectly public).
  *
  * This runs **before** hashing or storing anything. It exists because the
  * portal's original defect was a **200 response with a client-side login
@@ -15,8 +21,9 @@ namespace App\Monitor;
  * hashed, and snapshotted, quietly turning a public-website monitor into a copy
  * of protected material.
  *
- * A gated observation is a **finding to report**, not content to collect: the
- * collector records `became_gated` and stores no body, no hash and no snapshot.
+ * Either way the observation is a **finding to report**, not content to
+ * collect: the collector stores no body, no hash and no snapshot, and records
+ * the event type belonging to the kind ({@see ExclusionKind::eventType()}).
  *
  * Pure and unit-tested. No I/O — it inspects a response the fetcher already has.
  */
@@ -33,8 +40,8 @@ final class GateDetector
 
     /**
      * Markers of a login shell served at 200. Deliberately conservative: each
-     * one alone is weak evidence, so {@see isGated()} requires corroboration
-     * from a short body, which is what a login shell is.
+     * one alone is weak evidence, so {@see looksLikeLoginShell()} requires
+     * corroboration from a short body, which is what a login shell is.
      */
     private const LOGIN_BODY_MARKERS = [
         'type="password"',
@@ -62,17 +69,33 @@ final class GateDetector
      * @param string $body Raw response body.
      * @param array<string, string> $headers Response headers, lowercase keys.
      */
-    public static function isGated(int $statusCode, string $finalUrl, string $body, array $headers = []): bool
+    public static function isExcluded(int $statusCode, string $finalUrl, string $body, array $headers = []): bool
     {
-        return self::reason($statusCode, $finalUrl, $body, $headers) !== null;
+        return self::classify($statusCode, $finalUrl, $body, $headers) !== null;
     }
 
     /**
-     * Why the page is gated, or null when it is genuinely public.
+     * The exclusion kind, or null when the page may be collected.
      *
-     * The reason is recorded on the event so an operator can tell "the site
-     * removed this" from "the site put this behind a login" — very different
-     * findings that a boolean would flatten together.
+     * @param array<string, string> $headers Response headers, lowercase keys.
+     */
+    public static function classify(int $statusCode, string $finalUrl, string $body, array $headers = []): ?ExclusionKind
+    {
+        $reason = self::reason($statusCode, $finalUrl, $body, $headers);
+        if ($reason === null) {
+            return null;
+        }
+
+        return $reason === 'noindex' ? ExclusionKind::NotForRetention : ExclusionKind::AuthRequired;
+    }
+
+    /**
+     * The specific reason, or null when the page may be collected.
+     *
+     * Recorded on the event so an operator can tell "the site removed this"
+     * from "the site put this behind a login" from "the publisher asked us not
+     * to retain it" — three different findings a boolean would flatten into
+     * one, at least one of which would then be an accusation we cannot support.
      *
      * @param array<string, string> $headers Response headers, lowercase keys.
      */
@@ -86,12 +109,15 @@ final class GateDetector
             return 'redirected_to_login';
         }
 
-        if ($statusCode === 200 && self::carriesNoindex($body, $headers)) {
-            return 'noindex';
-        }
-
+        // Login shell before noindex: a gated page that ALSO carries noindex
+        // is an access change first and foremost, and reporting it as a mere
+        // retention preference would understate what happened.
         if ($statusCode === 200 && self::looksLikeLoginShell($body)) {
             return 'login_shell';
+        }
+
+        if ($statusCode === 200 && self::carriesNoindex($body, $headers)) {
+            return 'noindex';
         }
 
         return null;
@@ -114,8 +140,12 @@ final class GateDetector
     }
 
     /**
-     * `noindex` from either the header or the meta tag. A page the site asks
-     * search engines not to index is not a page we treat as published.
+     * `noindex` from either the header or the meta tag.
+     *
+     * This means "do not collect or retain this page". It does NOT mean the
+     * page requires authentication — a noindex page is usually still publicly
+     * reachable — so it maps to {@see ExclusionKind::NotForRetention} and is
+     * kept out of every gated/sign-in code path, counter and label.
      *
      * @param array<string, string> $headers
      */

@@ -75,6 +75,7 @@ final class PublicSiteCollector
             'events' => [],
             'fetch_failures' => 0,
             'gated' => 0,
+            'not_retained' => 0,
             'health' => 'ok',
         ];
 
@@ -109,16 +110,38 @@ final class PublicSiteCollector
                 continue;
             }
 
-            // --- re-gating gate, before hashing or storing anything ---
-            $gateReason = GateDetector::reason($result->statusCode, $result->finalUrl, $result->body, $result->headers);
-            if ($gateReason !== null) {
-                ++$report['gated'];
-                $seen[$itemKey] = true;
-                $report['events'][] = ['type' => 'became_gated', 'item' => $known[$itemKey]['item_public_ref'] ?? null, 'reason' => $gateReason];
-                if (!$dryRun && isset($known[$itemKey])) {
-                    $this->recordEvent($sourceKey, $known[$itemKey]['item_public_ref'], 'became_gated', $now, 'gate_probe', '');
+            // --- collection gate, before hashing or storing anything ---
+            $exclusion = GateDetector::classify($result->statusCode, $result->finalUrl, $result->body, $result->headers);
+            if ($exclusion !== null) {
+                $reason = (string) GateDetector::reason($result->statusCode, $result->finalUrl, $result->body, $result->headers);
+
+                // Counted separately. `noindex` says nothing about access, so
+                // folding it into the gated count would inflate a figure the
+                // dashboard presents as "pages that now require sign-in".
+                if ($exclusion === ExclusionKind::AuthRequired) {
+                    ++$report['gated'];
+                } else {
+                    ++$report['not_retained'];
                 }
-                // No hash, no snapshot, no body retained.
+
+                $seen[$itemKey] = true;
+                $report['events'][] = [
+                    'type' => $exclusion->eventType(),
+                    'item' => $known[$itemKey]['item_public_ref'] ?? null,
+                    'reason' => $reason,
+                    'kind' => $exclusion->value,
+                ];
+                if (!$dryRun && isset($known[$itemKey])) {
+                    $this->recordEvent(
+                        $sourceKey,
+                        $known[$itemKey]['item_public_ref'],
+                        $exclusion->eventType(),
+                        $now,
+                        'gate_probe',
+                        '',
+                    );
+                }
+                // No hash, no snapshot, no body retained — for either kind.
                 continue;
             }
 
@@ -212,6 +235,12 @@ final class PublicSiteCollector
      * Source health from this run's outcome. Any fetch failure degrades health:
      * a dashboard that silently stops checking is worse than no dashboard,
      * because it invites members to read a stale page as current.
+     *
+     * `noindex` exclusions deliberately do NOT degrade health
+     * ({@see ExclusionKind::affectsSourceHealth()}): the site is reachable and
+     * behaving normally, and we are choosing not to retain the page. Flagging
+     * the source unhealthy for honouring a publisher's directive would be a
+     * false alarm about our own monitoring.
      *
      * @param array<string, mixed> $report
      */

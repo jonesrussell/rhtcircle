@@ -6,6 +6,7 @@ namespace App\Tests\Unit\SagamokMonitor;
 
 use App\Monitor\ContentNormalizer;
 use App\Monitor\FetchResult;
+use App\Monitor\ExclusionKind;
 use App\Monitor\GateDetector;
 use PHPUnit\Framework\TestCase;
 
@@ -163,18 +164,66 @@ final class ChangeDetectionTest extends TestCase
         self::assertSame('login_shell', GateDetector::reason(200, 'https://x/members', $shell));
     }
 
-    public function testANoindexTwoHundredIsGated(): void
+    public function testANoindexTwoHundredIsExcludedButNotTreatedAsAuthRequired(): void
     {
+        // `noindex` means "do not collect or retain this page". It does NOT
+        // mean authentication is required — such a page is usually still
+        // publicly reachable. Reporting it as a sign-in wall would tell members
+        // the Nation restricted access when it did not, which on an
+        // accountability dashboard is the most damaging output possible.
         $noindex = '<html><head><meta name="robots" content="noindex,nofollow"></head><body>Text</body></html>';
 
         self::assertSame('noindex', GateDetector::reason(200, 'https://x/y', $noindex));
-        self::assertSame('noindex', GateDetector::reason(200, 'https://x/y', '<body>Text</body>', ['x-robots-tag' => 'noindex']));
+        self::assertSame(ExclusionKind::NotForRetention, GateDetector::classify(200, 'https://x/y', $noindex));
+
+        $viaHeader = GateDetector::classify(200, 'https://x/y', '<body>Text</body>', ['x-robots-tag' => 'noindex']);
+        self::assertSame(ExclusionKind::NotForRetention, $viaHeader);
+    }
+
+    public function testAuthSignalsClassifyAsAuthRequired(): void
+    {
+        $shell = '<html><body><h1>Members only</h1><form><input type="password"></form></body></html>';
+
+        self::assertSame(ExclusionKind::AuthRequired, GateDetector::classify(401, 'https://x/y', ''));
+        self::assertSame(ExclusionKind::AuthRequired, GateDetector::classify(403, 'https://x/y', ''));
+        self::assertSame(ExclusionKind::AuthRequired, GateDetector::classify(200, 'https://x/login', self::PAGE));
+        self::assertSame(ExclusionKind::AuthRequired, GateDetector::classify(200, 'https://x/members', $shell));
+    }
+
+    public function testTheTwoKindsAreDistinctInEveryOutwardFacingWay(): void
+    {
+        // Event type, health effect and public wording must all differ, so the
+        // distinction cannot quietly collapse in one of the three places.
+        self::assertNotSame(ExclusionKind::AuthRequired->eventType(), ExclusionKind::NotForRetention->eventType());
+        self::assertSame('became_gated', ExclusionKind::AuthRequired->eventType());
+        self::assertSame('became_noindex', ExclusionKind::NotForRetention->eventType());
+
+        self::assertTrue(ExclusionKind::AuthRequired->affectsSourceHealth());
+        self::assertFalse(
+            ExclusionKind::NotForRetention->affectsSourceHealth(),
+            'the site is reachable and behaving normally; honouring noindex is not a monitoring fault',
+        );
+
+        self::assertNotSame(ExclusionKind::AuthRequired->publicLabel(), ExclusionKind::NotForRetention->publicLabel());
+        self::assertStringNotContainsStringIgnoringCase('sign-in', ExclusionKind::NotForRetention->publicLabel());
+        self::assertStringNotContainsStringIgnoringCase('login', ExclusionKind::NotForRetention->publicLabel());
+    }
+
+    public function testAGatedPageThatAlsoCarriesNoindexIsReportedAsAuthRequired(): void
+    {
+        // Ordering matters: an access change is the more serious finding, and
+        // reporting it as a mere retention preference would understate it.
+        $both = '<html><head><meta name="robots" content="noindex"></head>'
+            . '<body><h1>Members only</h1><input type="password"></body></html>';
+
+        self::assertSame(ExclusionKind::AuthRequired, GateDetector::classify(200, 'https://x/y', $both));
     }
 
     public function testAGenuinelyPublicPageIsNotGated(): void
     {
         self::assertNull(GateDetector::reason(200, 'https://www.sagamokanishnawbek.com/notices/water', self::PAGE));
-        self::assertFalse(GateDetector::isGated(200, 'https://www.sagamokanishnawbek.com/notices/water', self::PAGE));
+        self::assertNull(GateDetector::classify(200, 'https://www.sagamokanishnawbek.com/notices/water', self::PAGE));
+        self::assertFalse(GateDetector::isExcluded(200, 'https://www.sagamokanishnawbek.com/notices/water', self::PAGE));
     }
 
     public function testALongPublicArticleMentioningLoginIsNotGated(): void
