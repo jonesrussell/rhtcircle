@@ -9,6 +9,7 @@ use Waaseyaa\Entity\Attribute\ContentEntityType;
 use Waaseyaa\Entity\Attribute\Field;
 use Waaseyaa\Entity\ContentEntityBase;
 use Waaseyaa\Entity\FieldReadLevel;
+use Waaseyaa\Entity\Storage\PrimaryStorageBackend;
 use Waaseyaa\Field\FieldStorage;
 
 /**
@@ -27,11 +28,11 @@ use Waaseyaa\Field\FieldStorage;
  *                           true, so the Discovery routes stay closed even if a
  *                           policy is added later
  */
-#[ContentEntityType(id: 'monitor_source', label: 'Monitor source')]
+#[ContentEntityType(id: 'monitor_source', label: 'Monitor source', storageBackend: PrimaryStorageBackend::SQL_COLUMN)]
 #[ContentEntityKeys(id: 'id', uuid: 'uuid', label: 'label')]
 final class MonitorSource extends ContentEntityBase
 {
-    #[Field(label: 'Key', description: 'Stable slug, e.g. sagamok_public_site.', required: true, settings: ['weight' => 0], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
+    #[Field(label: 'Key', description: 'Stable slug, e.g. sagamok_public_site.', required: true, settings: ['weight' => 0], stored: FieldStorage::Column, read: FieldReadLevel::Public, indexed: true)]
     public string $key = '';
 
     #[Field(label: 'Label', required: true, settings: ['weight' => 1], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
@@ -40,7 +41,7 @@ final class MonitorSource extends ContentEntityBase
     #[Field(label: 'Origin URL', description: 'A public website URL. Public because the site is public.', required: true, settings: ['weight' => 2], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
     public string $origin_url = '';
 
-    #[Field(required: false, type: 'boolean', label: 'Enabled', description: 'Operator switch.', settings: ['weight' => 3], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
+    #[Field(required: false, type: 'boolean', label: 'Enabled', description: 'Operator switch.', settings: ['weight' => 3], stored: FieldStorage::Column, read: FieldReadLevel::Public, indexed: true)]
     public bool $enabled = true;
 
     #[Field(required: false, label: 'Health', description: 'ok | degraded | failing.', settings: ['weight' => 4], stored: FieldStorage::Column, read: FieldReadLevel::Public)]

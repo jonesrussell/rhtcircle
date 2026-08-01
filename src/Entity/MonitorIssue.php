@@ -9,6 +9,7 @@ use Waaseyaa\Entity\Attribute\ContentEntityType;
 use Waaseyaa\Entity\Attribute\Field;
 use Waaseyaa\Entity\ContentEntityBase;
 use Waaseyaa\Entity\FieldReadLevel;
+use Waaseyaa\Entity\Storage\PrimaryStorageBackend;
 use Waaseyaa\Field\FieldStorage;
 
 /**
@@ -18,7 +19,7 @@ use Waaseyaa\Field\FieldStorage;
  * only from facts and asks already published on the Circle's existing Sagamok
  * disclosure pages.
  */
-#[ContentEntityType(id: 'monitor_issue', label: 'Monitor issue')]
+#[ContentEntityType(id: 'monitor_issue', label: 'Monitor issue', storageBackend: PrimaryStorageBackend::SQL_COLUMN)]
 #[ContentEntityKeys(id: 'id', uuid: 'uuid', label: 'title')]
 final class MonitorIssue extends ContentEntityBase
 {
@@ -39,17 +40,17 @@ final class MonitorIssue extends ContentEntityBase
      * routes. The two clauses conflict; the safety rule wins, so the field
      * carries the same semantics under an unambiguous name.
      */
-    #[Field(label: 'Issue state', description: 'open | awaiting_response | partly_answered | resolved | withdrawn.', required: true, settings: ['weight' => 2], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
+    #[Field(label: 'Issue state', description: 'open | awaiting_response | partly_answered | resolved | withdrawn.', required: true, settings: ['weight' => 2], stored: FieldStorage::Column, read: FieldReadLevel::Public, indexed: true)]
     public string $issue_state = 'open';
 
-    #[Field(required: false, type: 'integer', label: 'Opened at', settings: ['weight' => 3], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
+    #[Field(required: false, type: 'integer', label: 'Opened at', settings: ['weight' => 3], stored: FieldStorage::Column, read: FieldReadLevel::Public, indexed: true)]
     public int $opened_at = 0;
 
     #[Field(required: false, type: 'integer', label: 'Status changed at', settings: ['weight' => 4], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
     public int $status_changed_at = 0;
 
     /** Required when status = resolved. */
-    #[Field(required: false, type: 'integer', label: 'Closed at', settings: ['weight' => 5], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
+    #[Field(required: false, type: 'integer', label: 'Closed at', settings: ['weight' => 5], stored: FieldStorage::Column, read: FieldReadLevel::Public, indexed: true)]
     public int $closed_at = 0;
 
     #[Field(required: false, type: 'text', label: 'Summary', settings: ['weight' => 6], stored: FieldStorage::Data, read: FieldReadLevel::Public)]

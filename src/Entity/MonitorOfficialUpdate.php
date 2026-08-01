@@ -9,6 +9,7 @@ use Waaseyaa\Entity\Attribute\ContentEntityType;
 use Waaseyaa\Entity\Attribute\Field;
 use Waaseyaa\Entity\ContentEntityBase;
 use Waaseyaa\Entity\FieldReadLevel;
+use Waaseyaa\Entity\Storage\PrimaryStorageBackend;
 use Waaseyaa\Field\FieldStorage;
 
 /**
@@ -19,14 +20,14 @@ use Waaseyaa\Field\FieldStorage;
  * portal_update_note: their provenance rules differ, and conflating them would
  * let a portal-sourced item inherit this one's assumptions.
  */
-#[ContentEntityType(id: 'monitor_official_update', label: 'Monitor official update')]
+#[ContentEntityType(id: 'monitor_official_update', label: 'Monitor official update', storageBackend: PrimaryStorageBackend::SQL_COLUMN)]
 #[ContentEntityKeys(id: 'id', uuid: 'uuid', label: 'source_label')]
 final class MonitorOfficialUpdate extends ContentEntityBase
 {
     #[Field(label: 'Issue slug', required: true, settings: ['weight' => 0], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
     public string $issue_slug = '';
 
-    #[Field(required: false, type: 'integer', label: 'Published at', settings: ['weight' => 1], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
+    #[Field(required: false, type: 'integer', label: 'Published at', settings: ['weight' => 1], stored: FieldStorage::Column, read: FieldReadLevel::Public, indexed: true)]
     public int $published_at = 0;
 
     #[Field(label: 'Source label', description: 'For example "Council minutes, June 3 2026".', required: true, settings: ['weight' => 2], stored: FieldStorage::Column, read: FieldReadLevel::Public)]

@@ -9,6 +9,7 @@ use Waaseyaa\Entity\Attribute\ContentEntityType;
 use Waaseyaa\Entity\Attribute\Field;
 use Waaseyaa\Entity\ContentEntityBase;
 use Waaseyaa\Entity\FieldReadLevel;
+use Waaseyaa\Entity\Storage\PrimaryStorageBackend;
 use Waaseyaa\Field\FieldStorage;
 
 /**
@@ -20,11 +21,11 @@ use Waaseyaa\Field\FieldStorage;
  * and nothing for a projection to leak by accident. Everything that relates to
  * an item relates by `public_ref`, an opaque per-source counter.
  */
-#[ContentEntityType(id: 'monitor_item', label: 'Monitor item')]
+#[ContentEntityType(id: 'monitor_item', label: 'Monitor item', storageBackend: PrimaryStorageBackend::SQL_COLUMN)]
 #[ContentEntityKeys(id: 'id', uuid: 'uuid', label: 'title')]
 final class MonitorItem extends ContentEntityBase
 {
-    #[Field(label: 'Source key', required: true, settings: ['weight' => 0], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
+    #[Field(label: 'Source key', required: true, settings: ['weight' => 0], stored: FieldStorage::Column, read: FieldReadLevel::Public, indexed: true)]
     public string $source_key = '';
 
     /**
@@ -49,16 +50,16 @@ final class MonitorItem extends ContentEntityBase
      * save as the event that causes it: a projection that can disagree with its
      * own event log is the dual-state bug this codebase has been bitten by.
      */
-    #[Field(required: false, label: 'Change status', description: 'new | unchanged | changed | disappeared | reappeared.', settings: ['weight' => 5], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
+    #[Field(required: false, label: 'Change status', description: 'new | unchanged | changed | disappeared | reappeared.', settings: ['weight' => 5], stored: FieldStorage::Column, read: FieldReadLevel::Public, indexed: true)]
     public string $change_status = 'new';
 
     #[Field(required: false, type: 'integer', label: 'First seen', settings: ['weight' => 6], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
     public int $first_seen = 0;
 
-    #[Field(required: false, type: 'integer', label: 'Last seen', settings: ['weight' => 7], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
+    #[Field(required: false, type: 'integer', label: 'Last seen', settings: ['weight' => 7], stored: FieldStorage::Column, read: FieldReadLevel::Public, indexed: true)]
     public int $last_seen = 0;
 
-    #[Field(required: false, type: 'integer', label: 'Changed at', settings: ['weight' => 8], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
+    #[Field(required: false, type: 'integer', label: 'Changed at', settings: ['weight' => 8], stored: FieldStorage::Column, read: FieldReadLevel::Public, indexed: true)]
     public int $changed_at = 0;
 
     #[Field(required: false, type: 'integer', label: 'Disappeared at', settings: ['weight' => 9], stored: FieldStorage::Column, read: FieldReadLevel::Public)]

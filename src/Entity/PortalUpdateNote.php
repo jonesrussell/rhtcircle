@@ -9,6 +9,7 @@ use Waaseyaa\Entity\Attribute\ContentEntityType;
 use Waaseyaa\Entity\Attribute\Field;
 use Waaseyaa\Entity\ContentEntityBase;
 use Waaseyaa\Entity\FieldReadLevel;
+use Waaseyaa\Entity\Storage\PrimaryStorageBackend;
 use Waaseyaa\Field\FieldStorage;
 
 /**
@@ -32,7 +33,7 @@ use Waaseyaa\Field\FieldStorage;
  * password appears in any supplied field. The tests assert the shape; only a
  * human can assert the content.
  */
-#[ContentEntityType(id: 'portal_update_note', label: 'Portal update note')]
+#[ContentEntityType(id: 'portal_update_note', label: 'Portal update note', storageBackend: PrimaryStorageBackend::SQL_COLUMN)]
 #[ContentEntityKeys(id: 'id', uuid: 'uuid', label: 'title_supplied')]
 final class PortalUpdateNote extends ContentEntityBase
 {

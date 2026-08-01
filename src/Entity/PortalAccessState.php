@@ -9,6 +9,7 @@ use Waaseyaa\Entity\Attribute\ContentEntityType;
 use Waaseyaa\Entity\Attribute\Field;
 use Waaseyaa\Entity\ContentEntityBase;
 use Waaseyaa\Entity\FieldReadLevel;
+use Waaseyaa\Entity\Storage\PrimaryStorageBackend;
 use Waaseyaa\Field\FieldStorage;
 
 /**
@@ -28,7 +29,7 @@ use Waaseyaa\Field\FieldStorage;
  * an unverified all-clear about members' data would be the specific act the
  * existing disclosure pages hold the Nation accountable for.
  */
-#[ContentEntityType(id: 'portal_access_state', label: 'Portal access state')]
+#[ContentEntityType(id: 'portal_access_state', label: 'Portal access state', storageBackend: PrimaryStorageBackend::SQL_COLUMN)]
 #[ContentEntityKeys(id: 'id', uuid: 'uuid', label: 'state')]
 final class PortalAccessState extends ContentEntityBase
 {

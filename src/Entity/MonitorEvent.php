@@ -9,6 +9,7 @@ use Waaseyaa\Entity\Attribute\ContentEntityType;
 use Waaseyaa\Entity\Attribute\Field;
 use Waaseyaa\Entity\ContentEntityBase;
 use Waaseyaa\Entity\FieldReadLevel;
+use Waaseyaa\Entity\Storage\PrimaryStorageBackend;
 use Waaseyaa\Field\FieldStorage;
 
 /**
@@ -23,7 +24,7 @@ use Waaseyaa\Field\FieldStorage;
  * event existing plus the side-table history; publishing hashes buys a reader
  * nothing and the habit is worth not forming.
  */
-#[ContentEntityType(id: 'monitor_event', label: 'Monitor event')]
+#[ContentEntityType(id: 'monitor_event', label: 'Monitor event', storageBackend: PrimaryStorageBackend::SQL_COLUMN)]
 #[ContentEntityKeys(id: 'id', uuid: 'uuid', label: 'event_type')]
 final class MonitorEvent extends ContentEntityBase
 {
@@ -38,7 +39,7 @@ final class MonitorEvent extends ContentEntityBase
     public string $event_type = '';
 
     /** Observation time, which is not the same as any date the source claims. */
-    #[Field(required: false, type: 'integer', label: 'Observed at', settings: ['weight' => 3], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
+    #[Field(required: false, type: 'integer', label: 'Observed at', settings: ['weight' => 3], stored: FieldStorage::Column, read: FieldReadLevel::Public, indexed: true)]
     public int $observed_at = 0;
 
     /** The date the source itself publishes, when it publishes one. Nullable (0 = none). */
@@ -64,7 +65,7 @@ final class MonitorEvent extends ContentEntityBase
     public bool $is_baseline = false;
 
     /** Operator redaction (spec §3.7). 0 = not redacted. */
-    #[Field(required: false, type: 'integer', label: 'Redacted at', settings: ['weight' => 9], stored: FieldStorage::Column, read: FieldReadLevel::Public)]
+    #[Field(required: false, type: 'integer', label: 'Redacted at', settings: ['weight' => 9], stored: FieldStorage::Column, read: FieldReadLevel::Public, indexed: true)]
     public int $redacted_at = 0;
 
     /** A fixed enum label, never free text. See MonitorRedactionReason. */
