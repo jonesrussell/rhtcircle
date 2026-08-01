@@ -162,6 +162,16 @@ return [
     //     session, and already sends `private, no-store` + noindex;
     //   - /updates/remove and /petition/remove/{token} are GET one-click
     //     actions authorized by the token in the URL.
+    // The Sagamok public-website monitor ships DISABLED. Enabling it means this
+    // app starts making automated requests to another Nation's website on a
+    // timer, which is a maintainer and Council decision rather than a
+    // deployment side effect. Remove the entry below to enable it.
+    'schedule' => [
+        'disabled_entries' => [
+            \App\Schedule\SagamokMonitorSchedule::class,
+        ],
+    ],
+
     'session' => [
         // Cookie policy (issue #13). PHPSESSID gets Secure explicitly rather
         // than via `secure => 'auto'` detection, so it stays Secure in a

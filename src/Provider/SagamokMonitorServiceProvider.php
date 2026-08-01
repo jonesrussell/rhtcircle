@@ -4,13 +4,23 @@ declare(strict_types=1);
 
 namespace App\Provider;
 
+use App\Command\MonitorPublicCommand;
+use App\Command\MonitorRedactEventCommand;
+use App\Command\MonitorTriageCommand;
+use App\Monitor\HttpPageFetcher;
 use App\Monitor\MonitorEntityTypes;
-use App\Monitor\MonitorRepository;
 use Waaseyaa\Entity\EntityType;
 use Waaseyaa\Listing\Filter;
 use Waaseyaa\Listing\HasListingsInterface;
 use Waaseyaa\Listing\ListingDefinition;
 use Waaseyaa\Listing\Sort;
+use Waaseyaa\Audit\AuditedFieldRead;
+use Waaseyaa\CLI\Command\HandlerCommand;
+use Waaseyaa\CLI\Command\HandlerOption;
+use Waaseyaa\CLI\Command\HandlerOptionMode;
+use Waaseyaa\CLI\Command\SymfonyCommandIO;
+use Waaseyaa\CLI\Security\CliFieldReadCapabilityIssuer;
+use Waaseyaa\Foundation\ServiceProvider\Capability\ProvidesConsoleCommandsInterface;
 use Waaseyaa\Foundation\ServiceProvider\ServiceProvider;
 
 /**
@@ -33,7 +43,7 @@ use Waaseyaa\Foundation\ServiceProvider\ServiceProvider;
  * bespoke ability that only these listings ask for. See the policy class for
  * why `view` is deliberately never granted.
  */
-final class SagamokMonitorServiceProvider extends ServiceProvider implements HasListingsInterface
+final class SagamokMonitorServiceProvider extends ServiceProvider implements HasListingsInterface, ProvidesConsoleCommandsInterface
 {
     public const string LISTING_SOURCES = 'sagamok_monitor_sources';
     public const string LISTING_ITEMS = 'sagamok_monitor_items';
@@ -130,5 +140,102 @@ final class SagamokMonitorServiceProvider extends ServiceProvider implements Has
                 accessOps: $ops,
             ),
         ];
+    }
+
+    /**
+     * Three commands, each with a deliberately narrow surface.
+     *
+     * @return iterable<HandlerCommand>
+     */
+    public function consoleCommands(): iterable
+    {
+        yield new HandlerCommand(
+            name: 'sagamok:monitor-public',
+            description: 'Observe the Sagamok public website for changes. Public pages only; never the members portal.',
+            options: [
+                new HandlerOption(
+                    name: 'dry-run',
+                    mode: HandlerOptionMode::None,
+                    description: 'Report what would change without writing anything at all.',
+                ),
+            ],
+            handler: function (SymfonyCommandIO $io): int {
+                $etm = $this->entityTypeManager();
+                $database = $this->database();
+                if ($etm === null || $database === null) {
+                    $io->error('sagamok:monitor-public requires a booted kernel.');
+
+                    return 1;
+                }
+
+                $dryRun = (bool) ($io->option('dry-run') ?? false);
+
+                // The production fetcher is constructed here and nowhere else.
+                // Tests build MonitorPublicCommand directly with a fixture
+                // fetcher, so no test run can reach the network.
+                return new MonitorPublicCommand($etm, $database, new HttpPageFetcher())
+                    ->run($io, [], $dryRun, time());
+            },
+        );
+
+        yield new HandlerCommand(
+            name: 'sagamok:monitor-triage',
+            description: 'Maintainer report over the monitor Internal editorial values. Every read is ledgered.',
+            options: [
+                new HandlerOption(
+                    name: 'justification',
+                    mode: HandlerOptionMode::Required,
+                    description: 'Why these Internal values are being read. Recorded in the strict ledger.',
+                ),
+            ],
+            handler: function (SymfonyCommandIO $io): int {
+                $etm = $this->entityTypeManager();
+                if ($etm === null) {
+                    $io->error('sagamok:monitor-triage requires a booted kernel.');
+
+                    return 1;
+                }
+
+                $issuer = $this->resolve(CliFieldReadCapabilityIssuer::class);
+                $reader = $this->resolve(AuditedFieldRead::class);
+                if (!$issuer instanceof CliFieldReadCapabilityIssuer || !$reader instanceof AuditedFieldRead) {
+                    // Fail closed: without the audited path there is no
+                    // sanctioned way to read these values at all.
+                    $io->error('The audited field-read services are not available; triage cannot run.');
+
+                    return 1;
+                }
+
+                return new MonitorTriageCommand($etm, $issuer, $reader)->run(
+                    $io,
+                    (string) ($io->option('justification') ?? ''),
+                    new \DateTimeImmutable('+5 minutes'),
+                );
+            },
+        );
+
+        yield new HandlerCommand(
+            name: 'sagamok:monitor-redact-event',
+            description: 'Redact one monitor event, retaining a stub so the log cannot silently develop holes.',
+            options: [
+                new HandlerOption(name: 'event', mode: HandlerOptionMode::Required, description: 'The monitor_event id.'),
+                new HandlerOption(name: 'reason', mode: HandlerOptionMode::Required, description: 'One of: ' . implode(', ', MonitorRedactEventCommand::REASONS)),
+            ],
+            handler: function (SymfonyCommandIO $io): int {
+                $etm = $this->entityTypeManager();
+                if ($etm === null) {
+                    $io->error('sagamok:monitor-redact-event requires a booted kernel.');
+
+                    return 1;
+                }
+
+                return new MonitorRedactEventCommand($etm)->run(
+                    $io,
+                    (string) ($io->option('event') ?? ''),
+                    (string) ($io->option('reason') ?? ''),
+                    time(),
+                );
+            },
+        );
     }
 }
