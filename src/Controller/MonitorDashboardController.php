@@ -34,16 +34,26 @@ final class MonitorDashboardController
 
     public function dashboard(int $now, int $page = 1): Response
     {
+        // All seven registered listings are consumed here. A definition with no
+        // consumer is dead weight; DashboardListingTest asserts the two lists
+        // match exactly.
         $sources = $this->listing(SagamokMonitorServiceProvider::LISTING_SOURCES, 1, $now);
-        $changes = $this->listing(SagamokMonitorServiceProvider::LISTING_TIMELINE, $page, $now);
+        $timeline = $this->listing(SagamokMonitorServiceProvider::LISTING_TIMELINE, $page, $now);
+        $items = $this->listing(SagamokMonitorServiceProvider::LISTING_ITEMS, 1, $now);
+        $changed = $this->listing(SagamokMonitorServiceProvider::LISTING_CHANGES, 1, $now);
         $issues = $this->listing(SagamokMonitorServiceProvider::LISTING_ISSUES_OPEN, 1, $now);
+        $answered = $this->listing(SagamokMonitorServiceProvider::LISTING_ISSUES_RESOLVED, 1, $now);
         $updates = $this->listing(SagamokMonitorServiceProvider::LISTING_UPDATES, 1, $now);
 
         return $this->renderer->html('pages/communities/sagamok/monitor.html.twig', [
             'sources' => $sources['rows'],
-            'changes' => $changes['rows'],
-            'changes_pagination' => $changes['pagination'],
+            'changes' => $timeline['rows'],
+            'changes_pagination' => $timeline['pagination'],
+            'tracked' => $items['rows'],
+            'tracked_pagination' => $items['pagination'],
+            'changed_documents' => $changed['rows'],
             'issues' => $issues['rows'],
+            'answered' => $answered['rows'],
             'updates' => $updates['rows'],
             'portal' => $this->portalStatus(),
             'exclusion_labels' => [

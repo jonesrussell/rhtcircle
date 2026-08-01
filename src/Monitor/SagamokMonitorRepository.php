@@ -195,6 +195,28 @@ final class SagamokMonitorRepository
         return self::PROJECTION[$entityTypeId] ?? [];
     }
 
+    /**
+     * Every listing this app actually resolves in production.
+     *
+     * Asserted against the registered definitions by `DashboardListingTest`, so
+     * a definition without a consumer — dead weight that still has to be
+     * reviewed and maintained — fails the suite rather than lingering.
+     *
+     * @return list<string>
+     */
+    public static function consumedListingIds(): array
+    {
+        return [
+            SagamokMonitorServiceProvider::LISTING_SOURCES,
+            SagamokMonitorServiceProvider::LISTING_ITEMS,
+            SagamokMonitorServiceProvider::LISTING_CHANGES,
+            SagamokMonitorServiceProvider::LISTING_TIMELINE,
+            SagamokMonitorServiceProvider::LISTING_ISSUES_OPEN,
+            SagamokMonitorServiceProvider::LISTING_ISSUES_RESOLVED,
+            SagamokMonitorServiceProvider::LISTING_UPDATES,
+        ];
+    }
+
     /** @return array<string, list<string>> */
     public static function projection(): array
     {

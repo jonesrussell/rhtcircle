@@ -113,6 +113,52 @@
       {% endif %}
     </section>
 
+    <section class="monitor-changed" aria-labelledby="changed-heading">
+      <h2 id="changed-heading">Documents that moved recently</h2>
+      {% if changed_documents is empty %}
+        <p class="monitor-empty">No tracked document has changed status recently.</p>
+      {% else %}
+        <ul class="monitor-issues__list">
+          {% for doc in changed_documents %}
+            <li class="monitor-issue">
+              <h3>{{ doc.title }}</h3>
+              <p class="monitor-issue__meta">
+                {% if doc.change_status == 'new' %}First observed
+                {% elseif doc.change_status == 'changed' %}Content changed
+                {% elseif doc.change_status == 'disappeared' %}No longer reachable
+                {% elseif doc.change_status == 'reappeared' %}Reachable again
+                {% else %}{{ doc.change_status }}
+                {% endif %}
+                {% if doc.changed_at %} &middot; {{ doc.changed_at|date('j F Y') }}{% endif %}
+              </p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </section>
+
+    <section class="monitor-tracked" aria-labelledby="tracked-heading">
+      <h2 id="tracked-heading">Pages being watched</h2>
+      {% if tracked is empty %}
+        <p class="monitor-empty">No pages are being tracked yet.</p>
+      {% else %}
+        <p class="monitor-footnote">
+          {{ tracked_pagination.total_rows|default(tracked|length) }} public page(s) tracked on this source.
+        </p>
+        <ul class="monitor-issues__list">
+          {% for doc in tracked %}
+            <li class="monitor-issue">
+              <h3>{{ doc.title }}</h3>
+              <p class="monitor-issue__meta">
+                Last seen {{ doc.last_seen|date('j F Y') }}
+                {% if doc.doc_kind == 'document' %} &middot; document{% endif %}
+              </p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </section>
+
     <section class="monitor-issues" aria-labelledby="issues-heading">
       <h2 id="issues-heading">Questions awaiting an answer</h2>
       {% if issues is empty %}
@@ -127,6 +173,25 @@
                 <p class="monitor-issue__ask"><strong>What is asked:</strong> {{ issue.what_is_asked }}</p>
               {% endif %}
               <p class="monitor-issue__meta">Opened {{ issue.opened_at|date('j F Y') }}</p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </section>
+
+    <section class="monitor-answered" aria-labelledby="answered-heading">
+      <h2 id="answered-heading">Questions that have been answered</h2>
+      {% if answered is empty %}
+        <p class="monitor-empty">No question has been recorded as resolved yet.</p>
+      {% else %}
+        <ul class="monitor-issues__list">
+          {% for issue in answered %}
+            <li class="monitor-issue">
+              <h3><a href="/communities/sagamok/monitor/{{ issue.slug }}">{{ issue.title }}</a></h3>
+              <p class="monitor-issue__summary">{{ issue.summary }}</p>
+              {% if issue.closed_at %}
+                <p class="monitor-issue__meta">Closed {{ issue.closed_at|date('j F Y') }}</p>
+              {% endif %}
             </li>
           {% endfor %}
         </ul>

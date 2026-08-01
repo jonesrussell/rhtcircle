@@ -382,8 +382,32 @@ the page is still genuinely public, and **skips and reports** rather than storin
 if it is not:
 
 - HTTP 401/403, or a redirect to a login path → `became_gated`, nothing stored.
-- HTTP 200 whose body is a login shell, or which carries `noindex` →
-  `became_gated`, nothing stored.
+- HTTP 200 whose body is a login shell → `became_gated`, nothing stored.
+- HTTP 200 carrying `noindex` (header or meta) → **`became_noindex`**, nothing
+  stored.
+
+**`noindex` is not authentication, and the two are never reported as one
+another.** `noindex` means "do not collect or retain this page"; the page itself
+is usually still publicly reachable. Reporting it as a sign-in wall would tell
+members the Nation restricted access when it did not, which on an accountability
+dashboard is the most damaging output the feature can produce. The distinction
+is carried in three places, each independently asserted:
+
+| | authentication required | not for retention |
+|---|---|---|
+| Event | `became_gated` | `became_noindex` |
+| Source health | degrades | **does not** degrade |
+| Public wording | "Now requires sign-in" | "Not retained at publisher request" |
+
+Health is deliberate: the site answered normally and we chose not to retain the
+page, so flagging the source unhealthy would be a false alarm about our own
+monitoring rather than a finding about the Nation. A page that is *both* a login
+shell and `noindex` classifies as **authentication required**, because the
+access change is the more serious finding.
+
+Both kinds emit **exactly once per transition**, not once per run, and both
+recover: a page that becomes publicly retainable again emits
+`became_retainable`.
 
 This matters because the portal's original defect *was* a 200 response with a
 client-side login overlay. Without this branch, a page moved behind the portal
@@ -801,9 +825,16 @@ For every monitor entity type, with a seeded row, anonymously:
   register as changes.
 - `change_status` always equals the projection of the newest non-redacted event
   (the dual-state guard).
-- **Re-gating:** a 401, a 403, a login-shell 200, and a `noindex` 200 each produce
-  `became_gated` and store **no** hash and **no** snapshot. Assert the side table
-  is untouched for that item.
+- **Re-gating:** a 401, a 403 and a login-shell 200 produce `became_gated`; a
+  `noindex` 200 produces `became_noindex`. All four store **no** body, hash or
+  snapshot — assert the side table holds the exclusion *state* only, and that
+  the snapshot table is empty for that item. Assert `noindex` does not degrade
+  source health and is counted separately from gated.
+- **Transitions fire once:** a page that stays gated (or stays `noindex`) across
+  many runs produces exactly one event, and a page that becomes publicly
+  retainable again produces exactly one `became_retainable`.
+- **Only confirmed absence counts:** 404 and 410 advance `absent_runs`; 408, 429
+  and 5xx affect source health only and can never publish a removal.
 
 ### 9.5 Source health
 
@@ -857,11 +888,17 @@ record on their own.
 
 ## 11. Open decisions for the maintainer
 
-1. **Which public URLs seed `monitor_source`,** and the crawl budget. This
-   document deliberately does not enumerate them; they belong in configuration,
-   not in code.
-2. **Retention for `snapshot`** in the side table. Long enough to explain a
-   change, short enough not to become an archive.
+1. ~~**Which public URLs seed `monitor_source`,** and the crawl budget.~~
+   **RESOLVED.** Configuration, as intended: `sagamok_monitor` in
+   `config/waaseyaa.php` carries `origin_url`, `seed_paths`,
+   `max_urls_per_run` (300), `max_crawl_depth` and an `enabled` flag. The
+   collector seeds the `monitor_source` row from it idempotently, and crawls
+   outward from the seeds following public same-origin links, so newly
+   published pages are discovered rather than a frozen list re-checked.
+2. ~~**Retention for `snapshot`** in the side table.~~ **RESOLVED.** Three
+   snapshots per item, 2 MB each, pruned after 90 days, held in
+   `monitor_collector_snapshot` and carried across a rename. Long enough to
+   explain a change; far short of an archive.
 3. **Whether to supersede `conflict-register.html.twig`'s inline `DATA`** with
    entities. Recommended as a **follow-up**: it is a separate data model, and
    mixing it in would make both harder to review.
