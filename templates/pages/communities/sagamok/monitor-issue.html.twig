@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}{{ issue.title }} · Sagamok public-website monitor · RHT Circle{% endblock %}
+{% block description %}{{ issue.summary }}{% endblock %}
+{% block body_class %}route-sagamok-monitor-issue{% endblock %}
+
+{% block content %}
+<article class="monitor-issue-page">
+  <header class="cover">
+    <p class="cover__eyebrow"><a href="/communities/sagamok/monitor">Public-website monitor</a></p>
+    <h1 class="cover__title">{{ issue.title }}</h1>
+    <p class="cover__byline">Member-compiled and unofficial. This is the work of members, not an official communication of Sagamok Anishnawbek or its Chief and Council.</p>
+  </header>
+
+  <div class="page">
+    <section class="monitor-issue-page__summary" aria-labelledby="summary-heading">
+      <h2 id="summary-heading">What this is about</h2>
+      <p>{{ issue.summary }}</p>
+    </section>
+
+    {% if issue.what_is_asked %}
+      <section class="monitor-issue-page__ask" aria-labelledby="ask-heading">
+        <h2 id="ask-heading">What is asked</h2>
+        <p>{{ issue.what_is_asked }}</p>
+      </section>
+    {% endif %}
+
+    <section class="monitor-issue-page__status" aria-labelledby="status-heading">
+      <h2 id="status-heading">Status</h2>
+      <dl class="monitor-issue-page__dl">
+        <dt>Current status</dt>
+        <dd>
+          {% if issue.issue_state == 'open' %}Open
+          {% elseif issue.issue_state == 'awaiting_response' %}Awaiting a response
+          {% elseif issue.issue_state == 'partly_answered' %}Partly answered
+          {% elseif issue.issue_state == 'resolved' %}Resolved
+          {% else %}Withdrawn
+          {% endif %}
+        </dd>
+        <dt>Opened</dt>
+        <dd>{{ issue.opened_at|date('j F Y') }}</dd>
+        {% if issue.status_changed_at %}
+          <dt>Status last changed</dt>
+          <dd>{{ issue.status_changed_at|date('j F Y') }}</dd>
+        {% endif %}
+        {% if issue.closed_at %}
+          <dt>Closed</dt>
+          <dd>{{ issue.closed_at|date('j F Y') }}</dd>
+        {% endif %}
+      </dl>
+    </section>
+
+    {# Official updates sit beside the ask, deliberately. Anything the Nation
+       has actually said publicly belongs next to the question it answers, not
+       on a separate page a reader might never reach. #}
+    <section class="monitor-issue-page__updates" aria-labelledby="issue-updates-heading">
+      <h2 id="issue-updates-heading">Official updates</h2>
+      {% if updates is empty %}
+        <p class="monitor-empty">No official update has been recorded for this question.</p>
+      {% else %}
+        <ul class="monitor-updates__list">
+          {% for update in updates %}
+            <li class="monitor-update">
+              <p class="monitor-update__date">{{ update.published_at|date('j F Y') }}</p>
+              <p class="monitor-update__summary">{{ update.summary }}</p>
+              <p class="monitor-update__source">
+                Source: {{ update.source_label }}
+                {% if update.source_url %}
+                  &middot; <a href="{{ update.source_url }}" rel="nofollow noopener">view</a>
+                {% endif %}
+              </p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </section>
+
+    {% if issue.related_article_slugs %}
+      <section class="monitor-issue-page__related" aria-labelledby="related-heading">
+        <h2 id="related-heading">Related reading</h2>
+        <ul>
+          {% for slug in issue.related_article_slugs|split(',') %}
+            {% if slug|trim %}<li><a href="/articles/{{ slug|trim }}">{{ slug|trim|replace({'-': ' '})|capitalize }}</a></li>{% endif %}
+          {% endfor %}
+        </ul>
+      </section>
+    {% endif %}
+
+    <p class="monitor-issue-page__back"><a href="/communities/sagamok/monitor">Back to the monitor</a></p>
+  </div>
+</article>
+{% endblock %}

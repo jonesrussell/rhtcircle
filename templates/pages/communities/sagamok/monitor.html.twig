@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}Sagamok public-website monitor · RHT Circle{% endblock %}
+{% block description %}An automated record of what changed on the Sagamok Anishnawbek public website, when it was last checked, and which questions are still awaiting an answer.{% endblock %}
+{% block og_description %}What changed on the Sagamok public website, when we last checked, and what is still unanswered.{% endblock %}
+{% block body_class %}route-sagamok-monitor{% endblock %}
+
+{% block content %}
+<article class="monitor">
+  <header class="cover">
+    <p class="cover__eyebrow"><a href="/communities/sagamok">Sagamok Anishnawbek</a> · Public-website monitor</p>
+    <h1 class="cover__title">What changed, and when we last looked</h1>
+    <p class="cover__lede">This page records changes to the <strong>public</strong> Sagamok Anishnawbek website. It is compiled automatically so that members can see what moved without having to check every page themselves.</p>
+    <p class="cover__byline">Member-compiled and unofficial. This is the work of members, not an official communication of Sagamok Anishnawbek or its Chief and Council.</p>
+  </header>
+
+  <div class="page">
+    <div class="notice">
+      <strong>What this page does and does not do.</strong>
+      It watches pages that are already public. It does not access the members portal, and it makes no claim about anything held there. A change recorded here means a public page changed; it does not by itself mean anything was withheld or concealed.
+    </div>
+
+    {# Source health first, and never optional. A monitoring page that has
+       quietly stopped checking is worse than no page at all, because a reader
+       would take a stale list as current. #}
+    <section class="monitor-health" aria-labelledby="health-heading">
+      <h2 id="health-heading">Monitoring status</h2>
+      {% if sources is empty %}
+        <p class="monitor-empty">No source is configured yet, so nothing is being checked.</p>
+      {% else %}
+        <ul class="monitor-sources">
+          {% for source in sources %}
+            <li class="monitor-source monitor-source--{{ source.stalled ? 'stalled' : source.health }}">
+              <span class="monitor-source__label">{{ source.label }}</span>
+              <span class="monitor-source__badge" role="status">
+                {% if source.stalled %}
+                  Not checking
+                {% elseif source.health == 'ok' %}
+                  Checking normally
+                {% elseif source.health == 'degraded' %}
+                  Some pages unreachable
+                {% else %}
+                  Checks failing
+                {% endif %}
+              </span>
+              <span class="monitor-source__meta">
+                {% if source.last_check_completed %}
+                  Last completed check: {{ source.last_check_completed|date('j F Y, H:i') }}
+                {% else %}
+                  No completed check yet
+                {% endif %}
+              </span>
+              {% if source.stalled %}
+                <p class="monitor-source__warning">This source has not completed a check recently. Treat everything below as possibly out of date.</p>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </section>
+
+    <section class="monitor-changes" aria-labelledby="changes-heading">
+      <h2 id="changes-heading">Recent changes</h2>
+      {% if changes is empty %}
+        <p class="monitor-empty">No changes have been recorded yet.</p>
+      {% else %}
+        <div class="monitor-table-scroll">
+          <table class="monitor-table">
+            <caption class="visually-hidden">Recorded changes to public pages, newest first</caption>
+            <thead>
+              <tr>
+                <th scope="col">Observed</th>
+                <th scope="col">What happened</th>
+                <th scope="col">Evidence</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for change in changes %}
+                <tr>
+                  <td>{{ change.observed_at|date('j M Y') }}</td>
+                  <td>
+                    {% if change.event_type == 'appeared' %}
+                      First observed by this monitor
+                    {% elseif change.event_type == 'content_changed' %}
+                      Page content changed
+                    {% elseif change.event_type == 'disappeared' %}
+                      No longer reachable
+                    {% elseif change.event_type == 'reappeared' %}
+                      Reachable again
+                    {% elseif change.event_type == 'became_gated' %}
+                      {{ exclusion_labels.auth_required }}
+                    {% elseif change.event_type == 'became_noindex' %}
+                      {{ exclusion_labels.not_for_retention }}
+                    {% else %}
+                      {{ change.event_type }}
+                    {% endif %}
+                  </td>
+                  <td>
+                    {{ change.evidence_kind|replace({'_': ' '}) }}
+                    {% if change.evidence_captured_at %}
+                      <span class="monitor-table__meta">captured {{ change.evidence_captured_at|date('j M Y') }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <p class="monitor-footnote">
+          &ldquo;{{ exclusion_labels.not_for_retention }}&rdquo; means the publisher asked that the page not be stored or indexed. The page itself may still be public; this is a statement about what we keep, not about who may read it.
+        </p>
+      {% endif %}
+    </section>
+
+    <section class="monitor-issues" aria-labelledby="issues-heading">
+      <h2 id="issues-heading">Questions awaiting an answer</h2>
+      {% if issues is empty %}
+        <p class="monitor-empty">No questions are currently open.</p>
+      {% else %}
+        <ul class="monitor-issues__list">
+          {% for issue in issues %}
+            <li class="monitor-issue">
+              <h3><a href="/communities/sagamok/monitor/{{ issue.slug }}">{{ issue.title }}</a></h3>
+              <p class="monitor-issue__summary">{{ issue.summary }}</p>
+              {% if issue.what_is_asked %}
+                <p class="monitor-issue__ask"><strong>What is asked:</strong> {{ issue.what_is_asked }}</p>
+              {% endif %}
+              <p class="monitor-issue__meta">Opened {{ issue.opened_at|date('j F Y') }}</p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </section>
+
+    <section class="monitor-updates" aria-labelledby="updates-heading">
+      <h2 id="updates-heading">Official updates</h2>
+      {% if updates is empty %}
+        <p class="monitor-empty">No official updates have been recorded.</p>
+      {% else %}
+        <ul class="monitor-updates__list">
+          {% for update in updates %}
+            <li class="monitor-update">
+              <p class="monitor-update__date">{{ update.published_at|date('j F Y') }}</p>
+              <p class="monitor-update__summary">{{ update.summary }}</p>
+              <p class="monitor-update__source">
+                Source: {{ update.source_label }}
+                {% if update.source_url %}
+                  &middot; <a href="{{ update.source_url }}" rel="nofollow noopener">view</a>
+                {% endif %}
+              </p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </section>
+
+    {% if portal %}
+      <section class="monitor-portal" aria-labelledby="portal-heading">
+        <h2 id="portal-heading">Members portal</h2>
+        <p class="monitor-portal__statement">{{ portal.statement }}</p>
+        {% if portal.last_verified_on %}
+          <p class="monitor-portal__meta">Access status last confirmed: {{ portal.last_verified_on }}</p>
+        {% endif %}
+      </section>
+    {% endif %}
+  </div>
+</article>
+{% endblock %}

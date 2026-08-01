@@ -276,6 +276,11 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             }
         }
         $controller = new SiteController($renderer, $articleRepository);
+        $monitorDashboard = new \App\Controller\MonitorDashboardController(
+            $entityTypeManager,
+            $renderer,
+            new \App\Monitor\SagamokMonitorRepository($entityTypeManager),
+        );
         $petition = new PetitionController($this->petitionRepository(), $renderer);
         $contact = new ContactController($this->contactRepository(), $renderer);
         $poll = new PollController($this->pollRepository(), $renderer);
@@ -536,6 +541,32 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 ->controller(fn (Request $request, string $slug) => $md->wantsMarkdown($request)
                     ? $md->pageResponse('/communities/' . $slug)
                     : $controller->community($slug, $this->recordsRequestSignatures()))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+
+        // The public-website monitor (docs/specs/sagamok-monitoring-dashboard.md).
+        // Both routes are ->allowAll() at the HTTP layer and read exclusively
+        // through SagamokMonitorRepository::view(), the closed projection. The
+        // monitor ENTITIES stay closed: MonitorDashboardAccessPolicy grants only
+        // `monitor.dashboard_read` and never `view`, so MCP, GraphQL, JSON:API,
+        // Discovery and the SSR entity catch-all remain denied. Both paths sit
+        // under the /communities prefix already in session.stateless_paths, so
+        // anonymous readers get no cookie.
+        $router->addRoute(
+            'sagamok-monitor',
+            RouteBuilder::create('/communities/sagamok/monitor')
+                ->controller(fn (Request $request) => $monitorDashboard->dashboard(time()))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+
+        $router->addRoute(
+            'sagamok-monitor-issue',
+            RouteBuilder::create('/communities/sagamok/monitor/{slug}')
+                ->controller(fn (Request $request, string $slug) => $monitorDashboard->issue($slug))
                 ->allowAll()
                 ->methods('GET')
                 ->build(),
