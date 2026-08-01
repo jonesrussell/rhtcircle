@@ -106,13 +106,6 @@ final class DashboardPaginationTest extends TestCase
 
     public function testTheChangesRouteIsPagedAndReachesEveryRow(): void
     {
-        // Blocked by waaseyaa/framework#2167: RequestContext is bound with
-        // empty queryParams, so ListingResolver never sees `?page=` and every
-        // listing renders page 1. The app-side design is in place and this test
-        // will pass unchanged once the framework binds the real query
-        // parameters. Skipped rather than deleted so the gap stays visible.
-        self::markTestSkipped('waaseyaa/framework#2167: ?page= never reaches ListingResolver');
-
         $seen = [];
         $page = 1;
 
@@ -149,13 +142,6 @@ final class DashboardPaginationTest extends TestCase
 
     public function testTheSecondPageShowsDifferentRowsAndOffersBothDirections(): void
     {
-        // Blocked by waaseyaa/framework#2167: RequestContext is bound with
-        // empty queryParams, so ListingResolver never sees `?page=` and every
-        // listing renders page 1. The app-side design is in place and this test
-        // will pass unchanged once the framework binds the real query
-        // parameters. Skipped rather than deleted so the gap stays visible.
-        self::markTestSkipped('waaseyaa/framework#2167: ?page= never reaches ListingResolver');
-
         $first = (string) $this->request('/communities/sagamok/monitor/changes')->getContent();
         $second = (string) $this->request('/communities/sagamok/monitor/changes', ['page' => '2'])->getContent();
 
