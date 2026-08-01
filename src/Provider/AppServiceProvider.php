@@ -276,10 +276,19 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             }
         }
         $controller = new SiteController($renderer, $articleRepository);
+        // The dashboard reads exclusively through ListingResolver, so the
+        // seven registered ListingDefinitions are the real data path rather
+        // than decoration beside a controller that scans tables.
+        $monitorListings = $this->resolve(\Waaseyaa\Listing\ListingDefinitionRegistry::class);
+        $monitorResolver = $this->resolve(\Waaseyaa\Listing\ListingResolver::class);
         $monitorDashboard = new \App\Controller\MonitorDashboardController(
             $entityTypeManager,
             $renderer,
-            new \App\Monitor\SagamokMonitorRepository($entityTypeManager),
+            new \App\Monitor\SagamokMonitorRepository(
+                $entityTypeManager,
+                $monitorListings instanceof \Waaseyaa\Listing\ListingDefinitionRegistry ? $monitorListings : null,
+                $monitorResolver instanceof \Waaseyaa\Listing\ListingResolver ? $monitorResolver : null,
+            ),
         );
         $petition = new PetitionController($this->petitionRepository(), $renderer);
         $contact = new ContactController($this->contactRepository(), $renderer);
@@ -557,7 +566,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         $router->addRoute(
             'sagamok-monitor',
             RouteBuilder::create('/communities/sagamok/monitor')
-                ->controller(fn (Request $request) => $monitorDashboard->dashboard(time()))
+                ->controller(fn (Request $request) => $monitorDashboard->dashboard(time(), max(1, (int) $request->query->get('page', 1))))
                 ->allowAll()
                 ->methods('GET')
                 ->build(),

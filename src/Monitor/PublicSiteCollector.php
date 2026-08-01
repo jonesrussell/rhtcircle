@@ -76,6 +76,9 @@ final class PublicSiteCollector
             'fetch_failures' => 0,
             'gated' => 0,
             'not_retained' => 0,
+            'indeterminate' => [],
+            'empty_target_set' => false,
+            'exit_code' => 0,
             'health' => 'ok',
         ];
 
@@ -93,9 +96,27 @@ final class PublicSiteCollector
             $report['truncated_at_limit'] = true;
         }
 
-        $known = $dryRun ? $this->state->allForSource($sourceKey) : $this->state->allForSource($sourceKey);
+        // A run with nothing to look at is a configuration failure, not a
+        // healthy run. Reporting health=ok here would tell members the site is
+        // being watched when nothing is being fetched at all.
+        if ($eligible === []) {
+            $report['health'] = 'failing';
+            $report['empty_target_set'] = true;
+            $report['exit_code'] = 1;
+
+            return $report;
+        }
+
+        $known = $this->state->allForSource($sourceKey);
         $seen = [];
-        $disappearedThisRun = [];
+
+        // Absence must be CONFIRMED within this run before it can feed the
+        // move detector: identical content at a second still-live URL is two
+        // pages, not one that moved.
+        $confirmedAbsentKeys = [];
+
+        /** @var array<string, array{url: string, hash: string, snapshot: string, body: string}> */
+        $newThisRun = [];
 
         foreach ($eligible as $itemKey => $url) {
             $result = $this->fetcher->fetch($url);
@@ -125,28 +146,48 @@ final class PublicSiteCollector
                 }
 
                 $seen[$itemKey] = true;
-                $report['events'][] = [
-                    'type' => $exclusion->eventType(),
-                    'item' => $known[$itemKey]['item_public_ref'] ?? null,
-                    'reason' => $reason,
-                    'kind' => $exclusion->value,
-                ];
-                if (!$dryRun && isset($known[$itemKey])) {
-                    $this->recordEvent(
-                        $sourceKey,
-                        $known[$itemKey]['item_public_ref'],
-                        $exclusion->eventType(),
-                        $now,
-                        'gate_probe',
-                        '',
-                    );
+
+                // Emit ONCE per transition. A page that stays gated would
+                // otherwise produce an event every hour, burying real findings
+                // under a repeating one.
+                $alreadyExcluded = ($known[$itemKey]['exclusion_kind'] ?? '') === $exclusion->value;
+                $isTransition = !$alreadyExcluded;
+
+                if ($isTransition) {
+                    $report['events'][] = [
+                        'type' => $exclusion->eventType(),
+                        'item' => $known[$itemKey]['item_public_ref'] ?? null,
+                        'reason' => $reason,
+                        'kind' => $exclusion->value,
+                    ];
+                }
+
+                if (!$dryRun) {
+                    $recorded = $this->state->recordExclusion($sourceKey, $itemKey, $exclusion, $reason, $now);
+                    $publicRef = $known[$itemKey]['item_public_ref'] ?? '';
+                    if ($recorded && $publicRef !== '') {
+                        $this->recordEvent($sourceKey, $publicRef, $exclusion->eventType(), $now, 'gate_probe', '');
+                        $this->touchItem($sourceKey, $publicRef, null, null, $now, $exclusion->eventType());
+                    }
                 }
                 // No hash, no snapshot, no body retained — for either kind.
                 continue;
             }
 
-            if ($result->statusCode === 404 || $result->statusCode >= 400) {
-                // Genuinely absent upstream — handled with the absence pass below.
+            if (self::isConfirmedAbsence($result->statusCode)) {
+                // 404/410 are the server stating the resource is not there.
+                // Handled by the absence pass below.
+                $confirmedAbsentKeys[] = $itemKey;
+                continue;
+            }
+
+            if ($result->statusCode >= 400) {
+                // 408, 429, 5xx and anything else indeterminate: the server did
+                // not say the page is gone, it said it could not answer. Two
+                // 500s in a row must never publish "disappeared". Health only.
+                ++$report['fetch_failures'];
+                $report['indeterminate'][] = $result->statusCode;
+                $seen[$itemKey] = true;
                 continue;
             }
 
@@ -158,33 +199,19 @@ final class PublicSiteCollector
             $existing = $known[$itemKey] ?? null;
 
             if ($existing === null) {
-                // Near-duplicate guard: same content, different URL, in a run
-                // where the old URL went absent → a move, not a new document.
-                $moved = $this->state->findByContentHash($sourceKey, $hash, $itemKey);
-                if ($moved !== null) {
-                    $report['events'][] = ['type' => 'reappeared', 'item' => $moved['item_public_ref'], 'moved' => true];
-                    if (!$dryRun) {
-                        $this->state->record($sourceKey, $itemKey, $moved['item_public_ref'], $hash, strlen($snapshot), $snapshot, $now);
-                        $this->touchItem($sourceKey, $moved['item_public_ref'], $url, $hash, $now, 'reappeared');
-                        $this->recordEvent($sourceKey, $moved['item_public_ref'], 'reappeared', $now, 'direct_fetch', $url);
-                    }
-                    continue;
-                }
-
-                $publicRef = $dryRun ? $sourceKey . '-preview' : $this->state->nextPublicRef($sourceKey);
-                $report['events'][] = ['type' => 'appeared', 'item' => $publicRef, 'baseline' => $isBaselineRun];
-                if (!$dryRun) {
-                    $this->state->record($sourceKey, $itemKey, $publicRef, $hash, strlen($snapshot), $snapshot, $now);
-                    $this->createItem($sourceKey, $publicRef, $url, $result->body, $now);
-                    $this->recordEvent($sourceKey, $publicRef, 'appeared', $now, 'direct_fetch', $url, $isBaselineRun);
-                }
+                // Deferred: a move can only be recognised once the whole crawl
+                // has run, because it needs to know which old URLs are
+                // CONFIRMED absent. Deciding here would merge two live pages
+                // that happen to share content.
+                $newThisRun[$itemKey] = ['url' => $url, 'hash' => $hash, 'snapshot' => $snapshot, 'body' => $result->body];
                 continue;
             }
 
             if ($existing['content_hash'] !== $hash) {
                 $report['events'][] = ['type' => 'content_changed', 'item' => $existing['item_public_ref']];
                 if (!$dryRun) {
-                    $this->state->record($sourceKey, $itemKey, $existing['item_public_ref'], $hash, strlen($snapshot), $snapshot, $now);
+                    $this->state->record($sourceKey, $itemKey, $existing['item_public_ref'], $hash, strlen($snapshot), $now);
+                    $this->state->appendSnapshot($sourceKey, $itemKey, $hash, $snapshot, $now);
                     $this->touchItem($sourceKey, $existing['item_public_ref'], $url, $hash, $now, 'changed');
                     $this->recordEvent($sourceKey, $existing['item_public_ref'], 'content_changed', $now, 'direct_fetch', $url);
                 }
@@ -206,6 +233,20 @@ final class PublicSiteCollector
                 continue;
             }
 
+            // Recovery: the page was excluded (gated or noindex) and is now
+            // publicly retainable again. Announced once, symmetrically with the
+            // transition into exclusion.
+            if ($existing['exclusion_kind'] !== '') {
+                $report['events'][] = ['type' => 'became_retainable', 'item' => $existing['item_public_ref']];
+                if (!$dryRun) {
+                    $this->state->record($sourceKey, $itemKey, $existing['item_public_ref'], $hash, strlen($snapshot), $now);
+                    $this->state->appendSnapshot($sourceKey, $itemKey, $hash, $snapshot, $now);
+                    $this->touchItem($sourceKey, $existing['item_public_ref'], $url, $hash, $now, 'became_retainable');
+                    $this->recordEvent($sourceKey, $existing['item_public_ref'], 'became_retainable', $now, 'direct_fetch', $url);
+                }
+                continue;
+            }
+
             // Hash equal → no event. Refresh last_seen only (spec §4.3 step 6).
             // This branch is what makes the run idempotent.
             if (!$dryRun) {
@@ -214,9 +255,58 @@ final class PublicSiteCollector
             }
         }
 
+        // --- new items: a move, or genuinely new ---------------------------
+        // Resolved after the crawl so `$confirmedAbsentKeys` is complete. A URL
+        // rename shows up as one key absent and an identical body at another;
+        // two separate live pages never satisfy that, however alike they are.
+        foreach ($newThisRun as $itemKey => $found) {
+            $moved = $this->state->findMoveCandidate($sourceKey, $found['hash'], $itemKey, $confirmedAbsentKeys);
+
+            if ($moved !== null) {
+                $report['events'][] = ['type' => 'reappeared', 'item' => $moved['item_public_ref'], 'moved' => true];
+                if (!$dryRun) {
+                    // Atomic: the old key is removed as the new one takes the
+                    // ref, so the stale key cannot later report a false
+                    // disappearance for a page being served at its new URL.
+                    $this->state->moveIdentity(
+                        $sourceKey,
+                        $moved['item_key'],
+                        $itemKey,
+                        $moved['item_public_ref'],
+                        $found['hash'],
+                        strlen($found['snapshot']),
+                        $now,
+                    );
+                    $this->state->appendSnapshot($sourceKey, $itemKey, $found['hash'], $found['snapshot'], $now);
+                    $this->touchItem($sourceKey, $moved['item_public_ref'], $found['url'], $found['hash'], $now, 'reappeared');
+                    $this->recordEvent($sourceKey, $moved['item_public_ref'], 'reappeared', $now, 'direct_fetch', $found['url']);
+                }
+                // The old key is gone: it must not also be reported absent.
+                $confirmedAbsentKeys = array_values(array_diff($confirmedAbsentKeys, [$moved['item_key']]));
+                unset($known[$moved['item_key']]);
+                continue;
+            }
+
+            $publicRef = $dryRun ? $sourceKey . '-preview' : $this->state->nextPublicRef($sourceKey);
+            $report['events'][] = ['type' => 'appeared', 'item' => $publicRef, 'baseline' => $isBaselineRun];
+            if (!$dryRun) {
+                $this->state->record($sourceKey, $itemKey, $publicRef, $found['hash'], strlen($found['snapshot']), $now);
+                $this->state->appendSnapshot($sourceKey, $itemKey, $found['hash'], $found['snapshot'], $now);
+                $this->createItem($sourceKey, $publicRef, $found['url'], $found['body'], $now);
+                $this->recordEvent($sourceKey, $publicRef, 'appeared', $now, 'direct_fetch', $found['url'], $isBaselineRun);
+            }
+        }
+
         // --- absence pass: two consecutive runs before a removal is published ---
         foreach ($known as $itemKey => $row) {
             if (isset($seen[$itemKey])) {
+                continue;
+            }
+
+            // Only a server that SAID the page is gone advances the counter.
+            // A key we never reached this run (indeterminate error, or simply
+            // not in the crawl) tells us nothing about whether it still exists.
+            if (!in_array($itemKey, $confirmedAbsentKeys, true)) {
                 continue;
             }
 
@@ -240,6 +330,11 @@ final class PublicSiteCollector
         }
 
         $report['health'] = $this->healthFor($report);
+        if ($report['observed'] === 0) {
+            // Non-zero so a scheduled run surfaces in whatever watches exit
+            // codes, rather than failing silently every hour.
+            $report['exit_code'] = 1;
+        }
 
         if (!$dryRun) {
             $this->updateSourceHealth($source, $report, $now);
@@ -262,9 +357,24 @@ final class PublicSiteCollector
      *
      * @param array<string, mixed> $report
      */
+    /**
+     * Statuses where the server has actually stated the resource is gone.
+     *
+     * Everything else — 408, 429, 5xx, and anything unrecognised — means the
+     * server could not answer, which is a health signal and never a removal.
+     */
+    private static function isConfirmedAbsence(int $statusCode): bool
+    {
+        return $statusCode === 404 || $statusCode === 410;
+    }
+
     private function healthFor(array $report): string
     {
-        if ($report['fetch_failures'] > 0 && $report['observed'] === 0) {
+        // Nothing was successfully read. Whether that is because every fetch
+        // failed, or because every target was absent or excluded, the run did
+        // not verify anything — and reporting `ok` would put a "Checking
+        // normally" badge on a dashboard backed by no observation at all.
+        if ($report['observed'] === 0) {
             return 'failing';
         }
         if ($report['fetch_failures'] > 0) {
@@ -283,7 +393,7 @@ final class PublicSiteCollector
         $source->set('last_check_completed', $now);
         $source->set('health', $report['health']);
 
-        if ($report['health'] === 'ok') {
+        if ($report['health'] === 'ok' && $report['exit_code'] === 0) {
             $source->set('last_success', $now);
             $source->set('consecutive_failures', 0);
             $source->set('last_error', '');

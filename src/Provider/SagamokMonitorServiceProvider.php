@@ -8,6 +8,7 @@ use App\Command\MonitorPublicCommand;
 use App\Command\MonitorRedactEventCommand;
 use App\Command\MonitorTriageCommand;
 use App\Monitor\HttpPageFetcher;
+use App\Monitor\MonitorConfiguration;
 use App\Monitor\MonitorEntityTypes;
 use Waaseyaa\Entity\EntityType;
 use Waaseyaa\Listing\Filter;
@@ -169,12 +170,18 @@ final class SagamokMonitorServiceProvider extends ServiceProvider implements Has
                 }
 
                 $dryRun = (bool) ($io->option('dry-run') ?? false);
+                $configuration = MonitorConfiguration::fromConfig($this->config);
 
-                // The production fetcher is constructed here and nowhere else.
-                // Tests build MonitorPublicCommand directly with a fixture
-                // fetcher, so no test run can reach the network.
-                return new MonitorPublicCommand($etm, $database, new HttpPageFetcher())
-                    ->run($io, [], $dryRun, time());
+                // The production fetcher is constructed here and nowhere else,
+                // bound to the configured origin. Tests build
+                // MonitorPublicCommand directly with a fixture fetcher, so no
+                // test run can reach the network.
+                return new MonitorPublicCommand(
+                    $etm,
+                    $database,
+                    new HttpPageFetcher($configuration->originUrl),
+                    $configuration,
+                )->run($io, $dryRun, time());
             },
         );
 

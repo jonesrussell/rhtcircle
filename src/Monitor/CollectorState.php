@@ -7,11 +7,11 @@ namespace App\Monitor;
 use Waaseyaa\Database\DatabaseInterface;
 
 /**
- * The collector's side table (spec §3.6) — hashes, identity keys, snapshots and
- * the absence counter.
+ * The collector's side tables (spec §3.6) — identity keys, hashes, exclusion
+ * state, the absence counter, and a bounded snapshot history.
  *
- * **Not an entity, deliberately.** It has no independent lifecycle, is never
- * rendered and is never related to, which is exactly the case where the app's
+ * **Not entities, deliberately.** They have no independent lifecycle, are never
+ * rendered and are never related to, which is exactly the case where the app's
  * storage rule permits `DatabaseInterface` directly. Two consequences follow,
  * and both are the point:
  *
@@ -28,17 +28,18 @@ final class CollectorState
 {
     public const string TABLE = 'monitor_collector_state';
 
-    /** Approved retention limits (spec §0). */
+    /** Bounded snapshot history (spec §0). */
+    public const string SNAPSHOT_TABLE = 'monitor_collector_snapshot';
     public const int SNAPSHOT_RETENTION_DAYS = 90;
     public const int MAX_SNAPSHOTS_PER_ITEM = 3;
 
     public function __construct(private readonly DatabaseInterface $database) {}
 
     /**
-     * Whether the side table has been created yet.
+     * Whether the side tables have been created yet.
      *
      * Every read path checks this, because a **dry run must create nothing** —
-     * including this table. Reading before any live run has happened is a
+     * including these tables. Reading before any live run has happened is a
      * legitimate empty result, not an error, and making that explicit here
      * keeps `--dry-run` honestly write-free rather than write-free-except-DDL.
      */
@@ -47,43 +48,59 @@ final class CollectorState
         return $this->database->schema()->tableExists(self::TABLE);
     }
 
-    /**
-     * Create the table if absent. Called by the collector rather than schema
-     * sync, because this is not an entity type and `db:init` does not know it.
-     */
     public function ensureTable(): void
     {
         $schema = $this->database->schema();
-        if ($schema->tableExists(self::TABLE)) {
-            return;
+
+        if (!$schema->tableExists(self::TABLE)) {
+            $this->database->query(
+                'CREATE TABLE IF NOT EXISTS ' . self::TABLE . ' ('
+                . 'source_key TEXT NOT NULL, '
+                . 'item_key TEXT NOT NULL, '
+                . 'item_public_ref TEXT NOT NULL, '
+                . 'content_hash TEXT NOT NULL, '
+                . 'normalized_bytes INTEGER NOT NULL DEFAULT 0, '
+                . 'absent_runs INTEGER NOT NULL DEFAULT 0, '
+                // The page's current exclusion state, so a gated or noindex page
+                // that stays that way produces ONE event rather than one per
+                // run. Stores the state only: never the body, hash or snapshot
+                // of excluded content.
+                . 'exclusion_kind TEXT NOT NULL DEFAULT \'\', '
+                . 'exclusion_reason TEXT NOT NULL DEFAULT \'\', '
+                . 'updated_at INTEGER NOT NULL, '
+                . 'PRIMARY KEY (source_key, item_key)'
+                . ')',
+            );
+            $this->database->query(
+                'CREATE INDEX IF NOT EXISTS monitor_collector_state_source_idx ON ' . self::TABLE . '(source_key)',
+            );
         }
 
-        $this->database->query(
-            'CREATE TABLE IF NOT EXISTS ' . self::TABLE . ' ('
-            . 'source_key TEXT NOT NULL, '
-            . 'item_key TEXT NOT NULL, '
-            . 'item_public_ref TEXT NOT NULL, '
-            . 'content_hash TEXT NOT NULL, '
-            . 'normalized_bytes INTEGER NOT NULL DEFAULT 0, '
-            . 'snapshot BLOB, '
-            . 'snapshot_taken_at INTEGER, '
-            . 'absent_runs INTEGER NOT NULL DEFAULT 0, '
-            . 'updated_at INTEGER NOT NULL, '
-            . 'PRIMARY KEY (source_key, item_key)'
-            . ')',
-        );
-        // The collector scans by source every run, and prunes by snapshot age.
-        $this->database->query(
-            'CREATE INDEX IF NOT EXISTS monitor_collector_state_source_idx ON ' . self::TABLE . '(source_key)',
-        );
-        $this->database->query(
-            'CREATE INDEX IF NOT EXISTS monitor_collector_state_snapshot_taken_idx ON '
-            . self::TABLE . '(snapshot_taken_at)',
-        );
+        if (!$schema->tableExists(self::SNAPSHOT_TABLE)) {
+            $this->database->query(
+                'CREATE TABLE IF NOT EXISTS ' . self::SNAPSHOT_TABLE . ' ('
+                . 'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+                . 'source_key TEXT NOT NULL, '
+                . 'item_key TEXT NOT NULL, '
+                . 'content_hash TEXT NOT NULL, '
+                . 'snapshot BLOB, '
+                . 'snapshot_bytes INTEGER NOT NULL DEFAULT 0, '
+                . 'taken_at INTEGER NOT NULL'
+                . ')',
+            );
+            $this->database->query(
+                'CREATE INDEX IF NOT EXISTS monitor_collector_snapshot_item_idx ON '
+                . self::SNAPSHOT_TABLE . '(source_key, item_key, taken_at)',
+            );
+            $this->database->query(
+                'CREATE INDEX IF NOT EXISTS monitor_collector_snapshot_taken_idx ON '
+                . self::SNAPSHOT_TABLE . '(taken_at)',
+            );
+        }
     }
 
     /**
-     * @return array<string, array{item_key: string, item_public_ref: string, content_hash: string, normalized_bytes: int, absent_runs: int, snapshot_taken_at: ?int, updated_at: int}>
+     * @return array<string, array{item_key: string, item_public_ref: string, content_hash: string, normalized_bytes: int, absent_runs: int, exclusion_kind: string, exclusion_reason: string, updated_at: int}>
      *   Keyed by item_key.
      */
     public function allForSource(string $sourceKey): array
@@ -94,8 +111,8 @@ final class CollectorState
 
         $rows = $this->database->select(self::TABLE)
             ->fields(self::TABLE, [
-                'item_key', 'item_public_ref', 'content_hash',
-                'normalized_bytes', 'absent_runs', 'snapshot_taken_at', 'updated_at',
+                'item_key', 'item_public_ref', 'content_hash', 'normalized_bytes',
+                'absent_runs', 'exclusion_kind', 'exclusion_reason', 'updated_at',
             ])
             ->condition('source_key', $sourceKey)
             ->execute();
@@ -108,7 +125,8 @@ final class CollectorState
                 'content_hash' => (string) $row['content_hash'],
                 'normalized_bytes' => (int) $row['normalized_bytes'],
                 'absent_runs' => (int) $row['absent_runs'],
-                'snapshot_taken_at' => $row['snapshot_taken_at'] === null ? null : (int) $row['snapshot_taken_at'],
+                'exclusion_kind' => (string) ($row['exclusion_kind'] ?? ''),
+                'exclusion_reason' => (string) ($row['exclusion_reason'] ?? ''),
                 'updated_at' => (int) $row['updated_at'],
             ];
         }
@@ -117,19 +135,24 @@ final class CollectorState
     }
 
     /**
-     * Find an existing row on the same source carrying $contentHash, excluding
-     * $exceptItemKey.
+     * Find a row on the same source carrying $contentHash, excluding
+     * $exceptItemKey and restricted to $candidateKeys.
      *
-     * This backs the near-duplicate guard (spec §4.2): a URL rename otherwise
-     * produces a spurious "document disappeared" plus a spurious "new document"
-     * in the same run — the kind of false alarm that would discredit the
-     * dashboard faster than missing a real change.
+     * The caller passes only keys **confirmed absent in this same successful
+     * crawl**. Without that restriction, identical content at a second *live*
+     * URL looks like a move, and two genuinely separate pages are merged into
+     * one history — see `PublicSiteCollector::detectMove()`.
      *
+     * @param list<string> $candidateKeys
      * @return array{item_key: string, item_public_ref: string}|null
      */
-    public function findByContentHash(string $sourceKey, string $contentHash, string $exceptItemKey): ?array
-    {
-        if (!$this->tableExists()) {
+    public function findMoveCandidate(
+        string $sourceKey,
+        string $contentHash,
+        string $exceptItemKey,
+        array $candidateKeys,
+    ): ?array {
+        if (!$this->tableExists() || $candidateKeys === []) {
             return null;
         }
 
@@ -140,11 +163,9 @@ final class CollectorState
             ->execute();
 
         foreach ($rows as $row) {
-            if ((string) $row['item_key'] !== $exceptItemKey) {
-                return [
-                    'item_key' => (string) $row['item_key'],
-                    'item_public_ref' => (string) $row['item_public_ref'],
-                ];
+            $key = (string) $row['item_key'];
+            if ($key !== $exceptItemKey && in_array($key, $candidateKeys, true)) {
+                return ['item_key' => $key, 'item_public_ref' => (string) $row['item_public_ref']];
             }
         }
 
@@ -171,11 +192,10 @@ final class CollectorState
     }
 
     /**
-     * Insert or update the row for an observed item, resetting `absent_runs`.
+     * Insert or update the row for an observed, retainable item.
      *
-     * $snapshot is stored only when supplied; passing null keeps whatever the
-     * row already holds, so a metadata-only change does not consume one of the
-     * three retained snapshots.
+     * Clears `absent_runs` and any exclusion state: seeing real content again
+     * is the recovery signal for both.
      */
     public function record(
         string $sourceKey,
@@ -183,24 +203,19 @@ final class CollectorState
         string $itemPublicRef,
         string $contentHash,
         int $normalizedBytes,
-        ?string $snapshot,
         int $now,
     ): void {
-        $existing = $this->exists($sourceKey, $itemKey);
-
         $values = [
             'item_public_ref' => $itemPublicRef,
             'content_hash' => $contentHash,
             'normalized_bytes' => $normalizedBytes,
             'absent_runs' => 0,
+            'exclusion_kind' => '',
+            'exclusion_reason' => '',
             'updated_at' => $now,
         ];
-        if ($snapshot !== null) {
-            $values['snapshot'] = $snapshot;
-            $values['snapshot_taken_at'] = $now;
-        }
 
-        if ($existing) {
+        if ($this->exists($sourceKey, $itemKey)) {
             $this->database->update(self::TABLE)
                 ->fields($values)
                 ->condition('source_key', $sourceKey)
@@ -211,23 +226,80 @@ final class CollectorState
         }
 
         $this->database->insert(self::TABLE)
-            ->values([
-                'source_key' => $sourceKey,
-                'item_key' => $itemKey,
-                ...$values,
-                'snapshot' => $values['snapshot'] ?? null,
-                'snapshot_taken_at' => $values['snapshot_taken_at'] ?? null,
-            ])
+            ->values(['source_key' => $sourceKey, 'item_key' => $itemKey, ...$values])
             ->execute();
     }
 
     /**
-     * Increment and return the consecutive-absence counter for an item.
+     * Record that an item is currently excluded from collection.
      *
-     * The collector requires **two** consecutive absent runs before reporting a
-     * removal (spec §4.3 step 7), so a single upstream timeout is never
-     * published as "the Nation took this down".
+     * Stores the **state only**: no body, no hash, no snapshot. Returns true
+     * when this is a *transition* into the state, which is the only time the
+     * collector emits an event — otherwise a page that stays gated produces one
+     * event per run forever, and the timeline becomes noise.
      */
+    public function recordExclusion(
+        string $sourceKey,
+        string $itemKey,
+        ExclusionKind $kind,
+        string $reason,
+        int $now,
+    ): bool {
+        $existing = $this->allForSource($sourceKey)[$itemKey] ?? null;
+
+        if ($existing === null) {
+            // Never seen before and already excluded: remembered so the state
+            // is not re-announced, with no content retained.
+            $this->database->insert(self::TABLE)
+                ->values([
+                    'source_key' => $sourceKey,
+                    'item_key' => $itemKey,
+                    'item_public_ref' => '',
+                    'content_hash' => '',
+                    'normalized_bytes' => 0,
+                    'absent_runs' => 0,
+                    'exclusion_kind' => $kind->value,
+                    'exclusion_reason' => $reason,
+                    'updated_at' => $now,
+                ])
+                ->execute();
+
+            return true;
+        }
+
+        $isTransition = $existing['exclusion_kind'] !== $kind->value;
+
+        $this->database->update(self::TABLE)
+            ->fields([
+                'exclusion_kind' => $kind->value,
+                'exclusion_reason' => $reason,
+                // An excluded page is not an absent page; absence is a separate
+                // finding and must not accumulate while we are being told "no".
+                'absent_runs' => 0,
+                'updated_at' => $now,
+            ])
+            ->condition('source_key', $sourceKey)
+            ->condition('item_key', $itemKey)
+            ->execute();
+
+        return $isTransition;
+    }
+
+    /**
+     * Whether $itemKey is currently recorded as excluded, and how.
+     *
+     * @return array{kind: string, reason: string}|null
+     */
+    public function currentExclusion(string $sourceKey, string $itemKey): ?array
+    {
+        $row = $this->allForSource($sourceKey)[$itemKey] ?? null;
+        if ($row === null || $row['exclusion_kind'] === '') {
+            return null;
+        }
+
+        return ['kind' => $row['exclusion_kind'], 'reason' => $row['exclusion_reason']];
+    }
+
     public function incrementAbsent(string $sourceKey, string $itemKey, int $now): int
     {
         $current = $this->allForSource($sourceKey)[$itemKey]['absent_runs'] ?? 0;
@@ -252,71 +324,190 @@ final class CollectorState
     }
 
     /**
-     * Drop snapshot bodies older than the 90-day retention window, keeping the
-     * row (its hash and counters are still the collector's memory).
+     * Move an item's identity from one key to another, atomically.
      *
-     * @return int Rows whose snapshot was cleared.
+     * A rename must leave **one** active key per `public_ref`. Leaving the old
+     * key in place would let it go absent on later runs and publish a
+     * disappearance for an item being served happily at its new URL.
+     */
+    public function moveIdentity(
+        string $sourceKey,
+        string $fromItemKey,
+        string $toItemKey,
+        string $publicRef,
+        string $contentHash,
+        int $normalizedBytes,
+        int $now,
+    ): void {
+        $this->database->delete(self::TABLE)
+            ->condition('source_key', $sourceKey)
+            ->condition('item_key', $fromItemKey)
+            ->execute();
+
+        // Carry the snapshot history across, so a rename does not lose the
+        // item's record of what it used to say.
+        if ($this->database->schema()->tableExists(self::SNAPSHOT_TABLE)) {
+            $this->database->update(self::SNAPSHOT_TABLE)
+                ->fields(['item_key' => $toItemKey])
+                ->condition('source_key', $sourceKey)
+                ->condition('item_key', $fromItemKey)
+                ->execute();
+        }
+
+        $this->record($sourceKey, $toItemKey, $publicRef, $contentHash, $normalizedBytes, $now);
+    }
+
+    /**
+     * Active item keys mapped to $publicRef. More than one is an invariant
+     * violation; the disappearance path asserts on it.
+     *
+     * @return list<string>
+     */
+    public function keysForPublicRef(string $sourceKey, string $publicRef): array
+    {
+        if (!$this->tableExists() || $publicRef === '') {
+            return [];
+        }
+
+        $keys = [];
+        foreach ($this->allForSource($sourceKey) as $row) {
+            if ($row['item_public_ref'] === $publicRef) {
+                $keys[] = $row['item_key'];
+            }
+        }
+
+        return $keys;
+    }
+
+    // ------------------------------------------------------------------
+    // Snapshot history — three per item, 2 MB each, 90 days
+    // ------------------------------------------------------------------
+
+    /**
+     * Append a snapshot and trim the item's history to the newest three.
+     *
+     * Skipped when the newest retained snapshot already carries this hash:
+     * re-storing identical bytes would evict real history for nothing.
+     */
+    public function appendSnapshot(string $sourceKey, string $itemKey, string $contentHash, string $snapshot, int $now): void
+    {
+        $existing = $this->snapshotsFor($sourceKey, $itemKey);
+        if (($existing[0]['content_hash'] ?? null) === $contentHash) {
+            return;
+        }
+
+        $this->database->insert(self::SNAPSHOT_TABLE)
+            ->values([
+                'source_key' => $sourceKey,
+                'item_key' => $itemKey,
+                'content_hash' => $contentHash,
+                'snapshot' => $snapshot,
+                'snapshot_bytes' => strlen($snapshot),
+                'taken_at' => $now,
+            ])
+            ->execute();
+
+        $this->trimSnapshots($sourceKey, $itemKey);
+    }
+
+    /**
+     * Newest first.
+     *
+     * @return list<array{id: int, content_hash: string, snapshot_bytes: int, taken_at: int}>
+     */
+    public function snapshotsFor(string $sourceKey, string $itemKey): array
+    {
+        if (!$this->database->schema()->tableExists(self::SNAPSHOT_TABLE)) {
+            return [];
+        }
+
+        $rows = $this->database->select(self::SNAPSHOT_TABLE)
+            ->fields(self::SNAPSHOT_TABLE, ['id', 'content_hash', 'snapshot_bytes', 'taken_at'])
+            ->condition('source_key', $sourceKey)
+            ->condition('item_key', $itemKey)
+            ->orderBy('taken_at', 'DESC')
+            ->execute();
+
+        $out = [];
+        foreach ($rows as $row) {
+            $out[] = [
+                'id' => (int) $row['id'],
+                'content_hash' => (string) $row['content_hash'],
+                'snapshot_bytes' => (int) $row['snapshot_bytes'],
+                'taken_at' => (int) $row['taken_at'],
+            ];
+        }
+
+        // Stable ordering when several snapshots share a timestamp (tests, and
+        // a fast upstream edit): newest id wins.
+        usort($out, static fn (array $a, array $b): int => [$b['taken_at'], $b['id']] <=> [$a['taken_at'], $a['id']]);
+
+        return $out;
+    }
+
+    /** Keep only the newest {@see MAX_SNAPSHOTS_PER_ITEM}. */
+    private function trimSnapshots(string $sourceKey, string $itemKey): void
+    {
+        foreach (array_slice($this->snapshotsFor($sourceKey, $itemKey), self::MAX_SNAPSHOTS_PER_ITEM) as $stale) {
+            $this->database->delete(self::SNAPSHOT_TABLE)->condition('id', $stale['id'])->execute();
+        }
+    }
+
+    /**
+     * Delete snapshots older than the 90-day retention window.
+     *
+     * Deletes the row rather than blanking it: the side table still holds the
+     * hash and counters, so the collector keeps its memory while the retained
+     * copy of someone else's page is genuinely gone.
+     *
+     * @return int Snapshots deleted.
      */
     public function pruneExpiredSnapshots(int $now): int
     {
-        if (!$this->tableExists()) {
+        if (!$this->database->schema()->tableExists(self::SNAPSHOT_TABLE)) {
             return 0;
         }
 
         $cutoff = $now - (self::SNAPSHOT_RETENTION_DAYS * 86_400);
 
-        $stale = $this->database->select(self::TABLE)
-            ->fields(self::TABLE, ['source_key', 'item_key'])
-            ->condition('snapshot_taken_at', $cutoff, '<')
+        $stale = $this->database->select(self::SNAPSHOT_TABLE)
+            ->fields(self::SNAPSHOT_TABLE, ['id'])
+            ->condition('taken_at', $cutoff, '<')
             ->execute();
 
-        $cleared = 0;
+        $ids = [];
         foreach ($stale as $row) {
-            ++$cleared;
-            $this->database->update(self::TABLE)
-                ->fields(['snapshot' => null, 'snapshot_taken_at' => null])
-                ->condition('source_key', (string) $row['source_key'])
-                ->condition('item_key', (string) $row['item_key'])
-                ->execute();
+            $ids[] = (int) $row['id'];
+        }
+        foreach ($ids as $id) {
+            $this->database->delete(self::SNAPSHOT_TABLE)->condition('id', $id)->execute();
         }
 
-        return $cleared;
+        return count($ids);
     }
 
-    /**
-     * Resolve an opaque public ref back to its identity key.
-     *
-     * One-directional by design: the mapping lives here so the ref has
-     * somewhere to be resolved **without** the key ever appearing on an entity.
-     */
     public function itemKeyForPublicRef(string $sourceKey, string $publicRef): ?string
     {
-        if (!$this->tableExists()) {
-            return null;
-        }
-
-        foreach (
-            $this->database->select(self::TABLE)
-                ->fields(self::TABLE, ['item_key'])
-                ->condition('source_key', $sourceKey)
-                ->condition('item_public_ref', $publicRef)
-                ->execute() as $row
-        ) {
-            return (string) $row['item_key'];
-        }
-
-        return null;
+        return $this->keysForPublicRef($sourceKey, $publicRef)[0] ?? null;
     }
 
     /**
      * The next opaque public ref for a source — an incrementing per-source
      * counter, never a hash or a URL, so nothing about the upstream item can be
      * recovered from it.
+     *
+     * Derived from the highest assigned number rather than a row count, because
+     * exclusion-only rows carry no ref and must not consume one.
      */
     public function nextPublicRef(string $sourceKey): string
     {
-        $count = count($this->allForSource($sourceKey));
+        $highest = 0;
+        foreach ($this->allForSource($sourceKey) as $row) {
+            if (preg_match('/-(\d+)$/', $row['item_public_ref'], $m) === 1) {
+                $highest = max($highest, (int) $m[1]);
+            }
+        }
 
-        return sprintf('%s-%04d', $sourceKey, $count + 1);
+        return sprintf('%s-%04d', $sourceKey, $highest + 1);
     }
 }

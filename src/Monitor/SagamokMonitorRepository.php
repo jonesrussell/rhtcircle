@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Monitor;
 
+use App\Provider\SagamokMonitorServiceProvider;
 use Waaseyaa\Entity\EntityInterface;
 use Waaseyaa\Entity\EntityTypeManager;
+use Waaseyaa\Listing\ExposedFilterValues;
+use Waaseyaa\Listing\ListingDefinitionRegistry;
+use Waaseyaa\Listing\ListingResolver;
 
 /**
  * The **only** way monitor data reaches a template or any other reader (spec
@@ -70,7 +74,61 @@ final class SagamokMonitorRepository
      */
     private const STALLED_AFTER_SECONDS = 3 * 3600;
 
-    public function __construct(private readonly EntityTypeManager $entityTypes) {}
+    public function __construct(
+        private readonly EntityTypeManager $entityTypes,
+        private readonly ?ListingDefinitionRegistry $listings = null,
+        private readonly ?ListingResolver $resolver = null,
+    ) {}
+
+    /**
+     * Resolve a registered listing and project every row.
+     *
+     * **This is the only way the dashboard reads monitor data.** Going through
+     * `ListingResolver` rather than scanning repositories is what makes the
+     * seven `ListingDefinition`s real: they carry the access ops, the page
+     * size, the sort and the cache tags, and resolving them is what applies
+     * the bespoke `monitor.dashboard_read` gate. A controller that queried
+     * entities directly would bypass all of it and leave the definitions as
+     * decoration.
+     *
+     * @return array{rows: list<array<string, scalar>>, pagination: array<string, mixed>}
+     */
+    public function resolveListing(string $listingId, int $page = 1, int $now = 0): array
+    {
+        if ($this->listings === null || $this->resolver === null) {
+            throw new \LogicException(sprintf(
+                'The monitor dashboard requires the Listing pipeline; "%s" cannot be resolved without it.',
+                $listingId,
+            ));
+        }
+
+        $definition = $this->listings->get($listingId);
+
+        // Pagination is read by the resolver from the request's `?page=`
+        // parameter, so it is not threaded through here. `$page` is retained on
+        // the signature because callers reason in pages and the returned
+        // pagination block is what templates render.
+        $result = $this->resolver->resolve($definition);
+
+        $rows = [];
+        foreach ($result->rows as $row) {
+            if ($row instanceof EntityInterface) {
+                $rows[] = $this->view($row, $now);
+            }
+        }
+
+        return [
+            'rows' => $rows,
+            'pagination' => [
+                'page' => $result->pagination->page,
+                'page_size' => $result->pagination->pageSize,
+                'total_rows' => $result->pagination->totalRows,
+                'total_pages' => $result->pagination->totalPages,
+                'has_prev' => $result->pagination->hasPrev,
+                'has_next' => $result->pagination->hasNext,
+            ],
+        ];
+    }
 
     /**
      * Project one entity to its closed public shape.

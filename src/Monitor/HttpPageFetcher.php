@@ -30,6 +30,7 @@ final class HttpPageFetcher implements PageFetcherInterface
     public const int TIMEOUT_SECONDS = 15;
     public const int MAX_RESPONSE_BYTES = 25 * 1024 * 1024;
     public const int MIN_INTERVAL_MICROSECONDS = 1_000_000;
+    public const int MAX_REDIRECTS = 5;
 
     private ?float $lastRequestAt = null;
 
@@ -37,21 +38,64 @@ final class HttpPageFetcher implements PageFetcherInterface
 
     public function fetch(string $url): FetchResult
     {
-        // Refuse off-origin before making any request at all. The collector
-        // filters too; this is the second lock, because a redirect chain or a
-        // future caller could otherwise reach a host we never intended.
-        if (!UrlNormalizer::isSameOrigin($url, $this->origin)) {
-            return FetchResult::failure($url, 'refused: off-origin');
+        $target = $url;
+
+        // Follow redirects BY HAND. `follow_location` would have the transport
+        // request the next hop before we could look at it, so an off-origin
+        // redirect target receives a request from us and only then gets
+        // rejected — which is precisely the thing we promise never to do. The
+        // check has to happen between hops, not after them.
+        for ($hop = 0; $hop <= self::MAX_REDIRECTS; ++$hop) {
+            if (!UrlNormalizer::isSameOrigin($target, $this->origin)) {
+                return FetchResult::failure($url, $hop === 0 ? 'refused: off-origin' : 'refused: redirect left the origin');
+            }
+
+            $response = $this->request($target);
+            if ($response === null) {
+                return FetchResult::failure($url, 'connection failed');
+            }
+
+            [$status, $headers, $body, $error] = $response;
+            if ($error !== null) {
+                return FetchResult::failure($url, $error);
+            }
+
+            if (!self::isRedirect($status) || !isset($headers['location'])) {
+                return FetchResult::success($status, $target, $body, $headers);
+            }
+
+            $next = self::resolveLocation($target, $headers['location']);
+            if ($next === null) {
+                return FetchResult::failure($url, 'redirect Location could not be resolved');
+            }
+            if ($next === $target) {
+                return FetchResult::failure($url, 'redirect loop: Location points at itself');
+            }
+
+            $target = $next;
         }
 
+        // Hop limit reached without a terminal response.
+        return FetchResult::failure($url, 'too many redirects');
+    }
+
+    /**
+     * One request, no automatic redirect following.
+     *
+     * @return array{int, array<string, string>, string, ?string}|null
+     */
+    private function request(string $target): ?array
+    {
         $this->throttle();
 
         $context = stream_context_create([
             'http' => [
                 'method' => 'GET',
                 'timeout' => self::TIMEOUT_SECONDS,
-                'follow_location' => 1,
-                'max_redirects' => 5,
+                // The load-bearing line: nothing is fetched that we have not
+                // already validated as same-origin.
+                'follow_location' => 0,
+                'max_redirects' => 0,
                 'ignore_errors' => true,
                 'header' => [
                     'User-Agent: ' . self::USER_AGENT,
@@ -60,15 +104,16 @@ final class HttpPageFetcher implements PageFetcherInterface
             ],
         ]);
 
-        $handle = @fopen($url, 'rb', false, $context);
+        $handle = @fopen($target, 'rb', false, $context);
         if ($handle === false) {
-            return FetchResult::failure($url, 'connection failed');
+            return null;
         }
 
         // Read with a hard ceiling: an oversize response is abandoned, not
         // truncated, because half a document hashes to something meaningless
         // and would register as a change on every run.
         $body = '';
+        $error = null;
         while (!feof($handle)) {
             $chunk = fread($handle, 65_536);
             if ($chunk === false) {
@@ -76,23 +121,68 @@ final class HttpPageFetcher implements PageFetcherInterface
             }
             $body .= $chunk;
             if (strlen($body) > self::MAX_RESPONSE_BYTES) {
-                fclose($handle);
-
-                return FetchResult::failure($url, 'response exceeded the 25 MB ceiling');
+                $error = 'response exceeded the 25 MB ceiling';
+                $body = '';
+                break;
             }
         }
 
         $meta = stream_get_meta_data($handle);
         fclose($handle);
 
-        [$status, $headers, $finalUrl] = $this->parseMeta($meta, $url);
+        [$status, $headers] = $this->parseMeta($meta);
 
-        if (!UrlNormalizer::isSameOrigin($finalUrl, $this->origin)) {
-            // A redirect took us off-origin. Nothing is retained.
-            return FetchResult::failure($url, 'refused: redirected off-origin');
+        return [$status, $headers, $body, $error];
+    }
+
+    private static function isRedirect(int $status): bool
+    {
+        return in_array($status, [301, 302, 303, 307, 308], true);
+    }
+
+    /**
+     * Resolve a `Location` value against the URL that produced it.
+     *
+     * Handles the three shapes a server may send: absolute, scheme-relative
+     * (`//host/path`) and path-relative. A relative Location resolved wrongly
+     * would either miss a real redirect or, worse, produce a URL on a different
+     * host that the same-origin check then has to catch.
+     */
+    private static function resolveLocation(string $base, string $location): ?string
+    {
+        $location = trim($location);
+        if ($location === '') {
+            return null;
         }
 
-        return FetchResult::success($status, $finalUrl, $body, $headers);
+        $baseParts = parse_url($base);
+        if (!is_array($baseParts) || !isset($baseParts['scheme'], $baseParts['host'])) {
+            return null;
+        }
+
+        if (str_starts_with($location, '//')) {
+            return $baseParts['scheme'] . ':' . $location;
+        }
+
+        if (preg_match('#^[a-z][a-z0-9+.-]*://#i', $location) === 1) {
+            return $location;
+        }
+
+        $authority = $baseParts['scheme'] . '://' . $baseParts['host']
+            . (isset($baseParts['port']) ? ':' . $baseParts['port'] : '');
+
+        if (str_starts_with($location, '/')) {
+            return $authority . $location;
+        }
+
+        // Path-relative: resolve against the base's directory.
+        $basePath = $baseParts['path'] ?? '/';
+        $directory = substr($basePath, 0, (int) strrpos($basePath, '/') + 1);
+        if ($directory === '') {
+            $directory = '/';
+        }
+
+        return $authority . $directory . $location;
     }
 
     private function throttle(): void
@@ -108,30 +198,26 @@ final class HttpPageFetcher implements PageFetcherInterface
 
     /**
      * @param array<string, mixed> $meta
-     * @return array{int, array<string, string>, string}
+     * @return array{int, array<string, string>}
      */
-    private function parseMeta(array $meta, string $requestedUrl): array
+    private function parseMeta(array $meta): array
     {
         $status = 0;
         $headers = [];
-        $finalUrl = $requestedUrl;
 
         foreach ((array) ($meta['wrapper_data'] ?? []) as $line) {
             $line = (string) $line;
             if (preg_match('#^HTTP/\S+\s+(\d{3})#', $line, $m) === 1) {
+                // Last status wins if the transport ever reports several.
                 $status = (int) $m[1];
                 continue;
             }
             $parts = explode(':', $line, 2);
             if (count($parts) === 2) {
-                $name = strtolower(trim($parts[0]));
-                $headers[$name] = trim($parts[1]);
-                if ($name === 'location') {
-                    $finalUrl = $headers[$name];
-                }
+                $headers[strtolower(trim($parts[0]))] = trim($parts[1]);
             }
         }
 
-        return [$status, $headers, $finalUrl];
+        return [$status, $headers];
     }
 }

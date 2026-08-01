@@ -8,6 +8,7 @@ use App\Access\MonitorDashboardAccessPolicy;
 use App\Monitor\ExclusionKind;
 use App\Monitor\MonitorEntityTypes;
 use App\Monitor\SagamokMonitorRepository;
+use App\Provider\SagamokMonitorServiceProvider;
 use App\Rendering\SiteRenderer;
 use Symfony\Component\HttpFoundation\Response;
 use Waaseyaa\Entity\EntityTypeManager;
@@ -31,13 +32,19 @@ final class MonitorDashboardController
         private readonly SagamokMonitorRepository $projection,
     ) {}
 
-    public function dashboard(int $now): Response
+    public function dashboard(int $now, int $page = 1): Response
     {
+        $sources = $this->listing(SagamokMonitorServiceProvider::LISTING_SOURCES, 1, $now);
+        $changes = $this->listing(SagamokMonitorServiceProvider::LISTING_TIMELINE, $page, $now);
+        $issues = $this->listing(SagamokMonitorServiceProvider::LISTING_ISSUES_OPEN, 1, $now);
+        $updates = $this->listing(SagamokMonitorServiceProvider::LISTING_UPDATES, 1, $now);
+
         return $this->renderer->html('pages/communities/sagamok/monitor.html.twig', [
-            'sources' => $this->sources($now),
-            'changes' => $this->recentChanges(),
-            'issues' => $this->openIssues(),
-            'updates' => $this->officialUpdates(),
+            'sources' => $sources['rows'],
+            'changes' => $changes['rows'],
+            'changes_pagination' => $changes['pagination'],
+            'issues' => $issues['rows'],
+            'updates' => $updates['rows'],
             'portal' => $this->portalStatus(),
             'exclusion_labels' => [
                 ExclusionKind::AuthRequired->value => ExclusionKind::AuthRequired->publicLabel(),
@@ -72,64 +79,20 @@ final class MonitorDashboardController
         ]);
     }
 
-    /** @return list<array<string, scalar>> */
-    private function sources(int $now): array
-    {
-        return $this->projection->viewAll(
-            $this->entityTypes->getRepository(MonitorEntityTypes::SOURCE)->findBy([]),
-            $now,
-        );
-    }
-
     /**
-     * Recent change events, newest first, redacted rows excluded.
+     * Every dashboard section resolves a registered `ListingDefinition`.
      *
-     * @return list<array<string, scalar>>
+     * No full-table scan, no manual array slicing, no `usort()` in the
+     * controller: the sort, page size, access ops and cache tags all live in
+     * the definition, and `ListingResolver` is what applies them — including
+     * the bespoke `monitor.dashboard_read` gate. Reading repositories directly
+     * would leave those definitions as decoration.
+     *
+     * @return array{rows: list<array<string, scalar>>, pagination: array<string, mixed>}
      */
-    private function recentChanges(): array
+    private function listing(string $listingId, int $page = 1, int $now = 0): array
     {
-        $events = [];
-        foreach ($this->entityTypes->getRepository(MonitorEntityTypes::EVENT)->findBy([]) as $event) {
-            if ((int) $event->get('redacted_at') !== 0) {
-                continue;
-            }
-            $events[] = $this->projection->view($event);
-        }
-
-        usort($events, static fn (array $a, array $b): int => ((int) $b['observed_at']) <=> ((int) $a['observed_at']));
-
-        return array_slice($events, 0, 50);
-    }
-
-    /** @return list<array<string, scalar>> */
-    private function openIssues(): array
-    {
-        $issues = [];
-        foreach ($this->entityTypes->getRepository(MonitorEntityTypes::ISSUE)->findBy([]) as $issue) {
-            $view = $this->projection->view($issue);
-            if (in_array((string) $view['issue_state'], ['open', 'awaiting_response', 'partly_answered'], true)) {
-                $issues[] = $view;
-            }
-        }
-
-        // By date opened. Never by severity: that is an Internal editorial
-        // judgement, and a public list ordered by it publishes the ranking
-        // without ever rendering the field.
-        usort($issues, static fn (array $a, array $b): int => ((int) $b['opened_at']) <=> ((int) $a['opened_at']));
-
-        return $issues;
-    }
-
-    /** @return list<array<string, scalar>> */
-    private function officialUpdates(): array
-    {
-        $updates = $this->projection->viewAll(
-            $this->entityTypes->getRepository(MonitorEntityTypes::OFFICIAL_UPDATE)->findBy([]),
-        );
-
-        usort($updates, static fn (array $a, array $b): int => ((int) $b['published_at']) <=> ((int) $a['published_at']));
-
-        return $updates;
+        return $this->projection->resolveListing($listingId, $page, $now);
     }
 
     /** @return array<string, scalar>|null */

@@ -6,6 +6,7 @@ namespace App\Tests\Integration\Monitor;
 
 use App\Entity\MonitorSource;
 use App\Monitor\CollectorState;
+use App\Monitor\ExclusionKind;
 use App\Monitor\FetchResult;
 use App\Monitor\FixturePageFetcher;
 use App\Monitor\MonitorEntityTypes;
@@ -224,7 +225,7 @@ final class CollectorRunTest extends TestCase
 
         self::assertSame(1, $run['gated']);
         self::assertSame(0, $run['not_retained']);
-        self::assertSame([], $this->sideTableRows(), 'an excluded page must write nothing to the side table');
+        $this->assertExclusionRetainedNoContent(ExclusionKind::AuthRequired);
     }
 
     public function testANotForRetentionExclusionStoresNoBodyHashOrSnapshot(): void
@@ -242,7 +243,7 @@ final class CollectorRunTest extends TestCase
 
         self::assertSame(1, $run['not_retained'], 'noindex is counted separately from gated');
         self::assertSame(0, $run['gated'], 'noindex must never inflate the sign-in figure');
-        self::assertSame([], $this->sideTableRows(), 'nothing may be retained for a noindex page');
+        $this->assertExclusionRetainedNoContent(ExclusionKind::NotForRetention);
     }
 
     public function testNoindexDoesNotDegradeSourceHealth(): void
@@ -390,6 +391,35 @@ final class CollectorRunTest extends TestCase
             $this->manager()->getRepository(MonitorEntityTypes::EVENT)->findBy([]),
             false,
         )));
+    }
+
+    /**
+     * The exclusion STATE is persisted — that is how a gated page emits one
+     * event rather than one per run — but none of the excluded page's content
+     * may be. Assert both halves together so neither can drift.
+     */
+    private function assertExclusionRetainedNoContent(ExclusionKind $expected): void
+    {
+        $rows = $this->sideTableRows();
+        self::assertCount(1, $rows, 'the exclusion state is remembered');
+        self::assertSame($expected->value, $rows[0]['exclusion_kind']);
+
+        self::assertSame('', (string) $rows[0]['content_hash'], 'no hash of excluded content');
+        self::assertSame(0, (int) $rows[0]['normalized_bytes'], 'no size of excluded content');
+        self::assertSame([], $this->snapshotRows(), 'no snapshot of excluded content');
+    }
+
+    /** @return list<array<string, mixed>> */
+    private function snapshotRows(): array
+    {
+        $pdo = new \PDO('sqlite:' . $this->databasePath, null, null, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
+        $tables = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name='" . CollectorState::SNAPSHOT_TABLE . "'")
+            ->fetchAll(\PDO::FETCH_ASSOC);
+        if ($tables === []) {
+            return [];
+        }
+
+        return $pdo->query('SELECT * FROM ' . CollectorState::SNAPSHOT_TABLE)->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /** @return list<array<string, mixed>> */

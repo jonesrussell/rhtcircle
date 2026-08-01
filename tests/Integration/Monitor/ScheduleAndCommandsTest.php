@@ -9,6 +9,7 @@ use App\Command\MonitorRedactEventCommand;
 use App\Monitor\CollectorState;
 use App\Monitor\FetchResult;
 use App\Monitor\FixturePageFetcher;
+use App\Monitor\MonitorConfiguration;
 use App\Monitor\MonitorEntityTypes;
 use App\Provider\SagamokMonitorServiceProvider;
 use App\Schedule\SagamokMonitorSchedule;
@@ -114,11 +115,13 @@ final class ScheduleAndCommandsTest extends TestCase
     public function testDryRunWritesNothingIncludingNoSideTable(): void
     {
         $this->seedSource();
-        $fetcher = FixturePageFetcher::withPages([self::PAGE => '<html><head><title>A</title></head><body>x</body></html>']);
+        $fetcher = FixturePageFetcher::withPages([
+            self::ORIGIN => $this->seedPage(),
+            self::PAGE => '<html><head><title>A</title></head><body>x</body></html>',
+        ]);
 
         $io = $this->io();
-        $status = new MonitorPublicCommand($this->manager(), $this->kernel()->getDatabase(), $fetcher)
-            ->run($io, [self::PAGE], dryRun: true, now: 1_000);
+        $status = $this->command($fetcher)->run($io, dryRun: true, now: 1_000);
 
         self::assertSame(0, $status);
         self::assertStringContainsString('DRY RUN', $io->output());
@@ -136,7 +139,17 @@ final class ScheduleAndCommandsTest extends TestCase
     public function testALiveRunReportsClearTotals(): void
     {
         $this->seedSource();
-        $fetcher = FixturePageFetcher::withPages([self::PAGE => '<html><head><title>A</title></head><body>x</body></html>']);
+
+        // The seed links to each case, so discovery reaches them the way a real
+        // run would rather than the test hand-feeding a URL list.
+        $seed = '<html><head><title>Home</title></head><body>'
+            . '<a href="/notices/water-advisory">A</a>'
+            . '<a href="/gated">G</a><a href="/quiet">Q</a><a href="/down">D</a>'
+            . '</body></html>';
+        $fetcher = FixturePageFetcher::withPages([
+            self::ORIGIN => $seed,
+            self::PAGE => '<html><head><title>A</title></head><body>x</body></html>',
+        ]);
         $fetcher->set(self::ORIGIN . 'gated', FetchResult::success(401, self::ORIGIN . 'gated', ''));
         $fetcher->set(self::ORIGIN . 'quiet', FetchResult::success(
             200,
@@ -146,11 +159,10 @@ final class ScheduleAndCommandsTest extends TestCase
         $fetcher->set(self::ORIGIN . 'down', FetchResult::failure(self::ORIGIN . 'down', 'timeout'));
 
         $io = $this->io();
-        new MonitorPublicCommand($this->manager(), $this->kernel()->getDatabase(), $fetcher)
-            ->run($io, [self::PAGE, self::ORIGIN . 'gated', self::ORIGIN . 'quiet', self::ORIGIN . 'down'], false, 1_000);
+        $this->command($fetcher)->run($io, false, 1_000);
 
         $output = $io->output();
-        self::assertStringContainsString('new 1', $output);
+        self::assertStringContainsString('new 2', $output, 'the seed page is itself a monitored public page');
         self::assertStringContainsString('gated 1', $output);
         self::assertStringContainsString('not retained 1', $output);
         self::assertStringContainsString('failed 1', $output);
@@ -159,13 +171,73 @@ final class ScheduleAndCommandsTest extends TestCase
         self::assertStringContainsString('they remain publicly reachable', $output);
     }
 
-    public function testTheCommandRefusesWhenNoSourceIsRegistered(): void
+    public function testTheCommandSeedsTheSourceIdempotently(): void
+    {
+        // No source exists yet. The command must create one from configuration
+        // rather than refusing: a fresh deployment that monitors nothing until
+        // someone hand-seeds a row is how this shipped broken the first time.
+        self::assertSame(0, $this->countRowsOf(MonitorEntityTypes::SOURCE));
+
+        $fetcher = FixturePageFetcher::withPages([self::ORIGIN => $this->seedPage()]);
+
+        self::assertSame(0, $this->command($fetcher)->run($this->io(), false, 1_000));
+        self::assertSame(1, $this->countRowsOf(MonitorEntityTypes::SOURCE), 'the source is created from config');
+
+        // Second run changes nothing.
+        self::assertSame(0, $this->command($fetcher)->run($this->io(), false, 2_000));
+        self::assertSame(1, $this->countRowsOf(MonitorEntityTypes::SOURCE), 'seeding is idempotent');
+    }
+
+    public function testTheCommandRefusesAnUnconfiguredMonitor(): void
     {
         $io = $this->io();
-        $status = new MonitorPublicCommand($this->manager(), $this->kernel()->getDatabase(), new FixturePageFetcher())
-            ->run($io, [self::PAGE], false, 1_000);
+        $status = new MonitorPublicCommand(
+            $this->manager(),
+            $this->kernel()->getDatabase(),
+            new FixturePageFetcher(),
+            MonitorConfiguration::fromConfig(['sagamok_monitor' => ['enabled' => true, 'origin_url' => '', 'seed_paths' => []]]),
+        )->run($io, false, 1_000);
 
-        self::assertSame(1, $status, 'fail closed rather than inventing a source');
+        self::assertSame(1, $status, 'fail closed rather than running against a default nobody chose');
+    }
+
+    public function testAnEmptyTargetSetFailsClosedAndRecordsNoSuccessfulCheck(): void
+    {
+        // Nothing discoverable: the seed itself 404s. Reporting health=ok here
+        // would tell members the site is being watched when nothing was read.
+        $fetcher = new FixturePageFetcher();
+        $status = $this->command($fetcher)->run($this->io(), false, 1_000);
+
+        self::assertSame(1, $status);
+
+        $source = $this->manager()->getRepository(MonitorEntityTypes::SOURCE)->findBy(['key' => 'sagamok_public_site']);
+        foreach ($source as $row) {
+            self::assertSame(0, (int) $row->get('last_success'), 'an empty run is not a successful check');
+        }
+    }
+
+    public function testTheCommandDiscoversLinkedPagesFromTheSeed(): void
+    {
+        // The point of crawling rather than re-checking a frozen list: a page
+        // linked from the seed is monitored without anyone adding it by hand.
+        $fetcher = FixturePageFetcher::withPages([
+            self::ORIGIN => $this->seedPage(),
+            self::ORIGIN . 'notices/water-advisory' => '<html><head><title>Advisory</title></head><body>text</body></html>',
+        ]);
+
+        $io = $this->io();
+        self::assertSame(0, $this->command($fetcher)->run($io, false, 1_000));
+
+        $refs = [];
+        foreach ($this->manager()->getRepository(MonitorEntityTypes::ITEM)->findBy([]) as $item) {
+            $refs[] = (string) $item->get('public_url');
+        }
+
+        self::assertContains(
+            'https://www.sagamokanishnawbek.test/notices/water-advisory',
+            $refs,
+            'a page discovered by following a public link must be monitored',
+        );
     }
 
     public function testAllThreeCommandsAreDiscoverableFromTheProvider(): void
@@ -257,6 +329,34 @@ final class ScheduleAndCommandsTest extends TestCase
     // ------------------------------------------------------------------
     // Helpers
     // ------------------------------------------------------------------
+
+    /** A seed page linking to one notice, so discovery has something to find. */
+    private function seedPage(): string
+    {
+        return '<html><head><title>Home</title></head><body>'
+            . '<a href="/notices/water-advisory">Water advisory</a>'
+            . '<a href="/members/portal">Members</a>'
+            . '<a href="https://example.org/off">Off origin</a>'
+            . '</body></html>';
+    }
+
+    private function command(FixturePageFetcher $fetcher): MonitorPublicCommand
+    {
+        return new MonitorPublicCommand(
+            $this->manager(),
+            $this->kernel()->getDatabase(),
+            $fetcher,
+            MonitorConfiguration::fromConfig(['sagamok_monitor' => [
+                'enabled' => true,
+                'source_key' => 'sagamok_public_site',
+                'label' => 'Sagamok public website',
+                'origin_url' => rtrim(self::ORIGIN, '/'),
+                'seed_paths' => ['/'],
+                'max_urls_per_run' => 300,
+                'max_crawl_depth' => 2,
+            ]]),
+        );
+    }
 
     private function seedSource(): void
     {

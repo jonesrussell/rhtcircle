@@ -162,6 +162,32 @@ return [
     //     session, and already sends `private, no-store` + noindex;
     //   - /updates/remove and /petition/remove/{token} are GET one-click
     //     actions authorized by the token in the URL.
+    // The Sagamok public-website monitor: what it watches, stated explicitly.
+    //
+    // PUBLIC WEBSITE ONLY. There is no members-portal setting here and none can
+    // be added: the collector reaches the network solely through
+    // PageFetcherInterface, which has no credential, cookie or archive surface.
+    //
+    // The crawl starts at these seed paths and follows same-origin public links
+    // from them, so newly published pages are discovered rather than only
+    // re-checked. `enabled` gates the collector independently of the schedule:
+    // both must be on before anything is fetched.
+    'sagamok_monitor' => [
+        'enabled' => false,
+        'source_key' => 'sagamok_public_site',
+        'label' => 'Sagamok public website',
+        'origin_url' => 'https://www.sagamokanishnawbek.com',
+        'seed_paths' => [
+            '/',
+            '/news',
+            '/notices',
+            '/chief-and-council',
+            '/community-updates',
+        ],
+        'max_urls_per_run' => 300,
+        'max_crawl_depth' => 2,
+    ],
+
     // The Sagamok public-website monitor ships DISABLED. Enabling it means this
     // app starts making automated requests to another Nation's website on a
     // timer, which is a maintainer and Council decision rather than a

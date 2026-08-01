@@ -6,9 +6,11 @@ namespace App\Command;
 
 use App\Entity\MonitorSource;
 use App\Monitor\CollectorState;
+use App\Monitor\MonitorConfiguration;
 use App\Monitor\MonitorEntityTypes;
 use App\Monitor\PageFetcherInterface;
 use App\Monitor\PublicSiteCollector;
+use App\Monitor\PublicSiteCrawler;
 use Waaseyaa\CLI\Command\SymfonyCommandIO;
 use Waaseyaa\Database\DatabaseInterface;
 use Waaseyaa\Entity\EntityTypeManager;
@@ -17,14 +19,25 @@ use Waaseyaa\Entity\EntityTypeManager;
  * `bin/waaseyaa sagamok:monitor-public [--dry-run]` — one collection run over
  * the Sagamok **public website**.
  *
- * The fetcher is injected, so tests drive the whole command against fixtures
- * and no test run can reach the production site.
+ * The command owns three things the collector deliberately does not:
+ *
+ *  1. **Idempotent source initialisation.** The `monitor_source` row is created
+ *     from configuration if absent and reconciled if the configuration changed,
+ *     so a fresh deployment works without anyone remembering to seed a row by
+ *     hand — which is what "monitors nothing" looked like before.
+ *  2. **Discovery.** The crawl starts at the configured seed pages and follows
+ *     public same-origin links, so newly published pages are found rather than
+ *     only re-checked.
+ *  3. **Failing closed.** Missing configuration, a disabled monitor, or a run
+ *     that discovered nothing all exit non-zero rather than reporting a healthy
+ *     run over an empty set.
+ *
+ * The fetcher is injected, so tests drive the whole command against fixtures and
+ * no test run can reach the production site.
  *
  * `--dry-run` performs **zero** writes of every kind: no entity, no event, no
  * source-health update, no side-table row, no snapshot, no audit entry, and no
- * DDL. That last one is easy to overlook — creating the side table would make a
- * dry run write-free "except for schema", which is not write-free — so the side
- * table's read paths tolerate its absence rather than the command creating it.
+ * DDL — including no source seeding.
  */
 final class MonitorPublicCommand
 {
@@ -32,48 +45,138 @@ final class MonitorPublicCommand
         private readonly EntityTypeManager $entityTypes,
         private readonly DatabaseInterface $database,
         private readonly PageFetcherInterface $fetcher,
+        private readonly MonitorConfiguration $configuration,
     ) {}
 
-    /**
-     * @param list<string> $urls Same-origin public URLs to observe.
-     */
-    public function run(SymfonyCommandIO $io, array $urls, bool $dryRun, int $now): int
+    public function run(SymfonyCommandIO $io, bool $dryRun, int $now): int
     {
-        $sources = $this->entityTypes->getRepository(MonitorEntityTypes::SOURCE);
+        if (!$this->configuration->isRunnable()) {
+            $io->error(
+                'The Sagamok monitor is not configured: set sagamok_monitor.origin_url and at least one '
+                . 'seed_path in config/waaseyaa.php. Refusing to run against a default nobody chose.',
+            );
 
-        $source = null;
-        foreach ($sources->findBy(['key' => 'sagamok_public_site']) as $candidate) {
-            if ($candidate instanceof MonitorSource) {
-                $source = $candidate;
-                break;
-            }
+            return 1;
         }
 
+        if (!$this->configuration->enabled && !$dryRun) {
+            $io->writeln('The Sagamok monitor is disabled in configuration (sagamok_monitor.enabled). Nothing was fetched.');
+
+            return 0;
+        }
+
+        $source = $dryRun
+            ? $this->existingSource()
+            : $this->initialiseSource($now);
+
         if ($source === null) {
-            $io->error('No monitor source "sagamok_public_site" is registered. Seed it before running the collector.');
+            $io->error('No monitor source is available. A dry run cannot seed one; run once without --dry-run first.');
 
             return 1;
         }
 
         if (!(bool) $source->get('enabled')) {
-            $io->writeln('Source "sagamok_public_site" is disabled; nothing to do.');
+            $io->writeln(sprintf('Source "%s" is disabled; nothing to do.', $this->configuration->sourceKey));
 
             return 0;
         }
 
+        // --- discovery -------------------------------------------------------
+        $discovery = new PublicSiteCrawler($this->fetcher)->discover(
+            $this->configuration->seedUrls(),
+            $this->configuration->originUrl,
+            $this->configuration->maxUrlsPerRun,
+            $this->configuration->maxCrawlDepth,
+        );
+
+        $io->writeln(sprintf(
+            'discovered %d URL(s) from %d seed(s), %d page(s) fetched during discovery%s.',
+            count($discovery['urls']),
+            count($this->configuration->seedPaths),
+            $discovery['fetched'],
+            $discovery['truncated'] ? sprintf(' (truncated at the %d ceiling)', $this->configuration->maxUrlsPerRun) : '',
+        ));
+
+        // --- collection ------------------------------------------------------
         $collector = new PublicSiteCollector(
-            $sources,
+            $this->entityTypes->getRepository(MonitorEntityTypes::SOURCE),
             $this->entityTypes->getRepository(MonitorEntityTypes::ITEM),
             $this->entityTypes->getRepository(MonitorEntityTypes::EVENT),
             new CollectorState($this->database),
             $this->fetcher,
         );
 
-        $report = $collector->run($source, $urls, $now, $dryRun);
+        $report = $collector->run($source, $discovery['urls'], $now, $dryRun);
 
         $this->summarise($io, $report);
 
-        return 0;
+        if ($report['exit_code'] !== 0) {
+            $io->error(
+                'The run had no targets to observe. Nothing was recorded as a successful check, because '
+                . 'reporting health for a run that fetched nothing would tell members the site is being '
+                . 'watched when it is not.',
+            );
+        }
+
+        return (int) $report['exit_code'];
+    }
+
+    /**
+     * Create the source row from configuration if absent, reconcile it if the
+     * configuration moved. Idempotent: a second call changes nothing.
+     */
+    private function initialiseSource(int $now): ?MonitorSource
+    {
+        $repository = $this->entityTypes->getRepository(MonitorEntityTypes::SOURCE);
+        $existing = $this->existingSource();
+
+        if ($existing === null) {
+            $source = $repository->create([
+                'key' => $this->configuration->sourceKey,
+                'label' => $this->configuration->label,
+                'origin_url' => $this->configuration->originUrl,
+                'enabled' => true,
+                'health' => 'ok',
+                'last_check_started' => 0,
+                'last_check_completed' => 0,
+                'last_success' => 0,
+                'consecutive_failures' => 0,
+            ]);
+            $repository->save($source, validate: false);
+
+            return $source instanceof MonitorSource ? $source : null;
+        }
+
+        // Reconcile label/origin drift, but never re-enable a source an
+        // operator disabled: that decision belongs to them, not to config.
+        $changed = false;
+        if ((string) $existing->get('label') !== $this->configuration->label) {
+            $existing->set('label', $this->configuration->label);
+            $changed = true;
+        }
+        if ((string) $existing->get('origin_url') !== $this->configuration->originUrl) {
+            $existing->set('origin_url', $this->configuration->originUrl);
+            $changed = true;
+        }
+        if ($changed) {
+            $repository->save($existing, validate: false);
+        }
+
+        return $existing;
+    }
+
+    private function existingSource(): ?MonitorSource
+    {
+        foreach (
+            $this->entityTypes->getRepository(MonitorEntityTypes::SOURCE)
+                ->findBy(['key' => $this->configuration->sourceKey]) as $candidate
+        ) {
+            if ($candidate instanceof MonitorSource) {
+                return $candidate;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -94,8 +197,7 @@ final class MonitorPublicCommand
             'new %d; changed %d; unchanged %d; absent %d; removed %d; gated %d; not retained %d; failed %d.',
             $types['appeared'] ?? 0,
             $types['content_changed'] ?? 0,
-            // Observed minus those that produced an event is the unchanged set.
-            max(0, $report['observed'] - (($types['appeared'] ?? 0) + ($types['content_changed'] ?? 0) + ($types['reappeared'] ?? 0))),
+            max(0, $report['observed'] - (($types['appeared'] ?? 0) + ($types['content_changed'] ?? 0) + ($types['reappeared'] ?? 0) + ($types['became_retainable'] ?? 0))),
             $types['absent_pending'] ?? 0,
             $types['disappeared'] ?? 0,
             $report['gated'],
@@ -106,17 +208,24 @@ final class MonitorPublicCommand
         if (($types['reappeared'] ?? 0) > 0) {
             $io->writeln(sprintf('returned %d.', $types['reappeared']));
         }
+        if (($types['became_retainable'] ?? 0) > 0) {
+            $io->writeln(sprintf('became retainable again %d.', $types['became_retainable']));
+        }
         if ($report['skipped_off_origin'] > 0) {
             $io->writeln(sprintf('skipped %d off-origin URL(s).', $report['skipped_off_origin']));
         }
-        if ($report['truncated_at_limit']) {
+        if ($report['indeterminate'] !== []) {
+            // Named explicitly so an operator can tell "the server could not
+            // answer" from "the page is gone". Only the latter is a removal.
             $io->writeln(sprintf(
-                'NOTE: the URL list exceeded the %d-per-run ceiling and was truncated.',
-                PublicSiteCollector::MAX_URLS_PER_RUN,
+                'indeterminate response(s): %s — counted against source health, never as a removal.',
+                implode(', ', array_unique(array_map('strval', $report['indeterminate']))),
             ));
         }
+        if ($report['truncated_at_limit']) {
+            $io->writeln(sprintf('NOTE: the URL list exceeded the %d-per-run ceiling and was truncated.', PublicSiteCollector::MAX_URLS_PER_RUN));
+        }
         if ($report['not_retained'] > 0) {
-            // Worded so it is never mistaken for an access restriction.
             $io->writeln('Some pages asked not to be retained (noindex); they remain publicly reachable.');
         }
 
