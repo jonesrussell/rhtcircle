@@ -92,6 +92,13 @@
                       {{ exclusion_labels.auth_required }}
                     {% elseif change.event_type == 'became_noindex' %}
                       {{ exclusion_labels.not_for_retention }}
+                    {% elseif change.event_type == 'became_retainable' %}
+                      {# The collector emits this on recovery from any exclusion.
+                         It was missing here while the listing template handled
+                         it, so the dashboard preview fell through to the raw
+                         `else` and printed the literal string `became_retainable`
+                         to readers. #}
+                      Publicly retainable again
                     {% else %}
                       {{ change.event_type }}
                     {% endif %}

@@ -269,10 +269,25 @@ final class CollectorState
 
         $isTransition = $existing['exclusion_kind'] !== $kind->value;
 
+        // Purge what we already hold (review finding 2). Declining to collect
+        // from here on is only half of what an exclusion means. `noindex` is
+        // specified as "do not collect or retain this page", and a page that
+        // moved behind the portal is material we should never have had — yet
+        // the previously stored body sat in the snapshot table for up to 90
+        // more days under the ordinary retention timer. That honoured the
+        // publisher's instruction forwards and ignored it backwards.
+        $this->purgeRetainedContent($sourceKey, $itemKey);
+
         $this->database->update(self::TABLE)
             ->fields([
                 'exclusion_kind' => $kind->value,
                 'exclusion_reason' => $reason,
+                // Content-derived state goes with the content. A retained hash
+                // is a fingerprint of a body we are no longer entitled to hold,
+                // and keeping it would also let a later run "detect a change"
+                // in a page it must not be reading.
+                'content_hash' => '',
+                'normalized_bytes' => 0,
                 // An excluded page is not an absent page; absence is a separate
                 // finding and must not accumulate while we are being told "no".
                 'absent_runs' => 0,
@@ -283,6 +298,35 @@ final class CollectorState
             ->execute();
 
         return $isTransition;
+    }
+
+    /**
+     * Delete every stored snapshot for one item.
+     *
+     * Used by exclusion transitions and by redaction. Returns the number of
+     * rows removed so callers can report it — an operator acting on a
+     * personal-information report needs to know the copy is actually gone, and
+     * "0" for an item that should have had snapshots is itself a finding.
+     */
+    public function purgeRetainedContent(string $sourceKey, string $itemKey): int
+    {
+        if (!$this->database->schema()->tableExists(self::SNAPSHOT_TABLE)) {
+            return 0;
+        }
+
+        $rows = $this->database->select(self::SNAPSHOT_TABLE)
+            ->fields(self::SNAPSHOT_TABLE, ['id'])
+            ->condition('source_key', $sourceKey)
+            ->condition('item_key', $itemKey)
+            ->execute();
+
+        $removed = 0;
+        foreach ($rows as $row) {
+            $this->database->delete(self::SNAPSHOT_TABLE)->condition('id', $row['id'])->execute();
+            ++$removed;
+        }
+
+        return $removed;
     }
 
     /**

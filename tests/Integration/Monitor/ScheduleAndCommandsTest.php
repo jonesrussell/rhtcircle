@@ -275,7 +275,7 @@ final class ScheduleAndCommandsTest extends TestCase
         $id = (string) $event->id();
 
         $io = $this->io();
-        $status = new MonitorRedactEventCommand($this->manager())->run($io, $id, 'member_request', 9_000);
+        $status = new MonitorRedactEventCommand($this->manager(), new CollectorState($this->database()))->run($io, $id, 'member_request', 9_000);
 
         self::assertSame(0, $status);
 
@@ -291,7 +291,7 @@ final class ScheduleAndCommandsTest extends TestCase
     public function testRedactionFailsClosedOnAnUnknownId(): void
     {
         $io = $this->io();
-        self::assertSame(1, new MonitorRedactEventCommand($this->manager())->run($io, '999999', 'member_request', 9_000));
+        self::assertSame(1, new MonitorRedactEventCommand($this->manager(), new CollectorState($this->database()))->run($io, '999999', 'member_request', 9_000));
     }
 
     public function testRedactionFailsClosedOnAnUnknownReason(): void
@@ -299,8 +299,37 @@ final class ScheduleAndCommandsTest extends TestCase
         // Free-text reasons are rejected: the reason is rendered publicly
         // beside the stub, so it would otherwise be an unreviewed publication
         // surface.
-        $io = $this->io();
-        self::assertSame(1, new MonitorRedactEventCommand($this->manager())->run($io, '1', 'because I said so', 9_000));
+        //
+        // The event id below is REAL, and that is the whole point. This test
+        // used to pass id '1', which no fixture created — so it exercised the
+        // not-found branch and would have passed with the reason guard deleted
+        // entirely, making it a duplicate of the unknown-id test above it.
+        // Reason validation can only be observed on an event that exists.
+        $repository = $this->manager()->getRepository(MonitorEntityTypes::EVENT);
+        $event = $repository->create([
+            'source_key' => 'sagamok_public_site',
+            'item_public_ref' => 'p-reason',
+            'event_type' => 'content_changed',
+            'observed_at' => 500,
+            'redacted_at' => 0,
+        ]);
+        $repository->save($event, validate: false);
+        $id = (string) $event->id();
+
+        $command = new MonitorRedactEventCommand($this->manager(), new CollectorState($this->database()));
+
+        self::assertSame(1, $command->run($this->io(), $id, 'because I said so', 9_000));
+
+        // Control: the SAME id with an allowed reason succeeds. Without this,
+        // the assertion above could pass for any reason at all — a broken
+        // lookup, a failing purge, a typo in the fixture — and still look like
+        // reason validation working.
+        self::assertSame(0, $command->run($this->io(), $id, 'member_request', 9_000));
+
+        // And the refused attempt left no trace: the rejected reason must never
+        // have been written.
+        $stub = $repository->find($id);
+        self::assertSame('member_request', (string) $stub?->get('redaction_reason'));
     }
 
     public function testRedactionIsNotRepeatable(): void
@@ -316,7 +345,7 @@ final class ScheduleAndCommandsTest extends TestCase
         $repository->save($event, validate: false);
         $id = (string) $event->id();
 
-        $command = new MonitorRedactEventCommand($this->manager());
+        $command = new MonitorRedactEventCommand($this->manager(), new CollectorState($this->database()));
         self::assertSame(0, $command->run($this->io(), $id, 'member_request', 9_000));
         self::assertSame(1, $command->run($this->io(), $id, 'inaccurate', 9_500), 'a second redaction must fail closed');
 
@@ -393,6 +422,11 @@ final class ScheduleAndCommandsTest extends TestCase
     private function manager(): EntityTypeManager
     {
         return $this->kernel()->getEntityTypeManager();
+    }
+
+    private function database(): \Waaseyaa\Database\DatabaseInterface
+    {
+        return $this->kernel()->getDatabase();
     }
 
     private function kernel(): HttpKernel

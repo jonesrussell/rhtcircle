@@ -78,8 +78,22 @@ final class PortalBoundaryTest extends TestCase
 
     public function testPortalRecordsExposeOnlyEditorialStatementFields(): void
     {
-        // Positively pinned, not just negatively: the closed projection for
-        // these two types is small and deliberate.
+        // Asserted at the EMISSION point — the keys `view()` actually returns —
+        // not at the `PROJECTION` constant.
+        //
+        // Those two disagree, and did so while this test passed. `view()`
+        // mutates its result after copying the constant: it adds `stalled` for
+        // sources, and for portal state it adds `last_verified_on` and unsets
+        // `verified_on` (month precision only, spec §7.1). So the old assertion
+        // claimed readers receive `['state', 'verified_on', 'statement']` when
+        // they actually receive `['state', 'statement', 'last_verified_on']`.
+        //
+        // The closed-set guarantee has to be pinned where values leave the
+        // repository. Against the constant, adding `$out['method_note'] = …`
+        // inside `view()` keeps every assertion green while the value reaches
+        // every template. That emission-point assertion lives in
+        // MonitorCompositionTest, which has a booted kernel; this file keeps
+        // the constant check as a secondary, failure-localising signal.
         self::assertSame(
             ['state', 'verified_on', 'statement'],
             SagamokMonitorRepository::projectedKeys(MonitorEntityTypes::PORTAL_ACCESS_STATE),

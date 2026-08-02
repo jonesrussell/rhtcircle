@@ -91,7 +91,7 @@ final class DashboardListingTest extends TestCase
     {
         $repository = $this->repository();
 
-        $result = $repository->resolveListing(SagamokMonitorServiceProvider::LISTING_TIMELINE, 1, 1_000_000);
+        $result = $repository->resolveListing(SagamokMonitorServiceProvider::LISTING_TIMELINE, 1_000_000);
 
         self::assertArrayHasKey('rows', $result);
         self::assertArrayHasKey('pagination', $result);
@@ -103,7 +103,7 @@ final class DashboardListingTest extends TestCase
         // The timeline is declared `Sort::desc('observed_at')`. If the rows come
         // back newest-first without the controller touching them, the sort is
         // genuinely coming from the definition.
-        $rows = $this->repository()->resolveListing(SagamokMonitorServiceProvider::LISTING_TIMELINE, 1, 0)['rows'];
+        $rows = $this->repository()->resolveListing(SagamokMonitorServiceProvider::LISTING_TIMELINE)['rows'];
 
         $observed = array_map(static fn (array $r): int => (int) $r['observed_at'], $rows);
         $sorted = $observed;
@@ -114,9 +114,16 @@ final class DashboardListingTest extends TestCase
 
     public function testPaginationTotalsComeFromTheResolver(): void
     {
-        $pagination = $this->repository()->resolveListing(SagamokMonitorServiceProvider::LISTING_TIMELINE, 1, 0)['pagination'];
+        // These calls previously passed THREE arguments — `resolveListing($id, 1, 0)`
+        // — against a two-parameter signature `resolveListing(string $listingId,
+        // int $now = 0)`. PHP silently discards the extra, so `1` bound to
+        // `$now` and the third vanished. The tests read as though they selected
+        // page 1; no page was ever selected, and the assertions below could not
+        // fail. The signature is honoured now, and the page number comes from
+        // the request, which is where `ListingResolver` reads it.
+        $pagination = $this->repository()->resolveListing(SagamokMonitorServiceProvider::LISTING_TIMELINE)['pagination'];
 
-        self::assertSame(1, $pagination['page']);
+        self::assertSame(1, $pagination['page'], 'an unpaged request resolves page 1');
         self::assertSame(50, $pagination['page_size'], 'the declared page size, not a controller constant');
         self::assertSame(6, $pagination['total_rows'], 'a real total, not a count of the sliced array');
         self::assertFalse($pagination['has_prev']);
@@ -126,7 +133,7 @@ final class DashboardListingTest extends TestCase
     {
         // Declared `Filter::in('issue_state', ['open','awaiting_response','partly_answered'])`.
         // The resolved rows must honour it without the controller filtering.
-        $rows = $this->repository()->resolveListing(SagamokMonitorServiceProvider::LISTING_ISSUES_OPEN, 1, 0)['rows'];
+        $rows = $this->repository()->resolveListing(SagamokMonitorServiceProvider::LISTING_ISSUES_OPEN)['rows'];
 
         self::assertNotEmpty($rows);
         foreach ($rows as $row) {

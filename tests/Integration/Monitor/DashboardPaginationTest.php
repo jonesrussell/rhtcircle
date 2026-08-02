@@ -34,6 +34,9 @@ final class DashboardPaginationTest extends TestCase
     private const EVENT_COUNT = 120;
     private const PAGE_SIZE = 50;
 
+    /** `LISTING_ITEMS` declares pageSize 25, so 30 rows is two pages. */
+    private const ITEM_COUNT = 30;
+
     private string $projectRoot;
     private string $databasePath;
     /** @var array<string, string|false> */
@@ -158,12 +161,38 @@ final class DashboardPaginationTest extends TestCase
 
     public function testThePagesRouteIsIndependentlyPaged(): void
     {
-        // Independent: paging the changes route must not move this one, and
-        // vice versa. They are separate requests to separate routes.
-        $html = (string) $this->request('/communities/sagamok/monitor/pages')->getContent();
+        // This test used to issue ONE request with no `page` parameter and
+        // assert two string literals the controller emits unconditionally —
+        // while `seed()` created 3 items against `pageSize: 25`, so the pager
+        // never rendered at all. No pagination defect on this route was
+        // detectable by it.
+        //
+        // It now walks the pager over more than one page of items and asserts
+        // the rows differ, which is the claim its name makes.
+        $first = (string) $this->request('/communities/sagamok/monitor/pages')->getContent();
+        $second = (string) $this->request('/communities/sagamok/monitor/pages', ['page' => '2'])->getContent();
 
-        self::assertStringContainsString('Every page being watched', $html);
-        self::assertStringContainsString('/communities/sagamok/monitor/pages', $html);
+        preg_match_all('/data-item-(\d+)/', $first, $a);
+        preg_match_all('/data-item-(\d+)/', $second, $b);
+
+        self::assertNotEmpty($a[1], 'page 1 must list items');
+        self::assertNotEmpty($b[1], 'page 2 must list items');
+        self::assertSame([], array_intersect($a[1], $b[1]), 'page 2 must not repeat page 1');
+        self::assertStringContainsString('rel="next"', $first, 'more than one page must exist');
+        self::assertStringContainsString('Page 2 of', $second);
+    }
+
+    public function testPagingOneRouteDoesNotMoveTheOther(): void
+    {
+        // The independence claim itself, which nothing previously asserted.
+        // Each route resolves exactly one listing, so `?page=` addresses that
+        // listing and nothing else — the design constraint that follows from
+        // RequestContext being per-request.
+        $changesPage2 = (string) $this->request('/communities/sagamok/monitor/changes', ['page' => '2'])->getContent();
+        $pagesPage1 = (string) $this->request('/communities/sagamok/monitor/pages')->getContent();
+
+        self::assertStringContainsString('Page 2 of', $changesPage2);
+        self::assertStringContainsString('Page 1 of', $pagesPage1, 'the pages route is unaffected by the changes route');
     }
 
     public function testAnOutOfRangePageClampsRatherThanErroring(): void
@@ -208,18 +237,24 @@ final class DashboardPaginationTest extends TestCase
             $events->save($event, validate: false);
         }
 
-        // A handful of small-section rows: these are what used to empty.
+        // More than ONE page of items. `LISTING_ITEMS` declares pageSize 25, so
+        // the previous three rows meant `total_pages` was 1 and the pager block
+        // never rendered — which is why the pages-route test could not observe
+        // pagination at all. Each title carries a unique marker that reaches
+        // the rendered page, so navigation can be proven exhaustive the same
+        // way the events timeline is.
         $items = $manager->getRepository(MonitorEntityTypes::ITEM);
-        foreach ([1, 2, 3] as $n) {
+        for ($n = 1; $n <= self::ITEM_COUNT; ++$n) {
             $item = $items->create([
                 'source_key' => 'sagamok_public_site',
-                'public_ref' => 'sagamok_public_site-000' . $n,
-                'title' => 'Tracked page ' . $n,
+                'public_ref' => sprintf('sagamok_public_site-%04d', $n),
+                'title' => 'data-item-' . $n,
                 'public_url' => 'https://www.sagamokanishnawbek.test/p/' . $n,
                 'change_status' => 'changed',
                 'first_seen' => 1,
-                'last_seen' => 1_000_000,
-                'changed_at' => 1_000_000,
+                // Descending `last_seen` gives a stable, distinct page order.
+                'last_seen' => 1_000_000 + $n,
+                'changed_at' => 1_000_000 + $n,
             ]);
             $items->save($item, validate: false);
         }

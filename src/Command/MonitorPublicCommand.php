@@ -60,8 +60,21 @@ final class MonitorPublicCommand
             return 1;
         }
 
-        if (!$this->configuration->enabled && !$dryRun) {
-            $io->writeln('The Sagamok monitor is disabled in configuration (sagamok_monitor.enabled). Nothing was fetched.');
+        // The kill-switch is unconditional (review finding 11). It previously
+        // exempted `--dry-run`, on the reasoning that a dry run writes nothing.
+        // But a dry run still *fetches*: it makes real HTTP requests to another
+        // Nation's website. The switch that says "we are not monitoring right
+        // now" has to mean that, or it does not mean anything.
+        //
+        // This was masked while the shipped config had `enabled => false` and
+        // no source row existed, because the dry run bailed a few lines below.
+        // Once the monitor had been enabled once and then turned off, the row
+        // persisted and `--dry-run` would have resumed making live requests.
+        if (!$this->configuration->enabled) {
+            $io->writeln(sprintf(
+                'The Sagamok monitor is disabled in configuration (sagamok_monitor.enabled). Nothing was fetched%s.',
+                $dryRun ? ' — a dry run still makes real requests, so it is disabled too' : '',
+            ));
 
             return 0;
         }

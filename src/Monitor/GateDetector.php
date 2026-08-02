@@ -30,15 +30,6 @@ namespace App\Monitor;
 final class GateDetector
 {
     /**
-     * Path fragments that mean "you have been sent to authenticate". Matched
-     * against the *final* URL after redirects.
-     */
-    private const LOGIN_PATH_MARKERS = [
-        '/login', '/signin', '/sign-in', '/auth', '/account/login',
-        '/members/login', '/wp-login', '/user/login', '/sso', '/saml',
-    ];
-
-    /**
      * Markers of a login shell served at 200. Deliberately conservative: each
      * one alone is weak evidence, so {@see looksLikeLoginShell()} requires
      * corroboration from a short body, which is what a login shell is.
@@ -123,20 +114,24 @@ final class GateDetector
         return null;
     }
 
+    /**
+     * Delegates to {@see CrawlBoundary} — the single authority (review finding 1).
+     *
+     * This method used to own a list naming only `/members/login` and
+     * `/account/login`, while `LinkExtractor` separately knew about the whole
+     * `/members` family. The gate is what runs *after* a fetch, so its shorter
+     * list is the one that decided whether a members-area page reached the
+     * hasher, the snapshot table and the item title. A redirect to
+     * `/members/bulletin` — no password input, over the login-shell size
+     * ceiling — was classified as ordinary public content.
+     *
+     * Its old prefix test was also a bare `str_starts_with()`, which would
+     * have called `/logins-explained` a login page. `CrawlBoundary` matches on
+     * whole segments.
+     */
     private static function looksLikeLoginPath(string $url): bool
     {
-        $path = strtolower((string) (parse_url($url, PHP_URL_PATH) ?: ''));
-        if ($path === '') {
-            return false;
-        }
-
-        foreach (self::LOGIN_PATH_MARKERS as $marker) {
-            if (str_starts_with($path, $marker) || str_contains($path, $marker . '/')) {
-                return true;
-            }
-        }
-
-        return false;
+        return CrawlBoundary::isProtected($url);
     }
 
     /**

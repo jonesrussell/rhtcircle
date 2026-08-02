@@ -158,10 +158,53 @@ final class ChangeDetectionTest extends TestCase
         // The case that motivates this gate existing at all: the portal's
         // original defect was a 200 with a client-side login overlay. Status
         // code alone calls this page public.
+        //
+        // The URL here is a PUBLIC path on purpose. This test previously used
+        // `https://x/members`, which meant it passed on the body check only
+        // because `/members` was missing from the gate's path list — the very
+        // gap that let portal content through (review finding 1). With one
+        // boundary authority that URL is now caught by path, so exercising
+        // body detection requires a path the boundary does not already refuse.
         $shell = '<html><body><h1>Members only</h1>'
             . '<form><input type="password" name="password"></form></body></html>';
 
-        self::assertSame('login_shell', GateDetector::reason(200, 'https://x/members', $shell));
+        self::assertSame('login_shell', GateDetector::reason(200, 'https://x/news/bulletin', $shell));
+    }
+
+    public function testAPortalPathIsGatedRegardlessOfWhatTheBodyLooksLike(): void
+    {
+        // The scenario the old fixture accidentally concealed: a members-area
+        // page that is NOT a login shell. No password input, no login marker,
+        // and comfortably over the login-shell size ceiling — so every body
+        // heuristic declines. Before the single boundary authority this
+        // returned null and the collector hashed it, snapshotted up to 2 MB of
+        // it, and took the item title from its <title>.
+        $portalPage = '<html><head><title>Member bulletin — March</title></head><body>'
+            . str_repeat('<p>Members-only council correspondence.</p>', 3_000)
+            . '</body></html>';
+
+        self::assertGreaterThan(60_000, strlen($portalPage), 'must exceed the login-shell size ceiling');
+        self::assertStringNotContainsString('password', $portalPage, 'must carry no login marker');
+
+        self::assertSame(
+            'redirected_to_login',
+            GateDetector::reason(200, 'https://x/members/bulletin', $portalPage),
+        );
+        self::assertSame(
+            ExclusionKind::AuthRequired,
+            GateDetector::classify(200, 'https://x/members/bulletin', $portalPage),
+        );
+    }
+
+    public function testAPublicPageThatMerelyResemblesAPortalPathIsNotGated(): void
+    {
+        // Mutation control for the two tests above. A boundary that refused
+        // anything containing "member" would satisfy them both while silently
+        // blinding the monitor to a legitimate public page.
+        $page = '<html><head><title>How to apply for membership</title></head><body>'
+            . '<p>Membership applications open in April.</p></body></html>';
+
+        self::assertNull(GateDetector::reason(200, 'https://x/membership/how-to-apply', $page));
     }
 
     public function testANoindexTwoHundredIsExcludedButNotTreatedAsAuthRequired(): void

@@ -58,12 +58,26 @@ final class PublicSiteCollector
         $sourceKey = (string) $source->get('key');
         $originUrl = (string) $source->get('origin_url');
 
-        // The first successful run over a source establishes a BASELINE: those
-        // items were not created now, they were merely observed for the first
-        // time. Events from this run are flagged so the dashboard can say
-        // "First observed by this monitor" rather than implying the Nation
-        // published 200 documents the day we switched the collector on.
-        $isBaselineRun = ((int) $source->get('last_success')) === 0;
+        // The first run over a source establishes a BASELINE: those items were
+        // not created now, they were merely observed for the first time. Events
+        // from this run are flagged so the dashboard can say "First observed by
+        // this monitor" rather than implying the Nation published 200 documents
+        // the day we switched the collector on.
+        //
+        // Derived from whether this source has ANY tracked state, not from
+        // `last_success` (review finding 4). `last_success` only advances when
+        // health is `ok`, and health is `degraded` whenever a single URL in the
+        // target set fails. So one page that permanently 500s or times out held
+        // `last_success` at 0 forever, making EVERY run a baseline run — and
+        // every genuinely new document the Nation published thereafter was
+        // labelled "First observed by this monitor". The distinction the whole
+        // dashboard is built around inverted silently, with nothing visible but
+        // an "unreachable" badge operators learn to ignore.
+        //
+        // Bounded by construction: state rows are written for every observed,
+        // absent or excluded target, so the baseline closes after the first run
+        // that reached anything at all and cannot reopen.
+        $isBaselineRun = $this->state->allForSource($sourceKey) === [];
 
         $report = [
             'source_key' => $sourceKey,
@@ -131,10 +145,28 @@ final class PublicSiteCollector
                 continue;
             }
 
-            // --- collection gate, before hashing or storing anything ---
-            $exclusion = GateDetector::classify($result->statusCode, $result->finalUrl, $result->body, $result->headers);
+            // --- final effective-URL validation, before anything reads the body ---
+            //
+            // The URL we asked for and the URL we ended up at are different
+            // facts. Discovery vetted the first; only this check vets the
+            // second. A public URL that redirects into `/members/...` arrives
+            // here with a protected `finalUrl` and a members-area body, and
+            // everything downstream — parsing, titling, hashing, snapshotting,
+            // projecting — would otherwise treat it as ordinary content.
+            //
+            // Deliberately independent of what the body looks like: a portal
+            // page served at 200 with no login form is still not ours. Neither
+            // the path nor the body is retained, and the event carries no
+            // locator (spec §3, "no portal URLs").
+            $protectedFinalUrl = CrawlBoundary::isProtected($result->finalUrl);
+
+            $exclusion = $protectedFinalUrl
+                ? ExclusionKind::AuthRequired
+                : GateDetector::classify($result->statusCode, $result->finalUrl, $result->body, $result->headers);
             if ($exclusion !== null) {
-                $reason = (string) GateDetector::reason($result->statusCode, $result->finalUrl, $result->body, $result->headers);
+                $reason = $protectedFinalUrl
+                    ? 'protected_path'
+                    : (string) GateDetector::reason($result->statusCode, $result->finalUrl, $result->body, $result->headers);
 
                 // Counted separately. `noindex` says nothing about access, so
                 // folding it into the gated count would inflate a figure the
@@ -163,11 +195,19 @@ final class PublicSiteCollector
                 }
 
                 if (!$dryRun) {
+                    // Purges the retained body, snapshots and content hash.
                     $recorded = $this->state->recordExclusion($sourceKey, $itemKey, $exclusion, $reason, $now);
                     $publicRef = $known[$itemKey]['item_public_ref'] ?? '';
                     if ($recorded && $publicRef !== '') {
+                        // No locator on the event: for a protected path the URL
+                        // is itself something we do not store.
                         $this->recordEvent($sourceKey, $publicRef, $exclusion->eventType(), $now, 'gate_probe', '');
                         $this->touchItem($sourceKey, $publicRef, null, null, $now, $exclusion->eventType());
+                        // The title was learned from a body we are no longer
+                        // entitled to hold, so it goes with the body. Leaving it
+                        // would keep a readable fragment of excluded content on
+                        // the dashboard indefinitely.
+                        $this->neutralizeTitle($sourceKey, $publicRef, $exclusion);
                     }
                 }
                 // No hash, no snapshot, no body retained — for either kind.
@@ -194,6 +234,13 @@ final class PublicSiteCollector
             ++$report['observed'];
             $seen[$itemKey] = true;
 
+            // Last line of defence. Everything below reads the body: hashing,
+            // snapshotting, title extraction, projection. If any earlier stage
+            // has a gap, this fails loudly rather than quietly retaining
+            // protected material — a silent skip here would restore exactly the
+            // class of bug this machinery exists to prevent.
+            CrawlBoundary::assertPublic($result->finalUrl, 'hash and store');
+
             $hash = ContentNormalizer::hash($result->body);
             $snapshot = ContentNormalizer::snapshot($result->body);
             $existing = $known[$itemKey] ?? null;
@@ -204,6 +251,29 @@ final class PublicSiteCollector
                 // CONFIRMED absent. Deciding here would merge two live pages
                 // that happen to share content.
                 $newThisRun[$itemKey] = ['url' => $url, 'hash' => $hash, 'snapshot' => $snapshot, 'body' => $result->body];
+                continue;
+            }
+
+            // Recovery is decided BEFORE change detection, and the order is
+            // load-bearing. Exclusion purges the retained body and content hash
+            // (review finding 2), so on the way back out there is no stored
+            // fingerprint to compare against — by design, not by accident.
+            //
+            // Left in the other order, the empty hash never equals the incoming
+            // one and every recovery would publish "Page content changed": an
+            // assertion about the Nation's website that we cannot support,
+            // since we destroyed the only evidence that could have supported
+            // it. The page may well be byte-identical. What we actually know is
+            // that it is publicly retainable again, so that is what we say, and
+            // we re-establish the baseline silently.
+            if ($existing['exclusion_kind'] !== '') {
+                $report['events'][] = ['type' => 'became_retainable', 'item' => $existing['item_public_ref']];
+                if (!$dryRun) {
+                    $this->state->record($sourceKey, $itemKey, $existing['item_public_ref'], $hash, strlen($snapshot), $now);
+                    $this->state->appendSnapshot($sourceKey, $itemKey, $hash, $snapshot, $now);
+                    $this->touchItem($sourceKey, $existing['item_public_ref'], $url, $hash, $now, 'became_retainable');
+                    $this->recordEvent($sourceKey, $existing['item_public_ref'], 'became_retainable', $now, 'direct_fetch', $url);
+                }
                 continue;
             }
 
@@ -229,20 +299,6 @@ final class PublicSiteCollector
                     $this->state->clearAbsent($sourceKey, $itemKey, $now);
                     $this->touchItem($sourceKey, $existing['item_public_ref'], $url, $hash, $now, 'reappeared');
                     $this->recordEvent($sourceKey, $existing['item_public_ref'], 'reappeared', $now, 'direct_fetch', $url);
-                }
-                continue;
-            }
-
-            // Recovery: the page was excluded (gated or noindex) and is now
-            // publicly retainable again. Announced once, symmetrically with the
-            // transition into exclusion.
-            if ($existing['exclusion_kind'] !== '') {
-                $report['events'][] = ['type' => 'became_retainable', 'item' => $existing['item_public_ref']];
-                if (!$dryRun) {
-                    $this->state->record($sourceKey, $itemKey, $existing['item_public_ref'], $hash, strlen($snapshot), $now);
-                    $this->state->appendSnapshot($sourceKey, $itemKey, $hash, $snapshot, $now);
-                    $this->touchItem($sourceKey, $existing['item_public_ref'], $url, $hash, $now, 'became_retainable');
-                    $this->recordEvent($sourceKey, $existing['item_public_ref'], 'became_retainable', $now, 'direct_fetch', $url);
                 }
                 continue;
             }
@@ -310,13 +366,28 @@ final class PublicSiteCollector
                 continue;
             }
 
+            // A URL first seen already excluded has no public ref, by design —
+            // we never publicly acknowledged it (review finding 3). Without
+            // this guard its later removal emitted a `disappeared` event with
+            // an empty `item_public_ref`, which the timeline listing happily
+            // rendered as "No longer reachable" for an item that had never
+            // appeared on the dashboard. That publishes the lifecycle of a URL
+            // the monitor deliberately declined to acknowledge — and the
+            // paired `touchItem()` was a guaranteed no-op, so the two writes
+            // disagreed about whether anything had happened.
+            //
+            // Symmetric with the exclusion path, which already guards on
+            // `$publicRef !== ''` before recording an event.
+            if ((string) $row['item_public_ref'] === '') {
+                continue;
+            }
+
             $absentRuns = $dryRun ? $row['absent_runs'] + 1 : $this->state->incrementAbsent($sourceKey, $itemKey, $now);
 
             // Exactly at the transition, not on every later run: a removal is
             // announced once. `>= 2` would re-announce the same disappearance
             // every hour for as long as the page stayed gone.
             if ($absentRuns === 2) {
-                $disappearedThisRun[] = $row['item_public_ref'];
                 $report['events'][] = ['type' => 'disappeared', 'item' => $row['item_public_ref'], 'absent_runs' => $absentRuns];
                 if (!$dryRun) {
                     $this->touchItem($sourceKey, $row['item_public_ref'], null, null, $now, 'disappeared');
@@ -458,6 +529,40 @@ final class PublicSiteCollector
         }
         if ($changeStatus === 'reappeared') {
             $item->set('disappeared_at', 0);
+        }
+
+        $this->items->save($item, validate: false);
+    }
+
+    /**
+     * Replace a content-derived title with neutral status wording.
+     *
+     * The title was extracted from the page body. Once that body is excluded —
+     * gated, protected or `noindex` — the title is a surviving fragment of
+     * content we have undertaken not to retain, and it is rendered on the
+     * dashboard and in listings. Purging the snapshot while leaving
+     * "Member bulletin — March 2026" on screen would honour the letter of the
+     * retention rule and none of its point.
+     *
+     * The replacement says what the monitor knows without quoting the page:
+     * that an item exists at this reference and why it is no longer collected.
+     * The public URL is cleared for `AuthRequired` because a protected locator
+     * is itself not ours to publish; a `noindex` page is usually still public,
+     * so its URL is left in place.
+     */
+    private function neutralizeTitle(string $sourceKey, string $publicRef, ExclusionKind $kind): void
+    {
+        $item = $this->findItem($sourceKey, $publicRef);
+        if ($item === null) {
+            return;
+        }
+
+        $item->set('title', $kind === ExclusionKind::AuthRequired
+            ? 'Page requiring sign-in (title not retained)'
+            : 'Page not retained at publisher request');
+
+        if ($kind === ExclusionKind::AuthRequired) {
+            $item->set('public_url', '');
         }
 
         $this->items->save($item, validate: false);

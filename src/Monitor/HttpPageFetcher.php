@@ -50,6 +50,19 @@ final class HttpPageFetcher implements PageFetcherInterface
                 return FetchResult::failure($url, $hop === 0 ? 'refused: off-origin' : 'refused: redirect left the origin');
             }
 
+            // Same origin is not the same as public (review finding 1). A
+            // public URL that 302s to `/members/...` stays on this origin, so
+            // the off-origin check above waves it through. Refuse here, BEFORE
+            // the request is issued, so the protected target never receives a
+            // request from us — not at hop 0, and not at any later hop, which
+            // is the whole point of following redirects by hand.
+            if (CrawlBoundary::isProtected($target)) {
+                return FetchResult::failure(
+                    $url,
+                    $hop === 0 ? 'refused: protected path' : 'refused: redirect toward a protected path',
+                );
+            }
+
             $response = $this->request($target);
             if ($response === null) {
                 return FetchResult::failure($url, 'connection failed');

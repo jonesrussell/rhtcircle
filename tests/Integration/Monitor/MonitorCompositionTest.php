@@ -166,17 +166,203 @@ final class MonitorCompositionTest extends TestCase
         self::assertSame(404, $missing->getStatusCode());
     }
 
+    public function testTheClosedProjectionIsPinnedAtTheEmissionPoint(): void
+    {
+        // Review finding 5. The projection was asserted against the PROJECTION
+        // constant, and `view()` mutates its result after copying that constant:
+        // it adds `stalled` for sources, and for portal state it adds
+        // `last_verified_on` and unsets `verified_on` (month precision only,
+        // spec §7.1).
+        //
+        // So the constant and the emitted key set genuinely disagree, and the
+        // old assertions described something untrue while passing. More
+        // importantly, adding `$out['method_note'] = $entity->get('method_note')`
+        // inside `view()` would leave every constant-based assertion green while
+        // the value reached every template — which is exactly the composition
+        // leak this suite exists to prevent.
+        //
+        // Pinned here as the closed set a reader actually receives.
+        $manager = $this->kernel()->getEntityTypeManager();
+        $repository = new SagamokMonitorRepository($manager);
+
+        $portal = $manager->getRepository(MonitorEntityTypes::PORTAL_ACCESS_STATE)->create([
+            'state' => 'access_controlled',
+            'verified_on' => 'July 2026',
+            'statement' => 'The members portal is access-controlled.',
+            'verified_by_role' => 'member reviewer',
+            'method_note' => 'INTERNAL-METHOD-NOTE',
+        ]);
+
+        self::assertSame(
+            ['state', 'statement', 'last_verified_on'],
+            array_keys($repository->view($portal, 1_000_000)),
+            'the key set a reader receives, as a closed set',
+        );
+
+        $source = $manager->getRepository(MonitorEntityTypes::SOURCE)->create([
+            'key' => 'sagamok_public_site',
+            'label' => 'Sagamok public website',
+            'origin_url' => 'https://www.sagamokanishnawbek.test/',
+            'enabled' => true,
+            'health' => 'ok',
+            'last_error' => 'INTERNAL-LAST-ERROR',
+            'last_check_completed' => 1_000_000,
+        ]);
+
+        $emitted = $repository->view($source, 1_000_000);
+        self::assertContains('stalled', array_keys($emitted), 'view() adds a derived field the constant does not list');
+        self::assertNotContains('last_error', array_keys($emitted), 'and never an Internal one');
+    }
+
+    public function testAnInternalValueCannotSurviveTheEmittedProjectionUnderAnyKey(): void
+    {
+        // Mutation control for the test above: keys alone are not enough. A
+        // leak that copied an Internal value into an allowed key would keep the
+        // key set identical and still publish the value.
+        $manager = $this->kernel()->getEntityTypeManager();
+        $repository = new SagamokMonitorRepository($manager);
+        $marker = 'SENTINEL-' . bin2hex(random_bytes(4));
+
+        $portal = $manager->getRepository(MonitorEntityTypes::PORTAL_ACCESS_STATE)->create([
+            'state' => 'access_controlled',
+            'verified_on' => 'July 2026',
+            'statement' => 'The members portal is access-controlled.',
+            'verified_by_role' => $marker,
+            'method_note' => $marker,
+        ]);
+
+        $values = array_map(
+            static fn (mixed $v): string => (string) $v,
+            array_values($repository->view($portal, 1_000_000)),
+        );
+
+        self::assertNotContains($marker, $values, 'no Internal value may survive under any key');
+    }
+
     public function testTheDashboardEmitsNoInternalOrCollectorValue(): void
     {
+        // This test used to grep the HTML for twelve field NAMES. Templates
+        // render values, not keys — `{{ issue.summary }}`, never the string
+        // "summary" — so a real leak (view() starting to emit `method_note`,
+        // a template rendering `{{ portal.method_note }}`) puts the note TEXT
+        // on the page while the word `method_note` never appears. All twelve
+        // assertions passed straight through the leak they were written to
+        // catch.
+        //
+        // It now plants a distinctive sentinel VALUE in every Internal and
+        // collector-only field and asserts none of them is rendered. A sentinel
+        // cannot appear by coincidence, and it appears exactly when the field
+        // reaches a reader.
+        $sentinels = $this->seedInternalSentinels();
+        self::assertNotEmpty($sentinels, 'the fixture must plant sentinels, or this proves nothing');
+
+        $response = $this->request('/communities/sagamok/monitor');
+        $html = (string) $response->getContent();
+
+        // Positive control. Without these the assertions below would pass on an
+        // error page, a redirect, or an empty body.
+        self::assertSame(200, $response->getStatusCode());
+        self::assertStringContainsString('Monitoring status', $html, 'the dashboard must actually have rendered');
+
+        foreach ($sentinels as $field => $value) {
+            self::assertStringNotContainsString(
+                $value,
+                $html,
+                sprintf('the value of the internal field "%s" reached the page', $field),
+            );
+        }
+    }
+
+    public function testThePlantedSentinelsAreDetectableWhenTheyDoReachThePage(): void
+    {
+        // Mutation control for the test above: it proves the sentinel technique
+        // can actually observe a leak. A PUBLIC field seeded with the same kind
+        // of sentinel must be found in the HTML — otherwise "no sentinel found"
+        // would just mean "the dashboard never renders anything".
+        $marker = 'SENTINEL-PUBLIC-' . bin2hex(random_bytes(4));
+
+        $issues = $this->kernel()->getEntityTypeManager()->getRepository(MonitorEntityTypes::ISSUE);
+        $issue = $issues->create([
+            'slug' => 'sentinel-visibility-check',
+            'title' => $marker,
+            'issue_state' => 'open',
+            'opened_at' => 900,
+            'summary' => 'Seeded to prove a rendered value is observable.',
+        ]);
+        $issues->save($issue, validate: false);
+
         $html = (string) $this->request('/communities/sagamok/monitor')->getContent();
 
-        foreach ([
-            'severity', 'answers_ask', 'last_error', 'notes',
-            'method_note', 'review_note', 'verified_by_role', 'supplied_by_role',
-            'item_key', 'content_hash', 'normalized_bytes', 'snapshot',
-        ] as $forbidden) {
-            self::assertStringNotContainsStringIgnoringCase($forbidden, $html, $forbidden . ' must never reach the page');
-        }
+        self::assertStringContainsString(
+            $marker,
+            $html,
+            'a public field value must be observable in the HTML, or the leak test is blind',
+        );
+    }
+
+    /**
+     * Plant a unique, unmistakable value in each Internal / collector-only
+     * field.
+     *
+     * @return array<string, string> field name => sentinel value
+     */
+    private function seedInternalSentinels(): array
+    {
+        $manager = $this->kernel()->getEntityTypeManager();
+        $unique = static fn(string $field): string => 'SENTINEL-' . strtoupper($field) . '-' . bin2hex(random_bytes(4));
+
+        $sentinels = [];
+
+        $sentinels['last_error'] = $unique('last_error');
+        $sources = $manager->getRepository(MonitorEntityTypes::SOURCE);
+        $source = $sources->create([
+            'key' => 'sagamok_public_site',
+            'label' => 'Sagamok public website',
+            'origin_url' => 'https://www.sagamokanishnawbek.test/',
+            'enabled' => true,
+            'health' => 'degraded',
+            'last_error' => $sentinels['last_error'],
+            'last_check_completed' => 1_000_000,
+            'last_success' => 1_000_000,
+        ]);
+        $sources->save($source, validate: false);
+
+        $sentinels['severity'] = $unique('severity');
+        $issues = $manager->getRepository(MonitorEntityTypes::ISSUE);
+        $issue = $issues->create([
+            'slug' => 'sentinel-issue',
+            'title' => 'An issue awaiting an answer',
+            'issue_state' => 'open',
+            'opened_at' => 900,
+            'summary' => 'Public summary.',
+            'severity' => $sentinels['severity'],
+        ]);
+        $issues->save($issue, validate: false);
+
+        $sentinels['answers_ask'] = $unique('answers_ask');
+        $updates = $manager->getRepository(MonitorEntityTypes::OFFICIAL_UPDATE);
+        $update = $updates->create([
+            'issue_slug' => 'sentinel-issue',
+            'published_at' => 950,
+            'source_label' => 'Council minutes',
+            'summary' => 'Public update summary.',
+            'answers_ask' => $sentinels['answers_ask'],
+        ]);
+        $updates->save($update, validate: false);
+
+        $sentinels['method_note'] = $unique('method_note');
+        $sentinels['verified_by_role'] = $unique('verified_by_role');
+        $portal = $manager->getRepository(MonitorEntityTypes::PORTAL_ACCESS_STATE);
+        $state = $portal->create([
+            'state' => 'access_controlled',
+            'verified_on' => 'July 2026',
+            'statement' => 'The members portal is access-controlled.',
+            'verified_by_role' => $sentinels['verified_by_role'],
+            'method_note' => $sentinels['method_note'],
+        ]);
+        $portal->save($state, validate: false);
+
+        return $sentinels;
     }
 
     private function request(string $uri): \Symfony\Component\HttpFoundation\Response

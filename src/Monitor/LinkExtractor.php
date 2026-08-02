@@ -118,15 +118,11 @@ final class LinkExtractor
 
     private static function isNeverFollowed(string $url): bool
     {
-        $path = strtolower((string) (parse_url($url, PHP_URL_PATH) ?: '/'));
-
-        foreach (self::NEVER_FOLLOW as $marker) {
-            if ($path === $marker || str_starts_with($path, $marker . '/') || str_starts_with($path, $marker . '.')) {
-                return true;
-            }
-        }
-
-        return false;
+        // One authority (review finding 1). This list used to live here and
+        // disagreed with GateDetector's, which is what let a redirect into
+        // `/members` be collected: discovery knew the path family, the gate
+        // did not, and the gate is what runs after a fetch.
+        return CrawlBoundary::isExcludedFromDiscovery($url);
     }
 
     private static function isFollowableDocument(string $url): bool

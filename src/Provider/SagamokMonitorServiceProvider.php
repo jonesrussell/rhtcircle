@@ -7,10 +7,13 @@ namespace App\Provider;
 use App\Command\MonitorPublicCommand;
 use App\Command\MonitorRedactEventCommand;
 use App\Command\MonitorTriageCommand;
+use App\Monitor\CollectorState;
 use App\Monitor\HttpPageFetcher;
 use App\Monitor\MonitorConfiguration;
 use App\Monitor\MonitorEntityTypes;
+use Waaseyaa\Database\DatabaseInterface;
 use Waaseyaa\Entity\EntityType;
+use Waaseyaa\Entity\EntityTypeManager;
 use Waaseyaa\Listing\Filter;
 use Waaseyaa\Listing\HasListingsInterface;
 use Waaseyaa\Listing\ListingDefinition;
@@ -230,13 +233,16 @@ final class SagamokMonitorServiceProvider extends ServiceProvider implements Has
             ],
             handler: function (SymfonyCommandIO $io): int {
                 $etm = $this->entityTypeManager();
-                if ($etm === null) {
+                $database = $this->database();
+                if ($etm === null || $database === null) {
                     $io->error('sagamok:monitor-redact-event requires a booted kernel.');
 
                     return 1;
                 }
 
-                return new MonitorRedactEventCommand($etm)->run(
+                // Redaction reaches the snapshot table, not just the event row:
+                // the retained body is the thing being redacted.
+                return new MonitorRedactEventCommand($etm, new CollectorState($database))->run(
                     $io,
                     (string) ($io->option('event') ?? ''),
                     (string) ($io->option('reason') ?? ''),
@@ -244,5 +250,43 @@ final class SagamokMonitorServiceProvider extends ServiceProvider implements Has
                 );
             },
         );
+    }
+
+    /**
+     * Resolve the entity type manager, or null when there is no booted kernel.
+     *
+     * These two helpers were **missing entirely** while all three command
+     * handlers above called them, so every monitor CLI command died with
+     * "Call to undefined method" the moment it was invoked through the real
+     * CLI. Nothing caught it: `ScheduleAndCommandsTest` constructs the command
+     * objects directly with fixture collaborators, which is the right way to
+     * test their logic but never executes the provider handler that production
+     * actually runs. The gap only showed up when the acceptance run invoked
+     * `bin/waaseyaa sagamok:monitor-public --dry-run` for real.
+     *
+     * Same shape as AnokiiContentServiceProvider and CmsContentServiceProvider:
+     * resolve optionally and let the handler print an operator-facing error,
+     * rather than throwing out of a console command.
+     */
+    private function entityTypeManager(): ?EntityTypeManager
+    {
+        try {
+            $resolved = $this->resolve(EntityTypeManager::class);
+
+            return $resolved instanceof EntityTypeManager ? $resolved : null;
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    private function database(): ?DatabaseInterface
+    {
+        try {
+            $resolved = $this->resolve(DatabaseInterface::class);
+
+            return $resolved instanceof DatabaseInterface ? $resolved : null;
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }
