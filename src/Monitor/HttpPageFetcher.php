@@ -34,7 +34,20 @@ final class HttpPageFetcher implements PageFetcherInterface
 
     private ?float $lastRequestAt = null;
 
-    public function __construct(private readonly string $origin = 'https://www.sagamokanishnawbek.com/') {}
+    private readonly HttpTransportInterface $transport;
+
+    /**
+     * @param ?HttpTransportInterface $transport Injected only so tests can spy
+     *        on the transport seam and prove that a protected redirect target
+     *        never receives a request. Production always uses the stream
+     *        transport, which records nothing.
+     */
+    public function __construct(
+        private readonly string $origin = 'https://www.sagamokanishnawbek.com/',
+        ?HttpTransportInterface $transport = null,
+    ) {
+        $this->transport = $transport ?? new StreamHttpTransport();
+    }
 
     public function fetch(string $url): FetchResult
     {
@@ -101,51 +114,12 @@ final class HttpPageFetcher implements PageFetcherInterface
     {
         $this->throttle();
 
-        $context = stream_context_create([
-            'http' => [
-                'method' => 'GET',
-                'timeout' => self::TIMEOUT_SECONDS,
-                // The load-bearing line: nothing is fetched that we have not
-                // already validated as same-origin.
-                'follow_location' => 0,
-                'max_redirects' => 0,
-                'ignore_errors' => true,
-                'header' => [
-                    'User-Agent: ' . self::USER_AGENT,
-                    'Accept: text/html,application/xhtml+xml,application/pdf;q=0.8,*/*;q=0.5',
-                ],
-            ],
-        ]);
-
-        $handle = @fopen($target, 'rb', false, $context);
-        if ($handle === false) {
-            return null;
-        }
-
-        // Read with a hard ceiling: an oversize response is abandoned, not
-        // truncated, because half a document hashes to something meaningless
-        // and would register as a change on every run.
-        $body = '';
-        $error = null;
-        while (!feof($handle)) {
-            $chunk = fread($handle, 65_536);
-            if ($chunk === false) {
-                break;
-            }
-            $body .= $chunk;
-            if (strlen($body) > self::MAX_RESPONSE_BYTES) {
-                $error = 'response exceeded the 25 MB ceiling';
-                $body = '';
-                break;
-            }
-        }
-
-        $meta = stream_get_meta_data($handle);
-        fclose($handle);
-
-        [$status, $headers] = $this->parseMeta($meta);
-
-        return [$status, $headers, $body, $error];
+        return $this->transport->send(
+            $target,
+            self::TIMEOUT_SECONDS,
+            self::USER_AGENT,
+            self::MAX_RESPONSE_BYTES,
+        );
     }
 
     private static function isRedirect(int $status): bool

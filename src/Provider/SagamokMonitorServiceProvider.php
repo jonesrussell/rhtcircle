@@ -242,7 +242,7 @@ final class SagamokMonitorServiceProvider extends ServiceProvider implements Has
 
                 // Redaction reaches the snapshot table, not just the event row:
                 // the retained body is the thing being redacted.
-                return new MonitorRedactEventCommand($etm, new CollectorState($database))->run(
+                return new MonitorRedactEventCommand($etm, new CollectorState($database), $database)->run(
                     $io,
                     (string) ($io->option('event') ?? ''),
                     (string) ($io->option('reason') ?? ''),

@@ -8,6 +8,7 @@ use App\Entity\MonitorEvent;
 use App\Monitor\CollectorState;
 use App\Monitor\MonitorEntityTypes;
 use Waaseyaa\CLI\Command\SymfonyCommandIO;
+use Waaseyaa\Database\DatabaseInterface;
 use Waaseyaa\Entity\EntityTypeManager;
 
 /**
@@ -43,6 +44,7 @@ final class MonitorRedactEventCommand
     public function __construct(
         private readonly EntityTypeManager $entityTypes,
         private readonly CollectorState $state,
+        private readonly DatabaseInterface $database,
     ) {}
 
     public function run(SymfonyCommandIO $io, string $eventId, string $reason, int $now): int
@@ -73,45 +75,52 @@ final class MonitorRedactEventCommand
             return 1;
         }
 
-        // Purge the retained content FIRST, and only report success if it
-        // worked (review finding 2).
-        //
         // This used to clear `evidence_url` and `notes` and call that "the part
         // that resolves to content". It is not. The snapshot table holds the
         // page body, and the item holds a title extracted from it. A redaction
         // issued because a page carried personal information was leaving the
-        // copy of that page in place, and telling the operator it was done.
+        // copy of that page in place, and telling the operator it was done
+        // (review finding 2).
         //
-        // Ordering is deliberate: if the purge fails we must not have already
-        // written a stub that claims the content is gone. A redaction reported
-        // as complete while the body survives is worse than a failed redaction,
-        // because nobody looks again.
-        $purge = $this->purgeContentFor($event);
-        if ($purge === null) {
+        // ALL of it, or none of it. A partial redaction is the worst outcome
+        // available: the operator is told the content is gone, nobody looks
+        // again, and some of it is still there. Wrapping the whole sequence in
+        // one transaction makes that state unreachable — an exception anywhere
+        // between the first purge and the stub write rolls back every earlier
+        // step, including the snapshot deletes.
+        $transaction = $this->database->transaction('monitor_redact_event');
+
+        try {
+            $purged = $this->purgeContentFor($event);
+
+            // The stub: the row, its type, its timestamps and its item
+            // reference all remain, so the log cannot develop silent holes.
+            $event->set('redacted_at', $now);
+            $event->set('redaction_reason', $reason);
+            $event->set('evidence_url', '');
+            $event->set('notes', '');
+            $repository->save($event, validate: false);
+
+            $transaction->commit();
+        } catch (\Throwable $error) {
+            $transaction->rollBack();
+
             $io->error(sprintf(
-                'Could not purge retained content for event "%s". The redaction was NOT applied; '
-                . 'the event is unchanged and the content is still stored. Re-run once the cause is fixed.',
+                'Could not complete redaction of event "%s": %s. NOTHING was changed — the event is '
+                . 'unredacted and the retained content is still stored. Re-run once the cause is fixed.',
                 $eventId,
+                $error->getMessage(),
             ));
 
             return 1;
         }
-
-        // The stub: the row, its type, its timestamps and its item reference
-        // all remain, so the log cannot develop silent holes.
-        $event->set('redacted_at', $now);
-        $event->set('redaction_reason', $reason);
-        $event->set('evidence_url', '');
-        $event->set('notes', '');
-
-        $repository->save($event, validate: false);
 
         $io->writeln(sprintf(
             'Redacted event %s (%s). Purged %d snapshot(s) and cleared the content-derived title. '
             . 'The log entry is retained as a stub.',
             $eventId,
             $reason,
-            $purge['snapshots'],
+            $purged,
         ));
 
         return 0;
@@ -120,39 +129,31 @@ final class MonitorRedactEventCommand
     /**
      * Remove every retained artefact behind one event.
      *
-     * Returns null when the purge could not be completed, which the caller
-     * treats as a failed redaction. Returns a count otherwise — including zero,
-     * which is legitimate for an event whose item never carried a body.
+     * Throws rather than returning a failure value: the caller runs this inside
+     * a transaction, and an exception is what rolls the whole redaction back.
+     * Catching here would let a half-finished purge commit.
      *
-     * @return array{snapshots: int}|null
+     * Returns the number of snapshots removed — zero is legitimate for an event
+     * that is not item-scoped and therefore carries no retained body.
      */
-    private function purgeContentFor(MonitorEvent $event): ?array
+    private function purgeContentFor(MonitorEvent $event): int
     {
         $sourceKey = (string) $event->get('source_key');
         $publicRef = (string) $event->get('item_public_ref');
 
         if ($sourceKey === '' || $publicRef === '') {
-            // Nothing addressable to purge. Not a failure: some events are not
-            // item-scoped, and those carry no retained body by construction.
-            return ['snapshots' => 0];
+            return 0;
         }
 
-        try {
-            $snapshots = 0;
-            $itemKey = $this->state->itemKeyForPublicRef($sourceKey, $publicRef);
-            if ($itemKey !== null) {
-                $snapshots = $this->state->purgeRetainedContent($sourceKey, $itemKey);
-            }
-
-            $this->clearContentDerivedItemFields($sourceKey, $publicRef);
-
-            return ['snapshots' => $snapshots];
-        } catch (\Throwable) {
-            // Deliberately swallowed into a null return rather than rethrown:
-            // the caller turns this into a non-zero exit and an explicit "not
-            // applied" message, which is what an operator needs to see.
-            return null;
+        $snapshots = 0;
+        $itemKey = $this->state->itemKeyForPublicRef($sourceKey, $publicRef);
+        if ($itemKey !== null) {
+            $snapshots = $this->state->purgeRetainedContent($sourceKey, $itemKey);
         }
+
+        $this->clearContentDerivedItemFields($sourceKey, $publicRef);
+
+        return $snapshots;
     }
 
     /**

@@ -275,7 +275,7 @@ final class ScheduleAndCommandsTest extends TestCase
         $id = (string) $event->id();
 
         $io = $this->io();
-        $status = new MonitorRedactEventCommand($this->manager(), new CollectorState($this->database()))->run($io, $id, 'member_request', 9_000);
+        $status = new MonitorRedactEventCommand($this->manager(), new CollectorState($this->database()), $this->database())->run($io, $id, 'member_request', 9_000);
 
         self::assertSame(0, $status);
 
@@ -291,7 +291,7 @@ final class ScheduleAndCommandsTest extends TestCase
     public function testRedactionFailsClosedOnAnUnknownId(): void
     {
         $io = $this->io();
-        self::assertSame(1, new MonitorRedactEventCommand($this->manager(), new CollectorState($this->database()))->run($io, '999999', 'member_request', 9_000));
+        self::assertSame(1, new MonitorRedactEventCommand($this->manager(), new CollectorState($this->database()), $this->database())->run($io, '999999', 'member_request', 9_000));
     }
 
     public function testRedactionFailsClosedOnAnUnknownReason(): void
@@ -316,7 +316,7 @@ final class ScheduleAndCommandsTest extends TestCase
         $repository->save($event, validate: false);
         $id = (string) $event->id();
 
-        $command = new MonitorRedactEventCommand($this->manager(), new CollectorState($this->database()));
+        $command = new MonitorRedactEventCommand($this->manager(), new CollectorState($this->database()), $this->database());
 
         self::assertSame(1, $command->run($this->io(), $id, 'because I said so', 9_000));
 
@@ -345,7 +345,7 @@ final class ScheduleAndCommandsTest extends TestCase
         $repository->save($event, validate: false);
         $id = (string) $event->id();
 
-        $command = new MonitorRedactEventCommand($this->manager(), new CollectorState($this->database()));
+        $command = new MonitorRedactEventCommand($this->manager(), new CollectorState($this->database()), $this->database());
         self::assertSame(0, $command->run($this->io(), $id, 'member_request', 9_000));
         self::assertSame(1, $command->run($this->io(), $id, 'inaccurate', 9_500), 'a second redaction must fail closed');
 
