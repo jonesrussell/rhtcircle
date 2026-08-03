@@ -69,14 +69,14 @@ final class ScheduleAndCommandsTest extends TestCase
     // The schedule is declared and disabled
     // ------------------------------------------------------------------
 
-    public function testTheScheduleEntryIsDeclared(): void
+    public function testTheScheduleEntryIsDeclaredButRegistersNothingWhileDisabled(): void
     {
         $schedule = new \Waaseyaa\Scheduler\Schedule();
         $tasks = new SagamokMonitorSchedule()->register($schedule);
 
-        self::assertArrayHasKey(SagamokMonitorSchedule::TASK_ID, $tasks);
-        self::assertSame('sagamok:monitor-public', $tasks[SagamokMonitorSchedule::TASK_ID]->command);
-        self::assertSame('0 * * * *', $tasks[SagamokMonitorSchedule::TASK_ID]->expression);
+        self::assertFalse(SagamokMonitorSchedule::ENABLED);
+        self::assertSame([], $tasks);
+        self::assertSame([], $schedule->tasks());
     }
 
     public function testTheScheduleEntryShipsDisabled(): void
@@ -84,11 +84,8 @@ final class ScheduleAndCommandsTest extends TestCase
         // The load-bearing assertion. Enabling the monitor means this app
         // starts making automated requests to another Nation's website on a
         // timer; that must never become true as a side effect of an edit.
-        $config = require $this->projectRoot . '/config/waaseyaa.php';
-
-        self::assertContains(
-            SagamokMonitorSchedule::class,
-            $config['schedule']['disabled_entries'] ?? [],
+        self::assertFalse(
+            SagamokMonitorSchedule::ENABLED,
             'the monitor schedule must remain disabled by default',
         );
     }
