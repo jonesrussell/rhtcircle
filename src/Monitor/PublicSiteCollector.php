@@ -90,6 +90,11 @@ final class PublicSiteCollector
             'fetch_failures' => 0,
             'gated' => 0,
             'not_retained' => 0,
+            // Items whose retention is suppressed by a redaction. Counted
+            // separately: this is our own obligation, not an observation about
+            // the publisher's site, and folding it into `not_retained` would
+            // misreport a redaction as a `noindex`.
+            'suppressed' => 0,
             'indeterminate' => [],
             'empty_target_set' => false,
             'exit_code' => 0,
@@ -241,6 +246,23 @@ final class PublicSiteCollector
             // class of bug this machinery exists to prevent.
             CrawlBoundary::assertPublic($result->finalUrl, 'hash and store');
 
+            // Retention suppression outranks everything below.
+            //
+            // A redacted item must not be silently rehydrated. Without this the
+            // redaction was durable only until the page next changed: the
+            // change branch would re-hash the body, append a fresh snapshot and
+            // restore the public locator, quietly undoing a removal someone had
+            // asked for — and nobody would look again, because the command had
+            // already reported success.
+            //
+            // Checked BEFORE the body is hashed or stored, and never lifted
+            // here: only an audited maintainer action clears it.
+            if (($known[$itemKey]['suppressed_at'] ?? 0) > 0) {
+                $seen[$itemKey] = true;
+                ++$report['suppressed'];
+                continue;
+            }
+
             $hash = ContentNormalizer::hash($result->body);
             $snapshot = ContentNormalizer::snapshot($result->body);
             $existing = $known[$itemKey] ?? null;
@@ -267,11 +289,37 @@ final class PublicSiteCollector
             // that it is publicly retainable again, so that is what we say, and
             // we re-establish the baseline silently.
             if ($existing['exclusion_kind'] !== '') {
+                // A page first observed WHILE excluded has a state row with an
+                // empty ref, because we deliberately never acknowledged it
+                // publicly. It has no public history to recover to, so
+                // "became_retainable" would be a claim about a past that never
+                // existed — and the event would be an orphan, since there is no
+                // item to attach it to.
+                //
+                // Its first public sighting is a first sighting. Fall through to
+                // the same baseline path a never-before-seen URL takes.
+                if ((string) $existing['item_public_ref'] === '') {
+                    $newThisRun[$itemKey] = [
+                        'url' => $url,
+                        'hash' => $hash,
+                        'snapshot' => $snapshot,
+                        'body' => $result->body,
+                    ];
+                    continue;
+                }
+
                 $report['events'][] = ['type' => 'became_retainable', 'item' => $existing['item_public_ref']];
                 if (!$dryRun) {
                     $this->state->record($sourceKey, $itemKey, $existing['item_public_ref'], $hash, strlen($snapshot), $now);
                     $this->state->appendSnapshot($sourceKey, $itemKey, $hash, $snapshot, $now);
                     $this->touchItem($sourceKey, $existing['item_public_ref'], $url, $hash, $now, 'became_retainable');
+                    // The neutral exclusion label described a page we were not
+                    // retaining. We are retaining it again and hold the current
+                    // body, so leaving "Page not retained at publisher request"
+                    // on the dashboard beside a live locator and a fresh
+                    // snapshot would be a false statement we have the evidence
+                    // to correct.
+                    $this->restoreTitle($sourceKey, $existing['item_public_ref'], $result->body);
                     $this->recordEvent($sourceKey, $existing['item_public_ref'], 'became_retainable', $now, 'direct_fetch', $url);
                 }
                 continue;
@@ -550,6 +598,29 @@ final class PublicSiteCollector
      * is itself not ours to publish; a `noindex` page is usually still public,
      * so its URL is left in place.
      */
+    /**
+     * Re-derive the title from the page we are once again entitled to hold.
+     *
+     * The inverse of {@see neutralizeTitle()}. Exclusion replaces the title
+     * with a neutral label because the title was a fragment of content we had
+     * undertaken not to retain; recovery must undo that, or the dashboard
+     * keeps asserting "Page not retained at publisher request" next to a live
+     * locator and a freshly stored snapshot.
+     *
+     * Reads the CURRENT body, not any remembered value — the title may have
+     * changed while the page was gated, and the old one was purged anyway.
+     */
+    private function restoreTitle(string $sourceKey, string $publicRef, string $body): void
+    {
+        $item = $this->findItem($sourceKey, $publicRef);
+        if ($item === null) {
+            return;
+        }
+
+        $item->set('title', $this->extractTitle($body) ?: $publicRef);
+        $this->items->save($item, validate: false);
+    }
+
     private function neutralizeTitle(string $sourceKey, string $publicRef, ExclusionKind $kind): void
     {
         $item = $this->findItem($sourceKey, $publicRef);
@@ -588,6 +659,27 @@ final class PublicSiteCollector
         string $evidenceUrl,
         bool $isBaseline = false,
     ): void {
+        // The invariant, enforced HERE rather than in each calling branch.
+        //
+        // A monitor event is a public statement about a page. With an empty
+        // `item_public_ref` it is a statement about nothing: the timeline
+        // listing filters only on `redacted_at`, and the templates switch on
+        // `event_type` alone, so an orphan renders to readers as a real finding
+        // attached to no item. It also cannot be redacted, because redaction
+        // addresses an item by its public ref.
+        //
+        // This was fixed twice in individual branches — the absence pass, then
+        // the exclusion path — and re-appeared a third time on the recovery
+        // branch, because a guard in N places only holds until someone adds
+        // branch N+1. One boundary check cannot be forgotten.
+        if ($publicRef === '') {
+            throw new \LogicException(sprintf(
+                'Refused to persist a "%s" event with an empty public reference. An item must be '
+                . 'publicly acknowledged before any event about it can be published.',
+                $type,
+            ));
+        }
+
         $event = $this->events->create([
             'source_key' => $sourceKey,
             'item_public_ref' => $publicRef,

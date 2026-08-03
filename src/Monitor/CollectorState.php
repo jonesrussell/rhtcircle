@@ -67,6 +67,14 @@ final class CollectorState
                 // of excluded content.
                 . 'exclusion_kind TEXT NOT NULL DEFAULT \'\', '
                 . 'exclusion_reason TEXT NOT NULL DEFAULT \'\', '
+                // Retention suppression tombstone. Set by redaction; NEVER
+                // cleared by the collector. Clearing an exclusion is an
+                // observation about the publisher's site; clearing a
+                // suppression is a decision about our own obligation, and the
+                // specification defines no automatic path back. It stays in
+                // force until an audited maintainer action lifts it.
+                . 'suppressed_at INTEGER NOT NULL DEFAULT 0, '
+                . 'suppression_reason TEXT NOT NULL DEFAULT \'\', '
                 . 'updated_at INTEGER NOT NULL, '
                 . 'PRIMARY KEY (source_key, item_key)'
                 . ')',
@@ -74,6 +82,17 @@ final class CollectorState
             $this->database->query(
                 'CREATE INDEX IF NOT EXISTS monitor_collector_state_source_idx ON ' . self::TABLE . '(source_key)',
             );
+        }
+
+        // Tables created before the suppression tombstone existed get the
+        // columns added in place. A redaction on an un-migrated database would
+        // otherwise fail to record suppression and the content would rehydrate
+        // on the next crawl — silently, which is the failure mode the
+        // tombstone exists to prevent.
+        foreach (['suppressed_at' => 'INTEGER NOT NULL DEFAULT 0', 'suppression_reason' => "TEXT NOT NULL DEFAULT ''"] as $column => $definition) {
+            if (!$schema->fieldExists(self::TABLE, $column)) {
+                $this->database->query(sprintf('ALTER TABLE %s ADD COLUMN %s %s', self::TABLE, $column, $definition));
+            }
         }
 
         if (!$schema->tableExists(self::SNAPSHOT_TABLE)) {
@@ -113,6 +132,7 @@ final class CollectorState
             ->fields(self::TABLE, [
                 'item_key', 'item_public_ref', 'content_hash', 'normalized_bytes',
                 'absent_runs', 'exclusion_kind', 'exclusion_reason', 'updated_at',
+                'suppressed_at', 'suppression_reason',
             ])
             ->condition('source_key', $sourceKey)
             ->execute();
@@ -127,6 +147,8 @@ final class CollectorState
                 'absent_runs' => (int) $row['absent_runs'],
                 'exclusion_kind' => (string) ($row['exclusion_kind'] ?? ''),
                 'exclusion_reason' => (string) ($row['exclusion_reason'] ?? ''),
+                'suppressed_at' => (int) ($row['suppressed_at'] ?? 0),
+                'suppression_reason' => (string) ($row['suppression_reason'] ?? ''),
                 'updated_at' => (int) $row['updated_at'],
             ];
         }
@@ -308,6 +330,62 @@ final class CollectorState
      * personal-information report needs to know the copy is actually gone, and
      * "0" for an item that should have had snapshots is itself a finding.
      */
+    /**
+     * Mark an item as retention-suppressed.
+     *
+     * Set by redaction, and **never cleared by the collector**. The asymmetry
+     * with exclusion is deliberate: lifting an exclusion is an observation
+     * about the publisher's site — the gate came off, the `noindex` was removed
+     * — whereas lifting a suppression is a decision about our own obligation
+     * not to hold this material. The specification defines no automatic path
+     * back, so inventing one here would quietly overturn a redaction the next
+     * time the page changed.
+     *
+     * Without this, redaction was durable only until the next crawl: the item
+     * kept its `content_hash`, so the following content change re-hashed the
+     * body, appended a fresh snapshot and restored the public locator.
+     */
+    public function suppressRetention(string $sourceKey, string $itemKey, string $reason, int $now): void
+    {
+        $this->ensureTable();
+
+        $this->database->update(self::TABLE)
+            ->fields([
+                'suppressed_at' => $now,
+                'suppression_reason' => $reason,
+                // Content-derived state goes with the content.
+                'content_hash' => '',
+                'normalized_bytes' => 0,
+                'updated_at' => $now,
+            ])
+            ->condition('source_key', $sourceKey)
+            ->condition('item_key', $itemKey)
+            ->execute();
+    }
+
+    /** Whether retention is currently suppressed for this item. */
+    public function isSuppressed(string $sourceKey, string $itemKey): bool
+    {
+        return ($this->allForSource($sourceKey)[$itemKey]['suppressed_at'] ?? 0) > 0;
+    }
+
+    /**
+     * Lift a suppression. Intended for an audited maintainer action only —
+     * nothing in the collector calls this, and nothing should.
+     */
+    public function clearSuppression(string $sourceKey, string $itemKey, int $now): void
+    {
+        if (!$this->tableExists()) {
+            return;
+        }
+
+        $this->database->update(self::TABLE)
+            ->fields(['suppressed_at' => 0, 'suppression_reason' => '', 'updated_at' => $now])
+            ->condition('source_key', $sourceKey)
+            ->condition('item_key', $itemKey)
+            ->execute();
+    }
+
     public function purgeRetainedContent(string $sourceKey, string $itemKey): int
     {
         if (!$this->database->schema()->tableExists(self::SNAPSHOT_TABLE)) {

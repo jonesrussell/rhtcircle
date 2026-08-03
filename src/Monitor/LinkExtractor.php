@@ -26,17 +26,6 @@ namespace App\Monitor;
  */
 final class LinkExtractor
 {
-    /**
-     * Path fragments never queued for discovery. Overlaps
-     * {@see GateDetector}'s login markers on purpose: that one classifies what
-     * we already fetched, this one stops us fetching at all.
-     */
-    private const NEVER_FOLLOW = [
-        '/login', '/signin', '/sign-in', '/auth', '/sso', '/saml',
-        '/members', '/member-portal', '/portal', '/account', '/admin',
-        '/wp-admin', '/wp-login', '/user/login', '/cart', '/checkout',
-    ];
-
     /** Extensions worth following. Anything else is an asset, not a document. */
     private const FOLLOWABLE_EXTENSIONS = ['', 'html', 'htm', 'php', 'asp', 'aspx', 'pdf'];
 

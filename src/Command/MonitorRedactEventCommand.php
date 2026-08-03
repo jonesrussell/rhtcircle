@@ -91,7 +91,7 @@ final class MonitorRedactEventCommand
         $transaction = $this->database->transaction('monitor_redact_event');
 
         try {
-            $purged = $this->purgeContentFor($event);
+            $purged = $this->purgeContentFor($event, $reason, $now);
 
             // The stub: the row, its type, its timestamps and its item
             // reference all remain, so the log cannot develop silent holes.
@@ -136,7 +136,7 @@ final class MonitorRedactEventCommand
      * Returns the number of snapshots removed — zero is legitimate for an event
      * that is not item-scoped and therefore carries no retained body.
      */
-    private function purgeContentFor(MonitorEvent $event): int
+    private function purgeContentFor(MonitorEvent $event, string $reason, int $now): int
     {
         $sourceKey = (string) $event->get('source_key');
         $publicRef = (string) $event->get('item_public_ref');
@@ -149,6 +149,16 @@ final class MonitorRedactEventCommand
         $itemKey = $this->state->itemKeyForPublicRef($sourceKey, $publicRef);
         if ($itemKey !== null) {
             $snapshots = $this->state->purgeRetainedContent($sourceKey, $itemKey);
+            // The tombstone. Purging alone made redaction durable only until
+            // the next crawl: the state row kept its content hash, so the
+            // following content change re-hashed the body, appended a fresh
+            // snapshot and restored the public locator — quietly undoing a
+            // removal someone had asked for, with nobody looking again because
+            // the command had already reported success.
+            //
+            // Set inside the caller's transaction, so a failed redaction leaves
+            // no suppression behind either.
+            $this->state->suppressRetention($sourceKey, $itemKey, $reason, $now);
         }
 
         $this->clearContentDerivedItemFields($sourceKey, $publicRef);

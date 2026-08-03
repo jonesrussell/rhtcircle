@@ -182,29 +182,4 @@ final class HttpPageFetcher implements PageFetcherInterface
         }
         $this->lastRequestAt = microtime(true);
     }
-
-    /**
-     * @param array<string, mixed> $meta
-     * @return array{int, array<string, string>}
-     */
-    private function parseMeta(array $meta): array
-    {
-        $status = 0;
-        $headers = [];
-
-        foreach ((array) ($meta['wrapper_data'] ?? []) as $line) {
-            $line = (string) $line;
-            if (preg_match('#^HTTP/\S+\s+(\d{3})#', $line, $m) === 1) {
-                // Last status wins if the transport ever reports several.
-                $status = (int) $m[1];
-                continue;
-            }
-            $parts = explode(':', $line, 2);
-            if (count($parts) === 2) {
-                $headers[strtolower(trim($parts[0]))] = trim($parts[1]);
-            }
-        }
-
-        return [$status, $headers];
-    }
 }
