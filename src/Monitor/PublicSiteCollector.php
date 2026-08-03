@@ -285,6 +285,43 @@ final class PublicSiteCollector
             $existing = $known[$itemKey] ?? null;
 
             if ($existing === null) {
+                // The page may have moved while suppressed and then been
+                // explicitly released. In that case the new URL has no crawl
+                // state, but the cleared content-level tombstone still carries
+                // the original public identity. Recover that identity rather
+                // than minting a second item and an unsupported `appeared`
+                // event.
+                $clearedMove = $this->state->clearedSuppressionForContent($sourceKey, $hash);
+                if ($clearedMove !== null) {
+                    $publicRef = $clearedMove['item_public_ref'];
+                    $fromItemKey = $this->state->itemKeyForPublicRef($sourceKey, $publicRef);
+                    if ($fromItemKey === null) {
+                        throw new \LogicException(sprintf(
+                            'Cleared suppression for "%s" has no collector identity to restore.',
+                            $publicRef,
+                        ));
+                    }
+
+                    $report['events'][] = ['type' => 'became_retainable', 'item' => $publicRef, 'moved' => true];
+                    if (!$dryRun) {
+                        $this->state->moveIdentity(
+                            $sourceKey,
+                            $fromItemKey,
+                            $itemKey,
+                            $publicRef,
+                            $hash,
+                            strlen($snapshot),
+                            $now,
+                        );
+                        $this->state->appendSnapshot($sourceKey, $itemKey, $hash, $snapshot, $now);
+                        $this->touchItem($sourceKey, $publicRef, $url, $hash, $now, 'became_retainable');
+                        $this->restoreTitle($sourceKey, $publicRef, $result->body);
+                        $this->recordEvent($sourceKey, $publicRef, 'became_retainable', $now, 'direct_fetch', $url);
+                        $this->state->consumeClearedSuppression($sourceKey, $clearedMove['item_key']);
+                    }
+                    continue;
+                }
+
                 // Deferred: a move can only be recognised once the whole crawl
                 // has run, because it needs to know which old URLs are
                 // CONFIRMED absent. Deciding here would merge two live pages

@@ -473,6 +473,25 @@ final class CollectorState
     }
 
     /**
+     * Find an explicitly-cleared tombstone for content now seen at another URL.
+     *
+     * @return array{item_key: string, item_public_ref: string}|null
+     */
+    public function clearedSuppressionForContent(string $sourceKey, string $contentHash): ?array
+    {
+        foreach ($this->suppressionRowsForSource($sourceKey) as $row) {
+            if ($row['cleared_at'] === 0 || $row['content_fingerprint'] === '') {
+                continue;
+            }
+            if (hash_equals($row['content_fingerprint'], self::fingerprint($contentHash, $row['fingerprint_salt']))) {
+                return ['item_key' => $row['item_key'], 'item_public_ref' => $row['item_public_ref']];
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Carry a content-level suppression to another opaque URL key.
      *
      * @param array{item_public_ref: string, suppression_reason: string, fingerprint_salt: string, content_fingerprint: string} $suppression

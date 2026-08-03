@@ -250,6 +250,7 @@ final class MonitorStateTransitionAuditTest extends TestCase
     public function redactedContentMovedToANewUrlStaysSuppressed(): void
     {
         $this->seedAndRedact();
+        $originalPublicRef = $this->publicRef();
         $beforeEvents = $this->eventTypes();
 
         $f = FixturePageFetcher::withPages([]);
@@ -279,6 +280,21 @@ final class MonitorStateTransitionAuditTest extends TestCase
             ),
             'the opaque new URL key inherits the tombstone',
         );
+
+        // The sibling transition matters too: explicitly releasing that
+        // content after the move must restore the original identity, not mint a
+        // second item and call it a new appearance.
+        $state = new CollectorState($this->database());
+        $state->clearSuppression(self::SOURCE_KEY, \App\Monitor\UrlNormalizer::itemKey(self::PAGE), 5_000);
+        $recovery = FixturePageFetcher::withPages([self::MOVED_PAGE => $this->page('Original title', 'body')]);
+        $this->collector($recovery)->run($this->source(), [self::MOVED_PAGE], 6_000);
+
+        self::assertCount(1, $this->rows('monitor_item'));
+        self::assertSame($originalPublicRef, $this->publicRef());
+        self::assertSame('Original title', (string) $this->itemRow()['title']);
+        self::assertSame(self::MOVED_PAGE, (string) $this->itemRow()['public_url']);
+        self::assertSame('became_retainable', $this->eventTypes()[array_key_last($this->eventTypes())]);
+        self::assertSame(1, count(array_filter($this->eventTypes(), static fn (string $type): bool => $type === 'appeared')));
     }
 
     #[Test]
