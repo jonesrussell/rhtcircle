@@ -1342,3 +1342,137 @@ li { margin: 0 0 9px; }
   .news-article__aside { display: none; }
 }
 
+
+/* --------------------------------------------------------------------------
+   Sagamok public-website monitor
+   -------------------------------------------------------------------------- */
+
+/* Screen-reader-only. The monitor table carries a <caption> that duplicates the
+   visible "Recent changes" heading, so it is announced but not shown twice. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The change table scrolls inside its own box rather than pushing the page
+   sideways. Without this a single long cell breaks the whole mobile layout,
+   which is exactly what mobile QA caught. */
+.monitor-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.monitor-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 34rem;
+}
+
+.monitor-table th,
+.monitor-table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.monitor-table__meta {
+  display: block;
+  font-size: 0.85em;
+  opacity: 0.75;
+}
+
+.monitor-sources {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.monitor-source {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: baseline;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.monitor-source__label { font-weight: 600; }
+
+/* The health badge is never colour-only: each state also carries distinct
+   wording, so it remains legible without colour perception. */
+.monitor-source__badge {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  border: 1px solid currentColor;
+}
+
+.monitor-source--ok .monitor-source__badge { color: #0f766e; }
+.monitor-source--degraded .monitor-source__badge { color: #92400e; }
+.monitor-source--failing .monitor-source__badge,
+.monitor-source--stalled .monitor-source__badge { color: #991b1b; }
+
+.monitor-source__meta { opacity: 0.8; font-size: 0.9rem; }
+
+.monitor-source__warning {
+  flex-basis: 100%;
+  margin: 0.35rem 0 0;
+  font-weight: 600;
+  color: #991b1b;
+}
+
+.monitor-issues__list,
+.monitor-updates__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.monitor-issue,
+.monitor-update {
+  padding: 0.9rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.monitor-update__date,
+.monitor-issue__meta,
+.monitor-update__source {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin: 0.25rem 0 0;
+}
+
+.monitor-footnote,
+.monitor-empty {
+  font-size: 0.92rem;
+  opacity: 0.85;
+}
+
+.monitor-portal__statement { margin-bottom: 0.35rem; }
+.monitor-portal__meta { font-size: 0.9rem; opacity: 0.8; }
+
+.monitor-issue-page__dl dt { font-weight: 600; margin-top: 0.5rem; }
+.monitor-issue-page__dl dd { margin: 0 0 0.25rem; }
+
+.monitor-pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: center;
+  margin: 1.25rem 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.monitor-pager__link { font-weight: 600; }
+.monitor-pager__link--off { opacity: 0.4; }
+.monitor-pager__status { font-size: 0.9rem; opacity: 0.85; }

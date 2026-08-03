@@ -64,8 +64,17 @@ in this feature may contain a data literal, in PHP or in Twig.
 
 Two framework constraints that shape the field design:
 
-- **Rule G:** a field used in a Listing `filters` or `sorts` must be
-  `FieldStorage::Column`. `_data`-blob fields raise `UnsupportedListingException`
+- **Rule G, and an open framework gap:** a field used in a Listing `filters`
+  or `sorts` must be declared `FieldStorage::Column`.
+  **However** (verified 2026-07-31, framework v0.1.0-alpha.279, filed as
+  waaseyaa/framework#2157): for an app-defined entity type that declaration
+  does NOT produce a physical column or index. `EntityType::fromClass()`
+  cannot select the `sql-column` backend, only `sql-column` materialises real
+  columns, and the constructor slot that could supply both is `@internal`.
+  Every facet therefore lives in `_data` and is filtered via the JSON blob.
+  This is pre-existing and already true of the app's shipped
+  `node.community_slug` article facet. Raw SQL indexes are NOT an acceptable
+  workaround. Revisit when #2157 lands. `_data`-blob fields raise `UnsupportedListingException`
   at boot (`ListingDefinitionValidator`). Note the validator enforces *Column*
   only — `->indexed()` is a performance requirement, not a framework-enforced
   one, so an unindexed facet will validate and then scan. Index them anyway, and
@@ -87,7 +96,7 @@ fields must be registered before Listing validation runs.
 
 ## 3. Entity model
 
-Six entity types, registered in a new `SagamokMonitorServiceProvider`
+Seven entity types, registered in a new `SagamokMonitorServiceProvider`
 (`src/Provider/SagamokMonitorServiceProvider.php`) declared in `composer.json`
 `extra.waaseyaa.providers` **after** `CmsContentServiceProvider`. Each is an
 attribute-driven `ContentEntityBase` subclass in `src/Entity/`, following
@@ -211,15 +220,23 @@ machine-observed record and to official public updates.
 |---|---|---|---|
 | `slug` | Column, indexed | Public | |
 | `title` | Column | Public | Framed as a question or a neutral statement of what is outstanding |
-| `status` | Column, indexed | Public | `open` \| `awaiting_response` \| `partly_answered` \| `resolved` \| `withdrawn` |
+| `issue_state` | Column, indexed | Public | `open` \| `awaiting_response` \| `partly_answered` \| `resolved` \| `withdrawn`. **Deliberately not named `status`** — see the note below |
 | `opened_at` | Column, indexed | Public | |
 | `status_changed_at` | Column, indexed | Public | |
-| `closed_at` | Column, indexed | Public | Required when `status = resolved` |
+| `closed_at` | Column, indexed | Public | Required when `issue_state = resolved` |
 | `summary` | Data | Public | Short member-facing text |
 | `what_is_asked` | Data | Public | The specific ask |
 | `related_article_slugs` | Data | Public | Links to `node`/`article` records by slug |
 | `related_item_public_refs` | Data | Public | **Opaque refs only** (§3.0) |
 | `severity` | Column | **Internal** | `information` \| `concern` \| `urgent`. Editorial triage state. Internal, and therefore unreadable without the §6.4 audited path — not merely unrendered |
+
+**Why `issue_state` and not `status`.** An earlier revision of this table
+called this field `status`, which contradicted §6.2 rule 3 — no monitor type
+may declare a `status` field, because `WorkflowVisibility::isEntityPublic()`
+keys on exactly that name and a truthy value would open the
+`/api/discovery/*` routes. The safety rule controls: the field keeps its
+semantics under a name the framework does not recognise. Asserted by
+`NoAutoExposureTest::testNoMonitorTypeDeclaresAStatusField`.
 
 `severity` is **Internal and is not a listing facet.** It orders the maintainer's
 own CLI report (§6.4), never a public list. A public list sorted by an editorial
@@ -267,10 +284,40 @@ monitor_collector_state
   item_public_ref  TEXT NOT NULL   -- the opaque ref exposed on the entity
   content_hash     TEXT NOT NULL
   normalized_bytes INTEGER
-  snapshot         BLOB            -- capped; pruned past the retention window
+  snapshot         BLOB            -- capped at 2 MB; retained 90 days, max 3 per item
+  snapshot_taken_at INTEGER        -- drives the 90-day prune
+  absent_runs      INTEGER NOT NULL DEFAULT 0  -- consecutive runs this item was absent
   updated_at       INTEGER NOT NULL
   PRIMARY KEY (source_key, item_key)
 ```
+
+Redaction obligations live in a second additive side table rather than as
+columns lazily added to `monitor_collector_state`:
+
+```
+monitor_retention_suppression
+  source_key          TEXT NOT NULL
+  item_key            TEXT NOT NULL
+  item_public_ref     TEXT NOT NULL
+  fingerprint_salt    TEXT NOT NULL
+  content_fingerprint TEXT NOT NULL
+  suppression_reason  TEXT NOT NULL
+  suppressed_at       INTEGER NOT NULL
+  cleared_at          INTEGER NOT NULL DEFAULT 0
+  PRIMARY KEY (source_key, item_key)
+```
+
+The redaction command prepares this table **before** opening its purge
+transaction. DDL inside that transaction would appear atomic on SQLite and
+implicitly commit on MySQL. Missing suppression storage is a legitimate empty
+read for dry runs, so upgrading a database that predates the table does not make
+read paths perform hidden writes.
+
+The tombstone retains no body and no raw `content_hash`. It stores a randomly
+salted, domain-specific HMAC of the normalized hash. The collector can therefore
+recognize identical redacted content after a URL move without turning the
+tombstone into another copy of ordinary collector state. A match is checked
+before title extraction, snapshot storage, item creation, or event publication.
 
 Why a side table rather than `Internal` entity fields:
 
@@ -285,6 +332,12 @@ Why a side table rather than `Internal` entity fields:
   structural rather than enforced.
 - `item_key` → `item_public_ref` mapping lives here, so the opaque ref has
   somewhere to be resolved without exposing the key.
+- **`absent_runs` lives here too, and this is not incidental.** The
+  two-consecutive-absence rule of §4.3 step 7 needs a counter the collector
+  reads and increments on every run. As an `Internal` entity field it would
+  have been unreadable without an audited capability — the collector could
+  not have read its own counter — which is the exact trap this section
+  exists to avoid. Covered by the two-run disappearance tests in §9.4.
 
 The side table is **not** an entity, so it has no `FieldReadLevel`, appears in no
 listing, and is unreachable through MCP, GraphQL, JSON:API, SSR, or Discovery.
@@ -300,6 +353,13 @@ Define an **operator redaction**: a `redacted_at` timestamp plus a
 suppresses the row from every projection while retaining a stub, so the log does
 not silently develop holes. Redaction is a CLI action with a recorded reason, and
 it is the only write that ever touches an existing event.
+
+Redaction is durable across later crawls and URL moves. The collector never
+clears a tombstone. If an audited maintainer action explicitly clears one, the
+next successful observation records `became_retainable`, restores the title and
+locator from the current public body, and establishes a new baseline. It must
+not claim `content_changed`, because redaction deliberately destroyed the old
+content evidence needed to support that claim.
 
 ---
 
@@ -357,8 +417,32 @@ the page is still genuinely public, and **skips and reports** rather than storin
 if it is not:
 
 - HTTP 401/403, or a redirect to a login path → `became_gated`, nothing stored.
-- HTTP 200 whose body is a login shell, or which carries `noindex` →
-  `became_gated`, nothing stored.
+- HTTP 200 whose body is a login shell → `became_gated`, nothing stored.
+- HTTP 200 carrying `noindex` (header or meta) → **`became_noindex`**, nothing
+  stored.
+
+**`noindex` is not authentication, and the two are never reported as one
+another.** `noindex` means "do not collect or retain this page"; the page itself
+is usually still publicly reachable. Reporting it as a sign-in wall would tell
+members the Nation restricted access when it did not, which on an accountability
+dashboard is the most damaging output the feature can produce. The distinction
+is carried in three places, each independently asserted:
+
+| | authentication required | not for retention |
+|---|---|---|
+| Event | `became_gated` | `became_noindex` |
+| Source health | degrades | **does not** degrade |
+| Public wording | "Now requires sign-in" | "Not retained at publisher request" |
+
+Health is deliberate: the site answered normally and we chose not to retain the
+page, so flagging the source unhealthy would be a false alarm about our own
+monitoring rather than a finding about the Nation. A page that is *both* a login
+shell and `noindex` classifies as **authentication required**, because the
+access change is the more serious finding.
+
+Both kinds emit **exactly once per transition**, not once per run, and both
+recover: a page that becomes publicly retainable again emits
+`became_retainable`.
 
 This matters because the portal's original defect *was* a 200 response with a
 client-side login overlay. Without this branch, a page moved behind the portal
@@ -387,8 +471,8 @@ Public** per §6.3.
 | `sagamok_monitor_items` | `monitor_item` | `source_key = sagamok_public_site` | `last_seen` desc | 25 | Tracked-pages table |
 | `sagamok_monitor_changes` | `monitor_item` | `change_status IN (new, changed, disappeared, reappeared)` | `changed_at` desc | 25 | "What changed" |
 | `sagamok_monitor_timeline` | `monitor_event` | `redacted_at IS NULL` | `observed_at` desc | 50 | Change timeline |
-| `sagamok_monitor_issues_open` | `monitor_issue` | `status IN (open, awaiting_response, partly_answered)` | `opened_at` desc | 25 | Current-issues tracker |
-| `sagamok_monitor_issues_resolved` | `monitor_issue` | `status = resolved` | `closed_at` desc | 25 | Resolved archive |
+| `sagamok_monitor_issues_open` | `monitor_issue` | `issue_state IN (open, awaiting_response, partly_answered)` | `opened_at` desc | 25 | Current-issues tracker |
+| `sagamok_monitor_issues_resolved` | `monitor_issue` | `issue_state = resolved` | `closed_at` desc | 25 | Resolved archive |
 | `sagamok_monitor_updates` | `monitor_official_update` | none | `published_at` desc | 25 | Official-updates rail |
 
 Every definition sets **`accessOps: ['monitor.dashboard_read']`** — see §6.2. No
@@ -529,7 +613,7 @@ requires redoing the §6.0 composition analysis.
   `first_seen`, `last_seen`, `changed_at`, `disappeared_at`, `event_count`.
 - **Event:** `item_public_ref`, `event_type`, `observed_at`, `effective_at`,
   `evidence_kind`, `evidence_url`, `evidence_captured_at`.
-- **Issue:** `slug`, `title`, `status`, `opened_at`, `status_changed_at`,
+- **Issue:** `slug`, `title`, `issue_state`, `opened_at`, `status_changed_at`,
   `closed_at`, `summary`, `what_is_asked`, `related_article_slugs`,
   `related_item_public_refs`.
 - **Official update:** `issue_slug`, `published_at`, `source_label`,
@@ -702,7 +786,7 @@ important one here.
 
 `tests/Integration/SagamokMonitor/PublicProjectionTest.php`
 
-- For **each** of the six entity types, the projection emitted by `view()` is
+- For **each** of the seven entity types, the projection emitted by `view()` is
   asserted as a **set equality** against the §6.3 closed list. Adding a key
   anywhere fails until someone revisits §6.0.
 - Seed every Internal field (`severity`, `answers_ask`, `last_error`, `notes`,
@@ -776,9 +860,16 @@ For every monitor entity type, with a seeded row, anonymously:
   register as changes.
 - `change_status` always equals the projection of the newest non-redacted event
   (the dual-state guard).
-- **Re-gating:** a 401, a 403, a login-shell 200, and a `noindex` 200 each produce
-  `became_gated` and store **no** hash and **no** snapshot. Assert the side table
-  is untouched for that item.
+- **Re-gating:** a 401, a 403 and a login-shell 200 produce `became_gated`; a
+  `noindex` 200 produces `became_noindex`. All four store **no** body, hash or
+  snapshot — assert the side table holds the exclusion *state* only, and that
+  the snapshot table is empty for that item. Assert `noindex` does not degrade
+  source health and is counted separately from gated.
+- **Transitions fire once:** a page that stays gated (or stays `noindex`) across
+  many runs produces exactly one event, and a page that becomes publicly
+  retainable again produces exactly one `became_retainable`.
+- **Only confirmed absence counts:** 404 and 410 advance `absent_runs`; 408, 429
+  and 5xx affect source health only and can never publish a removal.
 
 ### 9.5 Source health
 
@@ -832,11 +923,17 @@ record on their own.
 
 ## 11. Open decisions for the maintainer
 
-1. **Which public URLs seed `monitor_source`,** and the crawl budget. This
-   document deliberately does not enumerate them; they belong in configuration,
-   not in code.
-2. **Retention for `snapshot`** in the side table. Long enough to explain a
-   change, short enough not to become an archive.
+1. ~~**Which public URLs seed `monitor_source`,** and the crawl budget.~~
+   **RESOLVED.** Configuration, as intended: `sagamok_monitor` in
+   `config/waaseyaa.php` carries `origin_url`, `seed_paths`,
+   `max_urls_per_run` (300), `max_crawl_depth` and an `enabled` flag. The
+   collector seeds the `monitor_source` row from it idempotently, and crawls
+   outward from the seeds following public same-origin links, so newly
+   published pages are discovered rather than a frozen list re-checked.
+2. ~~**Retention for `snapshot`** in the side table.~~ **RESOLVED.** Three
+   snapshots per item, 2 MB each, pruned after 90 days, held in
+   `monitor_collector_snapshot` and carried across a rename. Long enough to
+   explain a change; far short of an archive.
 3. **Whether to supersede `conflict-register.html.twig`'s inline `DATA`** with
    entities. Recommended as a **follow-up**: it is a separate data model, and
    mixing it in would make both harder to review.
