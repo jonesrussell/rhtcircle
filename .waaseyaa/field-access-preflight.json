@@ -1,5 +1,5 @@
 {
-    "framework_version": "dev@052f889757d4b810@classification-d735b49056f20152",
+    "framework_version": "dev@3a8e04c69db6f3fa@classification-d735b49056f20152",
     "schema_fingerprint": "2c194116807e06f265b9f632fae702fb188b6251fd8732512e432535a8fb286c",
     "scanner_version": 2,
     "fields": {
@@ -392,5 +392,5 @@
     "legacy_payloads": [],
     "legacy_payload_count": 0,
     "ready": true,
-    "checksum": "50fd6687b56e765b8666f7e148ef5ee82899fbd96dd2c5b096d20e19bde5e1c2"
+    "checksum": "79cac999f121ccd82f53ddacc9bbdc53970a1cc9b5394bfd26442de5da6edeaf"
 }
