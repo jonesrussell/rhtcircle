@@ -291,6 +291,34 @@ monitor_collector_state
   PRIMARY KEY (source_key, item_key)
 ```
 
+Redaction obligations live in a second additive side table rather than as
+columns lazily added to `monitor_collector_state`:
+
+```
+monitor_retention_suppression
+  source_key          TEXT NOT NULL
+  item_key            TEXT NOT NULL
+  item_public_ref     TEXT NOT NULL
+  fingerprint_salt    TEXT NOT NULL
+  content_fingerprint TEXT NOT NULL
+  suppression_reason  TEXT NOT NULL
+  suppressed_at       INTEGER NOT NULL
+  cleared_at          INTEGER NOT NULL DEFAULT 0
+  PRIMARY KEY (source_key, item_key)
+```
+
+The redaction command prepares this table **before** opening its purge
+transaction. DDL inside that transaction would appear atomic on SQLite and
+implicitly commit on MySQL. Missing suppression storage is a legitimate empty
+read for dry runs, so upgrading a database that predates the table does not make
+read paths perform hidden writes.
+
+The tombstone retains no body and no raw `content_hash`. It stores a randomly
+salted, domain-specific HMAC of the normalized hash. The collector can therefore
+recognize identical redacted content after a URL move without turning the
+tombstone into another copy of ordinary collector state. A match is checked
+before title extraction, snapshot storage, item creation, or event publication.
+
 Why a side table rather than `Internal` entity fields:
 
 - An `Internal` field cannot be read without an audited capability, so the
@@ -325,6 +353,13 @@ Define an **operator redaction**: a `redacted_at` timestamp plus a
 suppresses the row from every projection while retaining a stub, so the log does
 not silently develop holes. Redaction is a CLI action with a recorded reason, and
 it is the only write that ever touches an existing event.
+
+Redaction is durable across later crawls and URL moves. The collector never
+clears a tombstone. If an audited maintainer action explicitly clears one, the
+next successful observation records `became_retainable`, restores the title and
+locator from the current public body, and establishes a new baseline. It must
+not claim `content_changed`, because redaction deliberately destroyed the old
+content evidence needed to support that claim.
 
 ---
 

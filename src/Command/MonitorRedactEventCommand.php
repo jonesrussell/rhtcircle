@@ -82,6 +82,18 @@ final class MonitorRedactEventCommand
         // copy of that page in place, and telling the operator it was done
         // (review finding 2).
         //
+        // Prepare additive side-table storage before opening the transaction.
+        // DDL is an implicit commit on MySQL, so putting this inside the purge
+        // transaction would make a partial redaction possible even though the
+        // SQLite test environment appears atomic.
+        try {
+            $this->state->ensureSuppressionTable();
+        } catch (\Throwable $error) {
+            $io->error(sprintf('Could not prepare redaction storage: %s. NOTHING was changed.', $error->getMessage()));
+
+            return 1;
+        }
+
         // ALL of it, or none of it. A partial redaction is the worst outcome
         // available: the operator is told the content is gone, nobody looks
         // again, and some of it is still there. Wrapping the whole sequence in

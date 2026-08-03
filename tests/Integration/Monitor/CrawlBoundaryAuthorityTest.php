@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Monitor;
 
+use App\Monitor\CrawlBoundary;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -26,17 +27,6 @@ final class CrawlBoundaryAuthorityTest extends TestCase
 {
     private const MONITOR_SRC = __DIR__ . '/../../../src/Monitor';
 
-    /**
-     * Path literals that name a members-only or authentication surface. A
-     * second copy of any of these outside CrawlBoundary is the beginning of
-     * the next divergence.
-     */
-    private const PROTECTED_LITERALS = [
-        '/members', '/member-portal', '/portal', '/account', '/admin',
-        '/login', '/signin', '/sign-in', '/wp-admin', '/wp-login',
-        '/sso', '/saml', '/dashboard',
-    ];
-
     #[Test]
     public function protectedPathLiteralsLiveOnlyInTheCrawlBoundary(): void
     {
@@ -49,7 +39,7 @@ final class CrawlBoundaryAuthorityTest extends TestCase
 
             $code = $this->stripCommentsAndDocblocks((string) file_get_contents($file));
 
-            foreach (self::PROTECTED_LITERALS as $literal) {
+            foreach ($this->protectedLiterals() as $literal) {
                 // Quoted string literal only — a comment mentioning /members is
                 // documentation, not a competing authority.
                 if (str_contains($code, "'" . $literal . "'") || str_contains($code, '"' . $literal . '"')) {
@@ -79,21 +69,21 @@ final class CrawlBoundaryAuthorityTest extends TestCase
             <?php
             final class RivalGate
             {
-                private const MARKERS = ['/members', '/account'];
+                private const MARKERS = ['/oauth', '/my-account'];
             }
             PHP);
 
         try {
             $code = $this->stripCommentsAndDocblocks((string) file_get_contents($fixture));
             $hits = [];
-            foreach (self::PROTECTED_LITERALS as $literal) {
+            foreach ($this->protectedLiterals() as $literal) {
                 if (str_contains($code, "'" . $literal . "'")) {
                     $hits[] = $literal;
                 }
             }
 
-            self::assertContains('/members', $hits, 'the detector must see a rival list');
-            self::assertContains('/account', $hits);
+            self::assertContains('/oauth', $hits, 'the detector must cover the complete canonical list');
+            self::assertContains('/my-account', $hits);
         } finally {
             @unlink($fixture);
         }
@@ -137,5 +127,17 @@ final class CrawlBoundaryAuthorityTest extends TestCase
         }
 
         return $out;
+    }
+
+    /** @return list<string> */
+    private function protectedLiterals(): array
+    {
+        $constant = (new \ReflectionClass(CrawlBoundary::class))->getReflectionConstant('PROTECTED_PREFIXES');
+        self::assertNotFalse($constant, 'the canonical boundary constant must exist');
+        $values = $constant->getValue();
+        self::assertIsArray($values);
+        self::assertCount(30, $values, 'the test must follow the entire canonical list, not a hand-copied subset');
+
+        return array_values(array_map('strval', $values));
     }
 }

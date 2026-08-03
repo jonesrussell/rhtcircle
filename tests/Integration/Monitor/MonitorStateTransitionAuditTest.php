@@ -38,6 +38,7 @@ final class MonitorStateTransitionAuditTest extends TestCase
     private const SOURCE_KEY = 'sagamok_public_site';
     private const ORIGIN = 'https://www.sagamokanishnawbek.test/';
     private const PAGE = self::ORIGIN . 'notices/water-advisory';
+    private const MOVED_PAGE = self::ORIGIN . 'updates/water-advisory';
 
     private string $projectRoot;
     private string $databasePath;
@@ -246,6 +247,41 @@ final class MonitorStateTransitionAuditTest extends TestCase
     }
 
     #[Test]
+    public function redactedContentMovedToANewUrlStaysSuppressed(): void
+    {
+        $this->seedAndRedact();
+        $beforeEvents = $this->eventTypes();
+
+        $f = FixturePageFetcher::withPages([]);
+        $f->set(self::PAGE, FetchResult::success(404, self::PAGE, ''));
+        $f->set(
+            self::MOVED_PAGE,
+            FetchResult::success(200, self::MOVED_PAGE, $this->page('Original title', 'body')),
+        );
+        $report = $this->collector($f)->run($this->source(), [self::PAGE, self::MOVED_PAGE], 4_000);
+
+        self::assertSame(1, $report['suppressed'], 'the moved body must match the content-level tombstone');
+        self::assertSame($beforeEvents, $this->eventTypes(), 'a move must not publish a new event');
+        self::assertSame(0, $this->snapshotCount(), 'the moved body must not be retained');
+        self::assertCount(1, $this->rows('monitor_item'), 'the moved URL must not create a second public item');
+        $tombstones = $this->rows(CollectorState::SUPPRESSION_TABLE);
+        self::assertCount(2, $tombstones, 'the original and moved opaque URL keys share the obligation');
+        $rawHash = \App\Monitor\ContentNormalizer::hash($this->page('Original title', 'body'));
+        foreach ($tombstones as $tombstone) {
+            self::assertNotSame($rawHash, (string) $tombstone['content_fingerprint'], 'the raw content hash is not retained');
+            self::assertStringNotContainsString('Original title', implode('|', array_map('strval', $tombstone)));
+            self::assertStringNotContainsString('body', implode('|', array_map('strval', $tombstone)));
+        }
+        self::assertTrue(
+            new CollectorState($this->database())->isSuppressed(
+                self::SOURCE_KEY,
+                \App\Monitor\UrlNormalizer::itemKey(self::MOVED_PAGE),
+            ),
+            'the opaque new URL key inherits the tombstone',
+        );
+    }
+
+    #[Test]
     public function suppressionSurvivesAReloadFromTheDatabase(): void
     {
         $this->seedAndRedact();
@@ -281,6 +317,10 @@ final class MonitorStateTransitionAuditTest extends TestCase
 
         self::assertFalse(new CollectorState($this->database())->isSuppressed(self::SOURCE_KEY, $itemKey));
         self::assertGreaterThan(0, $this->snapshotCount(), 'collection resumes after an audited clear');
+        self::assertSame('Back in service', (string) $this->itemRow()['title']);
+        self::assertSame(self::PAGE, (string) $this->itemRow()['public_url']);
+        self::assertSame('became_retainable', $this->eventTypes()[array_key_last($this->eventTypes())]);
+        self::assertNotContains('content_changed', $this->eventTypes(), 'a cleared tombstone is not proof of a content change');
     }
 
     #[Test]
@@ -363,9 +403,14 @@ final class MonitorStateTransitionAuditTest extends TestCase
 
     private function driveEveryTransition(): void
     {
-        $f = $this->fixture($this->page('Water advisory', 'body'));
+        $f = $this->fixture('');
         $c = fn (): array => $this->collector($f)->run($this->source(), [self::PAGE], random_int(1_000, 9_000));
 
+        // Enter the empty-public-ref state first. The invariant test used to
+        // start public, so it could pass with every orphan-event defect intact.
+        $f->set(self::PAGE, FetchResult::success(401, self::PAGE, ''));
+        $c();
+        $f->set(self::PAGE, FetchResult::success(200, self::PAGE, $this->page('Water advisory', 'body')));
         $c();
         $f->set(self::PAGE, FetchResult::success(401, self::PAGE, ''));
         $c();
@@ -427,12 +472,14 @@ final class MonitorStateTransitionAuditTest extends TestCase
             self::assertSame($snapshots, $this->snapshotCount());
         }
 
-        // The public projection must always be the closed set.
+        // The public projection must always be the exact closed set. A deny
+        // list can pass while a newly-added sensitive field leaks.
         $repository = new SagamokMonitorRepository($this->manager());
         foreach ($this->manager()->getRepository(MonitorEntityTypes::ITEM)->findBy([]) as $entity) {
-            $keys = array_keys($repository->view($entity, 9_999));
-            self::assertNotContains('content_hash', $keys);
-            self::assertNotContains('item_key', $keys);
+            self::assertSame(
+                SagamokMonitorRepository::projectedKeys(MonitorEntityTypes::ITEM),
+                array_keys($repository->view($entity, 9_999)),
+            );
         }
     }
 

@@ -30,6 +30,7 @@ final class CollectorState
 
     /** Bounded snapshot history (spec §0). */
     public const string SNAPSHOT_TABLE = 'monitor_collector_snapshot';
+    public const string SUPPRESSION_TABLE = 'monitor_retention_suppression';
     public const int SNAPSHOT_RETENTION_DAYS = 90;
     public const int MAX_SNAPSHOTS_PER_ITEM = 3;
 
@@ -67,14 +68,6 @@ final class CollectorState
                 // of excluded content.
                 . 'exclusion_kind TEXT NOT NULL DEFAULT \'\', '
                 . 'exclusion_reason TEXT NOT NULL DEFAULT \'\', '
-                // Retention suppression tombstone. Set by redaction; NEVER
-                // cleared by the collector. Clearing an exclusion is an
-                // observation about the publisher's site; clearing a
-                // suppression is a decision about our own obligation, and the
-                // specification defines no automatic path back. It stays in
-                // force until an audited maintainer action lifts it.
-                . 'suppressed_at INTEGER NOT NULL DEFAULT 0, '
-                . 'suppression_reason TEXT NOT NULL DEFAULT \'\', '
                 . 'updated_at INTEGER NOT NULL, '
                 . 'PRIMARY KEY (source_key, item_key)'
                 . ')',
@@ -82,17 +75,6 @@ final class CollectorState
             $this->database->query(
                 'CREATE INDEX IF NOT EXISTS monitor_collector_state_source_idx ON ' . self::TABLE . '(source_key)',
             );
-        }
-
-        // Tables created before the suppression tombstone existed get the
-        // columns added in place. A redaction on an un-migrated database would
-        // otherwise fail to record suppression and the content would rehydrate
-        // on the next crawl — silently, which is the failure mode the
-        // tombstone exists to prevent.
-        foreach (['suppressed_at' => 'INTEGER NOT NULL DEFAULT 0', 'suppression_reason' => "TEXT NOT NULL DEFAULT ''"] as $column => $definition) {
-            if (!$schema->fieldExists(self::TABLE, $column)) {
-                $this->database->query(sprintf('ALTER TABLE %s ADD COLUMN %s %s', self::TABLE, $column, $definition));
-            }
         }
 
         if (!$schema->tableExists(self::SNAPSHOT_TABLE)) {
@@ -116,6 +98,78 @@ final class CollectorState
                 . self::SNAPSHOT_TABLE . '(taken_at)',
             );
         }
+
+        $this->ensureSuppressionTable();
+    }
+
+    /**
+     * Prepare the durable redaction tombstone outside any content transaction.
+     *
+     * Suppression deliberately has its own table. Adding columns lazily to the
+     * collector-state table made every read of a pre-existing database fail
+     * before the lazy migration ran, and running ALTER TABLE inside the
+     * redaction transaction is an implicit commit on MySQL. A separate table
+     * makes the upgrade additive and lets the command prepare storage before it
+     * starts the all-or-nothing purge.
+     */
+    public function ensureSuppressionTable(): void
+    {
+        $schema = $this->database->schema();
+        if ($schema->tableExists(self::SUPPRESSION_TABLE)) {
+            return;
+        }
+
+        $this->database->query(
+            'CREATE TABLE IF NOT EXISTS ' . self::SUPPRESSION_TABLE . ' ('
+            . 'source_key TEXT NOT NULL, '
+            . 'item_key TEXT NOT NULL, '
+            . 'item_public_ref TEXT NOT NULL, '
+            . 'fingerprint_salt TEXT NOT NULL, '
+            . 'content_fingerprint TEXT NOT NULL, '
+            . 'suppression_reason TEXT NOT NULL, '
+            . 'suppressed_at INTEGER NOT NULL, '
+            . 'cleared_at INTEGER NOT NULL DEFAULT 0, '
+            . 'PRIMARY KEY (source_key, item_key)'
+            . ')',
+        );
+        $this->database->query(
+            'CREATE INDEX IF NOT EXISTS monitor_retention_suppression_source_idx ON '
+            . self::SUPPRESSION_TABLE . '(source_key, cleared_at)',
+        );
+
+        // Compatibility with the unshipped intermediate shape that stored a
+        // URL-scoped tombstone on monitor_collector_state. Preserve those
+        // decisions if such a database exists, but do not pretend an erased
+        // content hash can be reconstructed: the migrated row protects the
+        // original opaque URL key and carries an empty content fingerprint.
+        if (
+            $schema->tableExists(self::TABLE)
+            && $schema->fieldExists(self::TABLE, 'suppressed_at')
+            && $schema->fieldExists(self::TABLE, 'suppression_reason')
+        ) {
+            $rows = $this->database->select(self::TABLE)
+                ->fields(self::TABLE, [
+                    'source_key', 'item_key', 'item_public_ref', 'suppressed_at', 'suppression_reason',
+                ])
+                ->execute();
+            foreach ($rows as $row) {
+                if ((int) $row['suppressed_at'] <= 0) {
+                    continue;
+                }
+                $this->database->insert(self::SUPPRESSION_TABLE)
+                    ->values([
+                        'source_key' => (string) $row['source_key'],
+                        'item_key' => (string) $row['item_key'],
+                        'item_public_ref' => (string) $row['item_public_ref'],
+                        'fingerprint_salt' => '',
+                        'content_fingerprint' => '',
+                        'suppression_reason' => (string) $row['suppression_reason'],
+                        'suppressed_at' => (int) $row['suppressed_at'],
+                        'cleared_at' => 0,
+                    ])
+                    ->execute();
+            }
+        }
     }
 
     /**
@@ -132,7 +186,6 @@ final class CollectorState
             ->fields(self::TABLE, [
                 'item_key', 'item_public_ref', 'content_hash', 'normalized_bytes',
                 'absent_runs', 'exclusion_kind', 'exclusion_reason', 'updated_at',
-                'suppressed_at', 'suppression_reason',
             ])
             ->condition('source_key', $sourceKey)
             ->execute();
@@ -147,8 +200,6 @@ final class CollectorState
                 'absent_runs' => (int) $row['absent_runs'],
                 'exclusion_kind' => (string) ($row['exclusion_kind'] ?? ''),
                 'exclusion_reason' => (string) ($row['exclusion_reason'] ?? ''),
-                'suppressed_at' => (int) ($row['suppressed_at'] ?? 0),
-                'suppression_reason' => (string) ($row['suppression_reason'] ?? ''),
                 'updated_at' => (int) $row['updated_at'],
             ];
         }
@@ -323,14 +374,6 @@ final class CollectorState
     }
 
     /**
-     * Delete every stored snapshot for one item.
-     *
-     * Used by exclusion transitions and by redaction. Returns the number of
-     * rows removed so callers can report it — an operator acting on a
-     * personal-information report needs to know the copy is actually gone, and
-     * "0" for an item that should have had snapshots is itself a finding.
-     */
-    /**
      * Mark an item as retention-suppressed.
      *
      * Set by redaction, and **never cleared by the collector**. The asymmetry
@@ -347,12 +390,41 @@ final class CollectorState
      */
     public function suppressRetention(string $sourceKey, string $itemKey, string $reason, int $now): void
     {
-        $this->ensureTable();
+        if (!$this->database->schema()->tableExists(self::SUPPRESSION_TABLE)) {
+            throw new \LogicException('Suppression storage must be prepared before the redaction transaction starts.');
+        }
+
+        $row = $this->allForSource($sourceKey)[$itemKey] ?? null;
+        if ($row === null) {
+            throw new \RuntimeException(sprintf('Collector state for "%s" was not found.', $itemKey));
+        }
+
+        $contentHash = (string) $row['content_hash'];
+        $salt = $contentHash === '' ? '' : bin2hex(random_bytes(16));
+        $fingerprint = $contentHash === '' ? '' : self::fingerprint($contentHash, $salt);
+        $values = [
+            'item_public_ref' => (string) $row['item_public_ref'],
+            'fingerprint_salt' => $salt,
+            'content_fingerprint' => $fingerprint,
+            'suppression_reason' => $reason,
+            'suppressed_at' => $now,
+            'cleared_at' => 0,
+        ];
+
+        if ($this->suppressionRow($sourceKey, $itemKey) === null) {
+            $this->database->insert(self::SUPPRESSION_TABLE)
+                ->values(['source_key' => $sourceKey, 'item_key' => $itemKey, ...$values])
+                ->execute();
+        } else {
+            $this->database->update(self::SUPPRESSION_TABLE)
+                ->fields($values)
+                ->condition('source_key', $sourceKey)
+                ->condition('item_key', $itemKey)
+                ->execute();
+        }
 
         $this->database->update(self::TABLE)
             ->fields([
-                'suppressed_at' => $now,
-                'suppression_reason' => $reason,
                 // Content-derived state goes with the content.
                 'content_hash' => '',
                 'normalized_bytes' => 0,
@@ -366,7 +438,75 @@ final class CollectorState
     /** Whether retention is currently suppressed for this item. */
     public function isSuppressed(string $sourceKey, string $itemKey): bool
     {
-        return ($this->allForSource($sourceKey)[$itemKey]['suppressed_at'] ?? 0) > 0;
+        $row = $this->suppressionRow($sourceKey, $itemKey);
+
+        return $row !== null && $row['suppressed_at'] > 0 && $row['cleared_at'] === 0;
+    }
+
+    /**
+     * Match content against every active tombstone for this source.
+     *
+     * The raw content hash is deliberately not retained by the tombstone. Each
+     * row uses a random salt and a domain-specific HMAC. That is enough to
+     * recognise the same normalized body at a different URL without turning
+     * the suppression table into another copy of collector content state.
+     *
+     * @return array{item_public_ref: string, suppression_reason: string, fingerprint_salt: string, content_fingerprint: string}|null
+     */
+    public function activeSuppressionForContent(string $sourceKey, string $contentHash): ?array
+    {
+        foreach ($this->suppressionRowsForSource($sourceKey) as $row) {
+            if ($row['cleared_at'] !== 0 || $row['content_fingerprint'] === '') {
+                continue;
+            }
+            if (hash_equals($row['content_fingerprint'], self::fingerprint($contentHash, $row['fingerprint_salt']))) {
+                return [
+                    'item_public_ref' => $row['item_public_ref'],
+                    'suppression_reason' => $row['suppression_reason'],
+                    'fingerprint_salt' => $row['fingerprint_salt'],
+                    'content_fingerprint' => $row['content_fingerprint'],
+                ];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Carry a content-level suppression to another opaque URL key.
+     *
+     * @param array{item_public_ref: string, suppression_reason: string, fingerprint_salt: string, content_fingerprint: string} $suppression
+     */
+    public function propagateSuppression(
+        string $sourceKey,
+        string $itemKey,
+        array $suppression,
+        int $now,
+    ): void {
+        if ($this->suppressionRow($sourceKey, $itemKey) !== null) {
+            return;
+        }
+
+        $this->database->insert(self::SUPPRESSION_TABLE)
+            ->values([
+                'source_key' => $sourceKey,
+                'item_key' => $itemKey,
+                'item_public_ref' => (string) $suppression['item_public_ref'],
+                'fingerprint_salt' => (string) $suppression['fingerprint_salt'],
+                'content_fingerprint' => (string) $suppression['content_fingerprint'],
+                'suppression_reason' => (string) $suppression['suppression_reason'],
+                'suppressed_at' => $now,
+                'cleared_at' => 0,
+            ])
+            ->execute();
+    }
+
+    /** Whether an audited clear is waiting to be reflected by the collector. */
+    public function clearedSuppression(string $sourceKey, string $itemKey): bool
+    {
+        $row = $this->suppressionRow($sourceKey, $itemKey);
+
+        return $row !== null && $row['cleared_at'] > 0;
     }
 
     /**
@@ -375,17 +515,109 @@ final class CollectorState
      */
     public function clearSuppression(string $sourceKey, string $itemKey, int $now): void
     {
-        if (!$this->tableExists()) {
+        $row = $this->suppressionRow($sourceKey, $itemKey);
+        if ($row === null) {
             return;
         }
 
-        $this->database->update(self::TABLE)
-            ->fields(['suppressed_at' => 0, 'suppression_reason' => '', 'updated_at' => $now])
-            ->condition('source_key', $sourceKey)
-            ->condition('item_key', $itemKey)
-            ->execute();
+        foreach ($this->suppressionRowsForSource($sourceKey) as $candidate) {
+            $sameContent = $row['content_fingerprint'] !== ''
+                && hash_equals($row['content_fingerprint'], $candidate['content_fingerprint']);
+            if ($candidate['item_key'] !== $itemKey && !$sameContent) {
+                continue;
+            }
+            $this->database->update(self::SUPPRESSION_TABLE)
+                ->fields(['cleared_at' => $now])
+                ->condition('source_key', $sourceKey)
+                ->condition('item_key', $candidate['item_key'])
+                ->execute();
+        }
     }
 
+    /** Remove a consumed, explicitly-cleared tombstone family. */
+    public function consumeClearedSuppression(string $sourceKey, string $itemKey): void
+    {
+        $row = $this->suppressionRow($sourceKey, $itemKey);
+        if ($row === null || $row['cleared_at'] === 0) {
+            return;
+        }
+
+        foreach ($this->suppressionRowsForSource($sourceKey) as $candidate) {
+            $sameContent = $row['content_fingerprint'] !== ''
+                && hash_equals($row['content_fingerprint'], $candidate['content_fingerprint']);
+            if ($candidate['item_key'] !== $itemKey && !$sameContent) {
+                continue;
+            }
+            $this->database->delete(self::SUPPRESSION_TABLE)
+                ->condition('source_key', $sourceKey)
+                ->condition('item_key', $candidate['item_key'])
+                ->execute();
+        }
+    }
+
+    /**
+     * @return array{item_key: string, item_public_ref: string, fingerprint_salt: string, content_fingerprint: string, suppression_reason: string, suppressed_at: int, cleared_at: int}|null
+     */
+    private function suppressionRow(string $sourceKey, string $itemKey): ?array
+    {
+        foreach ($this->suppressionRowsForSource($sourceKey) as $row) {
+            if ($row['item_key'] === $itemKey) {
+                return $row;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return list<array{item_key: string, item_public_ref: string, fingerprint_salt: string, content_fingerprint: string, suppression_reason: string, suppressed_at: int, cleared_at: int}>
+     */
+    private function suppressionRowsForSource(string $sourceKey): array
+    {
+        if (!$this->database->schema()->tableExists(self::SUPPRESSION_TABLE)) {
+            return [];
+        }
+
+        $rows = $this->database->select(self::SUPPRESSION_TABLE)
+            ->fields(self::SUPPRESSION_TABLE, [
+                'item_key', 'item_public_ref', 'fingerprint_salt', 'content_fingerprint',
+                'suppression_reason', 'suppressed_at', 'cleared_at',
+            ])
+            ->condition('source_key', $sourceKey)
+            ->execute();
+
+        $out = [];
+        foreach ($rows as $row) {
+            $out[] = [
+                'item_key' => (string) $row['item_key'],
+                'item_public_ref' => (string) $row['item_public_ref'],
+                'fingerprint_salt' => (string) $row['fingerprint_salt'],
+                'content_fingerprint' => (string) $row['content_fingerprint'],
+                'suppression_reason' => (string) $row['suppression_reason'],
+                'suppressed_at' => (int) $row['suppressed_at'],
+                'cleared_at' => (int) $row['cleared_at'],
+            ];
+        }
+
+        return $out;
+    }
+
+    private static function fingerprint(string $contentHash, string $salt): string
+    {
+        $key = hex2bin($salt);
+        if ($key === false) {
+            throw new \RuntimeException('The suppression fingerprint salt is malformed.');
+        }
+
+        return hash_hmac('sha256', 'monitor-retention-v1:' . $contentHash, $key);
+    }
+
+    /**
+     * Delete every stored snapshot for one item.
+     *
+     * Used by exclusion transitions and by redaction. Returns the number of
+     * rows removed so callers can report it.
+     */
     public function purgeRetainedContent(string $sourceKey, string $itemKey): int
     {
         if (!$this->database->schema()->tableExists(self::SNAPSHOT_TABLE)) {

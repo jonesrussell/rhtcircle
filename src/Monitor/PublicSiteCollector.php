@@ -257,7 +257,7 @@ final class PublicSiteCollector
             //
             // Checked BEFORE the body is hashed or stored, and never lifted
             // here: only an audited maintainer action clears it.
-            if (($known[$itemKey]['suppressed_at'] ?? 0) > 0) {
+            if ($this->state->isSuppressed($sourceKey, $itemKey)) {
                 $seen[$itemKey] = true;
                 ++$report['suppressed'];
                 continue;
@@ -265,6 +265,23 @@ final class PublicSiteCollector
 
             $hash = ContentNormalizer::hash($result->body);
             $snapshot = ContentNormalizer::snapshot($result->body);
+
+            // A redaction obligation follows the normalized content, not the
+            // URL it happened to occupy when the request was received. Match
+            // against the salted tombstone before creating an item, extracting
+            // a title, storing a snapshot or publishing an event. This closes
+            // the URL-move hole where the old state hash had correctly been
+            // cleared and therefore could never participate in ordinary move
+            // detection.
+            $contentSuppression = $this->state->activeSuppressionForContent($sourceKey, $hash);
+            if ($contentSuppression !== null) {
+                ++$report['suppressed'];
+                if (!$dryRun) {
+                    $this->state->propagateSuppression($sourceKey, $itemKey, $contentSuppression, $now);
+                }
+                continue;
+            }
+
             $existing = $known[$itemKey] ?? null;
 
             if ($existing === null) {
@@ -273,6 +290,36 @@ final class PublicSiteCollector
                 // CONFIRMED absent. Deciding here would merge two live pages
                 // that happen to share content.
                 $newThisRun[$itemKey] = ['url' => $url, 'hash' => $hash, 'snapshot' => $snapshot, 'body' => $result->body];
+                continue;
+            }
+
+            // An audited clear is a recovery transition, not evidence that the
+            // publisher changed the page. Redaction deliberately erased the old
+            // hash, so comparing it with the incoming hash would manufacture a
+            // `content_changed` event. Restore the title and baseline from the
+            // current body, then consume the cleared tombstone only after the
+            // recovery writes have succeeded.
+            if ($this->state->clearedSuppression($sourceKey, $itemKey)) {
+                $publicRef = (string) $existing['item_public_ref'];
+                if ($publicRef === '') {
+                    $newThisRun[$itemKey] = [
+                        'url' => $url,
+                        'hash' => $hash,
+                        'snapshot' => $snapshot,
+                        'body' => $result->body,
+                    ];
+                    continue;
+                }
+
+                $report['events'][] = ['type' => 'became_retainable', 'item' => $publicRef];
+                if (!$dryRun) {
+                    $this->state->record($sourceKey, $itemKey, $publicRef, $hash, strlen($snapshot), $now);
+                    $this->state->appendSnapshot($sourceKey, $itemKey, $hash, $snapshot, $now);
+                    $this->touchItem($sourceKey, $publicRef, $url, $hash, $now, 'became_retainable');
+                    $this->restoreTitle($sourceKey, $publicRef, $result->body);
+                    $this->recordEvent($sourceKey, $publicRef, 'became_retainable', $now, 'direct_fetch', $url);
+                    $this->state->consumeClearedSuppression($sourceKey, $itemKey);
+                }
                 continue;
             }
 
@@ -404,6 +451,13 @@ final class PublicSiteCollector
         // --- absence pass: two consecutive runs before a removal is published ---
         foreach ($known as $itemKey => $row) {
             if (isset($seen[$itemKey])) {
+                continue;
+            }
+
+            // Redaction is our own retention obligation, not a statement that
+            // the publisher removed a page. A suppressed item must therefore
+            // never accumulate absence runs or emit a later disappearance.
+            if ($this->state->isSuppressed($sourceKey, $itemKey)) {
                 continue;
             }
 

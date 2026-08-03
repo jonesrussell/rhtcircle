@@ -112,6 +112,32 @@ final class RedactionAtomicityTest extends TestCase
     }
 
     #[Test]
+    public function aPreSuppressionDatabaseCanBeReadAndRedactedWithoutAnInTransactionMigration(): void
+    {
+        $eventId = $this->seedFullyRetainedItem();
+
+        // Exact upgrade shape: the collector-state table predates suppression
+        // and the additive tombstone table does not exist yet.
+        $this->pdo()->exec('DROP TABLE ' . CollectorState::SUPPRESSION_TABLE);
+        $columns = $this->pdo()->query('PRAGMA table_info(' . CollectorState::TABLE . ')')->fetchAll(\PDO::FETCH_ASSOC);
+        $columnNames = array_column($columns, 'name');
+        self::assertNotContains('suppressed_at', $columnNames);
+        self::assertNotContains('suppression_reason', $columnNames);
+
+        $state = new CollectorState($this->database());
+        self::assertCount(1, $state->allForSource(self::SOURCE_KEY), 'legacy state remains readable');
+        self::assertFalse($state->isSuppressed(self::SOURCE_KEY, self::ITEM_KEY));
+        $state->clearSuppression(self::SOURCE_KEY, self::ITEM_KEY, 8_000);
+        self::assertFalse($this->tableExists(CollectorState::SUPPRESSION_TABLE), 'reads and clear are DDL-free');
+
+        $io = new RecordingCommandIo();
+        self::assertSame(0, $this->command()->run($io, $eventId, 'personal_information', 9_000), $io->output());
+        self::assertTrue($this->tableExists(CollectorState::SUPPRESSION_TABLE));
+        self::assertTrue((new CollectorState($this->database()))->isSuppressed(self::SOURCE_KEY, self::ITEM_KEY));
+        self::assertSame(0, $this->snapshotCount());
+    }
+
+    #[Test]
     public function aFailurePartwayThroughRollsBackCompletelyAndReportsFailure(): void
     {
         $eventId = $this->seedFullyRetainedItem();
@@ -266,6 +292,13 @@ final class RedactionAtomicityTest extends TestCase
     private function pdo(): \PDO
     {
         return new \PDO('sqlite:' . $this->databasePath, null, null, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
+    }
+
+    private function tableExists(string $table): bool
+    {
+        $quoted = $this->pdo()->quote($table);
+
+        return (int) $this->pdo()->query("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=" . $quoted)->fetchColumn() === 1;
     }
 
     private function manager(): EntityTypeManager
