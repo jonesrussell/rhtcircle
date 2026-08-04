@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}Proposed Sagamok election law · RHT Circle{% endblock %}
+{% block description %}Read, search and comment on a complete member counterdraft for a Sagamok leadership selection and accountability law, including independent election administration, accessible voting and member recall.{% endblock %}
+{% block og_title %}Proposed Sagamok election law{% endblock %}
+{% block og_description %}A complete member counterdraft for review and feedback, with independent election administration, accessible voting and member recall.{% endblock %}
+{% block body_class %}route-sagamok-member-election-law{% endblock %}
+
+{% block head_styles %}
+<style>
+.election-law-page{padding:2rem 0 4rem}.election-law-page .cover{margin-bottom:1.5rem}.election-law-page .law-status{display:inline-flex;align-items:center;gap:.5rem;margin:.4rem 0 1rem;padding:.5rem .8rem;border:1px solid #d4aa55;border-radius:999px;background:#fff6df;color:#694b0e;font-weight:700}.election-law-page .law-actions{display:flex;flex-wrap:wrap;gap:.7rem;margin:1.2rem 0}.election-law-page .law-actions a{text-decoration:none}.election-law-page .law-frame{width:100%;height:clamp(760px,82vh,1180px);border:1px solid var(--line,#d7dfdf);border-radius:14px;background:#fff;box-shadow:0 16px 44px rgba(17,47,65,.12)}.election-law-page .law-context{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin:1.3rem 0}.election-law-page .law-context>div{padding:1rem;border:1px solid #d7dfdf;border-radius:10px;background:#f6f9f8}.election-law-page .law-context strong{display:block;margin-bottom:.25rem;color:#123e57}.election-law-page .legal-note,.election-law-page .feedback-note{margin:1.3rem 0;padding:1rem 1.15rem;border-left:4px solid #167a76;background:#edf6f4}.election-law-page .feedback-note{border-left-color:#c41d8f;background:#fbf0f8}.election-law-page .frame-fallback{margin:.65rem 0;color:#52666f}@media(max-width:700px){.election-law-page{padding-top:1rem}.election-law-page .law-frame{height:78vh;border-radius:8px}}
+</style>
+{% endblock %}
+{% block content %}
+<article class="election-law-page">
+  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › <a href="/communities/sagamok/accountability">Member accountability</a> › Proposed election law</p>
+
+  <header class="cover">
+    <p class="cover__eyebrow">Member governance work</p>
+    <h1 class="cover__title">A proposed member election law for Sagamok</h1>
+    <p class="cover__lede">This is a complete working law built around a simple principle: election authority belongs to members. It separates election administration from Council, protects the right to vote and run, and creates a member recall process.</p>
+    <p class="law-status">Working counterdraft · Not official or enacted</p>
+    <p class="cover__byline">Member-compiled and unofficial. It starts from Sagamok's earlier election-law package and resolves its blank thresholds, contradictions and concentrated appointment powers. Formal enactment would still require consultation, legal review, the section 42 member vote and a federal removal order.</p>
+  </header>
+
+  <div class="law-context" aria-label="Key choices in the counterdraft">
+    <div><strong>Independent administration</strong>Members select the Election Commission. Council does not appoint the election decision-makers.</div>
+    <div><strong>Member recall</strong>A petition signed by 25% of electors requires a secret recall vote. Council has no veto.</div>
+    <div><strong>Open participation</strong>No residency bar, litigation bar, candidacy fee or appeal fee.</div>
+    <div><strong>Member-controlled amendments</strong>No Council-only amendment route. Protected rules can change only through a member vote.</div>
+  </div>
+
+  <div class="legal-note"><strong>Legal starting point.</strong> Section 42 of the <a href="https://laws-lois.justice.gc.ca/eng/acts/F-11.65/section-42.html">First Nations Elections Act</a> requires Council's removal resolution, publication of the complete code, approval by a majority of votes cast in a secret vote in which a majority of all electors participate, and a ministerial order. The counterdraft is proposed for discussion within that framework.</div>
+
+  <div class="legal-note"><strong>Its constitutional home.</strong> <a href="https://www.sagamokanishnawbek.com/meeting-minutes/chief-and-council-meeting-september-13-2022">Sagamok's September 13, 2022 Council minutes</a> record that a constitution is necessary so an election law and other governance laws do not exist in isolation. This counterdraft is therefore limited to leadership selection and accountability. It is written to operate as an extension of a future member-ratified Sagamok constitution, and that constitution would prevail if the two conflict. The election law can be completed now, but it does not replace the unfinished constitutional work.</div>
+
+  <div class="law-actions">
+    <a class="btn" href="/files/sagamok-election-law-member-counterdraft.html" target="_blank" rel="noopener">Open and search the complete law</a>
+    <a class="btn btn--secondary" href="/files/sagamok-election-law-member-counterdraft.html#part11" target="_blank" rel="noopener">Go directly to member recall</a>
+  </div>
+
+  <div class="feedback-note" id="feedback"><strong>This is open for member feedback.</strong> Read the wording, note the section number and tell the Circle what should be kept, changed or added. <a href="/contact">Send feedback through the Circle contact form</a>. Feedback informs the next counterdraft; submitting it does not sign a petition or cast a vote.</div>
+
+  <iframe class="law-frame" src="/files/sagamok-election-law-member-counterdraft.html" title="Sagamok Leadership Selection and Accountability Law member counterdraft"></iframe>
+  <p class="frame-fallback">If the embedded document does not load, <a href="/files/sagamok-election-law-member-counterdraft.html">open the full-screen version</a>.</p>
+</article>
+{% endblock %}

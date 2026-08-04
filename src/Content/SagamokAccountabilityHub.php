@@ -21,6 +21,7 @@ final class SagamokAccountabilityHub
             'hrefs' => [
                 '/communities/sagamok/awaiting-council',
                 '/communities/sagamok/member-accountability-resolution',
+                '/communities/sagamok/member-election-law',
                 '/standard/records-request',
                 '/communities/sagamok/write-to-council',
                 '/communities/sagamok/conflict-register',

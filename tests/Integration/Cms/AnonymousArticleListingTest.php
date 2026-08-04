@@ -95,6 +95,11 @@ final class AnonymousArticleListingTest extends TestCase
         self::assertSame(200, $hub->getStatusCode());
         self::assertStringContainsString('/news/sagamok-trespass-bylaw-session-was-backwards', (string) $hub->getContent());
         self::assertStringContainsString('/news/sagamok-south-market-land-deal', (string) $hub->getContent());
+
+        $law = $this->request('/communities/sagamok/member-election-law');
+        self::assertSame(200, $law->getStatusCode());
+        self::assertStringContainsString('This is open for member feedback.', (string) $law->getContent());
+        self::assertStringContainsString('/files/sagamok-election-law-member-counterdraft.html', (string) $law->getContent());
     }
 
     private function request(string $uri): \Symfony\Component\HttpFoundation\Response

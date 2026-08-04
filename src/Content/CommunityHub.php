@@ -235,6 +235,14 @@ final class CommunityHub
             ],
             [
                 'feature' => true,
+                'tag' => 'A complete member counterdraft',
+                'title' => 'Proposed election law for Sagamok',
+                'desc' => 'Read and search a complete working law with independent election administration, accessible voting, member-controlled amendments and a recall process. Member feedback is open.',
+                'go' => 'Read the law and send feedback',
+                'href' => '/communities/sagamok/member-election-law',
+            ],
+            [
+                'feature' => true,
                 'tag' => 'A member writing tool',
                 'title' => 'Write your own letter to Council',
                 'desc' => 'Build a clear concern or records-request letter on your device, download an editable template, and open the finished wording in your own email app.',

@@ -87,6 +87,10 @@ final class NewsFeedTest extends TestCase
             self::assertContains($href, $cardHrefs, $href . ' must surface as a tile automatically.');
         }
         self::assertSame(\count($cardHrefs), \count(array_unique($cardHrefs)), 'No article may be tiled twice.');
+        self::assertContains(
+            '/communities/sagamok/member-election-law',
+            array_column($groups[0]['cards'], 'href'),
+        );
         $followTheRecord = $groups[1]['cards'];
         self::assertContains(
             '/news/sagamok-trespass-bylaw-session-was-backwards',

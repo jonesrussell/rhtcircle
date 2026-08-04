@@ -374,6 +374,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             'sagamok-play-limited-partnership' => ['/communities/sagamok/play-limited-partnership', 'pages/communities/sagamok/play-limited-partnership.html.twig'],
             'sagamok-espanola-mill-bmi' => ['/communities/sagamok/espanola-mill-bmi', 'pages/communities/sagamok/espanola-mill-bmi.html.twig'],
             'sagamok-one-seat-one-salary' => ['/communities/sagamok/one-seat-one-salary', 'pages/communities/sagamok/one-seat-one-salary.html.twig'],
+            'sagamok-member-election-law' => ['/communities/sagamok/member-election-law', 'pages/communities/sagamok/member-election-law.html.twig'],
             // Client-side member letter builder. Personal text stays in the
             // browser: the app receives no form submission and stores nothing.
             'sagamok-write-to-council' => ['/communities/sagamok/write-to-council', 'pages/communities/sagamok/write-to-council.html.twig'],

@@ -120,6 +120,7 @@ final class SiteRendererTest extends TestCase
             ),
         ));
         self::assertSame($expectedTiles, substr_count($html, '<a class="tile-card'));
+        self::assertStringContainsString('/communities/sagamok/member-election-law', $html);
         self::assertStringContainsString('/news/sagamok-trespass-bylaw-session-was-backwards', $html);
         self::assertStringContainsString('/news/sagamok-south-market-land-deal', $html);
         self::assertStringContainsString('Back to the Sagamok community page', $html);
@@ -127,6 +128,18 @@ final class SiteRendererTest extends TestCase
             '~<main id="main">\s*<div class="wrap wrap--wide">~',
             $html,
         );
+    }
+
+    public function testMemberElectionLawIsClearlyUnofficialAndInvitesFeedback(): void
+    {
+        $_SERVER['REQUEST_URI'] = '/communities/sagamok/member-election-law';
+        $html = $this->renderer->render('pages/communities/sagamok/member-election-law.html.twig');
+
+        self::assertStringContainsString('Not official or enacted', $html);
+        self::assertStringContainsString('section 42 member vote and a federal removal order', $html);
+        self::assertStringContainsString('/files/sagamok-election-law-member-counterdraft.html', $html);
+        self::assertStringContainsString('This is open for member feedback.', $html);
+        self::assertStringContainsString('href="/contact"', $html);
     }
 
     public function testNoPageCanSelectTheNarrowReadingWrapperAsItsMainLayout(): void

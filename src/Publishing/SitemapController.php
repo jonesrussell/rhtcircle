@@ -55,6 +55,7 @@ final readonly class SitemapController
         '/communities/sagamok/members-website-issue',
         '/communities/sagamok/where-your-data-lives',
         '/communities/sagamok/long-term-care',
+        '/communities/sagamok/member-election-law',
         '/community-life/indigenous-baseball-league',
         '/land',
         '/land/massey-solar-project',
