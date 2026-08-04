@@ -98,8 +98,9 @@ final class AnonymousArticleListingTest extends TestCase
 
         $law = $this->request('/communities/sagamok/member-election-law');
         self::assertSame(200, $law->getStatusCode());
-        self::assertStringContainsString('This is open for member feedback.', (string) $law->getContent());
-        self::assertStringContainsString('/files/sagamok-election-law-member-counterdraft.html', (string) $law->getContent());
+        self::assertStringContainsString('id="part11"', (string) $law->getContent());
+        self::assertStringContainsString('id="changelog"', (string) $law->getContent());
+        self::assertStringNotContainsString('<iframe', (string) $law->getContent());
     }
 
     private function request(string $uri): \Symfony\Component\HttpFoundation\Response

@@ -136,9 +136,11 @@ final class SiteRendererTest extends TestCase
         $html = $this->renderer->render('pages/communities/sagamok/member-election-law.html.twig');
 
         self::assertStringContainsString('Not official or enacted', $html);
-        self::assertStringContainsString('section 42 member vote and a federal removal order', $html);
-        self::assertStringContainsString('/files/sagamok-election-law-member-counterdraft.html', $html);
-        self::assertStringContainsString('This is open for member feedback.', $html);
+        self::assertStringContainsString("Council's section 42 resolution", $html);
+        self::assertStringContainsString('id="part11"', $html);
+        self::assertStringContainsString('id="changelog"', $html);
+        self::assertStringNotContainsString('<iframe', $html);
+        self::assertStringContainsString('Send feedback', $html);
         self::assertStringContainsString('href="/contact"', $html);
     }
 
