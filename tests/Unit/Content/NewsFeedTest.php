@@ -118,6 +118,7 @@ final class NewsFeedTest extends TestCase
         self::assertContains('sagamok-trespass-bylaw-session-was-backwards', array_column($seeds, 'slug'));
         self::assertNotContains('waasmoowin-deal-public-record', ArticleSeedData::unpublishedSlugs());
         self::assertContains('waasmoowin-deal-public-record', ArticleSeedData::publicationRefreshSlugs());
+        self::assertContains('sagamok-membership-did-not-begin-with-the-list', ArticleSeedData::publicationRefreshSlugs());
         self::assertContains('aging-well-starts-before-long-term-care', ArticleSeedData::metadataRefreshSlugs());
     }
 }

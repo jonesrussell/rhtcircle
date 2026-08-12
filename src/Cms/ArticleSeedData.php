@@ -219,6 +219,7 @@ final class ArticleSeedData
         return [
             'waasmoowin-deal-public-record',
             'sagamok-trespass-bylaw-session-was-backwards',
+            'sagamok-membership-did-not-begin-with-the-list',
         ];
     }
 
