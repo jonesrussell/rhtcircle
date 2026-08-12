@@ -80,6 +80,20 @@ final class SiteRendererTest extends TestCase
         self::assertStringContainsString('>Help &amp; resources</a>', $html);
     }
 
+    public function testComingHomeReviewIsAStandaloneUnlistedStory(): void
+    {
+        $_SERVER['REQUEST_URI'] = '/review/coming-home-8f3c7a1d5e';
+        $html = $this->renderer->render('pages/review/coming-home-8f3c7a1d5e.html.twig');
+
+        self::assertStringContainsString('<meta name="robots" content="noindex,nofollow,noarchive">', $html);
+        self::assertStringContainsString('<h1>Coming home.</h1>', $html);
+        self::assertStringContainsString('intended only for her review', $html);
+        self::assertStringContainsString('/images/review/coming-home-8f3c7a1d5e/alan-clan-discussion-33m20s.mp4', $html);
+        self::assertStringContainsString('/images/review/coming-home-8f3c7a1d5e/sagamok-membership-law-1999.pdf', $html);
+        self::assertStringNotContainsString('—', $html);
+        self::assertSame(1, substr_count(strtolower($html), '<!doctype html>'));
+    }
+
     public function testGetInvolvedUsesTheWidePublicationDoorwayLayout(): void
     {
         $_SERVER['REQUEST_URI'] = '/get-involved';

@@ -457,6 +457,14 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 ->build(),
         );
         $router->addRoute(
+            'review-coming-home-8f3c7a1d5e',
+            RouteBuilder::create('/review/coming-home-8f3c7a1d5e')
+                ->controller(fn () => $controller->reviewPage('pages/review/coming-home-8f3c7a1d5e.html.twig'))
+                ->allowAll()
+                ->methods('GET')
+                ->build(),
+        );
+        $router->addRoute(
             'review-aging-well-starts-at-home-2026-07-26',
             RouteBuilder::create('/review/aging-well-starts-at-home-2026-07-26')
                 ->controller(fn () => $controller->redirect('/news/aging-well-starts-before-long-term-care'))

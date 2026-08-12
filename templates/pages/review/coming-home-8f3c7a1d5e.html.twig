@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="description" content="A private story concept for Sagamok Membership Law work.">
+  <title>Coming Home | Private concept</title>
+  <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=">
+  <style>
+    :root {
+      --ink: #17251f;
+      --forest: #173d30;
+      --forest-light: #285a46;
+      --cedar: #a34931;
+      --gold: #e3b657;
+      --cream: #f6f0e3;
+      --paper: #fffdf8;
+      --muted: #5e6862;
+      --line: #dcd4c4;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--cream);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+    a { color: inherit; }
+    .shell { width: min(1040px, calc(100% - 40px)); margin: 0 auto; }
+    .private {
+      padding: 10px 20px;
+      color: rgba(255,255,255,.78);
+      background: #10271f;
+      text-align: center;
+      font-size: .74rem;
+      font-weight: 750;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+    header {
+      padding: 22px 0;
+      border-bottom: 1px solid rgba(23,37,31,.12);
+      background: rgba(246,240,227,.9);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-size: .79rem; font-weight: 850; letter-spacing: .11em; }
+    .mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; color: white; background: var(--cedar); font-family: Georgia, serif; font-size: 1.25rem; }
+
+    .hero {
+      min-height: 700px;
+      display: grid;
+      align-content: center;
+      padding: 90px 0 110px;
+    }
+    .eyebrow { margin: 0 0 20px; color: var(--cedar); font-size: .78rem; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
+    h1, h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-weight: 500; line-height: .98; letter-spacing: -.045em; }
+    h1 { max-width: 920px; font-size: clamp(4.4rem, 11vw, 8.7rem); }
+    h2 { font-size: clamp(2.65rem, 6vw, 5.1rem); }
+    .hero-copy { max-width: 750px; margin: 36px 0 0; color: var(--muted); font-family: Georgia, serif; font-size: clamp(1.25rem, 2.4vw, 1.8rem); line-height: 1.45; }
+
+    .story { padding: 100px 0; color: white; background: var(--forest); }
+    .story-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 70px; align-items: start; }
+    .story-label { color: var(--gold); }
+    blockquote { margin: 0; font-family: Georgia, serif; font-size: clamp(1.85rem, 4.1vw, 3.5rem); line-height: 1.22; letter-spacing: -.025em; }
+    .note { max-width: 680px; margin-top: 28px; color: rgba(255,255,255,.64); font-size: .85rem; }
+
+    .turn { padding: 100px 0; }
+    .turn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: center; }
+    .turn-copy p { color: var(--muted); font-size: 1.05rem; }
+    .law-card { padding: 40px; border: 1px solid var(--line); border-radius: 22px; background: var(--paper); box-shadow: 0 22px 55px rgba(31,49,40,.1); }
+    .law-card .year { color: var(--cedar); font-size: .78rem; font-weight: 850; letter-spacing: .11em; }
+    .law-card strong { display: block; margin: 15px 0; font-family: Georgia, serif; font-size: 1.8rem; line-height: 1.2; }
+    .law-card p { margin: 0; color: var(--muted); }
+
+    .question { padding: 90px 0; color: white; background: var(--cedar); }
+    .question h2 { max-width: 900px; }
+    .question p { max-width: 760px; margin: 28px 0 0; color: rgba(255,255,255,.78); font-size: 1.1rem; }
+
+    .idea { padding: 110px 0; }
+    .idea-intro { max-width: 760px; margin-top: 28px; color: var(--muted); font-size: 1.1rem; }
+    .sequence { margin-top: 60px; border-top: 1px solid var(--line); }
+    .sequence-row { display: grid; grid-template-columns: 75px 1fr; gap: 25px; padding: 30px 0; border-bottom: 1px solid var(--line); }
+    .sequence-number { color: var(--cedar); font-family: Georgia, serif; font-size: 2rem; }
+    .sequence-row strong { display: block; font-family: Georgia, serif; font-size: 1.55rem; font-weight: 500; }
+    .sequence-row p { margin: 8px 0 0; color: var(--muted); }
+
+    .recording { padding: 90px 0; background: #e9e1d2; }
+    .recording-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 45px; }
+    .clip { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); }
+    video { display: block; width: 100%; aspect-ratio: 1280 / 560; background: #101713; }
+    .clip-copy { padding: 24px; }
+    .clip-copy small { color: var(--cedar); font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+    .clip-copy h3 { margin: 8px 0; font-family: Georgia, serif; font-size: 1.55rem; font-weight: 500; }
+    .clip-copy p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+    .close { padding: 120px 0; text-align: center; }
+    .close h2 { max-width: 870px; margin: 0 auto; }
+    .close p { max-width: 700px; margin: 30px auto 0; color: var(--muted); font-size: 1.1rem; }
+    .sources { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 35px; }
+    .sources a { padding: 9px 14px; border: 1px solid var(--line); border-radius: 99px; color: var(--forest); text-decoration: none; font-size: .78rem; font-weight: 750; }
+    footer { padding: 28px 0 45px; border-top: 1px solid var(--line); color: var(--muted); font-size: .76rem; text-align: center; }
+
+    @media (max-width: 760px) {
+      .hero { min-height: 600px; padding: 70px 0 85px; }
+      .story-grid, .turn-grid, .recording-grid { grid-template-columns: 1fr; gap: 38px; }
+      .story, .turn, .idea, .recording { padding: 75px 0; }
+      .sequence-row { grid-template-columns: 48px 1fr; gap: 15px; }
+      .law-card { padding: 28px; }
+    }
+
+    @media print {
+      .private, header, video { display: none; }
+      body { background: white; }
+      .hero { min-height: auto; }
+      section { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="private">Unlisted working concept · for Rhea's review</div>
+  <header>
+    <div class="shell brand"><span class="mark">Z</span><span>SAGAMOK MEMBERSHIP LAW · STORY, LANGUAGE AND RECORD</span></div>
+  </header>
+
+  <main>
+    <section class="shell hero">
+      <p class="eyebrow">A story from the Membership Law breakout group</p>
+      <h1>Coming home.</h1>
+      <p class="hero-copy">Rhea described a woman who was required to leave Sagamok and transfer her membership when she married a man from another First Nation. After she was widowed, she came home. She was no longer a member here.</p>
+    </section>
+
+    <section class="story">
+      <div class="shell story-grid">
+        <p class="eyebrow story-label">What the story carries</p>
+        <div>
+          <blockquote>She came home. Her membership did not.</blockquote>
+          <p class="note">This account comes from Russell's recollection of the August 11 online breakout group. It is not a quotation. The details have not been confirmed with Rhea. This unlisted page is intended only for her review.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="turn">
+      <div class="shell turn-grid">
+        <div class="turn-copy">
+          <p class="eyebrow">The gap</p>
+          <h2>The rule ended. The separation remained.</h2>
+          <p>Before 1985, the Indian Act moved a First Nations woman to her husband's band list when she married a man from another First Nation. Parliament ended that rule, but did not automatically return her to her home community's list.</p>
+        </div>
+        <aside class="law-card">
+          <div class="year">SAGAMOK MEMBERSHIP LAW · 1999</div>
+          <strong>The current law does not create a separate way home for someone displaced by that rule.</strong>
+          <p>A transfer from another First Nation generally requires member approval, Membership Authority approval and probation. The published law does not distinguish that process from a return after a forced historic transfer.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="question">
+      <div class="shell">
+        <p class="eyebrow" style="color:#ffe0a0">The question for the new law</p>
+        <h2>Should someone displaced from Sagamok by the old marriage rule have a right to return?</h2>
+        <p>A return after forced transfer is not the same as an ordinary transfer. The new law can treat it differently, then decide what that means for the person and their descendants.</p>
+      </div>
+    </section>
+
+    <section class="idea">
+      <div class="shell">
+        <p class="eyebrow">More than the written rule</p>
+        <h2>The law work is already recording why membership matters.</h2>
+        <p class="idea-intro">Family memory shows what was lost. Anishinaabemowin and historical records show how identity was carried, named and changed. Together they can preserve why the new law takes the shape it does.</p>
+        <div class="sequence">
+          <div class="sequence-row"><span class="sequence-number">01</span><div><strong>The lived reason</strong><p>A family story shows the consequence of a membership rule in a way legal wording cannot.</p></div></div>
+          <div class="sequence-row"><span class="sequence-number">02</span><div><strong>The language and the record</strong><p>Oral teaching, Anishinaabemowin and written records sit together. The written archive does not get the last word.</p></div></div>
+          <div class="sequence-row"><span class="sequence-number">03</span><div><strong>Sagamok's copy</strong><p>The recordings and source material remain under Sagamok's authority. The people whose stories are included decide how they may be used.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="recording">
+      <div class="shell">
+        <p class="eyebrow">Another thread in the recording</p>
+        <h2>Language, doodem and the colonial record.</h2>
+        <p class="idea-intro">Alan's presentation moved between family teachings and marks recorded in treaty documents. Two moments may connect with things Rhea described. The connections are not yet confirmed.</p>
+        <div class="recording-grid">
+          <article class="clip">
+            <video controls preload="metadata" poster="/images/review/coming-home-8f3c7a1d5e/alan-clan-discussion-poster.jpg"><source src="/images/review/coming-home-8f3c7a1d5e/alan-clan-discussion-33m20s.mp4" type="video/mp4"></video>
+            <div class="clip-copy"><small>33:20–34:10</small><h3>A doodem teaching</h3><p>Alan recounts a family discussion about whether doodem follows the father. The exact language and teaching require fluent review.</p></div>
+          </article>
+          <article class="clip">
+            <video controls preload="metadata" poster="/images/review/coming-home-8f3c7a1d5e/alan-rooster-treaty-poster.jpg"><source src="/images/review/coming-home-8f3c7a1d5e/alan-rooster-treaty-discussion-40m05s.mp4" type="video/mp4"></video>
+            <div class="clip-copy"><small>40:05–42:15</small><h3>A rooster or cock mark</h3><p>Alan discusses an animal mark in an 1836 treaty record. It may connect with Rhea's memory of what her mother called herself. The connection is not confirmed.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="close">
+      <div class="shell">
+        <h2>Keep the reason with the rule.</h2>
+        <p>The law can carry the stories, language and history that explain it. Sagamok can keep that record and decide who may use it.</p>
+        <div class="sources">
+          <a href="/images/review/coming-home-8f3c7a1d5e/sagamok-membership-law-1999.pdf">1999 Sagamok Membership Law</a>
+          <a href="https://www.parl.ca/legisinfo/en/bill/45-1/s-2">Bill S-2</a>
+          <a href="https://www.rcaanc-cirnac.gc.ca/eng/1540403121778/1568898903708">Band control of membership</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="shell">Unlisted working concept · August 11, 2026</div></footer>
+</body>
+</html>
+
