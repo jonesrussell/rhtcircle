@@ -80,6 +80,17 @@ final class SiteRendererTest extends TestCase
         self::assertStringContainsString('>Help &amp; resources</a>', $html);
     }
 
+    public function testPublicChatLauncherRequiresAnExplicitReleaseFlag(): void
+    {
+        $html = $this->renderer->render('pages/about.html.twig');
+        self::assertStringNotContainsString('/js/rht-anokii-chat.js', $html);
+
+        $released = $this->renderer->render('pages/about.html.twig', [
+            'chat_enabled' => true,
+        ]);
+        self::assertStringContainsString('/js/rht-anokii-chat.js', $released);
+    }
+
     public function testGetInvolvedUsesTheWidePublicationDoorwayLayout(): void
     {
         $_SERVER['REQUEST_URI'] = '/get-involved';
