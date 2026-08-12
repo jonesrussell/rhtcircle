@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Publishing;
 
+use App\Cms\ArticleSeedData;
 use App\Publishing\ArticleContentType;
 use App\Publishing\Validator\ImageAltTextValidator;
 use App\Publishing\Validator\IsoDateValidator;
 use App\Publishing\Validator\NoEmDashValidator;
 use App\Publishing\Validator\SlugShapeValidator;
+use App\Publishing\Validator\EditorialLaneValidator;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Waaseyaa\Publishing\ValidationErrors;
@@ -57,6 +59,43 @@ final class EditorialValidatorsTest extends TestCase
         self::assertSame([], $this->errorsFor(new SlugShapeValidator(), ['slug' => 'good-slug-9']));
         self::assertArrayHasKey('date_iso', $this->errorsFor(new IsoDateValidator(), ['date_iso' => '2026-13-45']));
         self::assertSame([], $this->errorsFor(new IsoDateValidator(), ['date_iso' => '2026-07-29']));
+    }
+
+    #[Test]
+    public function article_lanes_keep_section_kicker_and_action_consistent(): void
+    {
+        $validator = new EditorialLaneValidator();
+        self::assertSame([], $this->errorsFor($validator, [
+            'section' => 'RHT Circle analysis',
+            'kicker' => 'Analysis | Sagamok',
+            'action_label' => 'Read the analysis',
+        ]));
+
+        $errors = $this->errorsFor($validator, [
+            'section' => 'RHT Circle analysis',
+            'kicker' => 'Investigation | Sagamok',
+            'action_label' => 'Read the commentary',
+        ]);
+        self::assertArrayHasKey('kicker', $errors);
+        self::assertArrayHasKey('action_label', $errors);
+        self::assertArrayHasKey('section', $this->errorsFor($validator, [
+            'section' => 'RHT Circle feature',
+        ]));
+    }
+
+    #[Test]
+    public function every_managed_article_obeys_the_publishing_contract(): void
+    {
+        $descriptor = ArticleContentType::descriptor();
+        foreach (ArticleSeedData::all(\dirname(__DIR__, 3)) as $article) {
+            foreach ($descriptor->validators as $validator) {
+                self::assertSame(
+                    [],
+                    $this->errorsFor($validator, $article),
+                    sprintf('%s failed %s.', $article['slug'], $validator::class),
+                );
+            }
+        }
     }
 
     #[Test]

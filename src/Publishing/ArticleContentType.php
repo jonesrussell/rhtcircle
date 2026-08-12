@@ -9,6 +9,7 @@ use App\Publishing\Validator\ImageAltTextValidator;
 use App\Publishing\Validator\IsoDateValidator;
 use App\Publishing\Validator\NoEmDashValidator;
 use App\Publishing\Validator\SlugShapeValidator;
+use App\Publishing\Validator\EditorialLaneValidator;
 use App\Publishing\ArticleHtmlSanitizer;
 use Waaseyaa\Publishing\ContentTypeDescriptor;
 use Waaseyaa\Publishing\FieldSpec;
@@ -69,6 +70,7 @@ final class ArticleContentType
                 new ImageAltTextValidator(),
                 new SlugShapeValidator(),
                 new IsoDateValidator(),
+                new EditorialLaneValidator(),
             ],
             publishCapability: self::CAPABILITY,
         );

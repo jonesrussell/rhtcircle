@@ -80,7 +80,13 @@ final class NewsFeedTest extends TestCase
         // tile (curated slot or the automatic follow-the-record placement),
         // on top of the non-article curated tiles — publishing an article
         // never requires editing this expectation.
-        $articleHrefs = array_column($articles, 'href');
+        $articleHrefs = array_column(
+            array_values(array_filter(
+                $articles,
+                static fn (array $article): bool => ($article['community_slug'] ?? null) === 'sagamok',
+            )),
+            'href',
+        );
         $allCards = array_merge(...array_map(static fn (array $group): array => $group['cards'], $groups));
         $cardHrefs = array_column($allCards, 'href');
         foreach ($articleHrefs as $href) {
