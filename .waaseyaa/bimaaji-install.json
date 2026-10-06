@@ -1,0 +1,110 @@
+{
+    "schema_version": 1,
+    "generated_by": "waaseyaa/bimaaji bimaaji:install",
+    "clients": {
+        "claude": {
+            "targets": [
+                {
+                    "path": ".claude/CLAUDE-WAASEYAA.md",
+                    "sha1": "bbd15cf86b929af522155c77a87c8894c7a75e7a"
+                },
+                {
+                    "path": ".claude/skills/waaseyaa-access-control/SKILL.md",
+                    "sha1": "9a04303066ad2a29def2df2bd5d2136683b2c6c9"
+                },
+                {
+                    "path": ".claude/skills/waaseyaa-admin-spa/SKILL.md",
+                    "sha1": "fd847e594d7760fe09c383978b6a84e056034d12"
+                },
+                {
+                    "path": ".claude/skills/waaseyaa-ai-integration/SKILL.md",
+                    "sha1": "d388d96f74c1cf8b22897f2ef7b5dd1dc04c4908"
+                },
+                {
+                    "path": ".claude/skills/waaseyaa-api-layer/SKILL.md",
+                    "sha1": "bb2d377ca79f17db9d7c1a7d23ee65a2b3a1f890"
+                },
+                {
+                    "path": ".claude/skills/waaseyaa-app-development/SKILL.md",
+                    "sha1": "27ee15b0ba4ab7e22b85c85f16f32a3af14163f0"
+                },
+                {
+                    "path": ".claude/skills/waaseyaa-entity-system/SKILL.md",
+                    "sha1": "41dd0a4c0f2d6c9544e1d7dccb2781e47503b2ed"
+                },
+                {
+                    "path": ".claude/skills/waaseyaa-framework-extraction/SKILL.md",
+                    "sha1": "7a733bd2d0787cfb100c987ed71d10589378ee7d"
+                },
+                {
+                    "path": ".claude/skills/waaseyaa-infrastructure/SKILL.md",
+                    "sha1": "d2fa0e6e09d1c1c02f65be5af86ea1a28933ed74"
+                },
+                {
+                    "path": ".claude/skills/waaseyaa-mcp-endpoint/SKILL.md",
+                    "sha1": "563116b19b5857fdfc1b4367604c3f991f21b882"
+                },
+                {
+                    "path": ".claude/skills/waaseyaa-middleware-pipeline/SKILL.md",
+                    "sha1": "90c0e721d3752751f91002000fe01e0cc56db950"
+                },
+                {
+                    "path": ".claude/skills/waaseyaa-spec-maintenance/SKILL.md",
+                    "sha1": "9922af2132469b98d2a8e140ba0e9234ad929892"
+                }
+            ]
+        },
+        "codex": {
+            "targets": [
+                {
+                    "path": ".agents/skills/waaseyaa-access-control/SKILL.md",
+                    "sha1": "9a04303066ad2a29def2df2bd5d2136683b2c6c9"
+                },
+                {
+                    "path": ".agents/skills/waaseyaa-admin-spa/SKILL.md",
+                    "sha1": "fd847e594d7760fe09c383978b6a84e056034d12"
+                },
+                {
+                    "path": ".agents/skills/waaseyaa-ai-integration/SKILL.md",
+                    "sha1": "d388d96f74c1cf8b22897f2ef7b5dd1dc04c4908"
+                },
+                {
+                    "path": ".agents/skills/waaseyaa-api-layer/SKILL.md",
+                    "sha1": "bb2d377ca79f17db9d7c1a7d23ee65a2b3a1f890"
+                },
+                {
+                    "path": ".agents/skills/waaseyaa-app-development/SKILL.md",
+                    "sha1": "27ee15b0ba4ab7e22b85c85f16f32a3af14163f0"
+                },
+                {
+                    "path": ".agents/skills/waaseyaa-entity-system/SKILL.md",
+                    "sha1": "41dd0a4c0f2d6c9544e1d7dccb2781e47503b2ed"
+                },
+                {
+                    "path": ".agents/skills/waaseyaa-framework-extraction/SKILL.md",
+                    "sha1": "7a733bd2d0787cfb100c987ed71d10589378ee7d"
+                },
+                {
+                    "path": ".agents/skills/waaseyaa-infrastructure/SKILL.md",
+                    "sha1": "d2fa0e6e09d1c1c02f65be5af86ea1a28933ed74"
+                },
+                {
+                    "path": ".agents/skills/waaseyaa-mcp-endpoint/SKILL.md",
+                    "sha1": "563116b19b5857fdfc1b4367604c3f991f21b882"
+                },
+                {
+                    "path": ".agents/skills/waaseyaa-middleware-pipeline/SKILL.md",
+                    "sha1": "90c0e721d3752751f91002000fe01e0cc56db950"
+                },
+                {
+                    "path": ".agents/skills/waaseyaa-spec-maintenance/SKILL.md",
+                    "sha1": "9922af2132469b98d2a8e140ba0e9234ad929892"
+                },
+                {
+                    "path": "AGENTS.md",
+                    "sha1": "7366514831c6020f0d5130e835917df5189acfbe"
+                }
+            ]
+        }
+    }
+}

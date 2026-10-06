@@ -63,7 +63,7 @@ final class SiteRendererTest extends TestCase
         ]);
 
         self::assertStringContainsString('News and public records members can use.', $html);
-        self::assertSame(3, substr_count($html, '<article class="news-card">'));
+        self::assertSame(6, substr_count($html, '<article class="news-card">'));
         self::assertStringContainsString('One Treaty, 21 community desks', $html);
         self::assertStringContainsString('Find the right doorway.', $html);
         self::assertStringNotContainsString('Today, July 23', $html);
@@ -106,16 +106,36 @@ final class SiteRendererTest extends TestCase
             ),
         ]);
 
-        self::assertStringContainsString('Follow the record. Find the question. Take the next step.', $html);
-        self::assertStringContainsString('id="start-here"', $html);
+        self::assertStringContainsString('Sagamok records and member questions', $html);
+        self::assertStringContainsString('id="open-questions"', $html);
+        self::assertStringContainsString('id="member-proposals"', $html);
         self::assertStringContainsString('id="follow-the-record"', $html);
         self::assertStringContainsString('id="member-tools"', $html);
-        self::assertSame(22, substr_count($html, '<a class="tile-card'));
+        self::assertSame(25, substr_count($html, '<a class="tile-card'));
         self::assertStringContainsString('/news/sagamok-trespass-bylaw-session-was-backwards', $html);
         self::assertStringContainsString('/news/sagamok-south-market-land-deal', $html);
         self::assertStringContainsString('Back to the Sagamok community page', $html);
         self::assertMatchesRegularExpression(
             '~<main id="main">\s*<div class="wrap wrap--wide">~',
+            $html,
+        );
+    }
+
+    public function testSagamokMembersFirstPlanPresentsAReviewableMemberProposal(): void
+    {
+        $_SERVER['REQUEST_URI'] = '/communities/sagamok/members-first-plan';
+        $html = $this->renderer->render('pages/communities/sagamok/members-first-plan.html.twig');
+
+        self::assertStringContainsString('A Members First Plan for Sagamok', $html);
+        self::assertStringContainsString('id="first-100-days"', $html);
+        self::assertStringContainsString('id="pillars"', $html);
+        self::assertStringContainsString('id="sources"', $html);
+        self::assertStringContainsString('Member-built working proposal', $html);
+        self::assertStringContainsString('Choose what comes first', $html);
+        self::assertStringNotContainsString('Write to Council', $html);
+        self::assertStringNotContainsString('Plan and Priorities of Council', $html);
+        self::assertMatchesRegularExpression(
+            '~<main id="main">\s*<div class="mfp-shell">~',
             $html,
         );
     }

@@ -23,6 +23,22 @@ final class ArticleSeeder
         private readonly string $projectRoot,
     ) {}
 
+    /** @param array<string, mixed> $criteria
+     *  @return list<Node>
+     */
+    private function articleNodes(array $criteria, ?int $limit = null): array
+    {
+        $nodes = [];
+        foreach ($this->nodes->findBy($criteria, limit: $limit) as $node) {
+            if (!$node instanceof Node) {
+                throw new \UnexpectedValueException('The article repository must return revisionable Node entities.');
+            }
+            $nodes[] = $node;
+        }
+
+        return $nodes;
+    }
+
     /**
      * @return array{created: int, skipped: int, unpublished: int, published: int, refreshed: int}
      */
@@ -46,13 +62,13 @@ final class ArticleSeeder
         }
 
         $existing = [];
-        foreach ($this->nodes->findBy(['type' => ArticleFields::BUNDLE]) as $node) {
+        foreach ($this->articleNodes(['type' => ArticleFields::BUNDLE]) as $node) {
             $existing[(string) $node->get('slug')] = $node;
         }
 
         $unpublished = 0;
         foreach (ArticleSeedData::unpublishedSlugs() as $slug) {
-            $published = $this->nodes->findBy([
+            $published = $this->articleNodes([
                 'type' => ArticleFields::BUNDLE,
                 'slug' => $slug,
                 'status' => true,
@@ -85,7 +101,7 @@ final class ArticleSeeder
                 $changed = true;
             }
 
-            $unpublishedRows = $this->nodes->findBy([
+            $unpublishedRows = $this->articleNodes([
                 'type' => ArticleFields::BUNDLE,
                 'slug' => $slug,
                 'status' => false,

@@ -69,6 +69,15 @@
 
     <div class="hub-content">
       <section>
+        <h2>News from {{ nation.name }}</h2>
+        {% if local_reporting|default([]) is not empty %}
+          <div class="news-grid">{% for story in local_reporting|slice(0, 3) %}{% include 'components/news_card.html.twig' with { story: story } only %}{% endfor %}</div>
+        {% else %}
+          <p>Original reporting from this community is still growing. The public updates below link to available sources. <a href="/contact">Suggest a story or a public notice</a>.</p>
+        {% endif %}
+        <a href="/news?nation={{ nation.slug }}">Browse news connected to {{ nation.name }}</a>
+      </section>
+      <section>
         <h2>History and treaty relationship</h2>
         <div class="measure">{{ nation.history|raw }}</div>
       </section>
@@ -84,7 +93,7 @@
       {% endif %}
 
       <section>
-        <h2>Current public updates</h2>
+        <h2>Official updates and selected coverage</h2>
         <p class="muted">The Nation’s own public communications first, followed by hand-reviewed reporting connected to this community and the shared Treaty. RHT Circle summarizes outside coverage and links readers to the original source.</p>
         <div class="tile-grid">
           {% for t in current_updates %}{% include 'components/tile_card.html.twig' with t only %}{% endfor %}

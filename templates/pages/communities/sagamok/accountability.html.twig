@@ -10,8 +10,8 @@
 <article class="accountability-hub">
   <header class="cover">
     <p class="cover__eyebrow"><a href="/communities/sagamok">Sagamok Anishnawbek</a> · Member accountability</p>
-    <h1 class="cover__title">Follow the record. Find the question. Take the next step.</h1>
-    <p class="cover__lede">The Sagamok accountability work had outgrown the community profile. It now lives here: records, unanswered questions, business decisions and practical tools, organized by what members need to do.</p>
+    <h1 class="cover__title">Sagamok records and member questions</h1>
+    <p class="cover__lede">A focused collection within RHT Circle’s coverage of all 21 Nations. Reporting, unresolved questions and member proposals have different purposes. Choose the kind of material you want to read.</p>
     <p class="cover__byline">Member-compiled and unofficial. This is the work of members, not an official communication of Sagamok Anishnawbek or its Chief and Council.</p>
   </header>
 
@@ -27,20 +27,21 @@
     </nav>
 
     {% for group in groups %}
-      <section id="{{ group.id }}" class="accountability-group">
+      <details id="{{ group.id }}" class="accountability-group accountability-collection">
+        <summary>{{ group.title }} <span>({{ group.cards|length }} resources)</span></summary>
         <p class="eyebrow">{{ group.eyebrow }}</p>
         <h2>{{ group.title }}</h2>
         <p class="muted">{{ group.intro }}</p>
         <div class="tile-grid">
           {% for t in group.cards %}{% include 'components/tile_card.html.twig' with t only %}{% endfor %}
         </div>
-      </section>
+      </details>
     {% endfor %}
 
     <section class="accountability-return">
       <p class="eyebrow">The broader community desk</p>
-      <h2>Sagamok is more than its accountability record.</h2>
-      <p>Return to the community page for Sagamok history, official public updates, community life, land and resource decisions, and the Nation's own website.</p>
+      <h2>Community news and practical information</h2>
+      <p>Return to the community page for Sagamok history, official public updates, community life, land and resource decisions, and the Nation's own website. Browse <a href="/news">news across all 21 Nations</a> for the broader Treaty territory.</p>
       <a class="btn" href="/communities/sagamok">Back to the Sagamok community page</a>
     </section>
   </div>

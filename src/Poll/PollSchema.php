@@ -7,8 +7,8 @@ namespace App\Poll;
 use Waaseyaa\Database\DatabaseInterface;
 
 /**
- * Creates the poll tables on demand (same on-boot, tableExists()-guarded
- * pattern as PetitionSchema; the framework has no migration CLI).
+ * Creates the poll tables on demand (same explicit, tableExists()-guarded
+ * pattern as PetitionSchema; initialized explicitly by app:initialize).
  *
  * SOVEREIGNTY NOTE (OCAP): a vote is never a row. Casting a vote only
  * increments an aggregate counter on poll_option, so there is no per-voter

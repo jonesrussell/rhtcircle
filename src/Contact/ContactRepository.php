@@ -38,18 +38,15 @@ final class ContactRepository
         ?string $userAgent,
     ): int {
         $kind = in_array($kind, self::KINDS, true) ? $kind : 'other';
-        $this->db->query(
-            'INSERT INTO ' . ContactSchema::TABLE
-            . ' (name, email, kind, message, created_at, ip_hash, user_agent_hash)'
-            . ' VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [$name, $email, $kind, $message, $this->now(), $this->hash($ip), $this->hash($userAgent)],
-        );
-
-        foreach ($this->db->query('SELECT MAX(id) AS id FROM ' . ContactSchema::TABLE) as $row) {
-            return (int) ($row['id'] ?? 0);
-        }
-
-        return 0;
+        return (int) $this->db->insert(ContactSchema::TABLE)->values([
+            'name' => $name,
+            'email' => $email,
+            'kind' => $kind,
+            'message' => $message,
+            'created_at' => $this->now(),
+            'ip_hash' => $this->hash($ip),
+            'user_agent_hash' => $this->hash($userAgent),
+        ])->execute();
     }
 
     public function tooManyFromIp(?string $ip): bool

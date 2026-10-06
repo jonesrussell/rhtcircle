@@ -16,3 +16,9 @@ composer.local.json
 # Node (OG card generator deps; browsers are managed by Playwright)
 node_modules/
 package-lock.json
+
+# Local browser traces, scratch output and preview exports
+/.playwright-cli/
+/output/
+/public/local-preview/
+/vendor-dist/

@@ -34,7 +34,7 @@ final class PollRepository
 
     /**
      * Idempotently ensure a poll and its options exist, in the given order.
-     * Safe to call on every boot; only inserts when the slug is absent, so
+     * Run through explicit member-tool setup; only inserts when the slug is absent, so
      * editing $labels here after launch does not resurrect or reorder a poll
      * that already has votes.
      *
@@ -46,20 +46,17 @@ final class PollRepository
             return;
         }
 
-        $this->db->query(
-            'INSERT INTO ' . PollSchema::TABLE_POLL . ' (slug, question, active, created_at) VALUES (?, ?, 1, ?)',
-            [$slug, $question, $this->now()],
-        );
-
-        $poll = $this->findPoll($slug);
-        if ($poll === null) {
-            return;
-        }
+        $pollId = $this->db->insert(PollSchema::TABLE_POLL)->values([
+            'slug' => $slug,
+            'question' => $question,
+            'active' => 1,
+            'created_at' => $this->now(),
+        ])->execute();
 
         foreach ($labels as $position => $label) {
             $this->db->query(
                 'INSERT INTO ' . PollSchema::TABLE_OPTION . ' (poll_id, position, label, votes) VALUES (?, ?, ?, 0)',
-                [(int) $poll['id'], $position, $label],
+                [$pollId, $position, $label],
             );
         }
     }

@@ -55,20 +55,23 @@ classification. The application-owned classification document is
   before booting. A deploy is ready only when the report has zero unclassified
   entries and `ready` is `true`.
 
-## News workflow
+## News and community workflow
 
-To publish another investigation:
+Managed articles are revisionable `node/article` entities. `ArticleRepository` resolves public collections through Waaseyaa Listing and filters before access-aware pagination. An empty or non-Nation `community_slug` is grouped as Treaty-wide scope; legacy `circle` tags do not become broken community links.
 
-1. Add a page under `templates/pages/news/`.
-2. Extend `layouts/news_article.html.twig`.
-3. Set the article metadata object and override `article_body`,
-   `article_sidebar`, and `article_sources`.
-4. Add its route and machine-readable index entry.
-5. Add it to the News index through a reusable component, not copied markup.
-6. Push the page normally. The OG-card workflow discovers templates through
-   inherited layouts and generates a 1200 x 630 card from `og_title` and
-   `og_description`, falling back to `title` and `description`.
-7. Run PHPUnit, the copy lints, a dry-run ingest, and responsive browser checks.
+`PublicationContext` supplies the same homepage, news and community context to HTTP controllers and `app:ingest`. `EditorialPages` owns the static route-to-template catalogue. The ingest allowlist is intentionally narrower: not every interactive or advocacy page belongs in the retrieval corpus.
+
+- News covers all 21 Nations. The homepage selects a dated mix with at most one story connected to each Nation, and one Treaty-wide story, in its six-card selection.
+- The news index has Nation and topic filters, explicit coverage gaps and pagination for original reporting. Source summaries retain their actual dates and last-review date.
+- Each community page links to its filtered news and official communications. A profile is not proof of an active newsroom in that community.
+- Sagamok reporting, open questions, member proposals and tools are separate collapsed collections. Proposals do not become newsroom conclusions or adopted Council policy.
+- For existing stories, CMS content and revisions are authoritative. Hand-authored source templates are migration inputs. Do not edit a source template and assume an existing CMS article changed.
+- `app:cms-migrate-articles` is an explicit migration operation. Its named historical refresh lists can overwrite selected article fields; review those lists before invoking it against an existing content database.
+- Run `composer check`, dry-run ingestion and responsive browser checks for publication changes. Production publication and deployment are separate actions.
+
+## App-owned schema lifecycle
+
+`app:initialize` runs app schema setup. `app:seed-member-tools` seeds legacy polls and campaign definitions explicitly. HTTP boot does neither. Both public controllers and ingestion use the kernel's database service, not their own SQLite path resolution.
 
 ## Social images
 

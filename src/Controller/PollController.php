@@ -59,12 +59,8 @@ final class PollController
      */
     public function vote(Request $request): Response
     {
-        $raw = $request->getContent();
-        if ($raw === '' || strlen($raw) > self::MAX_BODY_BYTES) {
-            return $this->fail('That did not look right. Please try again.');
-        }
-        $data = json_decode($raw, true);
-        if (!is_array($data)) {
+        $data = \App\Support\JsonSubmission::read($request, self::MAX_BODY_BYTES);
+        if ($data === null) {
             return $this->fail('That did not look right. Please try again.');
         }
 

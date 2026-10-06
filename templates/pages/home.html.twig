@@ -14,22 +14,20 @@
       <div>
         <p class="eyebrow">Member-led · sourced · across 21 Nations</p>
         <h1>News and public records members can use.</h1>
-        <p class="lead">RHT Circle connects community reporting, the Treaty, land and water decisions, public records and practical help across Robinson Huron Treaty territory.</p>
+        <p class="lead">A news and resource home for all 21 Robinson Huron Treaty Nations. Follow community life, language, health, elections, the Treaty and decisions about land and water.</p>
         <div class="btn-row">
           <a class="btn" href="/news">Read the latest</a>
           <a class="btn btn--alt" href="/communities">Find your Nation</a>
         </div>
       </div>
 
-      {% if featured_articles is not empty %}
-        {% set lead_article = featured_articles[0] %}
-        <a class="home-lead-story" href="{{ lead_article.href }}">
-          <span class="home-lead-story__label">{{ lead_article.section }}</span>
-          <strong>{{ lead_article.title }}</strong>
-          <span>{{ lead_article.summary }}</span>
-          <span class="home-lead-story__go">{{ lead_article.action }}</span>
-        </a>
-      {% endif %}
+      <div class="home-lead-story">
+        <span class="home-lead-story__label">Every Nation belongs here</span>
+        <strong>What is happening in your community?</strong>
+        <span>Find your Nation’s news, public notices and profile. Suggest a story, share a public source or help us check a detail.</span>
+        <a class="home-lead-story__go" href="/communities">Choose your Nation</a>
+        <a class="home-lead-story__go" href="/get-involved">Contribute a story</a>
+      </div>
     </div>
 
     <form id="rht-ask-hero" class="hero-ask home-ask" role="search">
@@ -54,7 +52,7 @@
       <a href="/news">All news and reporting</a>
     </div>
     <div class="news-grid home-news-grid">
-      {% for story in stories|slice(0, 3) %}
+      {% for story in stories|slice(0, 6) %}
         {% include 'components/news_card.html.twig' with { story: story, nation_names: nation_names } only %}
       {% endfor %}
     </div>
@@ -64,7 +62,7 @@
     <div class="home-community-band__intro">
       <p class="eyebrow">One Treaty, 21 community desks</p>
       <h2>Start with the Nation you know.</h2>
-      <p>Every community has a sourced profile, its official public updates and reporting connected to that Nation. Local knowledge makes each desk stronger.</p>
+      <p>Every community has a sourced profile and a doorway to its official updates. Our reporting is still growing: help us cover the stories that matter where you live.</p>
       <div class="btn-row">
         <a class="btn" href="/communities">See all 21 Nations</a>
         <a class="btn btn--alt" href="/get-involved">Help keep one current</a>

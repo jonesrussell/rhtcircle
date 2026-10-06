@@ -8,6 +8,10 @@ use Waaseyaa\Entity\EntityInterface;
 use Waaseyaa\Entity\EntityTypeManager;
 use Waaseyaa\Listing\ListingDefinitionRegistry;
 use Waaseyaa\Listing\ListingResolver;
+use Waaseyaa\Listing\Filter;
+use Waaseyaa\Listing\ListingDefinition;
+use Waaseyaa\Listing\Pagination;
+use App\Content\Nations;
 
 /**
  * Public read model for managed articles.
@@ -33,6 +37,41 @@ final class ArticleRepository
     public function published(): array
     {
         return $this->listing(self::LISTING_ALL);
+    }
+
+    /** Filters apply before framework pagination and access checks.
+     *  @return array{articles: list<array<string, mixed>>, pagination: Pagination}
+     */
+    public function browse(string $nation = '', string $topic = ''): array
+    {
+        $base = $this->definitions->get(self::LISTING_ALL);
+        $filters = $base->filters;
+        if ($nation !== '') {
+            $filters[] = $nation === 'treaty-wide'
+                ? Filter::notIn('community_slug', array_keys(Nations::names()))
+                : Filter::eq('community_slug', $nation);
+        }
+        if ($topic !== '') {
+            $filters[] = Filter::eq('section', $topic);
+        }
+        $definition = new ListingDefinition(
+            id: 'rht_articles_filtered',
+            entityType: $base->entityType,
+            bundle: $base->bundle,
+            filters: $filters,
+            sorts: $base->sorts,
+            pageSize: $base->pageSize,
+            accessOps: $base->accessOps,
+        );
+        $result = $this->resolver->resolve($definition);
+        $articles = [];
+        foreach ($result->rows as $entity) {
+            if ($entity instanceof EntityInterface) {
+                $articles[] = $this->view($entity);
+            }
+        }
+
+        return ['articles' => $articles, 'pagination' => $result->pagination];
     }
 
     /**
@@ -86,6 +125,7 @@ final class ArticleRepository
     private function view(EntityInterface $node): array
     {
         $slug = (string) $node->get('slug');
+        $communitySlug = (string) $node->get('community_slug');
 
         return [
             'id' => (string) $node->id(),
@@ -95,7 +135,7 @@ final class ArticleRepository
             'internal' => true,
             'title' => (string) $node->get('title'),
             'community_slug' => (string) $node->get('community_slug'),
-            'nations' => [(string) $node->get('community_slug')],
+            'nations' => Nations::find($communitySlug) !== null ? [$communitySlug] : [],
             'kicker' => (string) $node->get('kicker'),
             'topic' => (string) $node->get('section'),
             'deck' => (string) $node->get('deck'),

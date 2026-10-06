@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Cms\ArticleRepository;
-use App\Content\CommunityHub;
 use App\Content\LandProjects;
 use App\Content\Nations;
-use App\Content\NewsFeed;
+use App\Content\PublicationContext;
 use App\Content\SagamokAccountabilityHub;
 use App\Rendering\SiteRenderer;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -20,10 +19,13 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class SiteController
 {
+    private readonly PublicationContext $publication;
     public function __construct(
         private readonly SiteRenderer $renderer,
         private readonly ?ArticleRepository $articles = null,
-    ) {}
+    ) {
+        $this->publication = new PublicationContext($this->articles);
+    }
 
     public function page(string $template): Response
     {
@@ -41,45 +43,14 @@ final class SiteController
         return $response;
     }
 
-    /**
-     * Publication front page with current reporting and the 21 community desks.
-     */
     public function home(): Response
     {
-        $nationNames = [];
-        foreach (Nations::all() as $nation) {
-            $nationNames[(string) $nation['slug']] = (string) $nation['name'];
-        }
-
-        return $this->renderer->html('pages/home.html.twig', [
-            'stories' => NewsFeed::recentExternalStories(),
-            'featured_articles' => $this->articles?->promoted() ?? [],
-            'regions' => Nations::regions(),
-            'communities_by_region' => Nations::byRegion(),
-            'nation_names' => $nationNames,
-        ]);
+        return $this->renderer->html('pages/home.html.twig', $this->publication->home());
     }
 
-    /**
-     * Original RHT Circle reporting and a hand-reviewed external news digest.
-     */
-    public function newsIndex(): Response
+    public function newsIndex(array $query = []): Response
     {
-        $nationNames = [];
-        foreach (Nations::all() as $nation) {
-            $nationNames[(string) $nation['slug']] = (string) $nation['name'];
-        }
-
-        $articles = $this->articles?->published() ?? [];
-
-        return $this->renderer->html('pages/news/index.html.twig', [
-            'stories' => NewsFeed::recentExternalStories(),
-            'feature_article' => $articles[0] ?? null,
-            'reporting_articles' => array_slice($articles, 1),
-            'regions' => Nations::regions(),
-            'communities_by_region' => Nations::byRegion(),
-            'nation_names' => $nationNames,
-        ]);
+        return $this->renderer->html('pages/news/index.html.twig', $this->publication->news($query));
     }
 
     public function article(string $slug): Response
@@ -125,15 +96,7 @@ final class SiteController
             return $this->renderer->html('404.html.twig', ['path' => '/communities/' . $slug], 404);
         }
 
-        return $this->renderer->html('pages/communities/nation.html.twig', [
-            'nation' => $nation,
-            ...CommunityHub::context(
-                $slug,
-                $nation,
-                $signatures,
-                $slug === 'sagamok' ? ($this->articles?->forSagamok() ?? []) : [],
-            ),
-        ]);
+        return $this->renderer->html('pages/communities/nation.html.twig', $this->publication->community($nation, $signatures));
     }
 
     /**

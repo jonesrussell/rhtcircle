@@ -52,12 +52,8 @@ final class SignupController
      */
     public function submit(Request $request): Response
     {
-        $raw = $request->getContent();
-        if ($raw === '' || strlen($raw) > self::MAX_BODY_BYTES) {
-            return $this->fail('That did not look right. Please try again.');
-        }
-        $data = json_decode($raw, true);
-        if (!is_array($data)) {
+        $data = \App\Support\JsonSubmission::read($request, self::MAX_BODY_BYTES);
+        if ($data === null) {
             return $this->fail('That did not look right. Please try again.');
         }
 
@@ -69,7 +65,7 @@ final class SignupController
         $email = trim((string) ($data['email'] ?? ''));
         $firstName = trim((string) ($data['first_name'] ?? ''));
         $nation = trim((string) ($data['nation'] ?? ''));
-        $consent = (bool) ($data['consent'] ?? false);
+        $consent = ($data['consent'] ?? false) === true;
 
         if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return $this->fail('Please enter a valid email address.');

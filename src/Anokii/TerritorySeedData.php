@@ -281,7 +281,7 @@ final class TerritorySeedData
     {
         $rows = [];
         foreach (self::NEW_PLACES as $slug => $name) {
-            $coords = self::PLACE_COORDS[$slug] ?? ['lat' => '', 'lng' => '', 'travel_note' => ''];
+            $coords = self::PLACE_COORDS[$slug];
             $rows[] = ['slug' => $slug, 'name' => $name] + $coords;
         }
 

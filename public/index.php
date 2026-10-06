@@ -43,9 +43,13 @@ $handler = static function () use ($projectRoot): void {
         $kernel = new HttpKernel($projectRoot);
         $response = $kernel->handle();
     } catch (\Throwable $e) {
+        error_log(sprintf('RHT Circle request failed: %s: %s', $e::class, $e->getMessage()));
+        $detail = filter_var(getenv('APP_DEBUG') ?: false, FILTER_VALIDATE_BOOLEAN)
+            ? $e->getMessage()
+            : 'The request could not be completed.';
         $payload = json_encode([
             'jsonapi' => ['version' => '1.1'],
-            'errors' => [['status' => '500', 'title' => 'Internal Server Error', 'detail' => $e->getMessage()]],
+            'errors' => [['status' => '500', 'title' => 'Internal Server Error', 'detail' => $detail]],
         ], JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR);
         $response = new Response($payload, 500, ['Content-Type' => 'application/vnd.api+json']);
     }

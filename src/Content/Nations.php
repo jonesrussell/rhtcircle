@@ -36,6 +36,12 @@ final class Nations
         return self::rows();
     }
 
+    /** @return array<string, string> */
+    public static function names(): array
+    {
+        return array_column(self::all(), 'name', 'slug');
+    }
+
     /** @return array<string, mixed>|null one profile by slug, or null if unknown */
     public static function find(string $slug): ?array
     {

@@ -14,6 +14,8 @@ if (!file_exists($envFile) && file_exists($envExample)) {
         $appName = '"' . $appName . '"';
     }
     $content = str_replace('WAASEYAA_JWT_SECRET=', "WAASEYAA_JWT_SECRET={$secret}", $content);
+    $masterSecret = 'base64:' . base64_encode(random_bytes(32));
+    $content = str_replace('WAASEYAA_APP_SECRET=', "WAASEYAA_APP_SECRET={$masterSecret}", $content);
     if (str_contains($content, 'APP_NAME=Waaseyaa')) {
         $content = str_replace('APP_NAME=Waaseyaa', "APP_NAME={$appName}", $content);
     } else {

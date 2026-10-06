@@ -19,25 +19,40 @@ final class AnonymousArticleListingTest extends TestCase
     /** @var array<string, string|false> */
     private array $originalEnvironment = [];
 
+    /** @var list<HttpKernel> */
+    private array $kernels = [];
+
     protected function setUp(): void
     {
         $this->projectRoot = \dirname(__DIR__, 3);
         $this->databasePath = sys_get_temp_dir() . '/rhtcircle-cms-' . bin2hex(random_bytes(8)) . '.sqlite';
 
-        foreach (['APP_ENV', 'APP_DEBUG', 'WAASEYAA_DB'] as $name) {
+        foreach (['APP_ENV', 'APP_DEBUG', 'WAASEYAA_DB', 'WAASEYAA_APP_SECRET'] as $name) {
             $this->originalEnvironment[$name] = getenv($name);
         }
 
         putenv('APP_ENV=testing');
         putenv('APP_DEBUG=false');
         putenv('WAASEYAA_DB=' . $this->databasePath);
+        putenv('WAASEYAA_APP_SECRET=base64:' . base64_encode(random_bytes(32)));
 
         $this->runCli('db:init');
+        $this->runCli('app:initialize');
         $this->runCli('app:cms-migrate-articles');
     }
 
     protected function tearDown(): void
     {
+        foreach ($this->kernels as $kernel) {
+            $database = $kernel->getDatabase();
+            if ($database instanceof \Waaseyaa\Database\DBALDatabase) {
+                $database->getConnection()->close();
+            }
+        }
+        $this->kernels = [];
+        unset($kernel, $database);
+        gc_collect_cycles();
+
         foreach ($this->originalEnvironment as $name => $value) {
             putenv($value === false ? $name : $name . '=' . $value);
         }
@@ -50,6 +65,7 @@ final class AnonymousArticleListingTest extends TestCase
     public function testAnonymousNewsAndSagamokListingsContainMigratedArticles(): void
     {
         $kernel = new HttpKernel($this->projectRoot);
+        $this->kernels[] = $kernel;
         $kernel->bootForCli();
 
         $provider = null;
@@ -69,6 +85,11 @@ final class AnonymousArticleListingTest extends TestCase
         $articles = new ArticleRepository($kernel->getEntityTypeManager(), $definitions, $resolver);
         self::assertCount(6, $articles->published());
         self::assertCount(5, $articles->forSagamok());
+        self::assertCount(5, $articles->browse('sagamok')['articles']);
+        self::assertSame([], $articles->browse('garden-river')['articles']);
+        $treatyWide = $articles->browse('treaty-wide')['articles'];
+        self::assertCount(1, $treatyWide);
+        self::assertSame([], $treatyWide[0]['nations']);
 
         $published = $resolver->resolve($definitions->get(ArticleRepository::LISTING_ALL));
         self::assertCount(6, $published->rows);
@@ -87,6 +108,32 @@ final class AnonymousArticleListingTest extends TestCase
         self::assertSame(200, $hub->getStatusCode());
         self::assertStringContainsString('/news/sagamok-trespass-bylaw-session-was-backwards', (string) $hub->getContent());
         self::assertStringContainsString('/news/sagamok-south-market-land-deal', (string) $hub->getContent());
+        self::assertStringContainsString('/communities/sagamok/members-first-plan', (string) $hub->getContent());
+
+        $plan = $this->request('/communities/sagamok/members-first-plan');
+        self::assertSame(200, $plan->getStatusCode());
+        self::assertStringContainsString('A Members First Plan for Sagamok', (string) $plan->getContent());
+        self::assertStringContainsString('id="first-100-days"', (string) $plan->getContent());
+
+        $planPages = [
+            '/communities/sagamok/members-first-plan/member-government' => 'Member power and open government',
+            '/communities/sagamok/members-first-plan/community-wealth' => 'Protect and grow community wealth',
+            '/communities/sagamok/members-first-plan/enterprises' => 'Enterprises that return value to members',
+            '/communities/sagamok/members-first-plan/homes-infrastructure' => 'Homes, water and infrastructure that get delivered',
+            '/communities/sagamok/members-first-plan/health-families-elders' => 'Health, families and Elders supported close to home',
+            '/communities/sagamok/members-first-plan/language-culture-learning' => 'Language, culture and learning at the centre',
+            '/communities/sagamok/members-first-plan/lands-safety-rights' => 'Lands, safety and rights protected together',
+            '/communities/sagamok/members-first-plan/public-service' => 'A professional public service that members can rely on',
+            '/communities/sagamok/members-first-plan/implementation' => 'The first 100 days and Year One delivery plan',
+            '/communities/sagamok/members-first-plan/scorecard' => 'The scorecard members should receive every quarter',
+            '/communities/sagamok/members-first-plan/source-record' => 'The public record behind the plan',
+        ];
+        foreach ($planPages as $path => $heading) {
+            $page = $this->request($path);
+            self::assertSame(200, $page->getStatusCode(), $path);
+            self::assertStringContainsString($heading, (string) $page->getContent(), $path);
+            self::assertStringContainsString('The full plan', (string) $page->getContent(), $path);
+        }
     }
 
     private function request(string $uri): \Symfony\Component\HttpFoundation\Response
@@ -106,7 +153,10 @@ final class AnonymousArticleListingTest extends TestCase
             'SCRIPT_FILENAME' => $this->projectRoot . '/public/index.php',
         ];
 
-        return new HttpKernel($this->projectRoot)->handle();
+        $kernel = new HttpKernel($this->projectRoot);
+        $this->kernels[] = $kernel;
+
+        return $kernel->handle();
     }
 
     private function runCli(string $command): void

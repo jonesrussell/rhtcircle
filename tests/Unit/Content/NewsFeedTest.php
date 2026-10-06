@@ -29,6 +29,28 @@ final class NewsFeedTest extends TestCase
         self::assertSame([], $stories[1]['nations']);
     }
 
+    public function testFrontPageDoesNotFillWithOneNationsReporting(): void
+    {
+        $stories = [
+            ['date_iso' => '2026-10-05', 'nations' => ['sagamok'], 'title' => 'Sagamok newest'],
+            ['date_iso' => '2026-10-04', 'nations' => ['sagamok'], 'title' => 'Sagamok second'],
+            ['date_iso' => '2026-10-03', 'nations' => ['shawanaga'], 'title' => 'Shawanaga'],
+            ['date_iso' => '2026-10-02', 'nations' => [], 'title' => 'Treaty'],
+        ];
+
+        self::assertSame(['Sagamok newest', 'Shawanaga', 'Treaty'], array_column(NewsFeed::frontPage($stories), 'title'));
+    }
+
+    public function testNationFilterDoesNotMislabelTreatyWideStoriesAsLocal(): void
+    {
+        $stories = NewsFeed::recentExternalStories();
+        self::assertSame([], NewsFeed::filter($stories, 'garden-river'));
+        foreach (NewsFeed::filter($stories, 'treaty-wide') as $story) {
+            self::assertSame([], $story['nations']);
+        }
+        self::assertCount(1, NewsFeed::filter($stories, 'shawanaga', 'Water and infrastructure'));
+    }
+
     public function testAllTwentyOneCommunityPagesReceiveCurrentUpdates(): void
     {
         foreach (Nations::all() as $nation) {
@@ -75,11 +97,15 @@ final class NewsFeedTest extends TestCase
             $articles,
         );
 
-        self::assertSame(['start-here', 'follow-the-record', 'member-tools'], array_column($groups, 'id'));
-        self::assertSame(22, array_sum(array_map(
+        self::assertSame(['open-questions', 'follow-the-record', 'member-proposals', 'member-tools'], array_column($groups, 'id'));
+        self::assertSame(25, array_sum(array_map(
             static fn (array $group): int => count($group['cards']),
             $groups,
         )));
+        self::assertContains(
+            '/communities/sagamok/members-first-plan',
+            array_column($groups[2]['cards'], 'href'),
+        );
         $followTheRecord = $groups[1]['cards'];
         self::assertContains(
             '/news/sagamok-trespass-bylaw-session-was-backwards',

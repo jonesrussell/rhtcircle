@@ -21,7 +21,7 @@ final readonly class ClassifiedFieldDefinition implements FieldDefinitionInterfa
         private FieldReadLevel $readLevel,
     ) {}
 
-    public function getReadLevel(): ?FieldReadLevel
+    public function getReadLevel(): FieldReadLevel
     {
         return $this->readLevel;
     }

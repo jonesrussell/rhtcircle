@@ -11,7 +11,6 @@ use Anokii\Dashboard\LoginBrand;
 use App\Admin\AdminController;
 use App\Analytics\AnalyticsRecorder;
 use App\Analytics\AnalyticsReport;
-use App\Analytics\AnalyticsSchema;
 use App\Controller\AnalyticsDashboardController;
 use App\Controller\CollectController;
 use App\Controller\ContactController;
@@ -20,18 +19,14 @@ use App\Controller\PetitionController;
 use App\Content\LandProjects;
 use App\Controller\LexiconController;
 use App\Controller\SiteController;
-use App\Lexicon\LexiconCacheSchema;
 use App\Lexicon\LexiconClient;
 use App\Lexicon\SqlLexiconCache;
 use App\Petition\PetitionRepository;
-use App\Petition\PetitionSchema;
 use App\Controller\PollController;
 use App\Poll\PollRepository;
-use App\Poll\PollSchema;
 use App\Rendering\SiteRenderer;
 use App\Controller\SignupController;
 use App\Signup\SignupRepository;
-use App\Signup\SignupSchema;
 use Symfony\Component\HttpFoundation\Request;
 use Waaseyaa\HttpClient\StreamHttpClient;
 use Waaseyaa\CLI\Command\HandlerArgument;
@@ -41,7 +36,6 @@ use Waaseyaa\CLI\Command\HandlerOption;
 use Waaseyaa\CLI\Command\HandlerOptionMode;
 use Waaseyaa\CLI\Command\SymfonyCommandIO;
 use Waaseyaa\Database\DatabaseInterface;
-use Waaseyaa\Database\DBALDatabase;
 use Waaseyaa\Entity\EntityTypeManager;
 use Waaseyaa\Foundation\ServiceProvider\Capability\ProvidesConsoleCommandsInterface;
 use Waaseyaa\Foundation\ServiceProvider\Capability\ProvidesRolesInterface;
@@ -56,116 +50,11 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
 
     public function register(): void {}
 
-    /**
-     * Ensure the petition tables and seed the records-request campaign on the
-     * persistent SQLite file (the same file the controllers read and write).
-     * Wrapped so a storage hiccup can never take down the static pages: the
-     * sign-on is additive to a site that otherwise renders without a database.
-     */
-    public function boot(): void
-    {
-        try {
-            // First-party analytics: ensure the append-only event table on the
-            // persistent file (same pin-to-file rationale as the petition below).
-            new AnalyticsSchema($this->persistentDatabase())->ensure();
-
-            new PetitionSchema($this->persistentDatabase())->ensure();
-            // Public contact form: ensure its table on the same persistent file.
-            new \App\Contact\ContactSchema($this->persistentDatabase())->ensure();
-            // Member-owned email list (collect-only for now; see
-            // working/cc-prompt-rhtcircle-list.md): ensure its table.
-            new SignupSchema($this->persistentDatabase())->ensure();
-            // Anonymous member polls: ensure the tables, then seed the Sagamok
-            // "what matters" poll (idempotent; only inserts on first boot, so
-            // editing the labels here later never reorders or resurrects a
-            // poll that already has votes).
-            new PollSchema($this->persistentDatabase())->ensure();
-            $this->pollRepository()->ensurePoll(
-                'sagamok-what-matters',
-                'Sagamok members: what matters most to you right now? What should our leadership be focused on?',
-                [
-                    'Housing, on-reserve and for off-reserve members',
-                    'Knowing where our settlement money goes, and what reaches members',
-                    'Care for our Elders and health close to home',
-                    'More member say in decisions, real consultation and community meetings',
-                    'Jobs and support for member-owned businesses',
-                    'Publishing council minutes, financials, and decisions openly',
-                    'Language, culture, and our youth',
-                    "Protecting our members' personal information",
-                    'Ending conflicts of interest, the same few people on all the boards',
-                ],
-            );
-            // Second Sagamok poll: two yes/no/not-sure questions about Chief
-            // and Council meetings, grouped onto one page (PollController::
-            // pageMulti) as two independent poll rows sharing the vote
-            // endpoint and cookie mechanism above.
-            $this->pollRepository()->ensurePoll(
-                'sagamok-poll-meetings-posted',
-                'Should Sagamok keep the Chief and Council meeting schedule and minutes current and posted on the Nation\'s website, so any member can see when Council meets and what was decided?',
-                ['Yes', 'No', 'Not sure'],
-            );
-            $this->pollRepository()->ensurePoll(
-                'sagamok-poll-evening-meetings',
-                'Should Council hold some meetings in the evening, alternating with daytime meetings, so members who work during the day can attend and be heard?',
-                ['Yes', 'No', 'Not sure'],
-            );
-            // Anishinaabemowin lookup cache (Minoo language API). Ensured here on
-            // the persistent file for the same reason as the petition below.
-            new LexiconCacheSchema($this->persistentDatabase())->ensure();
-            $repo = $this->petitionRepository();
-            $repo->ensureCampaign(
-                'records-request-support',
-                'Support the member records request',
-                'We, the undersigned members of Sagamok Anishnawbek, support the records request submitted to Chief and Council. We want clear answers, on the record, to one question: when the Nation invests in businesses and ventures, what are the benefits to the membership, and who is being served? We ask Council to provide the records and respond to the membership.',
-                'Sagamok Chief and Council',
-            );
-            // online_base stays 0: the real online sign-ons were migrated from
-            // oiatc as rows, so they carry the live count themselves. The paper
-            // count + its dated provenance note are carried over from oiatc
-            // (aggregate only, no PII). Bump the paper count as more are handed
-            // in.
-            $repo->setOnlineBase('records-request-support', 0);
-            $repo->setPaperCount(
-                'records-request-support',
-                39,
-                'Paper signatures handed to the Sagamok band office: 16 on June 15, 2026, 10 on June 22, 2026, and 3 on June 25, 2026. Plus 10 members who signed on paper and asked to be counted only, not named, accounted on June 25, 2026.',
-            );
-
-            // "Account, or Resign": a separate campaign/slug from records-request-support,
-            // sharing the same petition infrastructure (see CLAUDE.md's 2026-07-11
-            // exception for this one page). New campaign, no carried-over paper/online
-            // base; it starts at zero and counts online sign-ons from here.
-            $repo->ensureCampaign(
-                'account-or-resign',
-                'Account, or Resign: a member statement of no confidence',
-                'We, the undersigned members of Sagamok Anishnawbek, declare that we have lost confidence in the current Chief and Council, and we call on them to account fully to the members within thirty days, or resign.',
-                'Sagamok Chief and Council',
-            );
-            // The July 23 member resolution is a new consent instrument. Keep
-            // the earlier Account-or-Resign signatures attached to their exact
-            // original statement; never carry them into this campaign.
-            $repo->ensureCampaign(
-                'sagamok-accountability-resolution-2026',
-                'Sagamok Members\' Accountability Resolution',
-                'I support the seven requested actions in the Sagamok Members\' Accountability Resolution displayed at rhtcircle.ca/communities/sagamok/member-accountability-resolution.',
-                'Sagamok Chief and Council',
-            );
-            $repo->setCampaignDetails(
-                'sagamok-accountability-resolution-2026',
-                'Sagamok Members\' Accountability Resolution',
-                'I support the seven requested actions in the Sagamok Members\' Accountability Resolution displayed at rhtcircle.ca/communities/sagamok/member-accountability-resolution.',
-                'Sagamok Chief and Council',
-            );
-        } catch (\Throwable) {
-            // Additive feature; never let it break page rendering.
-        }
-    }
-
     private function petitionRepository(): PetitionRepository
     {
         return $this->petitionRepository ??= new PetitionRepository(
             $this->persistentDatabase(),
-            getenv('WAASEYAA_PETITION_SECRET') ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-petition'),
+            \App\Support\HashSecret::fromEnvironment('WAASEYAA_PETITION_SECRET'),
         );
     }
 
@@ -191,7 +80,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
     {
         return $this->pollRepository ??= new PollRepository(
             $this->persistentDatabase(),
-            getenv('WAASEYAA_POLL_SECRET') ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-poll'),
+            \App\Support\HashSecret::fromEnvironment('WAASEYAA_POLL_SECRET'),
         );
     }
 
@@ -201,7 +90,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
     {
         return $this->contactRepository ??= new \App\Contact\ContactRepository(
             $this->persistentDatabase(),
-            getenv('WAASEYAA_CONTACT_SECRET') ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-contact'),
+            \App\Support\HashSecret::fromEnvironment('WAASEYAA_CONTACT_SECRET'),
         );
     }
 
@@ -211,7 +100,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
     {
         return $this->signupRepository ??= new SignupRepository(
             $this->persistentDatabase(),
-            getenv('WAASEYAA_SIGNUP_SECRET') ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-signup'),
+            \App\Support\HashSecret::fromEnvironment('WAASEYAA_SIGNUP_SECRET'),
         );
     }
 
@@ -241,20 +130,12 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
      */
     private function persistentDatabase(): DatabaseInterface
     {
-        return $this->persistentDatabase ??= DBALDatabase::createSqlite($this->databasePath());
-    }
-
-    /** The app's SQLite path: WAASEYAA_DB if set, else storage/waaseyaa.sqlite. */
-    private function databasePath(): string
-    {
-        $root = \dirname(__DIR__, 2);
-        $configured = getenv('WAASEYAA_DB') ?: '';
-        if ($configured === '') {
-            return $root . '/storage/waaseyaa.sqlite';
+        $database = $this->resolve(DatabaseInterface::class);
+        if (!$database instanceof DatabaseInterface) {
+            throw new \LogicException('The application requires the kernel database service.');
         }
-        $isAbsolute = str_starts_with($configured, '/') || preg_match('#^[A-Za-z]:[\\\\/]#', $configured) === 1;
 
-        return $isAbsolute ? $configured : $root . '/' . ltrim($configured, './');
+        return $this->persistentDatabase ??= $database;
     }
 
     public function routes(WaaseyaaRouter $router, ?\Waaseyaa\Entity\EntityTypeManager $entityTypeManager = null): void
@@ -282,110 +163,12 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         $signup = new SignupController($this->signupRepository(), $renderer);
         // Machine-readable Markdown layer (advertised in /llms.txt): pages honor
         // ?format=md / Accept: text/markdown, and the graph entities are fetchable
-        // as Markdown. Reads the persistent file (route-build resolve() can be
-        // ephemeral), same rationale as the petition/analytics wiring below.
+        // as Markdown, using the same kernel-owned database as HTTP content.
         $md = new \App\Support\MarkdownExporter($this->persistentDatabase());
         // The Get-help directory renders from the graph (front-door services).
         $directory = new \App\Content\ResourcesDirectory($this->persistentDatabase());
 
-        $pages = [
-            // Member-run live stream of the July 23, 2026 Sagamok members'
-            // meeting. Top-level /live so the URL can be said out loud in the
-            // room; the Twitch channel embed is permanent, so the page works
-            // before, during, and after the broadcast.
-            'live' => ['/live', 'pages/live.html.twig'],
-
-            // The Treaty: orientation pillar. The four-part annuity explainer and
-            // its distribution-models companion migrated here from /treaty-wide
-            // (301s below); fixed-content pages, no context needed.
-            'treaty' => ['/treaty', 'pages/treaty/index.html.twig'],
-            'treaty-distribution-models' => ['/treaty/distribution-models', 'pages/treaty/distribution-models.html.twig'],
-            // (/treaty/language is registered explicitly below: it renders a
-            // server-side Anishinaabemowin lookup against Minoo's language API.)
-            'treaty-settlement' => ['/treaty/settlement-where-it-goes', 'pages/treaty/settlement-where-it-goes.html.twig'],
-
-            // (/myth-versus-record is registered explicitly below: it renders from
-            // the managed myth_entry content type, not a static template.)
-
-            // Original member-led reporting is managed node/article content.
-            // /news and /news/{slug} are registered explicitly below.
-
-            // Transparency: the settlement asks and the shared standard.
-            'treaty-wide' => ['/treaty-wide', 'pages/treaty-wide.html.twig'],
-            'standard' => ['/standard', 'pages/standard.html.twig'],
-            'records-request' => ['/standard/records-request', 'pages/standard/records-request.html.twig'],
-
-            'land' => ['/land', 'pages/land/index.html.twig'],
-            'land-massey' => ['/land/massey-solar-project', 'pages/land/massey-solar-project.html.twig'],
-            'land-massey-what-youve-heard' => ['/land/massey-solar-project/what-youve-heard', 'pages/land/massey-solar-project/what-youve-heard.html.twig'],
-            'land-massey-voices' => ['/land/massey-solar-project/voices', 'pages/land/massey-solar-project/voices.html.twig'],
-            'land-massey-climate' => ['/land/massey-solar-project/climate', 'pages/land/massey-solar-project/climate.html.twig'],
-
-            // Community safety: its own section. Sensitive pages carry a crisis-line
-            // strip and a Quick Exit button; the hate-and-extremism page moved here
-            // from /land/territory-and-safety (301 below).
-            'safety' => ['/safety', 'pages/safety/index.html.twig'],
-            'safety-get-help-now' => ['/safety/get-help-now', 'pages/safety/get-help-now.html.twig'],
-            'safety-emergency-preparedness' => ['/safety/emergency-preparedness', 'pages/safety/emergency-preparedness.html.twig'],
-            'safety-missing-persons-and-mmiwg' => ['/safety/missing-persons-and-mmiwg', 'pages/safety/missing-persons-and-mmiwg.html.twig'],
-            'safety-harm-reduction' => ['/safety/harm-reduction', 'pages/safety/harm-reduction.html.twig'],
-            'safety-protecting-elders' => ['/safety/protecting-elders', 'pages/safety/protecting-elders.html.twig'],
-            'safety-information-safety' => ['/safety/information-safety', 'pages/safety/information-safety.html.twig'],
-            'safety-hate-and-extremism' => ['/safety/hate-and-extremism', 'pages/safety/hate-and-extremism.html.twig'],
-
-            // Resources: the member-facing get-help directory (the 8th section).
-            // /resources itself is registered explicitly below (graph-driven), not
-            // here; this is its child page.
-            'resources-paying-for-school' => ['/resources/paying-for-school', 'pages/resources/paying-for-school.html.twig'],
-
-            // The Circle: the member-led movement. About: what the hub is and is not.
-            'circle' => ['/circle', 'pages/circle/index.html.twig'],
-            'about' => ['/about', 'pages/about.html.twig'],
-            'get-involved' => ['/get-involved', 'pages/get-involved.html.twig'],
-
-            // sagamok-awaiting-council is registered explicitly below (not
-            // here): it needs the live signature count passed into the
-            // template, which this generic no-context loop cannot supply.
-            // Support images: a client-side canvas generator (Facebook cover,
-            // square post, profile badge) for the records request. No login,
-            // no upload, no names collected. Ported from main, where it was
-            // built directly during the bad-pin window; see the awaiting-
-            // council reconciliation commit for context.
-            'sagamok-support-images' => ['/communities/sagamok/support-images', 'pages/communities/sagamok/support-images.html.twig'],
-            'sagamok-how-organized' => ['/communities/sagamok/how-its-organized', 'pages/communities/sagamok/how-its-organized.html.twig'],
-            'sagamok-members-website-issue' => ['/communities/sagamok/members-website-issue', 'pages/communities/sagamok/members-website-issue.html.twig'],
-            'sagamok-where-your-data-lives' => ['/communities/sagamok/where-your-data-lives', 'pages/communities/sagamok/where-your-data-lives.html.twig'],
-            'sagamok-long-term-care' => ['/communities/sagamok/long-term-care', 'pages/communities/sagamok/long-term-care.html.twig'],
-            'sagamok-gr-truss' => ['/communities/sagamok/gr-truss', 'pages/communities/sagamok/gr-truss.html.twig'],
-            'sagamok-play-limited-partnership' => ['/communities/sagamok/play-limited-partnership', 'pages/communities/sagamok/play-limited-partnership.html.twig'],
-            'sagamok-espanola-mill-bmi' => ['/communities/sagamok/espanola-mill-bmi', 'pages/communities/sagamok/espanola-mill-bmi.html.twig'],
-            'sagamok-one-seat-one-salary' => ['/communities/sagamok/one-seat-one-salary', 'pages/communities/sagamok/one-seat-one-salary.html.twig'],
-            // Client-side member letter builder. Personal text stays in the
-            // browser: the app receives no form submission and stores nothing.
-            'sagamok-write-to-council' => ['/communities/sagamok/write-to-council', 'pages/communities/sagamok/write-to-council.html.twig'],
-            // The member accountability resolution is registered explicitly
-            // below so its
-            // generated, source-backed resolution data reaches the template.
-            // The Conflict Register: an interactive tool, filterable by
-            // councillor or company, cross-referencing enterprise money
-            // votes against councillor-director board seats. First of a
-            // planned interactive data hub for this section (see the
-            // "companion tools" note in the build history for this page).
-            'sagamok-conflict-register' => ['/communities/sagamok/conflict-register', 'pages/communities/sagamok/conflict-register.html.twig'],
-            // A member's record (Russell Jones): the members-only portal
-            // exposure, its capture in the public Internet Archive, and what
-            // is being asked of Council. Companion to members-website-issue.
-            'sagamok-it-accountability' => ['/communities/sagamok/it-accountability', 'pages/communities/sagamok/it-accountability.html.twig'],
-            // Public-records kit: eleven member-compiled cards (image + ready
-            // caption), built from public sources only, for members to copy
-            // and post themselves.
-            'sagamok-share' => ['/communities/sagamok/share', 'pages/communities/sagamok/share.html.twig'],
-
-            // Community life: events shared across the treaty nations. The youth
-            // baseball league spans Sagamok, Serpent River, and Atikameksheng and
-            // is featured from each of their community pages.
-            'community-life-baseball' => ['/community-life/indigenous-baseball-league', 'pages/community-life/indigenous-baseball-league.html.twig'],
-        ];
+        $pages = \App\Content\EditorialPages::routes();
 
         foreach ($pages as $name => [$path, $template]) {
             $router->addRoute(
@@ -416,7 +199,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
             RouteBuilder::create('/news')
                 ->controller(fn (Request $request) => $md->wantsMarkdown($request)
                     ? $md->pageResponse('/news')
-                    : $controller->newsIndex())
+                    : $controller->newsIndex($request->query->all()))
                 ->allowAll()
                 ->methods('GET')
                 ->build(),
@@ -756,8 +539,7 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         // an ephemeral connection, so beacon writes wired to it would never reach
         // storage/waaseyaa.sqlite and the dashboard would read an empty DB.
         $database = $this->persistentDatabase();
-        $secret = getenv('WAASEYAA_ANALYTICS_SECRET')
-            ?: (getenv('WAASEYAA_JWT_SECRET') ?: 'rhtcircle-analytics');
+        $secret = \App\Support\HashSecret::fromEnvironment('WAASEYAA_ANALYTICS_SECRET');
         $report = new AnalyticsReport($database);
         $collect = new CollectController(new AnalyticsRecorder($database, $secret));
         $pageStats = new PageStatsController($report);
@@ -879,6 +661,27 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
      */
     public function consoleCommands(): iterable
     {
+        yield new HandlerCommand(
+            name: 'app:initialize',
+            description: 'Initialize app-owned schemas explicitly; does not seed or modify campaign consent records.',
+            handler: function (SymfonyCommandIO $io): int {
+                new \App\Content\SiteSchemaInitializer($this->persistentDatabase())->initialize();
+                $io->writeln('Application schemas ready.');
+
+                return 0;
+            },
+        );
+        yield new HandlerCommand(
+            name: 'app:seed-member-tools',
+            description: 'Seed the legacy Sagamok polls and campaign definitions, including their historical aggregate counts. Explicit operator action only.',
+            handler: function (SymfonyCommandIO $io): int {
+                new \App\Content\MemberToolsSeeder($this->petitionRepository(), $this->pollRepository())->seed();
+                $io->writeln('Legacy member tools seeded.');
+
+                return 0;
+            },
+        );
+
         yield new HandlerCommand(
             name: 'app:create-admin',
             description: 'Create or update the administrator account for the gated /admin dashboards. Password from --password or RHTCIRCLE_ADMIN_PASSWORD (never hardcoded).',

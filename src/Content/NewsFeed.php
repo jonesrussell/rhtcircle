@@ -11,6 +11,45 @@ namespace App\Content;
  */
 final class NewsFeed
 {
+    /** @param list<array<string, mixed>> $stories
+     *  @return list<array<string, mixed>>
+     */
+    public static function filter(array $stories, string $nation = '', string $topic = ''): array
+    {
+        return array_values(array_filter($stories, static fn (array $story): bool =>
+            ($nation === '' || ($nation === 'treaty-wide' ? $story['nations'] === [] : in_array($nation, $story['nations'], true)))
+            && ($topic === '' || $story['topic'] === $topic)
+        ));
+    }
+
+    /** Select a dated front-page mix without letting one community fill it.
+     *  @param list<array<string, mixed>> $stories
+     *  @return list<array<string, mixed>>
+     */
+    public static function frontPage(array $stories, int $limit = 6): array
+    {
+        usort($stories, static fn (array $a, array $b): int => strcmp($b['date_iso'], $a['date_iso']));
+        $selected = [];
+        $counts = [];
+        foreach ($stories as $story) {
+            $scope = $story['nations'] ?: ['treaty-wide'];
+            foreach ($scope as $slug) {
+                if (($counts[$slug] ?? 0) >= 1) {
+                    continue 2;
+                }
+            }
+            $selected[] = $story;
+            foreach ($scope as $slug) {
+                $counts[$slug] = ($counts[$slug] ?? 0) + 1;
+            }
+            if (count($selected) >= $limit) {
+                break;
+            }
+        }
+
+        return $selected;
+    }
+
     /**
      * @return list<array{
      *   date: string,

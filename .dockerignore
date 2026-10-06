@@ -8,3 +8,12 @@ phpunit.xml.dist
 *.md
 .claude
 .cursor
+
+.agents
+.waaseyaa/bimaaji-install.json
+.playwright-cli
+output
+public/local-preview
+var
+vendor-dist
+composer.local.json*

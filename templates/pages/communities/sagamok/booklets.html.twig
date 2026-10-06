@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}Members First booklets · Sagamok · RHT Circle{% endblock %}
+{% block description %}A weekly archive of member-compiled Sagamok information booklets, built for print, door-to-door distribution and public reference.{% endblock %}
+{% block og_description %}Twelve-page Members First booklets: one question, the supporting record and one clear next step each week.{% endblock %}
+{% block body_class %}route-sagamok-booklets{% endblock %}
+
+{% block head %}
+<style>
+  .booklet-hero { padding: clamp(32px, 6vw, 72px); border: 1px solid var(--rule); border-radius: var(--radius-lg); background: linear-gradient(135deg, #f9edf6 0%, #f6f3ff 60%, #fff2e9 100%); }
+  .booklet-hero h1 { max-width: 900px; margin: 10px 0 16px; }
+  .booklet-hero .lead { max-width: 780px; margin-bottom: 0; }
+  .booklet-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 24px 0 42px; }
+  .booklet-card { display: flex; flex-direction: column; min-height: 260px; padding: 24px; border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--paper); }
+  .booklet-card.is-current { border-color: var(--magenta); background: linear-gradient(145deg, #fff 0%, #fbf0f8 100%); }
+  .booklet-card__meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .booklet-pill { display: inline-flex; padding: 5px 10px; border-radius: 999px; background: var(--paper-2); color: var(--indigo-deep); font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+  .booklet-pill.is-status { background: #f8ddea; color: #7d155f; }
+  .booklet-card h2, .booklet-card h3 { margin: 0 0 10px; }
+  .booklet-card p { color: var(--ink-2); }
+  .booklet-card__action { margin-top: auto; padding-top: 16px; font-weight: 800; color: var(--indigo-deep); }
+  .booklet-rules { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 20px 0 42px; }
+  .booklet-rule { padding: 18px; border-left: 5px solid var(--magenta); background: var(--paper-2); }
+  .booklet-rule strong { display: block; margin-bottom: 5px; color: var(--indigo-deep); }
+  @media (max-width: 760px) {
+    .booklet-grid, .booklet-rules { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<article>
+  <p class="crumb"><a href="/communities/sagamok">Sagamok Anishnawbek</a> · <a href="/communities/sagamok/accountability">Member accountability</a> · Booklets</p>
+
+  <header class="booklet-hero">
+    <p class="eyebrow">Members First print series</p>
+    <h1>One question. Twelve pages. One clear next step.</h1>
+    <p class="lead">A weekly series of member-compiled information booklets built for door-to-door printing and permanent public reference. Each issue follows the record, explains one subject and ends with one current action.</p>
+  </header>
+
+  <section class="measure" style="margin-top: 42px;">
+    <p class="eyebrow">Launch edition</p>
+    <h2>Preparing the public archive</h2>
+    <p>The first printed booklet is undergoing its separate public-output review. The website copy will appear here only after its sources, privacy handling, current status and print geometry pass.</p>
+  </section>
+
+  <div class="booklet-grid">
+    <article class="booklet-card is-current">
+      <div class="booklet-card__meta"><span class="booklet-pill">Print edition · July 31</span><span class="booklet-pill is-status">Public review</span></div>
+      <h2>Children, families and the records between them</h2>
+      <p>A grandmother's renewed hope, a member's experience inside CFAU, the child-wellbeing transition and the records families still need.</p>
+      <p class="booklet-card__action">Public download is being prepared.</p>
+    </article>
+    <article class="booklet-card">
+      <div class="booklet-card__meta"><span class="booklet-pill">Issue 01 · Aug. 7</span><span class="booklet-pill is-status">In production</span></div>
+      <h2>Membership Law: Who Belongs and Who Decides?</h2>
+      <p>A plain-language orientation before the Aug. 11-12 Membership Law gathering.</p>
+      <p class="booklet-card__action">Next issue</p>
+    </article>
+    <article class="booklet-card">
+      <div class="booklet-card__meta"><span class="booklet-pill">Issue 02 · Aug. 14</span></div>
+      <h3>The Records Members Asked For</h3>
+      <p>The request, the responses, the submitted resolution and the promised September Chief and Council table.</p>
+    </article>
+    <article class="booklet-card">
+      <div class="booklet-card__meta"><span class="booklet-pill">Issue 03 · Aug. 21</span></div>
+      <h3>Who Checks Whom?</h3>
+      <p>Clean audits, overlapping roles, recusals, committee records and independent review.</p>
+    </article>
+    <article class="booklet-card">
+      <div class="booklet-card__meta"><span class="booklet-pill">Issue 04 · Aug. 28</span></div>
+      <h3>The Council Record</h3>
+      <p>Meetings, minutes, in-camera decisions, identifiers, recorded votes and the publication standard.</p>
+    </article>
+    <article class="booklet-card">
+      <div class="booklet-card__meta"><span class="booklet-pill">Issue 05 · Sept. 4</span></div>
+      <h3>Sagamok Enterprises: What We Own</h3>
+      <p>The ownership tree, company boards, money paths, results and records still missing.</p>
+    </article>
+  </div>
+
+  <section>
+    <p class="eyebrow">The series standard</p>
+    <h2>Built to be read, checked and passed on</h2>
+    <div class="booklet-rules">
+      <div class="booklet-rule"><strong>One subject</strong>Each issue answers one concrete member question instead of trying to carry the whole investigation.</div>
+      <div class="booklet-rule"><strong>Sources on the page</strong>Dates, motions, BCRs, filings and public records travel with the claims they support.</div>
+      <div class="booklet-rule"><strong>Print and web together</strong>The same reviewed issue is available door to door and through a permanent website archive.</div>
+    </div>
+  </section>
+
+  <p class="disc"><b>Member-compiled and unofficial.</b> These booklets are prepared by members for members. They are not official communications of Sagamok Anishnawbek or its Chief and Council. Corrections supported by records are welcome through the RHT Circle corrections process.</p>
+</article>
+{% endblock %}

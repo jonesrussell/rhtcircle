@@ -10,7 +10,7 @@ use Waaseyaa\Database\DatabaseInterface;
  * The member-owned email distribution list, COLLECT-ONLY for now (no sending
  * infra exists yet; see working/cc-prompt-rhtcircle-list.md). Operational
  * (non-entity) table, same as contact_message / petition_signature: ensured
- * idempotently at boot, no migration CLI in this framework.
+ * idempotently during setup, initialized explicitly by app:initialize.
  *
  * Single opt-in with express consent (double opt-in deferred until send infra
  * exists): the checkbox text shown at submit time is stored verbatim-versioned

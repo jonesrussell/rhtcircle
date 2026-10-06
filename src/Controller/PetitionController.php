@@ -35,12 +35,8 @@ final class PetitionController
      */
     public function sign(Request $request): Response
     {
-        $raw = $request->getContent();
-        if ($raw === '' || strlen($raw) > self::MAX_BODY_BYTES) {
-            return $this->fail('That did not look right. Please try again.');
-        }
-        $data = json_decode($raw, true);
-        if (!is_array($data)) {
+        $data = \App\Support\JsonSubmission::read($request, self::MAX_BODY_BYTES);
+        if ($data === null) {
             return $this->fail('That did not look right. Please try again.');
         }
 
@@ -60,9 +56,9 @@ final class PetitionController
         $email = trim((string) ($data['email'] ?? ''));
         $memberFlag = ((string) ($data['member_flag'] ?? 'supporter')) === 'member' ? 'member' : 'supporter';
         $comment = trim((string) ($data['comment'] ?? ''));
-        $showName = (bool) ($data['show_name_publicly'] ?? false);
-        $includeOnLetter = (bool) ($data['include_name_on_letter'] ?? false);
-        $consent = (bool) ($data['consent'] ?? false);
+        $showName = ($data['show_name_publicly'] ?? false) === true;
+        $includeOnLetter = ($data['include_name_on_letter'] ?? false) === true;
+        $consent = ($data['consent'] ?? false) === true;
 
         if ($name === '' || mb_strlen($name) > self::NAME_MAX) {
             return $this->fail('Please enter your name.');

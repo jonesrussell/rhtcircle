@@ -45,8 +45,8 @@ final class CommunityHub
             'community_life' => self::communityLife($slug),
             'current_updates' => self::currentUpdates($slug, $nation),
             'lede' => $slug === 'sagamok'
-                ? 'A member-compiled profile of Sagamok Anishnawbek: its history, community updates, life on the territory, and a clear doorway into the separate member accountability desk.'
-                : self::lede((string) $nation['name'], $transparency !== []),
+                ? 'Sagamok Anishnawbek: community news, history, practical information and public updates from the Nation.'
+                : self::lede((string) $nation['name']),
             'tsub' => $slug === 'sagamok'
                 ? 'The worked accountability record now has its own section, leaving this page focused on Sagamok as a community.'
                 : 'The shared standard, the same plain questions every member can put to their own Chief and Council, is ready to be brought home here.',
@@ -227,11 +227,35 @@ final class CommunityHub
             ],
             [
                 'feature' => true,
+                'tag' => 'Members First print series',
+                'title' => 'Weekly member booklets',
+                'desc' => 'One question, twelve pages and one clear next step. Read the current issue and browse the permanent print archive.',
+                'go' => 'Open the booklet library',
+                'href' => '/communities/sagamok/booklets',
+            ],
+            [
+                'feature' => true,
+                'tag' => 'A member strategic plan',
+                'title' => 'A Members First Plan for Sagamok',
+                'desc' => 'Eight priorities, five first decisions, a first 100 days and one public reporting standard, built around measurable benefit for members.',
+                'go' => 'Explore the plan',
+                'href' => '/communities/sagamok/members-first-plan',
+            ],
+            [
+                'feature' => true,
                 'tag' => 'A member resolution',
                 'title' => 'Members\' Accountability Resolution',
                 'desc' => 'A non-binding resolution submitted to Chief and Council on July 24, asking for seven specific records, audit, correction, reporting, and response actions. Signatures remain open.',
                 'go' => 'Read and sign the resolution',
                 'href' => '/communities/sagamok/member-accountability-resolution',
+            ],
+            [
+                'feature' => true,
+                'tag' => 'A complete member counterdraft',
+                'title' => 'A fair election law for Sagamok',
+                'desc' => 'A searchable working law with independent election administration, accessible voting, member-controlled amendments and a real recall process.',
+                'go' => 'Read and search the counterdraft',
+                'href' => '/communities/sagamok/member-election-law',
             ],
             [
                 'feature' => true,
@@ -359,12 +383,8 @@ final class CommunityHub
         return $cards;
     }
 
-    private static function lede(string $name, bool $hasTransparency): string
+    private static function lede(string $name): string
     {
-        if ($hasTransparency) {
-            return 'A member-compiled profile of ' . $name . ', and the hub for the parts of this resource that touch the community: the shared transparency standard applied here, the records request, how the Nation is organized, and the land decisions on the territory.';
-        }
-
-        return 'A member-compiled profile of ' . $name . ', and a doorway into the parts of this resource that touch the community. The shared transparency standard is ready for members here whenever they choose to bring it home.';
+        return $name . ': community news, history, practical information and public updates from the Nation.';
     }
 }

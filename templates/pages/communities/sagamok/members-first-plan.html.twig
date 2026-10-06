@@ -1,0 +1,124 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}A Members First Plan for Sagamok · RHT Circle{% endblock %}
+{% block description %}A member-built strategic plan for Sagamok Anishnawbek: eight priorities, a first 100 days, measurable commitments and a public reporting standard.{% endblock %}
+{% block og_title %}A Members First Plan for Sagamok{% endblock %}
+{% block og_description %}A practical member proposal for open government, protected community wealth, homes, services, culture and accountable delivery.{% endblock %}
+{% block body_class %}route-sagamok-members-first-plan{% endblock %}
+{% block main_class %}mfp-shell{% endblock %}
+
+{% block head_styles %}
+<style>
+.mfp-shell{width:100%;max-width:none;padding:0 clamp(24px,4vw,72px)}.mfp{--plan-ink:#16243f;--plan-indigo:#33256f;--plan-violet:#7653b8;--plan-magenta:#b53272;--plan-gold:#d5a747;--plan-mint:#e7f3ef;width:100%;padding:0 0 4rem}.mfp .cover,.mfp .page{width:100%;max-width:none;padding-left:0;padding-right:0}.mfp .cover{padding-bottom:1.4rem}.mfp .cover__title{max-width:18ch;font-size:clamp(2.4rem,6vw,5.4rem);line-height:.98}.mfp .cover__lede{max-width:830px;font-size:clamp(1.08rem,2vw,1.35rem)}.mfp-status{display:flex;flex-wrap:wrap;gap:.55rem;margin:1.25rem 0 0}.mfp-status span{padding:.45rem .72rem;border:1px solid #cec6e5;border-radius:999px;background:#f7f4ff;color:var(--plan-indigo);font-size:.77rem;font-weight:750;letter-spacing:.035em;text-transform:uppercase}.mfp-actions{display:flex;flex-wrap:wrap;gap:.7rem;margin:1.35rem 0 0}.mfp-actions a{text-decoration:none}.mfp-nav{position:sticky;top:0;z-index:5;display:flex;gap:1.15rem;overflow:auto;margin:0 0 2rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.96);box-shadow:0 8px 24px rgba(25,31,62,.08);font-size:.84rem;white-space:nowrap}.mfp-nav a{font-weight:700;text-decoration:none}.mfp-section{scroll-margin-top:5rem;margin:0 0 clamp(3.2rem,7vw,6.5rem)}.mfp-section>header{max-width:900px;margin-bottom:1.4rem}.mfp-section h2{margin:.15rem 0 .55rem;color:var(--plan-ink);font-size:clamp(1.75rem,3.6vw,3rem);line-height:1.08}.mfp-kicker{margin:0;color:var(--plan-magenta);font-size:.76rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.mfp-intro{font-size:1.08rem;color:var(--ink-2)}.mfp-principle{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(250px,.8fr);gap:1rem;padding:clamp(1.4rem,4vw,3rem);border-radius:22px;background:linear-gradient(135deg,var(--plan-indigo),#4b2875 68%,#7f2d70);color:#fff}.mfp-principle h2{margin:0;color:#fff}.mfp-principle p{color:rgba(255,255,255,.86)}.mfp-test{align-self:center;padding:1.1rem 1.2rem;border:1px solid rgba(255,255,255,.35);border-radius:14px;background:rgba(255,255,255,.09);font-family:var(--serif);font-size:1.3rem;line-height:1.28}.mfp-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.mfp-fact{padding:1.2rem;border:1px solid var(--line);border-top:4px solid var(--plan-violet);border-radius:14px;background:#fff}.mfp-fact:nth-child(3n+2){border-top-color:var(--plan-magenta)}.mfp-fact:nth-child(3n){border-top-color:var(--plan-gold)}.mfp-fact strong{display:block;margin-bottom:.3rem;color:var(--plan-indigo);font-family:var(--serif);font-size:clamp(1.5rem,3vw,2.35rem);line-height:1}.mfp-fact span{display:block;color:var(--ink-2);font-size:.92rem}.mfp-fact small{display:block;margin-top:.65rem;color:var(--ink-3);font-size:.75rem;line-height:1.4}.mfp-note{margin-top:1rem;padding:1rem 1.15rem;border-left:4px solid var(--plan-gold);background:#fff8e8;color:var(--ink-2)}.mfp-decisions,.mfp-pillars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;counter-reset:plan}.mfp-card{position:relative;padding:1.3rem 1.35rem;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 7px 25px rgba(20,33,61,.055)}.mfp-card h3{margin:.15rem 0 .45rem;color:var(--plan-indigo);font-size:1.18rem}.mfp-card p{margin:.35rem 0;color:var(--ink-2)}.mfp-card dl{margin:.85rem 0 0;padding-top:.75rem;border-top:1px solid var(--line)}.mfp-card dt{margin-top:.55rem;color:var(--ink-3);font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.mfp-card dd{margin:.15rem 0 0;color:var(--plan-ink);font-size:.9rem}.mfp-decisions .mfp-card{counter-increment:plan;padding-left:4.2rem}.mfp-decisions .mfp-card::before{content:counter(plan,decimal-leading-zero);position:absolute;left:1.25rem;top:1.25rem;color:var(--plan-magenta);font-family:var(--serif);font-size:1.55rem;font-weight:700}.mfp-pillars{grid-template-columns:repeat(4,minmax(0,1fr))}.mfp-pillars .mfp-card{padding-top:2.9rem}.mfp-pillar-no{position:absolute;top:1rem;left:1.25rem;color:var(--plan-magenta);font-size:.73rem;font-weight:850;letter-spacing:.12em}.mfp-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0}.mfp-step{padding:1.35rem;border-top:5px solid var(--plan-violet);background:#f7f5fb}.mfp-step:nth-child(2){border-top-color:var(--plan-magenta);background:#fbf3f7}.mfp-step:nth-child(3){border-top-color:var(--plan-gold);background:#fff8e9}.mfp-step:first-child{border-radius:14px 0 0 14px}.mfp-step:last-child{border-radius:0 14px 14px 0}.mfp-step h3{margin:.1rem 0 .6rem;color:var(--plan-indigo)}.mfp-step ul{margin:.5rem 0 0;padding-left:1.1rem}.mfp-step li{margin:.38rem 0;color:var(--ink-2)}.mfp-gates{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.55rem}.mfp-gate{padding:1rem .8rem;border-radius:12px;background:var(--plan-mint);text-align:center}.mfp-gate b{display:block;margin-bottom:.3rem;color:var(--plan-indigo);font-size:.74rem;text-transform:uppercase}.mfp-gate span{font-size:.82rem;color:var(--ink-2)}.mfp-report{overflow-x:auto;border:1px solid var(--line);border-radius:14px}.mfp-report table{width:100%;min-width:720px;border-collapse:collapse;background:#fff}.mfp-report th,.mfp-report td{padding:.85rem 1rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.mfp-report th{background:#f3f0f9;color:var(--plan-indigo);font-size:.75rem;letter-spacing:.05em;text-transform:uppercase}.mfp-report tr:last-child td{border-bottom:0}.mfp-callout{display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center;padding:clamp(1.35rem,4vw,2.6rem);border-radius:18px;background:linear-gradient(120deg,#f0eafa,#fcebf3)}.mfp-callout h2{margin:0 0 .4rem}.mfp-callout p{margin:0;max-width:700px}.mfp-sources{padding:1.4rem;border:1px solid var(--line);border-radius:14px;background:var(--paper-2)}.mfp-sources li{margin:.6rem 0}.mfp-sources small{display:block;margin-top:1rem;color:var(--ink-3)}@media(max-width:980px){.mfp-pillars{grid-template-columns:repeat(2,minmax(0,1fr))}.mfp-gates{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:720px){.mfp-shell{padding:0 20px}.mfp-principle,.mfp-callout{grid-template-columns:1fr}.mfp-facts,.mfp-decisions,.mfp-pillars,.mfp-steps{grid-template-columns:1fr}.mfp-step:first-child,.mfp-step:last-child{border-radius:12px}.mfp-gates{grid-template-columns:repeat(2,minmax(0,1fr))}.mfp-nav{border-radius:0;margin-left:-20px;margin-right:-20px}.mfp .cover__title{font-size:2.55rem}}
+.mfp-test{padding:1.25rem 1.35rem;border:0;background:#fff;color:var(--plan-indigo);box-shadow:0 12px 30px rgba(12,8,35,.24);line-height:1.35}.mfp-test strong{color:var(--plan-indigo)}
+.mfp-pillars a.mfp-card{display:block;color:inherit;text-decoration:none;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}.mfp-pillars a.mfp-card:hover{transform:translateY(-3px);border-color:#b9a9dc;box-shadow:0 14px 34px rgba(20,33,61,.12)}.mfp-pillars a.mfp-card::after{content:"Read the full priority →";display:block;margin-top:1rem;color:var(--plan-magenta);font-size:.78rem;font-weight:800}.mfp-library-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.mfp-library-link{padding:1.25rem;border:1px solid var(--line);border-radius:15px;background:#fff;color:inherit;text-decoration:none}.mfp-library-link:hover{border-color:#b9a9dc}.mfp-library-link strong{display:block;margin-bottom:.35rem;color:var(--plan-indigo);font-family:var(--serif);font-size:1.2rem}.mfp-library-link span{color:var(--ink-2);font-size:.9rem}@media(max-width:760px){.mfp-library-links{grid-template-columns:1fr}}
+</style>
+{% endblock %}
+
+{% block content %}
+<article class="mfp">
+  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › <a href="/communities/sagamok/accountability">Member accountability</a> › Members First Plan</p>
+
+  <header class="cover">
+    <p class="cover__eyebrow">Sagamok Anishnawbek · A member proposal</p>
+    <h1 class="cover__title">A Members First Plan for Sagamok</h1>
+    <p class="cover__lede">Open the record. Protect community wealth. Build at home. Make every company report. Give members a clear path from a promise to a result.</p>
+    <div class="mfp-status" aria-label="Plan status"><span>Member-built</span><span>Evidence-based</span><span>Working proposal</span><span>Updated August 2026</span></div>
+    <div class="mfp-actions"><a class="btn" href="#first-100-days">See the first 100 days</a><a class="btn btn--ghost" href="#sources">Check the source record</a></div>
+    <p class="cover__byline">Member-built working proposal. Not adopted by Sagamok Anishnawbek.</p>
+  </header>
+
+  <div class="page">
+    <nav class="mfp-nav" aria-label="On this page"><a href="#starting-point">Starting point</a><a href="#decisions">First decisions</a><a href="#pillars">Eight priorities</a><a href="#first-100-days">First 100 days</a><a href="#delivery">Delivery test</a><a href="#reporting">Quarterly report</a><a href="#sources">Sources</a></nav>
+
+    <section class="mfp-section mfp-principle" aria-labelledby="plan-purpose">
+      <div><p class="mfp-kicker">The proposal</p><h2 id="plan-purpose">Turn priorities into public commitments.</h2><p>Sagamok does not need another list of intentions. It needs a small number of outcomes, a named accountable office, a funded work plan, a date and a report members can inspect. This plan uses that standard across government, companies, housing, services, culture and lands.</p></div>
+      <div class="mfp-test"><strong>The test for every commitment:</strong><br>What changes for members, by when, at what cost, who is responsible and where will the result be reported?</div>
+    </section>
+
+    <section id="starting-point" class="mfp-section">
+      <header><p class="mfp-kicker">The public starting point</p><h2>Start with the money, commitments and results already on the record.</h2><p class="mfp-intro">The latest audit is clean. Sagamok is managing substantial trust wealth, debt, enterprise lending and housing commitments. Members need a clear account of what that money is doing and what it delivers.</p></header>
+      <div class="mfp-facts">
+        <div class="mfp-fact"><strong>Clean</strong><span>audit opinion for the year ended March 31, 2025</span><small>FY2025 audited consolidated financial statements</small></div>
+        <div class="mfp-fact"><strong>$219.0M</strong><span>reported trust value at December 31, 2025</span><small>BMO quarterly investment report published by the Nation</small></div>
+        <div class="mfp-fact"><strong>$96.97M</strong><span>loans due from Government Business Enterprises</span><small>FY2025 audit, Note 14</small></div>
+        <div class="mfp-fact"><strong>$100.52M</strong><span>long-term debt at March 31, 2025</span><small>FY2025 audited consolidated financial statements</small></div>
+        <div class="mfp-fact"><strong>422 homes</strong><span>presented as a ten-year housing objective</span><small>Council minutes, April 22, 2025, item 8(a)</small></div>
+        <div class="mfp-fact"><strong>Up to 30</strong><span>homes directed into planning and procurement for 2026 and 2027</span><small>Council minutes, October 28, 2025, Motion 2025/10 #17</small></div>
+      </div>
+      <p class="mfp-note"><strong>Still missing from the record:</strong> current account balances, the present status of the housing work and a verified cash envelope for this plan.</p>
+    </section>
+
+    <section id="decisions" class="mfp-section">
+      <header><p class="mfp-kicker">Five first decisions</p><h2>Begin with the systems that make every other promise credible.</h2></header>
+      <div class="mfp-decisions">
+        <article class="mfp-card"><h3>Adopt a member access and appeal standard</h3><p>Publish what members can request, who must answer, the normal response time, the lawful reasons for withholding and an independent appeal route.</p></article>
+        <article class="mfp-card"><h3>Reconcile community wealth in plain language</h3><p>Show trust balances, withdrawals, enterprise loans, debt, repayments, investment income and member benefit in one annual statement that ties back to the audited accounts.</p></article>
+        <article class="mfp-card"><h3>Require every Nation-owned company to report</h3><p>Use one quarterly template for capital received, debt, revenue, jobs, contracts, dividends, risks and board attendance. Report clean checks plainly too.</p></article>
+        <article class="mfp-card"><h3>Publish a funded homes and infrastructure schedule</h3><p>For every home, lot, renovation and water project, show its status, funding source, tender stage, target date and reason for any delay.</p></article>
+        <article class="mfp-card"><h3>Set service standards members can see</h3><p>Each department publishes its core services, eligibility rules, response targets, contact route and quarterly performance. Privacy is protected; aggregate results are public.</p></article>
+      </div>
+    </section>
+
+    <section id="pillars" class="mfp-section">
+      <header><p class="mfp-kicker">Eight connected priorities</p><h2>A whole-Nation plan, measured by member benefit.</h2><p class="mfp-intro">Each pillar names the outcome, the first practical move and the measure members should receive.</p></header>
+      <div class="mfp-pillars">
+        <a class="mfp-card" href="/communities/sagamok/members-first-plan/member-government"><span class="mfp-pillar-no">01</span><h3>Member power and open government</h3><p>Members can see, question and influence decisions before they are locked in.</p><dl><dt>First move</dt><dd>Records standard, meeting calendar, decision register and member appeal.</dd><dt>Measure</dt><dd>Requests answered on time; open decisions published with reasons.</dd></dl></a>
+        <a class="mfp-card" href="/communities/sagamok/members-first-plan/community-wealth"><span class="mfp-pillar-no">02</span><h3>Financial sovereignty</h3><p>Settlement wealth and borrowing create lasting, understandable benefit.</p><dl><dt>First move</dt><dd>Trust, debt and enterprise reconciliation with an independent investment policy.</dd><dt>Measure</dt><dd>Capital preserved; returns, withdrawals and member benefits reported.</dd></dl></a>
+        <a class="mfp-card" href="/communities/sagamok/members-first-plan/enterprises"><span class="mfp-pillar-no">03</span><h3>Enterprises that return value</h3><p>Nation-owned businesses have a clear mandate and report what they deliver.</p><dl><dt>First move</dt><dd>Common business-case, conflict, board and quarterly reporting rules.</dd><dt>Measure</dt><dd>Jobs, training, revenue, repayment and dividends by company.</dd></dl></a>
+        <a class="mfp-card" href="/communities/sagamok/members-first-plan/homes-infrastructure"><span class="mfp-pillar-no">04</span><h3>Homes, water and infrastructure</h3><p>Safe homes and dependable systems are treated as delivery work.</p><dl><dt>First move</dt><dd>One project pipeline for lots, builds, repairs, water and maintenance.</dd><dt>Measure</dt><dd>Units completed, wait times, water reliability and cost variance.</dd></dl></a>
+        <a class="mfp-card" href="/communities/sagamok/members-first-plan/health-families-elders"><span class="mfp-pillar-no">05</span><h3>Health, families and Elders</h3><p>Members can reach coordinated, culturally safe care without navigating silos.</p><dl><dt>First move</dt><dd>Service map, navigation standard and an Elders-at-home delivery plan.</dd><dt>Measure</dt><dd>Access times, completed referrals and avoidable service gaps.</dd></dl></a>
+        <a class="mfp-card" href="/communities/sagamok/members-first-plan/language-culture-learning"><span class="mfp-pillar-no">06</span><h3>Language, culture and learning</h3><p>Anishinaabemowin and land-based learning shape daily community life.</p><dl><dt>First move</dt><dd>Multi-year language plan led by fluent speakers, families and educators.</dd><dt>Measure</dt><dd>Learners, fluent-speaker hours, programs and participation.</dd></dl></a>
+        <a class="mfp-card" href="/communities/sagamok/members-first-plan/lands-safety-rights"><span class="mfp-pillar-no">07</span><h3>Lands, safety and rights</h3><p>Land decisions protect jurisdiction, community safety and future generations.</p><dl><dt>First move</dt><dd>Public lands decision path with cumulative-impact and emergency-readiness checks.</dd><dt>Measure</dt><dd>Consultations completed, conditions tracked and safety gaps closed.</dd></dl></a>
+        <a class="mfp-card" href="/communities/sagamok/members-first-plan/public-service"><span class="mfp-pillar-no">08</span><h3>A professional public service</h3><p>Clear roles, fair hiring and reliable processes outlast any one Council.</p><dl><dt>First move</dt><dd>Current organization chart, delegated authorities and workforce plan.</dd><dt>Measure</dt><dd>Vacancies, turnover, service standards and audit actions completed.</dd></dl></a>
+      </div>
+    </section>
+
+    <section class="mfp-section">
+      <header><p class="mfp-kicker">Put the plan to work</p><h2>Implementation, reporting and the evidence underneath.</h2></header>
+      <div class="mfp-library-links">
+        <a class="mfp-library-link" href="/communities/sagamok/members-first-plan/implementation"><strong>Implementation</strong><span>The first 100 days, Year One sequence, costing rules and six delivery gates.</span></a>
+        <a class="mfp-library-link" href="/communities/sagamok/members-first-plan/scorecard"><strong>Member scorecard</strong><span>The quarterly measures, status rules, budget fields and correction record.</span></a>
+        <a class="mfp-library-link" href="/communities/sagamok/members-first-plan/source-record"><strong>Source record</strong><span>The financial and housing baselines, open fields and records still required.</span></a>
+      </div>
+    </section>
+
+    <section id="first-100-days" class="mfp-section">
+      <header><p class="mfp-kicker">First 100 days</p><h2>Start with disclosure, baselines and decisions that unlock delivery.</h2></header>
+      <div class="mfp-steps">
+        <div class="mfp-step"><h3>Days 1 to 30</h3><ul><li>Publish the records and appeal standard.</li><li>Name the accountable office for every priority.</li><li>Release the current organization chart and committee mandates.</li><li>Inventory active capital projects, company loans and Council commitments.</li></ul></div>
+        <div class="mfp-step"><h3>Days 31 to 60</h3><ul><li>Publish the first trust, debt and enterprise reconciliation.</li><li>Adopt common company reporting and business-case templates.</li><li>Validate the housing, lots, repair, water and maintenance pipeline.</li><li>Set service standards with department leads.</li></ul></div>
+        <div class="mfp-step"><h3>Days 61 to 100</h3><ul><li>Release a costed twelve-month delivery plan.</li><li>Identify grants, own-source revenue and approved capital for each action.</li><li>Publish the first member dashboard.</li><li>Hold a member review and record corrections before final adoption.</li></ul></div>
+      </div>
+    </section>
+
+    <section id="delivery" class="mfp-section">
+      <header><p class="mfp-kicker">The delivery test</p><h2>No major commitment moves on a speech alone.</h2><p class="mfp-intro">Housing, infrastructure, investments and new programs should pass the same six gates. A project can pause at any gate when the evidence is not ready.</p></header>
+      <div class="mfp-gates" aria-label="Six delivery gates"><div class="mfp-gate"><b>1 · Need</b><span>Member need and desired result</span></div><div class="mfp-gate"><b>2 · Case</b><span>Options, full cost and risk</span></div><div class="mfp-gate"><b>3 · Authority</b><span>Approval, conflict check and funding</span></div><div class="mfp-gate"><b>4 · Delivery</b><span>Procurement, owner and schedule</span></div><div class="mfp-gate"><b>5 · Operation</b><span>Staffing, maintenance and service</span></div><div class="mfp-gate"><b>6 · Report</b><span>Result, variance and correction</span></div></div>
+      <p class="mfp-note"><strong>Costing rule.</strong> Internal policy and disclosure work can begin with existing capacity. Construction, technology, staffing and new programs need a defined scope, quotes, operating costs and an identified funding source before a number is called a budget.</p>
+    </section>
+
+    <section id="reporting" class="mfp-section">
+      <header><p class="mfp-kicker">The member report</p><h2>One page per priority, every quarter.</h2><p class="mfp-intro">The same fields should follow every commitment. That lets members compare what was promised with what happened.</p></header>
+      <div class="mfp-report"><table><thead><tr><th>Commitment</th><th>Status</th><th>Budget and funding</th><th>Delivery</th><th>Member benefit</th><th>Correction</th></tr></thead><tbody><tr><td>Plain-language outcome and accountable office</td><td>Not started, on track, at risk, delayed or complete</td><td>Approved amount, source, spent and forecast</td><td>Milestone due, milestone reached and evidence link</td><td>Who benefited and how it was measured</td><td>What changes next, by whom and by what date</td></tr></tbody></table></div>
+    </section>
+
+    <section class="mfp-section mfp-callout">
+      <div><p class="mfp-kicker">Member direction</p><h2>This plan belongs to members.</h2><p>Members should decide what comes first, what is missing and what success looks like. Those priorities set the twelve-month work plan, and the results come back to members every quarter.</p></div>
+      <a class="btn" href="/communities/sagamok/what-matters">Choose what comes first</a>
+    </section>
+
+    <section id="sources" class="mfp-section mfp-sources">
+      <p class="mfp-kicker">Source record and limits</p><h2>Check the baseline.</h2>
+      <ul>
+        <li><a href="https://www.sagamokanishnawbek.com/annual-report-financial-statements/2025-annual-report" target="_blank" rel="noopener">Sagamok Anishnawbek 2025 Annual Report and audited financial statements</a>, including Note 14 on loans to Government Business Enterprises and the long-term debt schedule.</li>
+        <li><a href="https://www.sagamokanishnawbek.com/meeting-minutes/meeting-minutes" target="_blank" rel="noopener">Sagamok Chief and Council minutes</a>, including April 22, 2025, item 8(a), and October 28, 2025, Motion 2025/10 #17.</li>
+        <li>The Nation-published BMO quarterly investment report for the quarter ended December 31, 2025, reporting a trust market value of $219,001,971.</li>
+        <li><a href="https://partii-partiii.fng.ca/fng-gpn-ii-iii/pii/en/item/479633/index.do" target="_blank" rel="noopener">Sagamok Anishnawbek Financial Administration Law, 2020</a>.</li>
+      </ul>
+      <small>Housing status remains unverified. The cited minutes record the directions, but not the funding, procurement or completion of every planned unit.</small>
+    </section>
+  </div>
+</article>
+{% endblock %}

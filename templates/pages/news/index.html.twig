@@ -11,13 +11,35 @@
   <header class="news-head">
     <p class="news-kicker">Across the 21 Nations</p>
     <h1>News and reporting</h1>
-    <p class="lead">Original reporting from RHT Circle, plus recent coverage and official updates from across Robinson Huron Treaty territory.</p>
+    <p class="lead">Community life, language, health, elections, Treaty rights, land and water across all 21 Nations. Original RHT Circle reporting appears alongside selected coverage and official updates.</p>
   </header>
+
+  <form class="news-filters" action="/news" method="get" aria-label="Filter news">
+    <label>Nation
+      <select name="nation">
+        <option value="">All 21 Nations</option>
+        <option value="treaty-wide" {% if selected_nation|default('') == 'treaty-wide' %}selected{% endif %}>Treaty-wide stories</option>
+        {% for slug, name in nation_names %}<option value="{{ slug }}" {% if selected_nation|default('') == slug %}selected{% endif %}>{{ name }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Topic
+      <select name="topic">
+        <option value="">All topics</option>
+        {% for topic in topics|default([]) %}<option value="{{ topic }}" {% if selected_topic|default('') == topic %}selected{% endif %}>{{ topic }}</option>{% endfor %}
+      </select>
+    </label>
+    <button class="btn" type="submit">Show news</button>
+    <a href="/news">Clear filters</a>
+  </form>
+  {% if reporting_articles is empty and stories is empty %}
+    <div class="notice"><strong>No reviewed stories match these filters yet.</strong> Our coverage is growing. Browse the community desks below for official updates, or <a href="/contact">suggest a story with a public source</a>.</div>
+  {% endif %}
 
   {% if feature_article %}
     {% include 'components/news_feature.html.twig' with { story: feature_article } only %}
   {% endif %}
 
+  {% if reporting_articles is not empty %}
   <div class="news-section-head">
     <h2>RHT Circle reporting</h2>
     <p>Original reporting and analysis built from the public record.</p>
@@ -29,21 +51,31 @@
     {% endfor %}
   </div>
 
+  {% endif %}
+  {% if previous_page_url|default(null) or next_page_url|default(null) %}
+    <nav class="btn-row" aria-label="Original reporting pages">
+      {% if previous_page_url %}<a class="btn btn--alt" href="{{ previous_page_url }}">Previous reporting</a>{% endif %}
+      <span>Reporting page {{ pagination.page }}</span>
+      {% if next_page_url %}<a class="btn" href="{{ next_page_url }}">More reporting</a>{% endif %}
+    </nav>
+  {% endif %}
+  {% if stories is not empty %}
   <div class="news-section-head">
-    <h2>Recent across the territory</h2>
+    <h2>From community and regional sources</h2>
     <p>Selected for direct relevance to Treaty members. The full story remains with the original publisher.</p>
   </div>
 
   <div class="news-grid">
     {% for story in stories %}
-      {% include 'components/news_card.html.twig' with { story: story } only %}
+      {% include 'components/news_card.html.twig' with { story: story, nation_names: nation_names } only %}
     {% endfor %}
   </div>
+  {% endif %}
 
   <section class="news-community-desks">
     <div class="news-section-head">
       <h2>Community desks</h2>
-      <p>Every Nation has a sourced profile and a place for current public updates. Choose a community, or help keep its page current.</p>
+      <p>All 21 Nations are part of our coverage. Reporting is not yet equally developed in every community. Each profile links to the Nation’s own public updates and shows the reviewed stories we have.</p>
     </div>
     {% for region_key, communities in communities_by_region %}
       <h3>{{ regions[region_key] }}</h3>
@@ -59,5 +91,5 @@
     </div>
   </section>
 
-  <p class="news-note"><strong>About this digest:</strong> RHT Circle writes the short summaries and links directly to the original reporting or official notice. Inclusion is not endorsement. Dates shown are publication dates. Last reviewed July 26, 2026.</p>
+  <p class="news-note"><strong>About this digest:</strong> RHT Circle writes the short summaries and links directly to the original reporting or official notice. Inclusion is not endorsement. Dates shown are publication dates; this collection is not a live news feed. The external summaries were last reviewed July 26, 2026. <a href="/about#editorial">Read our editorial approach</a>.</p>
 {% endblock %}

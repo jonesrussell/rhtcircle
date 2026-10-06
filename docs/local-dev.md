@@ -1,11 +1,48 @@
-# Local Composer workflow
+# Local development
 
-The skeleton ships without a `composer.lock` — `composer create-project` resolves fresh and writes your project's own lock, which you should commit. When you have a local Waaseyaa monorepo checkout and need symlinked `waaseyaa/*` packages for development, use `composer.local.json`.
+## Canonical location and dependencies
 
-1. Clone or place your app so `../waaseyaa/packages/*` exists relative to the app root (e.g. app in `~/dev/my-app` and monorepo in `~/dev/waaseyaa`).
-2. Copy `composer.local.json.example` to `composer.local.json` (or add your own `repositories` and overrides).
-3. Run `composer install` or `composer update` as usual.
+Use `C:\dev\rhtcircle`. Sagamok's private research remains on E:. Install published dependencies from the committed lock with `composer install`. `composer.local.json` is not loaded; the merge plugin has been removed. Its old example is pending deletion and is not supported guidance.
 
-The app loads `composer.local.json` through `wikimedia/composer-merge-plugin`, and `prepend-repositories: true` makes local path repositories win over Packagist during development.
+PHP 8.5 with PDO SQLite, SQLite3 and mbstring is required. Run `composer check-platform-reqs`. Do not borrow another checkout's vendor tree.
 
-Before you commit dependency changes in your project, run `composer regen-lock`. That command disables plugins so Composer ignores `composer.local.json` and refreshes your project's `composer.lock` against the published `waaseyaa/*` packages instead of leaking local path references.
+## Local environment
+
+`php bin/post-create-setup.php` creates `.env` only when absent, with independent random JWT and `base64:` master secrets. It never changes an existing environment. `.env`, SQLite databases, caches and logs are ignored. Never copy production credentials into a local environment or print secrets.
+
+For the built-in server:
+
+```powershell
+php -S 127.0.0.1:8101 -t public public/index.php
+```
+
+Use `composer dev` for the supported FrankenPHP runtime. The built-in server is sufficient for editorial previews; it does not qualify concurrent SSE or worker behaviour.
+
+## Database lifecycle
+
+For a fresh database, or a local production snapshot undergoing a framework upgrade:
+
+1. `php vendor/bin/waaseyaa schema:sync --dry-run`, then `schema:sync` after reviewing the additive changes.
+2. `php vendor/bin/waaseyaa db:init` to apply framework migrations.
+3. For a database without activated canonical configuration, `php vendor/bin/waaseyaa install:init`.
+4. `php vendor/bin/waaseyaa app:initialize` for app-owned schemas. It does not seed campaigns.
+5. For pre-authority entity rows after an upgrade, `php vendor/bin/waaseyaa entity:backfill-mutation-authorities --reason="Local framework upgrade" --json`.
+6. `php vendor/bin/waaseyaa optimize:manifest`.
+7. Run `field-access:preflight --write-artifact` and inspect readiness. An HTTP 200 in local mode is not production readiness.
+
+The alpha.305 refresh required schema synchronization before `db:init`; otherwise the AI-agent migration attempted indexes on missing columns. The current local field-read preflight has a framework-default conflict on `pipeline|*|label`, documented in the audit. Do not weaken its classification to obtain a green result.
+
+`app:seed-member-tools` is a separate, explicit legacy setup command. It writes historic Sagamok polls and campaign definitions and aggregate counts. Do not run it during ordinary development or a production refresh. Existing signatures stay attached to their original consent instrument.
+
+## Checks and agent setup
+
+```powershell
+composer check
+php vendor/bin/waaseyaa app:ingest --dry-run
+composer agents:install
+php vendor/bin/waaseyaa graph:dump --strict --section=public_surface
+```
+
+Bimaaji is included by the framework. Installation is idempotent and tracks owned files in `.waaseyaa/bimaaji-install.json`. Add app guidance outside its markers; never edit generated framework guidance to mask a dependency bug. Strict graph export currently fails on a legacy framework AI-agent route contributor. No remote MCP credentials or new public permissions were added.
+
+The legacy `bin/maintenance/waaseyaa-audit-site` shell helper requires Bash and a byte-identical skeleton front controller. It does not qualify this app's runtime adapter on native Windows. `composer audit-site` now runs portable app checks and a dry-run corpus render. Use `composer check` for the core app checks and the focused framework commands above; see the audit for this tooling gap.

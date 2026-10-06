@@ -180,14 +180,6 @@ final class AdminController extends DashboardGate
         );
     }
 
-    private function html(string $body, int $status = 200): Response
-    {
-        return new Response($body, $status, [
-            'Content-Type' => 'text/html; charset=UTF-8',
-            'X-Robots-Tag' => 'noindex, nofollow',
-        ]);
-    }
-
     private function cleanDate(mixed $value, string $fallback): string
     {
         return is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $value) === 1 ? $value : $fallback;

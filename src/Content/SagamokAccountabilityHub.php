@@ -14,22 +14,19 @@ final class SagamokAccountabilityHub
 {
     /** @var array<string, array{eyebrow: string, title: string, intro: string, hrefs: list<string>}> */
     private const array GROUPS = [
-        'start-here' => [
-            'eyebrow' => 'Requests, responses and member action',
-            'title' => 'Start here',
-            'intro' => 'The central requests members have made, the answers still outstanding, and practical ways to take part.',
+        'open-questions' => [
+            'eyebrow' => 'Requests and responses',
+            'title' => 'Open questions and records requests',
+            'intro' => 'What members have asked, what responses are available and what remains unresolved. An unanswered request is not a finding of wrongdoing.',
             'hrefs' => [
                 '/communities/sagamok/awaiting-council',
-                '/communities/sagamok/member-accountability-resolution',
                 '/standard/records-request',
-                '/communities/sagamok/write-to-council',
-                '/communities/sagamok/conflict-register',
             ],
         ],
         'follow-the-record' => [
             'eyebrow' => 'Public records and member explainers',
-            'title' => 'Follow the record',
-            'intro' => 'Worked examples drawn from public records, organized by the decision or system members are trying to understand.',
+            'title' => 'Reporting and public-record explainers',
+            'intro' => 'Published reporting and explainers about decisions, services and enterprises. Read each page’s sources, dates and limits.',
             'hrefs' => [
                 '/news/sagamok-trespass-bylaw-session-was-backwards',
                 '/news/sagamok-south-market-land-deal',
@@ -43,6 +40,18 @@ final class SagamokAccountabilityHub
                 '/communities/sagamok/long-term-care',
                 '/communities/sagamok/play-limited-partnership',
                 '/communities/sagamok/espanola-mill-bmi',
+                '/communities/sagamok/conflict-register',
+            ],
+        ],
+        'member-proposals' => [
+            'eyebrow' => 'Member-authored advocacy',
+            'title' => 'Member proposals and statements',
+            'intro' => 'Working proposals and advocacy submitted by members. These are not adopted Council policy, election endorsements or the conclusions of a news investigation.',
+            'hrefs' => [
+                '/communities/sagamok/members-first-plan',
+                '/communities/sagamok/member-accountability-resolution',
+                '/communities/sagamok/member-election-law',
+                '/communities/sagamok/booklets',
             ],
         ],
         'member-tools' => [
@@ -55,6 +64,7 @@ final class SagamokAccountabilityHub
                 '/communities/sagamok/support-images',
                 '/communities/sagamok/members-website-issue',
                 '/communities/sagamok/where-your-data-lives',
+                '/communities/sagamok/write-to-council',
             ],
         ],
     ];
@@ -82,7 +92,7 @@ final class SagamokAccountabilityHub
                 continue;
             }
             $cardsByHref[$href] = [
-                'feature' => true,
+                'feature' => false,
                 'tag' => (string) ($article['kicker'] ?? 'RHT Circle reporting'),
                 'title' => (string) ($article['title'] ?? ''),
                 'desc' => (string) ($article['summary'] ?? $article['deck'] ?? ''),
@@ -116,10 +126,10 @@ final class SagamokAccountabilityHub
     public static function doorway(): array
     {
         return [
-            'feature' => true,
+            'feature' => false,
             'tag' => 'Dedicated Sagamok section',
             'title' => 'Sagamok member accountability',
-            'desc' => 'Records, unanswered questions, business decisions, member tools and ways to act, now organized in one place.',
+            'desc' => 'Browse reporting, open records requests, clearly labelled member proposals and practical tools.',
             'go' => 'Open the accountability section',
             'href' => '/communities/sagamok/accountability',
         ];

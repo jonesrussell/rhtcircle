@@ -55,44 +55,40 @@ final class PetitionSchema
             return;
         }
 
-        // Never let a migration hiccup take down app boot (see the signature note).
-        try {
-            $have = [];
-            foreach ($this->db->query('PRAGMA table_info(' . self::TABLE_CAMPAIGN . ')') as $row) {
-                $have[(string) $row['name']] = true;
-            }
-
-            if (!isset($have['paper_count'])) {
-                $this->db->query(
-                    'ALTER TABLE ' . self::TABLE_CAMPAIGN
-                    . ' ADD COLUMN paper_count int NOT NULL DEFAULT 0',
-                );
-            }
-            if (!isset($have['paper_note'])) {
-                $this->db->query(
-                    'ALTER TABLE ' . self::TABLE_CAMPAIGN . ' ADD COLUMN paper_note varchar(255)',
-                );
-            }
-            if (!isset($have['paper_updated_at'])) {
-                $this->db->query(
-                    'ALTER TABLE ' . self::TABLE_CAMPAIGN . ' ADD COLUMN paper_updated_at varchar(19)',
-                );
-            }
-            if (!isset($have['online_base'])) {
-                $this->db->query(
-                    'ALTER TABLE ' . self::TABLE_CAMPAIGN
-                    . ' ADD COLUMN online_base int NOT NULL DEFAULT 0',
-                );
-            }
-        } catch (\Throwable) {
-            // swallow — see ensureSignatureColumns note
+        $have = [];
+        foreach ($this->db->query('PRAGMA table_info(' . self::TABLE_CAMPAIGN . ')') as $row) {
+            $have[(string) $row['name']] = true;
         }
+
+        if (!isset($have['paper_count'])) {
+            $this->db->query(
+                'ALTER TABLE ' . self::TABLE_CAMPAIGN
+                . ' ADD COLUMN paper_count int NOT NULL DEFAULT 0',
+            );
+        }
+        if (!isset($have['paper_note'])) {
+            $this->db->query(
+                'ALTER TABLE ' . self::TABLE_CAMPAIGN . ' ADD COLUMN paper_note varchar(255)',
+            );
+        }
+        if (!isset($have['paper_updated_at'])) {
+            $this->db->query(
+                'ALTER TABLE ' . self::TABLE_CAMPAIGN . ' ADD COLUMN paper_updated_at varchar(19)',
+            );
+        }
+        if (!isset($have['online_base'])) {
+            $this->db->query(
+                'ALTER TABLE ' . self::TABLE_CAMPAIGN
+                . ' ADD COLUMN online_base int NOT NULL DEFAULT 0',
+            );
+        }
+
     }
 
     /**
      * Additive column migrations for the signature table (createTable only fires
      * for a fresh DB; an existing prod table needs ALTER). Each step is guarded
-     * by PRAGMA table_info so it is idempotent and safe to run on every boot.
+     * by PRAGMA table_info so it is idempotent and safe to run through app:initialize.
      */
     private function ensureSignatureColumns(): void
     {
@@ -100,26 +96,20 @@ final class PetitionSchema
             return;
         }
 
-        // Never let a migration hiccup take down app boot; a failure surfaces
-        // later at sign time (the INSERT references the column) rather than 500ing
-        // every page.
-        try {
-            $have = [];
-            foreach ($this->db->query('PRAGMA table_info(' . self::TABLE_SIGNATURE . ')') as $row) {
-                $have[(string) $row['name']] = true;
-            }
-
-            // "Include my name on the letter to Chief and Council" — separate from
-            // show_name_publicly (public display). Defaults to 0 (count me only).
-            if (!isset($have['include_name_on_letter'])) {
-                $this->db->query(
-                    'ALTER TABLE ' . self::TABLE_SIGNATURE
-                    . ' ADD COLUMN include_name_on_letter int NOT NULL DEFAULT 0',
-                );
-            }
-        } catch (\Throwable) {
-            // swallow — see note above
+        $have = [];
+        foreach ($this->db->query('PRAGMA table_info(' . self::TABLE_SIGNATURE . ')') as $row) {
+            $have[(string) $row['name']] = true;
         }
+
+        // "Include my name on the letter to Chief and Council" — separate from
+        // show_name_publicly (public display). Defaults to 0 (count me only).
+        if (!isset($have['include_name_on_letter'])) {
+            $this->db->query(
+                'ALTER TABLE ' . self::TABLE_SIGNATURE
+                . ' ADD COLUMN include_name_on_letter int NOT NULL DEFAULT 0',
+            );
+        }
+
     }
 
     private function ensureCampaignTable(): void

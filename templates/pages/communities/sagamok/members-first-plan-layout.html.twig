@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+{% set nav = 'communities' %}
+
+{% block title %}{{ plan_title }} · Members First Plan · RHT Circle{% endblock %}
+{% block description %}{{ plan_description }}{% endblock %}
+{% block og_title %}{{ plan_title }}{% endblock %}
+{% block og_description %}{{ plan_description }}{% endblock %}
+{% block body_class %}route-sagamok-members-first-library{% endblock %}
+{% block main_class %}plan-library-shell{% endblock %}
+
+{% block head_styles %}
+<style>
+.plan-library-shell{width:100%;max-width:none;padding:0 clamp(20px,4vw,72px)}.plan-library{--p-ink:#16243f;--p-indigo:#33256f;--p-magenta:#b53272;--p-gold:#d5a747;padding:0 0 4rem}.plan-library .cover{width:100%;max-width:none;padding-left:0;padding-right:0;padding-bottom:1.5rem}.plan-library .cover__title{max-width:22ch;font-size:clamp(2.25rem,5vw,4.7rem);line-height:1}.plan-library .cover__lede{max-width:980px}.plan-status{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0}.plan-status span{padding:.38rem .68rem;border:1px solid #d8cee9;border-radius:999px;background:#f7f4ff;color:var(--p-indigo);font-size:.72rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase}.plan-layout{display:grid;grid-template-columns:minmax(230px,290px) minmax(0,1fr);gap:clamp(1.5rem,4vw,4.5rem);align-items:start}.plan-side{position:sticky;top:1rem;padding:1rem;border:1px solid var(--line);border-radius:16px;background:#fff}.plan-side strong{display:block;margin:0 0 .6rem;color:var(--p-magenta);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}.plan-side a{display:block;padding:.52rem .65rem;border-radius:8px;color:var(--ink-2);font-size:.84rem;font-weight:650;text-decoration:none}.plan-side a:hover,.plan-side a[aria-current="page"]{background:#f0eafa;color:var(--p-indigo)}.plan-side hr{border:0;border-top:1px solid var(--line);margin:.65rem 0}.plan-content{min-width:0}.plan-content section{margin:0 0 clamp(2.6rem,6vw,5.5rem);scroll-margin-top:2rem}.plan-content section>header{max-width:1000px;margin-bottom:1.25rem}.plan-content h2{margin:.15rem 0 .55rem;color:var(--p-ink);font-size:clamp(1.65rem,3vw,2.7rem);line-height:1.08}.plan-content h3{color:var(--p-indigo)}.plan-kicker{margin:0;color:var(--p-magenta);font-size:.75rem;font-weight:850;letter-spacing:.13em;text-transform:uppercase}.plan-lede{font-size:1.08rem;color:var(--ink-2)}.plan-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.plan-grid--3{grid-template-columns:repeat(3,minmax(0,1fr))}.plan-card{padding:1.25rem 1.3rem;border:1px solid var(--line);border-radius:15px;background:#fff}.plan-card h3{margin:0 0 .45rem;font-size:1.08rem}.plan-card p{margin:.35rem 0;color:var(--ink-2)}.plan-card ul{margin:.5rem 0 0;padding-left:1.15rem}.plan-card li{margin:.36rem 0}.plan-commitments{counter-reset:commitment;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.plan-commitment{counter-increment:commitment;position:relative;padding:1.3rem 1.35rem 1.3rem 4.4rem;border:1px solid var(--line);border-radius:15px;background:#fff}.plan-commitment::before{content:counter(commitment,decimal-leading-zero);position:absolute;left:1.25rem;top:1.1rem;color:var(--p-magenta);font-family:var(--serif);font-size:1.45rem;font-weight:700}.plan-commitment h3{margin:0 0 .35rem}.plan-commitment p{margin:.25rem 0;color:var(--ink-2)}.plan-table{overflow-x:auto;border:1px solid var(--line);border-radius:14px}.plan-table table{width:100%;min-width:760px;border-collapse:collapse;background:#fff}.plan-table th,.plan-table td{padding:.8rem .9rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.plan-table th{background:#f3eff9;color:var(--p-indigo);font-size:.73rem;letter-spacing:.05em;text-transform:uppercase}.plan-table tr:last-child td{border-bottom:0}.plan-decision{padding:clamp(1.3rem,3vw,2.2rem);border-radius:18px;background:linear-gradient(125deg,#33256f,#722d71);color:#fff}.plan-decision h2,.plan-decision h3{color:#fff}.plan-decision p,.plan-decision li{color:rgba(255,255,255,.9)}.plan-note{padding:1rem 1.15rem;border-left:4px solid var(--p-gold);background:#fff7e5;color:var(--ink-2)}.plan-next{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;padding-top:1.25rem;border-top:1px solid var(--line)}.plan-next a{font-weight:750}@media(max-width:900px){.plan-layout{grid-template-columns:1fr}.plan-side{position:static;display:flex;gap:.35rem;overflow:auto;white-space:nowrap}.plan-side strong,.plan-side hr{display:none}.plan-side a{flex:none}.plan-grid--3{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.plan-library-shell{padding:0 20px}.plan-grid,.plan-grid--3,.plan-commitments{grid-template-columns:1fr}.plan-library .cover__title{font-size:2.45rem}.plan-side{margin:0 -20px;border-left:0;border-right:0;border-radius:0}}
+</style>
+{% endblock %}
+
+{% block content %}
+<article class="plan-library">
+  <p class="crumb"><a href="/communities">Communities</a> › <a href="/communities/sagamok">Sagamok Anishnawbek</a> › <a href="/communities/sagamok/members-first-plan">Members First Plan</a> › {{ plan_short }}</p>
+  <header class="cover">
+    <p class="cover__eyebrow">Members First Plan · {{ plan_eyebrow }}</p>
+    <h1 class="cover__title">{{ plan_title }}</h1>
+    <p class="cover__lede">{{ plan_description }}</p>
+    <div class="plan-status"><span>Member-built</span><span>Working proposal</span><span>{{ plan_status|default('Year One detail') }}</span></div>
+    <p class="cover__byline">Part of the member-built strategic plan for Sagamok. Not adopted by Sagamok Anishnawbek.</p>
+  </header>
+
+  <div class="plan-layout">
+    <nav class="plan-side" aria-label="Members First Plan pages">
+      <strong>The full plan</strong>
+      <a href="/communities/sagamok/members-first-plan">Plan overview</a>
+      <a href="/communities/sagamok/members-first-plan/member-government"{% if plan_key == 'government' %} aria-current="page"{% endif %}>1. Member government</a>
+      <a href="/communities/sagamok/members-first-plan/community-wealth"{% if plan_key == 'wealth' %} aria-current="page"{% endif %}>2. Community wealth</a>
+      <a href="/communities/sagamok/members-first-plan/enterprises"{% if plan_key == 'enterprises' %} aria-current="page"{% endif %}>3. Enterprises</a>
+      <a href="/communities/sagamok/members-first-plan/homes-infrastructure"{% if plan_key == 'homes' %} aria-current="page"{% endif %}>4. Homes and infrastructure</a>
+      <a href="/communities/sagamok/members-first-plan/health-families-elders"{% if plan_key == 'health' %} aria-current="page"{% endif %}>5. Health, families and Elders</a>
+      <a href="/communities/sagamok/members-first-plan/language-culture-learning"{% if plan_key == 'culture' %} aria-current="page"{% endif %}>6. Language, culture and learning</a>
+      <a href="/communities/sagamok/members-first-plan/lands-safety-rights"{% if plan_key == 'lands' %} aria-current="page"{% endif %}>7. Lands, safety and rights</a>
+      <a href="/communities/sagamok/members-first-plan/public-service"{% if plan_key == 'service' %} aria-current="page"{% endif %}>8. Public service</a>
+      <hr>
+      <a href="/communities/sagamok/members-first-plan/implementation"{% if plan_key == 'implementation' %} aria-current="page"{% endif %}>Implementation</a>
+      <a href="/communities/sagamok/members-first-plan/scorecard"{% if plan_key == 'scorecard' %} aria-current="page"{% endif %}>Member scorecard</a>
+      <a href="/communities/sagamok/members-first-plan/source-record"{% if plan_key == 'sources' %} aria-current="page"{% endif %}>Source record</a>
+    </nav>
+    <div class="plan-content">{% block plan_content %}{% endblock %}</div>
+  </div>
+</article>
+{% endblock %}

@@ -7,10 +7,9 @@ namespace App\Command;
 use Anokii\Entity\DocChunk;
 use App\Anokii\GraphSeedData;
 use App\Cms\ArticleRepository;
-use App\Content\CommunityHub;
 use App\Content\LandProjects;
 use App\Content\Nations;
-use App\Content\NewsFeed;
+use App\Content\PublicationContext;
 use App\Content\SagamokAccountabilityHub;
 use App\Petition\PetitionRepository;
 use App\Rendering\SiteRenderer;
@@ -69,6 +68,7 @@ final class IngestCommand
         // it needs the live signature breakdown, which this no-context loop
         // cannot supply.
         '/communities/sagamok/support-images' => 'pages/communities/sagamok/support-images.html.twig',
+        '/communities/sagamok/booklets' => 'pages/communities/sagamok/booklets.html.twig',
         '/communities/sagamok/how-its-organized' => 'pages/communities/sagamok/how-its-organized.html.twig',
         '/communities/sagamok/members-website-issue' => 'pages/communities/sagamok/members-website-issue.html.twig',
         '/communities/sagamok/it-accountability' => 'pages/communities/sagamok/it-accountability.html.twig',
@@ -78,6 +78,7 @@ final class IngestCommand
         '/communities/sagamok/play-limited-partnership' => 'pages/communities/sagamok/play-limited-partnership.html.twig',
         '/communities/sagamok/espanola-mill-bmi' => 'pages/communities/sagamok/espanola-mill-bmi.html.twig',
         '/communities/sagamok/one-seat-one-salary' => 'pages/communities/sagamok/one-seat-one-salary.html.twig',
+        '/communities/sagamok/member-election-law' => 'pages/communities/sagamok/member-election-law.html.twig',
         '/communities/sagamok/write-to-council' => 'pages/communities/sagamok/write-to-council.html.twig',
         '/circle' => 'pages/circle/index.html.twig',
         '/about' => 'pages/about.html.twig',
@@ -162,20 +163,15 @@ final class IngestCommand
 
         $signatures = $this->recordsRequestSignatures();
         $articles = $this->articles?->published() ?? [];
+        $publication = new PublicationContext($this->articles);
         $sagamokArticles = $this->articles?->forSagamok() ?? [];
 
         foreach (self::PAGES as $sourceUrl => $template) {
             $render($sourceUrl, $template, []);
         }
 
-        $render('/news', 'pages/news/index.html.twig', [
-            'stories' => NewsFeed::recentExternalStories(),
-            'feature_article' => $articles[0] ?? null,
-            'reporting_articles' => array_slice($articles, 1),
-            'regions' => Nations::regions(),
-            'communities_by_region' => Nations::byRegion(),
-            'nation_names' => array_column(Nations::all(), 'name', 'slug'),
-        ]);
+        $render('/', 'pages/home.html.twig', $publication->home());
+        $render('/news', 'pages/news/index.html.twig', $publication->news());
         foreach ($articles as $article) {
             $render((string) $article['href'], 'pages/news/article.html.twig', ['article' => $article]);
         }
@@ -198,15 +194,7 @@ final class IngestCommand
         // page uses so the index matches what members see.
         foreach (Nations::all() as $nation) {
             $slug = (string) $nation['slug'];
-            $render('/communities/' . $slug, 'pages/communities/nation.html.twig', [
-                'nation' => $nation,
-                ...CommunityHub::context(
-                    $slug,
-                    $nation,
-                    $signatures,
-                    $slug === 'sagamok' ? $sagamokArticles : [],
-                ),
-            ]);
+            $render('/communities/' . $slug, 'pages/communities/nation.html.twig', $publication->community($nation, $signatures));
         }
 
         return [$chunks, $sources];
