@@ -9,7 +9,8 @@ use Waaseyaa\Access\AuthorizationPrincipalInterface;
 /**
  * The machine principal behind the MCP publisher bearer token.
  *
- * Holds ONLY the article publish capability (least privilege) with a fixed
+ * Holds the article capability and its required bundle-scoped framework grants
+ * (no node/media administration or other content bundles), with a fixed
  * high sentinel uid (never colliding with real auto-increment uids or the
  * framework sentinels 0 / PHP_INT_MAX). Revision authorship and audit actor
  * columns record this uid for every agent-driven content mutation.
@@ -25,7 +26,16 @@ final readonly class ArticlePublisherAccount implements AuthorizationPrincipalIn
 
     public function hasPermission(string $permission): bool
     {
-        return $permission === ArticleContentType::CAPABILITY;
+        return in_array($permission, [
+            ArticleContentType::CAPABILITY,
+            \Waaseyaa\Node\NodePermissions::ACCESS_CONTENT,
+            \Waaseyaa\Node\NodePermissions::create('article'),
+            \Waaseyaa\Node\NodePermissions::editAny('article'),
+            \Waaseyaa\Node\NodeAccessPolicy::PUBLISH_PERMISSION,
+            \Waaseyaa\Media\MediaPermissions::ACCESS,
+            \Waaseyaa\Media\MediaPermissions::VIEW_OWN_UNPUBLISHED,
+            \Waaseyaa\Media\MediaPermissions::create('image'),
+        ], true);
     }
 
     public function getRoles(): array
@@ -40,7 +50,7 @@ final readonly class ArticlePublisherAccount implements AuthorizationPrincipalIn
 
     public function claimsGeneration(): string
     {
-        return 'rhtcircle-article-publisher-v1';
+        return 'rhtcircle-article-publisher-v2';
     }
 
     public function tenantId(): ?string

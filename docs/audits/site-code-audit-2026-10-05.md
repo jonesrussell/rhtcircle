@@ -10,6 +10,8 @@ The user chose to repair and release the alpha.305 candidate. GitHub main is can
 
 Full integrated Windows qualification: `composer check` succeeds, including PHPStan, copy/signature lints and all 351 tests with 2,526 assertions. Three native SQLite cleanup warnings remain; they are not suppressed. Corpus dry-run extraction succeeds without writes. Browser checks at 360 and 1440 pixels pass for homepage, news and Sagamok collections: HTTP 200, one H1, no overflow, preserved Nation filter state, 23 filter options and four functioning disclosures. Supported Linux runtime and production snapshot qualification are tracked separately in infrastructure delivery evidence.
 
+Subsequent publishing acceptance exposed the framework's enforced entity-policy permissions. The machine publisher now uses canonical bundle-scoped article/image permissions and an article-only draft/revision read policy, without node/media administration or other-bundle creation. Publishing refuses a missing authorization handler. Its claims generation is advanced. The real registered tool set creates, publishes and retracts a synthetic draft and uploads an image; anonymous draft access and publishing are denied. Focused publishing/listing integration passes 4 tests and 106 assertions with native cleanup warnings. The final supported-runtime suite includes this additional regression.
+
 ## Outcome and scope
 
 The application now has a Treaty-wide news front door, Nation/topic discovery and bounded Sagamok collections. Bimaaji guidance is installed for Codex and Claude. Dependency overrides and their merge plugin are retired. Static analysis runs across all 66 application PHP source files at PHPStan level 5, without a baseline or ignored findings.

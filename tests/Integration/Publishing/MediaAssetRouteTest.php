@@ -97,6 +97,53 @@ final class MediaAssetRouteTest extends TestCase
         self::assertSame(404, $this->request('/media/uploads/not-a-content-hash.png')->getStatusCode());
     }
 
+    public function testPublisherToolsCreateAndRetractAnArticleWithoutAdministratorAccess(): void
+    {
+        $kernel = new HttpKernel($this->projectRoot);
+        $kernel->bootForCli();
+        $tools = $kernel->buildHandlerContainer()->get(\Waaseyaa\AI\Tools\ToolRegistryInterface::class);
+        $actor = new \App\Publishing\ArticlePublisherAccount();
+        self::assertFalse($actor->hasPermission(\Waaseyaa\Node\NodePermissions::ADMINISTER));
+        self::assertFalse($actor->hasPermission(\Waaseyaa\Media\MediaPermissions::ADMINISTER));
+        self::assertFalse($actor->hasPermission(\Waaseyaa\Node\NodePermissions::create('page')));
+        self::assertFalse($actor->hasPermission(\Waaseyaa\Media\MediaPermissions::create('document')));
+        $values = [
+            'slug' => 'synthetic-publishing-check', 'title' => 'Synthetic publishing check',
+            'community_slug' => 'circle', 'summary' => 'Fixture only.', 'author' => 'Test fixture',
+            'date_display' => 'October 5, 2026', 'date_iso' => '2026-10-05',
+            'section' => 'RHT Circle analysis', 'body_html' => '<p>Fixture body.</p>',
+            'sources_html' => '<p>Fixture source.</p>',
+        ];
+        $draft = $tools->get('article.createDraft')->impl->execute([
+            'values' => $values, 'idempotency_key' => 'fixture-create-article',
+        ], $actor);
+        self::assertFalse($draft->isError, json_encode($draft->content));
+        $row = $draft->structuredContent;
+        self::assertFalse($row['status']);
+        $entity = $kernel->getEntityTypeManager()->getRepository('node')->find($row['id']);
+        self::assertNotNull($entity);
+        self::assertFalse($kernel->getAccessHandler()->check($entity, 'view', new \Waaseyaa\User\AnonymousUser())->isAllowed());
+        $denied = $tools->get('article.createDraft')->impl->execute([
+            'values' => $values, 'idempotency_key' => 'fixture-anonymous-denied',
+        ], new \Waaseyaa\User\AnonymousUser());
+        self::assertTrue($denied->isError);
+        foreach (['publish' => true, 'unpublish' => false] as $operation => $status) {
+            $result = $tools->get('article.' . $operation)->impl->execute([
+                'id' => (string) $row['id'], 'expected_revision_id' => $row['revision_id'],
+                'idempotency_key' => 'fixture-' . $operation . '-article',
+            ], $actor);
+            self::assertFalse($result->isError, json_encode($result->content));
+            $row = $result->structuredContent;
+            self::assertSame($status, $row['status']);
+        }
+        $asset = $tools->get('asset.upload')->impl->execute([
+            'filename' => 'fixture.png',
+            'content_base64' => 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2nHgAAAAASUVORK5CYII=',
+        ], $actor);
+        self::assertFalse($asset->isError, json_encode($asset->content));
+        self::assertSame('image/png', $asset->structuredContent['mime']);
+    }
+
     private function request(string $uri): \Symfony\Component\HttpFoundation\Response
     {
         $_GET = [];

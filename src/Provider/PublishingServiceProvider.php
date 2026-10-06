@@ -162,14 +162,17 @@ final class PublishingServiceProvider extends ServiceProvider
         \assert($database instanceof DatabaseInterface);
 
         $audit = $this->resolveOptional(AuditWriterInterface::class);
-        $accessHandler = $this->resolveOptional(EntityAccessHandler::class);
+        $accessHandler = $this->resolve(EntityAccessHandler::class);
+        if (!$accessHandler instanceof EntityAccessHandler) {
+            throw new \RuntimeException('Article publishing requires entity authorization.');
+        }
 
         return new ContentPublisher(
             ArticleContentType::descriptor(),
             $repository,
             new IdempotencyStore($database),
             $audit instanceof AuditWriterInterface ? $audit : null,
-            $accessHandler instanceof EntityAccessHandler ? $accessHandler : null,
+            $accessHandler,
         );
     }
 
