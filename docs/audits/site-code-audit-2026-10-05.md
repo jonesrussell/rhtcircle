@@ -1,5 +1,13 @@
 # RHT Circle local code audit, October 5, 2026
 
+## Full-release integration checkpoint
+
+After the Massey-only release, the user authorized deployment of all local changes. The local tree was found to predate current production publishing, secure-cookie, monitor, chat-disable and election-law changes. Those changes have now been merged into the local candidate, preserving the current native election-law page and disabled public chat. This supersedes the earlier 35-test qualification scope below.
+
+Focused integration evidence: 23 tests, 362 assertions passed, with the existing Windows SQLite cleanup warning. This is not full-release qualification. Alpha.305 still fails field-access preflight on `pipeline|*|label` and strict graph export on the AI-agent legacy contributor. Integrating current production publishing also exposed the changed `MediaAssetStore` constructor, which prevents article/asset MCP tool wiring at alpha.305. Static analysis identified that mismatch plus inherited monitor-schedule dead code. Do not deploy this candidate as qualified or silently weaken the internal pipeline classification. The full production promotion has not been dispatched.
+
+Pending decision: release all application changes on the currently deployed framework cohort, or hold the release for framework upgrade repairs. No production database was overwritten with the local snapshot.
+
 ## Outcome and scope
 
 The application now has a Treaty-wide news front door, Nation/topic discovery and bounded Sagamok collections. Bimaaji guidance is installed for Codex and Claude. Dependency overrides and their merge plugin are retired. Static analysis runs across all 66 application PHP source files at PHPStan level 5, without a baseline or ignored findings.
