@@ -36,7 +36,7 @@ final class ArticlePublisherAccessPolicy implements AccessPolicyInterface, Prote
         return AccessResult::neutral('Creation uses the framework bundle permission.');
     }
 
-    public function protectedEntityReadPolicy(): ?ProtectedEntityReadPolicyInterface
+    public function protectedEntityReadPolicy(): ProtectedEntityReadPolicyInterface
     {
         return new ArticlePublisherReadPolicy();
     }
