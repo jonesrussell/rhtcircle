@@ -25,8 +25,8 @@ For a fresh database, or a local production snapshot undergoing a framework upgr
 1. `php vendor/bin/waaseyaa schema:sync --dry-run`, then `schema:sync` after reviewing the additive changes.
 2. `php vendor/bin/waaseyaa db:init` to apply framework migrations.
 3. For a database without activated canonical configuration, `php vendor/bin/waaseyaa install:init`.
-4. `php vendor/bin/waaseyaa app:initialize` for app-owned schemas. It does not seed campaigns.
-5. For pre-authority entity rows after an upgrade, `php vendor/bin/waaseyaa entity:backfill-mutation-authorities --reason="Local framework upgrade" --json`.
+4. For pre-authority entity rows after an upgrade, `php vendor/bin/waaseyaa entity:backfill-mutation-authorities --reason="Local framework upgrade" --json`. Run this before ordinary app commands: existing workflows can otherwise prevent kernel boot.
+5. `php vendor/bin/waaseyaa app:initialize` for app-owned schemas. It does not seed campaigns.
 6. `php vendor/bin/waaseyaa optimize:manifest`.
 7. Run `field-access:preflight --write-artifact` and inspect readiness. An HTTP 200 in local mode is not production readiness.
 

@@ -68,6 +68,7 @@ This is an application maintainability and integration audit of the working tree
 - Owner: Waaseyaa install/configuration and entity-mutation maintainers.
 - The production snapshot required `install:init` for missing canonical configuration and an explicit mutation-authority backfill for 1,276 existing entities, in addition to schema synchronization and 31 pending migrations.
 - Impact: a framework update that installs successfully may still fail when existing content is written. This is observed operational friction, not a claim that every upgrade requires these steps.
+- Production-snapshot qualification confirmed ordinary CLI boot can fail on a persisted workflow without aggregate mutation authority. The supported backfill command must precede `app:initialize` and indexing. Release tooling also needs candidate public assets in isolated mounts; skipping the entrypoint leaves new renderer assets absent, while running it against live mounts before qualification would mutate serving assets.
 - Acceptance: one diagnostic command distinguishes fresh install, missing activation, schema drift and authority backfill, with supported ordering and resumable operations.
 
 ### HOST-01: native Windows SQLite fixture cleanup warning
