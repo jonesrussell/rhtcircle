@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+$environment = getenv('APP_ENV') ?: 'production';
+
+// rhtcircle.ca is HTTPS-only: Cloudflare enforces Always Use HTTPS at the edge.
+// Deployed environments therefore require Secure cookies; local development over
+// http://127.0.0.1 must not, or the browser would discard every cookie and the
+// admin login would be untestable.
+$httpsOnly = \in_array($environment, ['production', 'staging'], true);
+
 return [
     // Debug mode. Controls error detail display, debug toolbar, and debug headers.
     // Override with APP_DEBUG env var. MUST be false in production.
@@ -103,6 +111,135 @@ return [
         // Per-entity field selection used for embedding text extraction.
         'embedding_fields' => [
             'node' => ['title', 'body'],
+        ],
+    ],
+
+    // Trusted reverse proxy (issue #13).
+    //
+    // Cloudflare terminates TLS at its edge and forwards plain HTTP through
+    // cloudflared to Caddy, which speaks FastCGI to this app. The app therefore
+    // never sees a TLS connection and $_SERVER['HTTPS'] is never 'on', so the
+    // framework's fail-closed `secure => 'auto'` detection cannot prove HTTPS on
+    // its own and correctly refuses to mark cookies Secure.
+    //
+    // 'REMOTE_ADDR' is Symfony's sentinel for "trust the single connecting peer,
+    // resolved per request". It is deliberately NOT a CIDR range: the peer here
+    // is always the Caddy container on the internal docker network, and this
+    // container publishes no ports (9000/tcp is unmapped), so nothing outside
+    // that network can reach php-fpm to forge X-Forwarded-*. Cloudflare sends
+    // X-Forwarded-Proto: https, which is what makes Request::isSecure() true.
+    //
+    // Empty outside deployed environments, so local development keeps Symfony's
+    // default of ignoring every X-Forwarded-* header.
+    'trusted_proxies' => $httpsOnly ? ['REMOTE_ADDR'] : [],
+
+    // Session handling.
+    //
+    // Anonymous GET/HEAD requests to these paths never start a PHP session, so
+    // they set no PHPSESSID and (with no session to hold a token) no
+    // XSRF-TOKEN either. That makes the public site shared-cache friendly and
+    // stops every crawler hit from burning a server-side session file.
+    //
+    // This is an ALLOWLIST, and three framework guards bound it, so the
+    // surfaces that need a session keep one without being named here:
+    //   - only GET/HEAD is ever stateless (every form POST gets a session);
+    //   - a request already carrying PHPSESSID resumes its session normally,
+    //     so a signed-in admin keeps their identity while browsing the site;
+    //   - anything not listed is unaffected: /admin and /admin/login (the
+    //     login form must mint a CSRF token), /api/*, /mcp, /mcp/write.
+    //
+    // Prefix matching is exact-segment: '/news' covers /news and /news/x but
+    // never /newsletter. '/' means the ROOT PATH ONLY (framework #2154) -- it
+    // is deliberately not a prefix of everything.
+    //
+    // Safe to include even though they carry forms or act on a token, because
+    // none of this app's own code reads the session (grep: no $_SESSION, no
+    // _account outside the framework's admin auth):
+    //   - /contact, /updates, /standard/records-request and the Sagamok poll
+    //     and petition pages submit JSON via fetch(), which CsrfMiddleware
+    //     exempts by content type, and no script reads the XSRF cookie;
+    //   - /news/preview/{nid} is authorized by a short-lived HMAC grant, not a
+    //     session, and already sends `private, no-store` + noindex;
+    //   - /updates/remove and /petition/remove/{token} are GET one-click
+    //     actions authorized by the token in the URL.
+    // The Sagamok public-website monitor: what it watches, stated explicitly.
+    //
+    // PUBLIC WEBSITE ONLY. There is no members-portal setting here and none can
+    // be added: the collector reaches the network solely through
+    // PageFetcherInterface, which has no credential, cookie or archive surface.
+    //
+    // The crawl starts at these seed paths and follows same-origin public links
+    // from them, so newly published pages are discovered rather than only
+    // re-checked. `enabled` gates the collector independently of the schedule:
+    // both must be on before anything is fetched.
+    'sagamok_monitor' => [
+        'enabled' => false,
+        'source_key' => 'sagamok_public_site',
+        'label' => 'Sagamok public website',
+        'origin_url' => 'https://www.sagamokanishnawbek.com',
+        'seed_paths' => [
+            '/',
+            '/news',
+            '/notices',
+            '/chief-and-council',
+            '/community-updates',
+        ],
+        'max_urls_per_run' => 300,
+        'max_crawl_depth' => 2,
+    ],
+
+    'session' => [
+        // Cookie policy (issue #13). PHPSESSID gets Secure explicitly rather
+        // than via `secure => 'auto'` detection, so it stays Secure in a
+        // deployed environment even if a proxy header is ever missing or
+        // changed. 'auto' locally keeps http://127.0.0.1 development working.
+        //
+        // The companion XSRF-TOKEN cookie has no equivalent switch: CsrfMiddleware
+        // builds it with `->withSecure($request->isSecure())`, so the only lever
+        // for it is the `trusted_proxies` setting above. Both cookies are asserted
+        // in tests/Integration/Http/SecureCookiePolicyTest.php.
+        'cookie' => [
+            'secure' => $httpsOnly ? true : 'auto',
+        ],
+
+        'stateless_paths' => [
+            '/',                   // homepage (root path only)
+            '/about',
+            '/circle',
+            '/communities',        // every community hub, incl. /communities/sagamok/*
+            '/community-life',
+            '/contact',
+            '/get-involved',
+            '/land',
+            '/live',
+            '/llms.txt',
+            '/media',              // /media/uploads/* served images
+            '/myth-versus-record',
+            '/news',               // index, articles, and signed previews
+            '/petition',           // token-authorized removal link
+            '/public',
+            '/resources',
+            '/review',
+            '/safety',
+            '/sitemap.xml',
+            '/standard',
+            '/treaty',
+            '/treaty-wide',
+            '/updates',
+        ],
+    ],
+
+    // MCP publishing surface (#2136): the article.* / asset.* tool set is
+    // reachable only through /mcp/write under this capability allowlist,
+    // authenticated by the RHTCIRCLE_MCP_PUBLISHER_TOKEN bearer binding
+    // (PublishingServiceProvider). Rate limit protects agent misuse.
+    'mcp' => [
+        'write_tier' => [
+            'capabilities' => ['publish rht articles'],
+        ],
+        'rate_limit' => [
+            'max_requests' => 120,
+            'window_seconds' => 60,
         ],
     ],
 ];

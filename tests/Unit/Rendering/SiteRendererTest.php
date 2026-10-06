@@ -80,6 +80,17 @@ final class SiteRendererTest extends TestCase
         self::assertStringContainsString('>Help &amp; resources</a>', $html);
     }
 
+    public function testPublicChatLauncherRequiresAnExplicitReleaseFlag(): void
+    {
+        $html = $this->renderer->render('pages/about.html.twig');
+        self::assertStringNotContainsString('/js/rht-anokii-chat.js', $html);
+
+        $released = $this->renderer->render('pages/about.html.twig', [
+            'chat_enabled' => true,
+        ]);
+        self::assertStringContainsString('/js/rht-anokii-chat.js', $released);
+    }
+
     public function testGetInvolvedUsesTheWidePublicationDoorwayLayout(): void
     {
         $_SERVER['REQUEST_URI'] = '/get-involved';
@@ -111,7 +122,17 @@ final class SiteRendererTest extends TestCase
         self::assertStringContainsString('id="member-proposals"', $html);
         self::assertStringContainsString('id="follow-the-record"', $html);
         self::assertStringContainsString('id="member-tools"', $html);
-        self::assertSame(25, substr_count($html, '<a class="tile-card'));
+        // Data-driven: the template renders exactly one tile per card in the
+        // groups model (which itself auto-places every published article).
+        $expectedTiles = array_sum(array_map(
+            static fn (array $group): int => \count($group['cards']),
+            \App\Content\SagamokAccountabilityHub::groups(
+                ['total' => 40, 'online' => 11, 'paper' => 29],
+                $this->articles(),
+            ),
+        ));
+        self::assertSame($expectedTiles, substr_count($html, '<a class="tile-card'));
+        self::assertStringContainsString('/communities/sagamok/member-election-law', $html);
         self::assertStringContainsString('/news/sagamok-trespass-bylaw-session-was-backwards', $html);
         self::assertStringContainsString('/news/sagamok-south-market-land-deal', $html);
         self::assertStringContainsString('Back to the Sagamok community page', $html);
@@ -138,6 +159,20 @@ final class SiteRendererTest extends TestCase
             '~<main id="main">\s*<div class="mfp-shell">~',
             $html,
         );
+    }
+
+    public function testMemberElectionLawIsClearlyUnofficialAndInvitesFeedback(): void
+    {
+        $_SERVER['REQUEST_URI'] = '/communities/sagamok/member-election-law';
+        $html = $this->renderer->render('pages/communities/sagamok/member-election-law.html.twig');
+
+        self::assertStringContainsString('Not official or enacted', $html);
+        self::assertStringContainsString("Council's section 42 resolution", $html);
+        self::assertStringContainsString('id="part11"', $html);
+        self::assertStringContainsString('id="changelog"', $html);
+        self::assertStringNotContainsString('<iframe', $html);
+        self::assertStringContainsString('Send feedback', $html);
+        self::assertStringContainsString('href="/contact"', $html);
     }
 
     public function testNoPageCanSelectTheNarrowReadingWrapperAsItsMainLayout(): void

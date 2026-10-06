@@ -10,7 +10,8 @@
         "symfony/dotenv": "^8.0",
         "waaseyaa/ai-agent": "0.1.0-alpha.305",
         "waaseyaa/anokii": "^0.1.0-alpha.13",
-        "waaseyaa/framework": "0.1.0-alpha.305"
+        "waaseyaa/framework": "0.1.0-alpha.305",
+        "waaseyaa/mcp": "0.1.0-alpha.305"
     },
     "autoload": {
         "psr-4": {
@@ -69,7 +70,9 @@
                 "App\\Provider\\FieldAccessClassificationProvider",
                 "App\\Provider\\RenderingServiceProvider",
                 "App\\Provider\\AppServiceProvider",
+                "App\\Provider\\PublishingServiceProvider",
                 "App\\Provider\\CmsContentServiceProvider",
+                "App\\Provider\\SagamokMonitorServiceProvider",
                 "App\\Provider\\AnokiiContentServiceProvider",
                 "Anokii\\Provider\\CoIntelligenceServiceProvider"
             ]

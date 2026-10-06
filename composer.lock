@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d8f3667eedfca902d0467551b319f863",
+    "content-hash": "429c4c108682303663175b66139eaf43",
     "packages": [
         {
             "name": "deployer/deployer",
@@ -6184,6 +6184,66 @@
             "support": {
                 "issues": "https://github.com/waaseyaa/mail/issues",
                 "source": "https://github.com/waaseyaa/mail/tree/v0.1.0-alpha.305"
+            },
+            "time": "2026-10-04T14:48:22+00:00"
+        },
+        {
+            "name": "waaseyaa/mcp",
+            "version": "v0.1.0-alpha.305",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/waaseyaa/mcp.git",
+                "reference": "a3b63e253c376813104dd1dd6c4b4aa16c7be7e6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/waaseyaa/mcp/zipball/a3b63e253c376813104dd1dd6c4b4aa16c7be7e6",
+                "reference": "a3b63e253c376813104dd1dd6c4b4aa16c7be7e6",
+                "shasum": ""
+            },
+            "require": {
+                "composer-runtime-api": "^2.2",
+                "php": ">=8.5",
+                "waaseyaa/access": "^0.1.0-alpha.305",
+                "waaseyaa/ai-tools": "^0.1.0-alpha.305",
+                "waaseyaa/api": "^0.1.0-alpha.305",
+                "waaseyaa/auth": "^0.1.0-alpha.305",
+                "waaseyaa/database-legacy": "^0.1.0-alpha.305",
+                "waaseyaa/entity": "^0.1.0-alpha.305",
+                "waaseyaa/foundation": "^0.1.0-alpha.305",
+                "waaseyaa/routing": "^0.1.0-alpha.305",
+                "waaseyaa/user": "^0.1.0-alpha.305"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^13.0",
+                "waaseyaa/audit": "^0.1.0-alpha.305",
+                "waaseyaa/testing": "^0.1.0-alpha.305"
+            },
+            "type": "library",
+            "extra": {
+                "waaseyaa": {
+                    "providers": [
+                        "Waaseyaa\\Mcp\\McpServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-main": "0.1.x-dev",
+                    "dev-develop/v1.1": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Waaseyaa\\Mcp\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "Remote MCP server endpoint for Waaseyaa",
+            "support": {
+                "issues": "https://github.com/waaseyaa/mcp/issues",
+                "source": "https://github.com/waaseyaa/mcp/tree/v0.1.0-alpha.305"
             },
             "time": "2026-10-04T14:48:22+00:00"
         },

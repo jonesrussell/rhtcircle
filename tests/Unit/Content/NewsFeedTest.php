@@ -98,10 +98,9 @@ final class NewsFeedTest extends TestCase
         );
 
         self::assertSame(['open-questions', 'follow-the-record', 'member-proposals', 'member-tools'], array_column($groups, 'id'));
-        self::assertSame(25, array_sum(array_map(
-            static fn (array $group): int => count($group['cards']),
-            $groups,
-        )));
+        $hrefs = array_merge(...array_map(static fn (array $group): array => array_column($group['cards'], 'href'), $groups));
+        self::assertGreaterThanOrEqual(25, count($hrefs));
+        self::assertSame(count($hrefs), count(array_unique($hrefs)));
         self::assertContains(
             '/communities/sagamok/members-first-plan',
             array_column($groups[2]['cards'], 'href'),
@@ -127,6 +126,7 @@ final class NewsFeedTest extends TestCase
         self::assertContains('sagamok-trespass-bylaw-session-was-backwards', array_column($seeds, 'slug'));
         self::assertNotContains('waasmoowin-deal-public-record', ArticleSeedData::unpublishedSlugs());
         self::assertContains('waasmoowin-deal-public-record', ArticleSeedData::publicationRefreshSlugs());
+        self::assertContains('sagamok-membership-did-not-begin-with-the-list', ArticleSeedData::publicationRefreshSlugs());
         self::assertContains('aging-well-starts-before-long-term-care', ArticleSeedData::metadataRefreshSlugs());
     }
 }

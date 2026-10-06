@@ -252,9 +252,9 @@ final class CommunityHub
             [
                 'feature' => true,
                 'tag' => 'A complete member counterdraft',
-                'title' => 'A fair election law for Sagamok',
-                'desc' => 'A searchable working law with independent election administration, accessible voting, member-controlled amendments and a real recall process.',
-                'go' => 'Read and search the counterdraft',
+                'title' => 'Proposed election law for Sagamok',
+                'desc' => 'Read and search a complete working law with independent election administration, accessible voting, member-controlled amendments and a recall process. Member feedback is open.',
+                'go' => 'Read the law and send feedback',
                 'href' => '/communities/sagamok/member-election-law',
             ],
             [

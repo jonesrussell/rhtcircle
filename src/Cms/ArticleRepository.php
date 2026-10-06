@@ -122,7 +122,7 @@ final class ArticleRepository
     /**
      * @return array<string, mixed>
      */
-    private function view(EntityInterface $node): array
+    public function view(EntityInterface $node): array
     {
         $slug = (string) $node->get('slug');
         $communitySlug = (string) $node->get('community_slug');
