@@ -11,12 +11,6 @@ name: OG cards
 # Chromium never runs on the Pi.
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'templates/**'
-      - 'scripts/generate-og.js'
-      - 'scripts/og-template*.html'
   workflow_dispatch:
 
 permissions:

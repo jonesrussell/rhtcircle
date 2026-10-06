@@ -4,9 +4,9 @@
 
 After the Massey-only release, the user authorized deployment of all local changes. The local tree was found to predate current production publishing, secure-cookie, monitor, chat-disable and election-law changes. Those changes have now been merged into the local candidate, preserving the current native election-law page and disabled public chat. This supersedes the earlier 35-test qualification scope below.
 
-Focused integration evidence: 23 tests, 362 assertions passed, with the existing Windows SQLite cleanup warning. This is not full-release qualification. Alpha.305 still fails field-access preflight on `pipeline|*|label` and strict graph export on the AI-agent legacy contributor. Integrating current production publishing also exposed the changed `MediaAssetStore` constructor, which prevents article/asset MCP tool wiring at alpha.305. Static analysis identified that mismatch plus inherited monitor-schedule dead code. Do not deploy this candidate as qualified or silently weaken the internal pipeline classification. The full production promotion has not been dispatched.
+The alpha.305 API integration is repaired: publishing services initialize lazily after authorization policies are discovered, and public media requires a published catalogue row, including after retraction. Static analysis passes. The stale app classification for the framework-owned pipeline label was removed; field-access preflight is ready and anonymous operational pipeline access is denied by integration coverage. Short fixture authentication secrets were replaced with random test-only secrets, and fresh HTTP fixtures explicitly initialize app schemas. Redirect fixtures now inherit their process environment and use the platform null device.
 
-Pending decision: release all application changes on the currently deployed framework cohort, or hold the release for framework upgrade repairs. No production database was overwritten with the local snapshot.
+The user chose to repair and release the alpha.305 candidate. GitHub main is canonical and direct checks/promotion do not depend on Actions. Complete Linux runtime and isolated production-database upgrade qualification are required before the full promotion. The local development database must never overwrite production.
 
 ## Outcome and scope
 
@@ -37,20 +37,19 @@ This is an application maintainability and integration audit of the working tree
 
 ### FW-01: strict Bimaaji graph export cannot complete
 
-- Owner: Waaseyaa Foundation route-composition and AI-agent maintainers; RHT Circle owns subsequent app route migration.
+- Owner: Waaseyaa Foundation route-composition and Debug maintainers; RHT Circle owns subsequent app route migration.
 - Reproduction: `php vendor/bin/waaseyaa graph:dump --strict --section=public_surface` on this alpha.305 lock.
-- Observed: exit 1, `RouteCompositionException`, `Legacy route contributor: Waaseyaa\AI\Agent\Routing\AgentRouteServiceProvider`.
+- Observed: after removing the unused AI-agent development dependency, exit 1, `RouteCompositionException`, `Legacy route contributor: Waaseyaa\Debug\DebugServiceProvider`.
 - Impact: Bimaaji skills install correctly, but the strict graph authority is unavailable. Do not claim a successful graph export or add a permissive private graph engine.
 - Acceptance: published compatible package cohort exports all six sections strictly; public/private classifications match runtime routes; app closure routing is migrated to the supported declaration contract without lost methods, redirects or access controls.
 
-### FW-02: field-read preflight conflicts with a stricter host classification
+### APP-15: stale framework-owned field classification (resolved)
 
-- Owner: Waaseyaa field-read defaults/preflight and AI-pipeline maintainers.
+- Owner: RHT Circle application classification artifact.
 - Reproduction: `php vendor/bin/waaseyaa field-access:preflight --write-artifact`.
-- Observed: zero unclassified entries but `ready: false`, conflict `pipeline|*|label`. The host artifact deliberately marks operational pipeline labels internal. The current framework default for that key is public.
+- Observed initially: `ready: false`, conflict `pipeline|*|label`. The app artifact was stale and did not control runtime reads. The framework-owned field already used its framework default at runtime.
 - Evidence: `vendor/waaseyaa/field/src/Preflight/FieldAccessPreflightScanner.php` compares live default keys against artifact levels; `vendor/waaseyaa/ai-pipeline/src/AIPipelineServiceProvider.php` registers a pipeline without explicit label-field metadata.
-- Impact: local rendering works, but this upgrade is not production-qualified. The stricter host artifact has been retained. The committed local preflight records failure rather than a false pass.
-- Acceptance: operational label policy is resolved in the canonical package contract; both runtime reads and preflight agree; existing internal consumer classifications do not silently become public.
+- Resolution: removed the conflicting declaration for this framework-owned field, regenerated a ready artifact, and verified anonymous users cannot view operational Pipeline entities. App-owned classifications are unchanged. The earlier attribution to a framework privacy regression was incorrect.
 
 ### FW-03: legacy database migration sequencing is not self-contained
 
@@ -105,9 +104,9 @@ Obsolete generated artifacts identified for deletion: `.playwright-cli/`, `outpu
 
 Temporary browser audit artifacts live in ignored `var/`; they are development artifacts, not canonical content. Existing historical design/audit documents remain labelled evidence rather than active operating instructions.
 
-## Verification
+## Initial partial-scope verification (historical)
 
-Final local evidence is recorded here. A successful app check is not a claim that FW-01 or FW-02 is resolved.
+These checks preceded integration of current GitHub main. They do not qualify the final release. See the full-release checkpoint above and its subsequent qualification record.
 
 - Bimaaji install: first run wrote 12 client targets each; second run reported 12 unchanged for each client and preserved app guidance.
 - PHPStan level 5: zero findings, no baseline/suppression, all 66 source files.
@@ -115,7 +114,7 @@ Final local evidence is recorded here. A successful app check is not a claim tha
 - Corpus dry run: 822 chunks from 81 pages, no writes.
 - Browser: homepage, news, Sagamok community and record desk at 360, 768, 1024 and 1440 CSS pixels, HTTP 200, one H1, no horizontal overflow. Nation filter selection, coverage-gap state, 23 selector options (all, Treaty-wide, 21 Nations), and four disclosure collections pass.
 - Strict graph: failed, FW-01.
-- Field-read preflight: failed, FW-02.
+- Field-read preflight: initially failed on the stale artifact, subsequently resolved as APP-15.
 - PHPUnit: 35 tests, 392 assertions, all assertions pass; one native cleanup warning remains HOST-01.
 - All 21 Nation routes: HTTP 200 with working filtered-news links.
 - Schema dry run: all 33 registered entity tables are up to date.

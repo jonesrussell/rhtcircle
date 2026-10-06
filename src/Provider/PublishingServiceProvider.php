@@ -64,14 +64,15 @@ final class PublishingServiceProvider extends ServiceProvider
     {
         try {
             $registry = $this->resolve(ToolRegistryInterface::class);
-            $publisher = $this->buildPublisher();
-            $etm = $this->entityTypeManager();
+            // Policies are discovered after provider boot. Native lazy proxies
+            // construct authorization-aware services only when a tool is used.
+            $publisher = (new \ReflectionClass(ContentPublisher::class))->newLazyProxy(
+                fn(): ContentPublisher => $this->buildPublisher(),
+            );
             \assert($registry instanceof ToolRegistryInterface);
 
-            $assets = new MediaAssetStore(
-                $etm->getRepository('media'),
-                $this->uploadsDir(),
-                '/media/uploads',
+            $assets = (new \ReflectionClass(MediaAssetStore::class))->newLazyProxy(
+                fn(): MediaAssetStore => $this->assetStore(),
             );
 
             new ContentToolSet(
@@ -105,8 +106,8 @@ final class PublishingServiceProvider extends ServiceProvider
 
         $router->addRoute('media-uploads', RouteBuilder::create('/media/uploads/{name}')
             ->controller(function (Request $request, string $name): \Symfony\Component\HttpFoundation\Response {
-                // Content-addressed names only — the pattern IS the authorization
-                // (published asset URLs are public); no traversal is expressible.
+                // A valid filename identifies bytes; the media catalogue and
+                // access handler decide whether an anonymous visitor may read them.
                 if (preg_match('/^[a-f0-9]{64}\\.(png|jpg|webp)$/', $name) !== 1) {
                     return new \Symfony\Component\HttpFoundation\Response('Not found', 404);
                 }
@@ -114,11 +115,18 @@ final class PublishingServiceProvider extends ServiceProvider
                 if (!is_file($file)) {
                     return new \Symfony\Component\HttpFoundation\Response('Not found', 404);
                 }
+                $asset = $this->assetStore()->get(
+                    substr($name, 0, 64),
+                    new \Waaseyaa\User\AnonymousUser([\Waaseyaa\Media\MediaPermissions::ACCESS]),
+                );
+                if ($asset === null) {
+                    return new \Symfony\Component\HttpFoundation\Response('Not found', 404);
+                }
                 $mime = ['png' => 'image/png', 'jpg' => 'image/jpeg', 'webp' => 'image/webp'][pathinfo($name, PATHINFO_EXTENSION)];
 
                 return new \Symfony\Component\HttpFoundation\BinaryFileResponse($file, 200, [
                     'Content-Type' => $mime,
-                    'Cache-Control' => 'public, max-age=31536000, immutable',
+                    'Cache-Control' => 'no-store',
                     'X-Content-Type-Options' => 'nosniff',
                 ]);
             })
@@ -162,6 +170,23 @@ final class PublishingServiceProvider extends ServiceProvider
             new IdempotencyStore($database),
             $audit instanceof AuditWriterInterface ? $audit : null,
             $accessHandler instanceof EntityAccessHandler ? $accessHandler : null,
+        );
+    }
+
+    private function assetStore(): MediaAssetStore
+    {
+        $repository = $this->entityTypeManager()->getRepository('media');
+        $access = $this->resolve(EntityAccessHandler::class);
+        if (!$repository instanceof EntityRepository || !$access instanceof EntityAccessHandler) {
+            throw new \RuntimeException('Media publishing requires an authorized entity repository.');
+        }
+
+        return new MediaAssetStore(
+            $repository,
+            $this->uploadsDir(),
+            '/media/uploads',
+            $access,
+            (string) ($this->config['files_root'] ?? $this->config['files_dir'] ?? $this->projectRoot . '/storage'),
         );
     }
 

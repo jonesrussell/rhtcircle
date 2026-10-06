@@ -49,7 +49,7 @@ final class MonitorCliEntryPointTest extends TestCase
             'APP_DEBUG' => 'false',
             'WAASEYAA_DB' => $this->databasePath,
             'WAASEYAA_APP_SECRET' => 'base64:' . base64_encode(random_bytes(32)),
-            'WAASEYAA_JWT_SECRET' => 'cli-entrypoint-secret',
+            'WAASEYAA_JWT_SECRET' => bin2hex(random_bytes(32)),
             // Never set the dev fallback account: it masks access denials, so a
             // run with it set cannot show what production would do.
             'WAASEYAA_DEV_FALLBACK_ACCOUNT' => 'false',

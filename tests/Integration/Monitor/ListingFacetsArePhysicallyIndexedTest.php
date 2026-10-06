@@ -48,7 +48,7 @@ final class ListingFacetsArePhysicallyIndexedTest extends TestCase
         putenv('APP_DEBUG=false');
         putenv('WAASEYAA_DB=' . $this->databasePath);
         putenv('WAASEYAA_APP_SECRET=base64:' . base64_encode(random_bytes(32)));
-        putenv('WAASEYAA_JWT_SECRET=monitor-index-test-secret');
+        putenv('WAASEYAA_JWT_SECRET=' . bin2hex(random_bytes(32)));
 
         $this->runCli('db:init');
     }

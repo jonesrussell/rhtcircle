@@ -33,6 +33,9 @@ return [
 
     // File storage root for LocalFileRepository (media package).
     'files_dir' => getenv('WAASEYAA_FILES_DIR') ?: __DIR__ . '/../storage/files',
+    // Editorial assets retain their historical storage/media-uploads location.
+    // Both the asset writer and authorized framework downloader use this root.
+    'files_root' => getenv('WAASEYAA_FILES_ROOT') ?: __DIR__ . '/../storage',
 
     // Bearer auth settings for machine clients.
     // JWT uses HS256 with this shared secret.

@@ -193,10 +193,11 @@ final class SecureCookiePolicyTest extends TestCase
         putenv('APP_DEBUG=false');
         putenv('WAASEYAA_DB=' . $database);
         putenv('WAASEYAA_APP_SECRET=base64:' . base64_encode(random_bytes(32)));
-        putenv('WAASEYAA_JWT_SECRET=secure-cookie-policy-test-secret');
+        putenv('WAASEYAA_JWT_SECRET=' . bin2hex(random_bytes(32)));
 
         try {
             $this->runCli('db:init');
+        $this->runCli('app:initialize');
 
             foreach (['/', '/news', '/communities/sagamok', '/sitemap.xml'] as $path) {
                 $response = $this->kernelRequest($path);

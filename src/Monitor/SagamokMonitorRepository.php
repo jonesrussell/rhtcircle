@@ -75,7 +75,7 @@ final class SagamokMonitorRepository
     private const STALLED_AFTER_SECONDS = 3 * 3600;
 
     public function __construct(
-        EntityTypeManager $entityTypes,
+        private readonly EntityTypeManager $entityTypes,
         private readonly ?ListingDefinitionRegistry $listings = null,
         private readonly ?ListingResolver $resolver = null,
     ) {}
@@ -143,6 +143,9 @@ final class SagamokMonitorRepository
      */
     public function view(EntityInterface $entity, int $now = 0): array
     {
+        if (!isset($this->entityTypes->getDefinitions()[$entity->getEntityTypeId()])) {
+            return [];
+        }
         $typeId = $entity->getEntityTypeId();
         $allowed = self::PROJECTION[$typeId] ?? null;
         if ($allowed === null) {

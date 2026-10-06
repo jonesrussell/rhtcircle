@@ -5,9 +5,7 @@ name: CI
 # main and on every pull request.
 
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read

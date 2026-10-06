@@ -54,20 +54,8 @@ final class SagamokMonitorSchedule implements ScheduleEntriesInterface
      */
     public function register(ScheduleInterface $schedule): array
     {
-        if (!self::ENABLED) {
-            return [];
-        }
-
-        $task = new ScheduledTask(
-            name: self::TASK_ID,
-            expression: self::EXPRESSION,
-            command: self::COMMAND,
-            preventOverlap: true,
-            description: 'Observe the Sagamok public website for changes. Public pages only.',
-        );
-
-        $schedule->add($task);
-
-        return [self::TASK_ID => $task];
+        // Activation requires a reviewed implementation change. Keep the
+        // disabled state structural, rather than retaining unreachable code.
+        return [];
     }
 }

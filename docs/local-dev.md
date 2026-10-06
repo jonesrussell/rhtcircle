@@ -30,7 +30,7 @@ For a fresh database, or a local production snapshot undergoing a framework upgr
 6. `php vendor/bin/waaseyaa optimize:manifest`.
 7. Run `field-access:preflight --write-artifact` and inspect readiness. An HTTP 200 in local mode is not production readiness.
 
-The alpha.305 refresh required schema synchronization before `db:init`; otherwise the AI-agent migration attempted indexes on missing columns. The current local field-read preflight has a framework-default conflict on `pipeline|*|label`, documented in the audit. Do not weaken its classification to obtain a green result.
+The alpha.305 refresh requires schema synchronization before `db:init` for legacy entity tables. The unused development-only AI-agent dependency was removed. Field-read preflight is ready after removing the stale app declaration for the framework-owned pipeline label; an integration assertion verifies anonymous pipeline access remains denied.
 
 `app:seed-member-tools` is a separate, explicit legacy setup command. It writes historic Sagamok polls and campaign definitions and aggregate counts. Do not run it during ordinary development or a production refresh. Existing signatures stay attached to their original consent instrument.
 
@@ -43,6 +43,6 @@ composer agents:install
 php vendor/bin/waaseyaa graph:dump --strict --section=public_surface
 ```
 
-Bimaaji is included by the framework. Installation is idempotent and tracks owned files in `.waaseyaa/bimaaji-install.json`. Add app guidance outside its markers; never edit generated framework guidance to mask a dependency bug. Strict graph export currently fails on a legacy framework AI-agent route contributor. No remote MCP credentials or new public permissions were added.
+Bimaaji is included by the framework. Installation is idempotent and tracks owned files in `.waaseyaa/bimaaji-install.json`. Add app guidance outside its markers; never edit generated framework guidance to mask a dependency bug. Strict graph export currently fails on the legacy framework Debug route contributor and remains an explicitly recorded diagnostic gap. No remote MCP credentials or new public permissions were added. GitHub main and direct release checks are governed by `docs/release-governance.md`.
 
 The legacy `bin/maintenance/waaseyaa-audit-site` shell helper requires Bash and a byte-identical skeleton front controller. It does not qualify this app's runtime adapter on native Windows. `composer audit-site` now runs portable app checks and a dry-run corpus render. Use `composer check` for the core app checks and the focused framework commands above; see the audit for this tooling gap.

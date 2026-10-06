@@ -150,6 +150,20 @@ final class AnonymousArticleListingTest extends TestCase
         self::assertStringNotContainsString('<iframe', (string) $law->getContent());
     }
 
+    public function testOperationalPipelineRecordsRemainDeniedToAnonymousReaders(): void
+    {
+        $kernel = new HttpKernel($this->projectRoot);
+        $this->kernels[] = $kernel;
+        $kernel->bootForCli();
+        $pipeline = new \Waaseyaa\AI\Pipeline\Pipeline([
+            'id' => 'private-pipeline-test', 'label' => 'PRIVATE_PIPELINE_SENTINEL',
+        ]);
+        self::assertFalse($kernel->getAccessHandler()->check(
+            $pipeline, 'view', new \Waaseyaa\User\AnonymousUser(),
+        )->isAllowed());
+        self::assertNotSame('content', $kernel->getEntityTypeManager()->getDefinition('pipeline')->getGroup());
+    }
+
     private function request(string $uri): \Symfony\Component\HttpFoundation\Response
     {
         $_GET = [];

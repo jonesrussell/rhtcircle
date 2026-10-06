@@ -24,7 +24,7 @@ final class MediaAssetRouteTest extends TestCase
         $this->databasePath = sys_get_temp_dir() . '/rhtcircle-media-' . $suffix . '.sqlite';
         $this->uploadsDir = sys_get_temp_dir() . '/rhtcircle-media-' . $suffix;
 
-        foreach (['APP_ENV', 'APP_DEBUG', 'WAASEYAA_DB', 'WAASEYAA_MEDIA_UPLOADS_DIR'] as $name) {
+        foreach (['APP_ENV', 'APP_DEBUG', 'WAASEYAA_DB', 'WAASEYAA_MEDIA_UPLOADS_DIR', 'WAASEYAA_FILES_ROOT'] as $name) {
             $this->originalEnvironment[$name] = getenv($name);
         }
 
@@ -33,8 +33,10 @@ final class MediaAssetRouteTest extends TestCase
         putenv('APP_DEBUG=false');
         putenv('WAASEYAA_DB=' . $this->databasePath);
         putenv('WAASEYAA_MEDIA_UPLOADS_DIR=' . $this->uploadsDir);
+        putenv('WAASEYAA_FILES_ROOT=' . $this->uploadsDir);
 
         $this->runCli('db:init');
+        $this->runCli('install:init');
     }
 
     protected function tearDown(): void
@@ -64,14 +66,33 @@ final class MediaAssetRouteTest extends TestCase
         $name = hash('sha256', $bytes) . '.png';
         file_put_contents($this->uploadsDir . '/' . $name, $bytes);
 
+        // Bytes alone are not public assets. A published catalogue row grants
+        // anonymous access, and retracting it must withdraw the same URL.
+        self::assertSame(404, $this->request('/media/uploads/' . $name)->getStatusCode());
+        $kernel = new HttpKernel($this->projectRoot);
+        $kernel->bootForCli();
+        $repository = $kernel->getEntityTypeManager()->getRepository('media');
+        $media = $repository->create([
+            'bundle' => 'image', 'name' => 'Test image',
+            'source_uri' => 'public://' . $name, 'status' => true,
+        ]);
+        $repository->save($media, validate: false);
+        $mediaId = $media->id();
+
         $response = $this->request('/media/uploads/' . $name);
         self::assertInstanceOf(BinaryFileResponse::class, $response);
         self::assertSame(200, $response->getStatusCode());
         self::assertSame('image/png', $response->headers->get('Content-Type'));
         $cacheControl = (string) $response->headers->get('Cache-Control');
-        self::assertStringContainsString('public', $cacheControl);
-        self::assertStringContainsString('max-age=31536000', $cacheControl);
-        self::assertStringContainsString('immutable', $cacheControl);
+        self::assertStringContainsString('no-store', $cacheControl);
+        $kernel = new HttpKernel($this->projectRoot);
+        $kernel->bootForCli();
+        $repository = $kernel->getEntityTypeManager()->getRepository('media');
+        $media = $repository->find($mediaId);
+        self::assertNotNull($media);
+        $media->set('status', false);
+        $repository->save($media, validate: false);
+        self::assertSame(404, $this->request('/media/uploads/' . $name)->getStatusCode());
 
         self::assertSame(404, $this->request('/media/uploads/not-a-content-hash.png')->getStatusCode());
     }

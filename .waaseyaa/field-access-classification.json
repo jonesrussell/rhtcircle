@@ -21,7 +21,6 @@
         "organization|*|name": "public",
         "organization|*|slug": "public",
         "organization|*|source_url": "public",
-        "pipeline|*|label": "internal",
         "place|*|lat": "public",
         "place|*|lng": "public",
         "place|*|name": "public",

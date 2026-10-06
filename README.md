@@ -30,7 +30,7 @@ composer check
 php vendor/bin/waaseyaa app:ingest --dry-run
 ```
 
-The committed Composer lock is the dependency authority. Framework alpha.305 is the current local baseline. Strict Bimaaji graph export and field-read activation have documented blockers; this local baseline is not ready for production deployment. No dependency symlinks, donor vendor directories or local Composer override files.
+GitHub main is the source of truth; candidate branches must integrate its current behavior before landing. The committed Composer lock is the dependency authority. Checks and single-target promotion run directly without depending on GitHub Actions. See [release governance](docs/release-governance.md). Strict Bimaaji graph export remains a recorded legacy-route diagnostic, separate from runtime qualification. No dependency symlinks, donor vendor directories or local Composer override files.
 
 ## Repository map
 

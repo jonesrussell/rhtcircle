@@ -14,6 +14,9 @@ Read this section first. The generated Bimaaji index below supplies framework gu
 
 ## Working contract
 
+- GitHub main is the source of truth. Fetch it before work and before landing; local work belongs on a candidate branch. Integrate newer main behavior before release. Normal fast-forward pushes only.
+- Read `docs/release-governance.md` for qualification and promotion. GitHub Actions are optional feedback, not release authority or a required deployment mechanism. Never deploy a dirty local tree or author changes on the Pi.
+
 - Inspect Git status before editing. Preserve existing authored work and active worktrees; remove obsolete generated artifacts only after checking ownership and references.
 - This repository consumes published Waaseyaa packages. No vendor edits, borrowed dependencies, local Composer overrides or duplicated framework engines.
 - Use the framework database, Listing access checks and Twig environment. Controllers orchestrate; shared publication context must serve HTTP and corpus ingestion alike.
