@@ -8,6 +8,8 @@ The alpha.305 API integration is repaired: publishing services initialize lazily
 
 The user chose to repair and release the alpha.305 candidate. GitHub main is canonical and direct checks/promotion do not depend on Actions. Complete Linux runtime and isolated production-database upgrade qualification are required before the full promotion. The local development database must never overwrite production.
 
+Full integrated Windows qualification: `composer check` succeeds, including PHPStan, copy/signature lints and all 351 tests with 2,526 assertions. Three native SQLite cleanup warnings remain; they are not suppressed. Corpus dry-run extraction succeeds without writes. Browser checks at 360 and 1440 pixels pass for homepage, news and Sagamok collections: HTTP 200, one H1, no overflow, preserved Nation filter state, 23 filter options and four functioning disclosures. Supported Linux runtime and production snapshot qualification are tracked separately in infrastructure delivery evidence.
+
 ## Outcome and scope
 
 The application now has a Treaty-wide news front door, Nation/topic discovery and bounded Sagamok collections. Bimaaji guidance is installed for Codex and Claude. Dependency overrides and their merge plugin are retired. Static analysis runs across all 66 application PHP source files at PHPStan level 5, without a baseline or ignored findings.
