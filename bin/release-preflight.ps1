@@ -15,4 +15,9 @@ Write-Output "Candidate: $candidate; GitHub main: $canonical"
 Invoke-Checked composer @('check')
 Invoke-Checked php @('vendor/bin/waaseyaa', 'app:ingest', '--dry-run')
 Invoke-Checked php @('vendor/bin/waaseyaa', 'field-access:preflight')
+if ((git status --porcelain) -or (git rev-parse HEAD) -ne $candidate) {
+    throw 'Candidate changed during qualification. Commit it and qualify the new identity.'
+}
+Invoke-Checked git @('fetch', 'origin', 'main')
+Invoke-Checked git @('merge-base', '--is-ancestor', 'origin/main', 'HEAD')
 Write-Output 'Local checks passed. Linux image and production-snapshot qualification are still required before promotion.'
