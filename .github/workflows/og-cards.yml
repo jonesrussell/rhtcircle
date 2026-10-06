@@ -1,81 +1,29 @@
-name: OG cards
+name: OG cards preview
 
-# Keeps every page's Open Graph social card in the repo automatically.
-#
-# scripts/generate-og.js auto-discovers any base-extending page and renders a
-# 1200x630 card to public/images/og/. The app serves the per-page card if it
-# exists, else falls back to og-default.png. On every page or generator edit,
-# this workflow regenerates cards for changed pages and commits changed images.
-# New pages gain a card and headline/description edits refresh existing cards
-# automatically. Generator or card-template changes rebuild the complete set.
-# Chromium never runs on the Pi.
-
+# Optional manual feedback. Canonical cards are generated locally with
+# node scripts/generate-og.js and landed through the normal candidate branch.
 on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-
-concurrency:
-  group: og-cards-${{ github.ref }}
-  cancel-in-progress: false
+  contents: read
 
 jobs:
   cards:
-    name: Generate missing OG cards
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - name: Install Playwright + Chromium
+      - name: Install preview tools
         run: |
           npm install playwright@^1.60.0 --no-save
           npx playwright install --with-deps chromium
-
       - name: Generate social cards
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          before="${{ github.event.before }}"
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]] \
-            || [[ -z "$before" ]] \
-            || [[ "$before" == "0000000000000000000000000000000000000000" ]] \
-            || git diff --name-only "$before" "$GITHUB_SHA" -- \
-                 scripts/generate-og.js 'scripts/og-template*.html' | grep -q .; then
-            node scripts/generate-og.js
-            exit 0
-          fi
-
-          while IFS= read -r file; do
-            [[ -z "$file" ]] && continue
-            template="${file#templates/}"
-            node scripts/generate-og.js "--only-template=$template"
-          done < <(git diff --name-only --diff-filter=ACMRT "$before" "$GITHUB_SHA" -- 'templates/**/*.html.twig')
-
-          while IFS= read -r file; do
-            [[ -z "$file" ]] && continue
-            template="${file#templates/}"
-            slug="${template%.html.twig}"
-            slug="${slug//\//-}"
-            rm -f "public/images/og/$slug.png"
-          done < <(git diff --name-only --diff-filter=D "$before" "$GITHUB_SHA" -- 'templates/**/*.html.twig')
-
-      - name: Commit new cards
-        run: |
-          if [ -n "$(git status --porcelain public/images)" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add public/images
-            git commit -m "Auto-generate missing OG cards [skip ci]"
-            git push
-            echo "Committed new OG cards."
-          else
-            echo "All pages already have an OG card; nothing to do."
-          fi
+        run: node scripts/generate-og.js
+      - name: Upload preview for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: og-card-preview
+          path: public/images/og/
