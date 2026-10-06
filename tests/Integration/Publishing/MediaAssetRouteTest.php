@@ -24,7 +24,7 @@ final class MediaAssetRouteTest extends TestCase
         $this->databasePath = sys_get_temp_dir() . '/rhtcircle-media-' . $suffix . '.sqlite';
         $this->uploadsDir = sys_get_temp_dir() . '/rhtcircle-media-' . $suffix;
 
-        foreach (['APP_ENV', 'APP_DEBUG', 'WAASEYAA_DB', 'WAASEYAA_MEDIA_UPLOADS_DIR', 'WAASEYAA_FILES_ROOT'] as $name) {
+        foreach (['APP_ENV', 'APP_DEBUG', 'WAASEYAA_DB', 'WAASEYAA_APP_SECRET', 'WAASEYAA_JWT_SECRET', 'WAASEYAA_MEDIA_UPLOADS_DIR', 'WAASEYAA_FILES_ROOT'] as $name) {
             $this->originalEnvironment[$name] = getenv($name);
         }
 
@@ -32,6 +32,8 @@ final class MediaAssetRouteTest extends TestCase
         putenv('APP_ENV=testing');
         putenv('APP_DEBUG=false');
         putenv('WAASEYAA_DB=' . $this->databasePath);
+        putenv('WAASEYAA_APP_SECRET=base64:' . base64_encode(random_bytes(32)));
+        putenv('WAASEYAA_JWT_SECRET=' . bin2hex(random_bytes(32)));
         putenv('WAASEYAA_MEDIA_UPLOADS_DIR=' . $this->uploadsDir);
         putenv('WAASEYAA_FILES_ROOT=' . $this->uploadsDir);
 
