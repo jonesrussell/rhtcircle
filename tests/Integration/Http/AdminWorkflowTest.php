@@ -32,6 +32,8 @@ final class AdminWorkflowTest extends TestCase
         try {
             $this->cli($root, ['install:init']);
             $this->cli($root, ['app:initialize']);
+            // A later deployment must still be able to enter the schema coordinator.
+            $this->cli($root, ['install:init']);
             $this->cli($root, ['app:create-admin', 'admin@example.invalid', '--name=Synthetic admin']);
             putenv('RHTCIRCLE_ADMIN_PASSWORD');
 

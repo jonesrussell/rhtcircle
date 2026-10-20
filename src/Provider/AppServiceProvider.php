@@ -738,6 +738,18 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
     public function consoleCommands(): iterable
     {
         yield new HandlerCommand(
+            name: 'app:repair-campaign-schema-authority',
+            description: 'Recover only the reviewed October 20 campaign-table schema drift, preserving all events.',
+            handler: function (SymfonyCommandIO $io): int {
+                $database = $this->persistentDatabase();
+                \assert($database instanceof \Waaseyaa\Database\DBALDatabase);
+                $result = new \App\Analytics\CampaignSchemaAuthorityRepair($database)->repair();
+                $io->writeln(json_encode($result, JSON_THROW_ON_ERROR));
+
+                return 0;
+            },
+        );
+        yield new HandlerCommand(
             name: 'app:initialize',
             description: 'Initialize app-owned schemas explicitly; does not seed or modify campaign consent records.',
             handler: function (SymfonyCommandIO $io): int {
