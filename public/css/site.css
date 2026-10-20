@@ -1504,3 +1504,31 @@ li { margin: 0 0 9px; }
 .election-guide th, .election-guide td { padding: 14px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
 .election-guide thead { background: var(--paper-2); }
 @media (max-width: 600px) { .election-guide table { min-width: 530px; } }
+
+.election-at-a-glance { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; background: var(--paper-2); padding: 28px; margin-top: 28px; }
+.election-at-a-glance strong { display: block; color: var(--indigo-deep); font: 600 clamp(23px, 3vw, 32px)/1.2 var(--serif); }
+.election-at-a-glance span { display: block; font-size: var(--fs-small); margin-top: 8px; }
+.election-editor-note { font-size: var(--fs-small); color: var(--ink-2); }
+.election-profile-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; align-items: start; }
+.election-profile-grid .election-profile { min-width: 0; border-bottom-color: var(--line); }
+.election-profile-name { color: var(--indigo-deep); }
+.election-profile-status { display: block; margin-top: 8px; color: var(--magenta-deep); font-size: 13px; font-weight: 600; }
+.election-profile-teaser { display: block; margin-top: 4px; color: var(--ink-2); font: 400 15px/1.55 var(--sans); }
+.election-profile-content { font-size: 15px; padding-top: 10px; overflow-wrap: anywhere; }
+.election-profile-content ul { padding-left: 22px; }
+.election-profile-content li + li { margin-top: 10px; }
+.election-profile-content dl { margin-left: 0; }
+.election-source-date { font-size: 13px; color: var(--ink-3); }
+.election-recordings { list-style: none; padding: 0; margin: 28px 0; }
+.election-recordings > li { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 28px; padding: 24px 0; border-bottom: 1px solid var(--line); }
+.election-recording-date strong { display: block; font: 600 25px/1.2 var(--serif); color: var(--indigo-deep); }
+.election-recording-date span { display: block; font-size: 13px; margin-top: 8px; color: var(--ink-3); }
+.election-recordings h3 { margin-top: 0; font-size: 22px; }
+.election-recordings p { margin-block: 8px; }
+.election-recordings .muted { font-size: var(--fs-small); }
+@media (max-width: 600px) {
+  .election-at-a-glance { grid-template-columns: 1fr; padding: 22px; gap: 20px; }
+  .election-profile-grid { grid-template-columns: 1fr; }
+  .election-recordings > li { grid-template-columns: 72px minmax(0, 1fr); gap: 18px; }
+  .election-recording-date strong { font-size: 21px; }
+}
