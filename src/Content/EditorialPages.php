@@ -38,6 +38,7 @@ final class EditorialPages
             'records-request' => ['/standard/records-request', 'pages/standard/records-request.html.twig'],
 
             'land' => ['/land', 'pages/land/index.html.twig'],
+            'sables-spanish-rivers-election-2026' => ['/elections/sables-spanish-rivers-2026', 'pages/election-2026.html.twig'],
             'land-massey' => ['/land/massey-solar-project', 'pages/land/massey-solar-project.html.twig'],
             'land-massey-what-youve-heard' => ['/land/massey-solar-project/what-youve-heard', 'pages/land/massey-solar-project/what-youve-heard.html.twig'],
             'land-massey-voices' => ['/land/massey-solar-project/voices', 'pages/land/massey-solar-project/voices.html.twig'],

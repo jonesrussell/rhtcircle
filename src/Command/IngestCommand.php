@@ -50,6 +50,7 @@ final class IngestCommand
         '/standard' => 'pages/standard.html.twig',
         '/standard/records-request' => 'pages/standard/records-request.html.twig',
         '/land' => 'pages/land/index.html.twig',
+        '/elections/sables-spanish-rivers-2026' => 'pages/election-2026.html.twig',
         '/land/massey-solar-project' => 'pages/land/massey-solar-project.html.twig',
         '/land/massey-solar-project/what-youve-heard' => 'pages/land/massey-solar-project/what-youve-heard.html.twig',
         '/land/massey-solar-project/voices' => 'pages/land/massey-solar-project/voices.html.twig',

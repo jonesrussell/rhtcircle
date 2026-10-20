@@ -1486,3 +1486,21 @@ li { margin: 0 0 9px; }
 .monitor-pager__link { font-weight: 600; }
 .monitor-pager__link--off { opacity: 0.4; }
 .monitor-pager__status { font-size: 0.9rem; opacity: 0.85; }
+
+/* Sables-Spanish Rivers election guide: shared editorial typography and disclosures. */
+.election-guide { max-width: 960px; margin-inline: auto; }
+.election-guide section { margin-block: var(--gap-9, 64px); }
+.election-guide h2 { border-top: 1px solid var(--rule); padding-top: var(--gap-6, 32px); }
+.election-jump { display: flex; flex-wrap: wrap; gap: 12px 24px; border-block: 1px solid var(--rule); padding-block: 20px; margin-block: 28px; }
+.election-profile { border-bottom: 1px solid var(--rule); padding-block: 16px; }
+.election-profile summary { cursor: pointer; font-size: 20px; font-weight: 600; }
+.election-profile summary:focus-visible { outline: 3px solid var(--magenta); outline-offset: 5px; }
+.election-profile dl { margin: 16px 0 8px 24px; }
+.election-profile dt { font-weight: 700; margin-top: 16px; }
+.election-profile dd { margin: 0; }
+.election-table-scroll { max-width: 100%; overflow-x: auto; }
+.election-guide table { width: 100%; border-collapse: collapse; text-align: left; font-size: 15px; }
+.election-guide caption { text-align: left; font-weight: 600; margin-bottom: 12px; }
+.election-guide th, .election-guide td { padding: 14px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.election-guide thead { background: var(--paper-2); }
+@media (max-width: 600px) { .election-guide table { min-width: 530px; } }
