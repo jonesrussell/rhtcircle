@@ -41,7 +41,7 @@
   <link rel="stylesheet" href="/css/site.css?v={{ asset_version|default('1') }}">
   {# First-party, self-hosted analytics. Same-origin beacon to /api/collect, no
      third party, no cookies, respects Do Not Track. #}
-  <script defer src="/js/rht-analytics.js?v={{ asset_version|default('1') }}"></script>
+  <script defer src="/js/rht-analytics.js?v={{ asset_version|default('1') }}" data-campaigns="{{ analytics_campaigns|default({})|json_encode|e('html_attr') }}"></script>
   {# Keep the public assistant behind an explicit release gate. The matching
      public-graph-chat module must also be enabled in config/anokii.yaml before
      this can be released. #}

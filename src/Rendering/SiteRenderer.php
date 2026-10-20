@@ -28,6 +28,7 @@ final class SiteRenderer
     {
         $context['og_image_url'] ??= $this->ogImageUrl($template);
         $context['asset_version'] ??= $this->assets->version();
+        $context['analytics_campaigns'] ??= \App\Analytics\CampaignRegistry::all();
 
         return $this->twig->render($template, $context);
     }

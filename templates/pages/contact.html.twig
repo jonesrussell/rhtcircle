@@ -83,7 +83,7 @@
 
     <button class="c-send" type="submit" data-contact-send>Send message</button>
 
-    <p class="c-privacy">What you send is stored on the Circle's own servers in Canada so a member can reply. We do not use trackers. You can ask us to remove your message any time.</p>
+    <p class="c-privacy">What you send is stored on the Circle's own servers in Canada so a member can reply. You can ask us to remove your message any time. Our own usage counts help us understand which shared links bring messages. Your name, email and message are not included in analytics. We respect Do Not Track and Global Privacy Control.</p>
   </form>
 </div>
 
@@ -101,6 +101,7 @@
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      if (sendBtn.disabled) return;
       show('', '');
 
       var payload = {
@@ -110,6 +111,9 @@
         message: form.message.value.trim(),
         website: form.website.value
       };
+      var tracking = window.rhtAnalytics ? window.rhtAnalytics.contactContext() : {};
+      payload.analytics_enabled = tracking.analytics_enabled === true;
+      payload.campaign = tracking.campaign || '';
       if (!payload.name) { show('error', 'Please enter your name.'); form.name.focus(); return; }
       if (!payload.email) { show('error', 'Please enter your email so we can reply.'); form.email.focus(); return; }
       if (!payload.message) { show('error', 'Please enter a message.'); form.message.focus(); return; }

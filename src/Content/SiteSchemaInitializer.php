@@ -20,6 +20,7 @@ final class SiteSchemaInitializer
     public function initialize(): void
     {
         new AnalyticsSchema($this->database)->ensure();
+        new \App\Analytics\CampaignSchema($this->database)->ensure();
         new ContactSchema($this->database)->ensure();
         new LexiconCacheSchema($this->database)->ensure();
         new PetitionSchema($this->database)->ensure();

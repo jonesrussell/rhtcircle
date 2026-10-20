@@ -35,7 +35,7 @@
   <section class="anokii-hero">
     <h1>Analytics</h1>
     <div class="mean">{{ range.from }} to {{ range.to }}</div>
-    <p>First-party, cookie-less analytics. No personal data stored; visitors are counted by a daily-rotating salted hash. No third party, no ad-tech.</p>
+    <p>First-party analytics without analytics cookies or third-party pixels. Visitor estimates use a daily-rotating salted hash, so the same person on different days can be counted again. Date ranges use UTC.</p>
   </section>
 
   <form method="get" class="rng">
@@ -47,8 +47,26 @@
   <h2 class="anokii-h2">Totals</h2>
   <div class="anokii-stats big">
     <div class="anokii-stat"><b>Pageviews</b><span>{{ report.totals.views }}</span></div>
-    <div class="anokii-stat"><b>Visitors</b><span>{{ report.totals.visitors }}</span></div>
+    <div class="anokii-stat"><b>Daily visitor estimates</b><span>{{ report.totals.visitors }}</span></div>
   </div>
+
+  <h2 class="anokii-h2">Shared campaigns and contact messages</h2>
+  <p>Counts begin with the October 20, 2026 update. A tagged visit can carry its campaign to the contact form in the same tab for 30 minutes. Only messages successfully saved by the server count. Privacy opt-outs and blocked scripts are not tracked. Release-check events are excluded here.</p>
+  <div class="anokii-stats big">
+    <div class="anokii-stat"><b>Tracked messages saved</b><span>{{ report.campaign_tracking.contacts }}</span></div>
+    <div class="anokii-stat"><b>Without campaign attribution</b><span>{{ report.campaign_tracking.unattributed_contacts }}</span></div>
+  </div>
+  <div class="anokii-scroll anokii-card" style="padding:8px 14px">
+    <table class="anokii-table">
+      <thead><tr><th>Shared link</th><th>Guide landings</th><th>Messages saved</th></tr></thead>
+      <tbody>
+        {% for row in report.campaign_tracking.campaigns %}
+          <tr><td>{{ row.label }}</td><td>{{ row.landings }}</td><td>{{ row.contacts }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p>These are visits and messages, not unique people or verified candidate platforms. The link tag identifies the shared link, including reshares; it cannot prove which Facebook post or group the reader saw. Message contents and contact details stay in the private inbox.</p>
 
   <h2 class="anokii-h2">Pages</h2>
   <div class="anokii-scroll anokii-card" style="padding:8px 14px">

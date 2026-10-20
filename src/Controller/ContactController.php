@@ -84,6 +84,10 @@ final class ContactController
             message: $message,
             ip: $request->getClientIp(),
             userAgent: $request->headers->get('User-Agent'),
+            trackConversion: ($data['analytics_enabled'] ?? false) === true
+                && \App\Analytics\TrackingPreference::allows($request)
+                && !\App\Analytics\AnalyticsRecorder::isBot($request->headers->get('User-Agent')),
+            campaign: \App\Analytics\CampaignRegistry::known($data['campaign'] ?? null),
         );
 
         return new JsonResponse(['ok' => true]);

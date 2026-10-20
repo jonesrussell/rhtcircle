@@ -38,7 +38,7 @@ final class AnalyticsRecorder
             return false;
         }
 
-        if ($userAgent !== null && $userAgent !== '' && preg_match(self::BOT_PATTERN, $userAgent) === 1) {
+        if (self::isBot($userAgent)) {
             return false;
         }
 
@@ -83,7 +83,16 @@ final class AnalyticsRecorder
             $row,
         );
 
+        if ($type === 'pageview') {
+            (new CampaignAnalytics($this->db))->landing($beacon['campaign'] ?? null, $viewId, $path);
+        }
+
         return true;
+    }
+
+    public static function isBot(?string $userAgent): bool
+    {
+        return $userAgent !== null && preg_match(self::BOT_PATTERN, $userAgent) === 1;
     }
 
     private function visitorHash(?string $ip, ?string $userAgent): string

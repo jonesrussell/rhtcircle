@@ -36,17 +36,30 @@ final class ContactRepository
         string $message,
         ?string $ip,
         ?string $userAgent,
+        bool $trackConversion = false,
+        ?string $campaign = null,
     ): int {
         $kind = in_array($kind, self::KINDS, true) ? $kind : 'other';
-        return (int) $this->db->insert(ContactSchema::TABLE)->values([
-            'name' => $name,
-            'email' => $email,
-            'kind' => $kind,
-            'message' => $message,
-            'created_at' => $this->now(),
-            'ip_hash' => $this->hash($ip),
-            'user_agent_hash' => $this->hash($userAgent),
-        ])->execute();
+        $transaction = $this->db->transaction('contact_submission');
+        try {
+            $id = (int) $this->db->insert(ContactSchema::TABLE)->values([
+                'name' => $name,
+                'email' => $email,
+                'kind' => $kind,
+                'message' => $message,
+                'created_at' => $this->now(),
+                'ip_hash' => $this->hash($ip),
+                'user_agent_hash' => $this->hash($userAgent),
+            ])->execute();
+            if ($trackConversion) {
+                (new \App\Analytics\CampaignAnalytics($this->db))->contactSaved($campaign);
+            }
+            $transaction->commit();
+            return $id;
+        } catch (\Throwable $error) {
+            $transaction->rollBack();
+            throw $error;
+        }
     }
 
     public function tooManyFromIp(?string $ip): bool

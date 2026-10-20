@@ -23,7 +23,8 @@ final class AnalyticsReport
      *   pages: list<array{path:string, views:int, visitors:int, avg_scroll:float, avg_dwell_ms:float}>,
      *   referrers: list<array{host:string, count:int}>,
      *   devices: list<array{device:string, count:int}>,
-     *   from:string, to:string
+     *   from:string, to:string,
+     *   campaign_tracking:array{campaigns:list<array<string,mixed>>, contacts:int, unattributed_contacts:int}
      * }
      */
     public function summary(string $fromDate, string $toDate): array
@@ -105,6 +106,7 @@ final class AnalyticsReport
             'devices' => $devices,
             'from' => $fromDate,
             'to' => $toDate,
+            'campaign_tracking' => (new CampaignAnalytics($this->db))->summary($fromDate, $toDate),
         ];
     }
 

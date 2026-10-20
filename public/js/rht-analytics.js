@@ -16,10 +16,64 @@
   // without the furniture bar.
   var ARTICLE_RE = /^\/(treaty|communities|land|standard|safety|circle|about|treaty-wide)(\/|$)/;
 
-  var dnt =
-    navigator.doNotTrack === '1' ||
-    window.doNotTrack === '1' ||
-    navigator.globalPrivacyControl === true;
+  function optedOut() {
+    return navigator.doNotTrack === '1' ||
+      window.doNotTrack === '1' ||
+      navigator.globalPrivacyControl === true;
+  }
+  var dnt = optedOut();
+  var campaignStorageKey = 'rht-campaign';
+  var campaignLifetime = 30 * 60 * 1000;
+  var campaigns = {};
+  var campaignVisit = null;
+  try {
+    campaigns = JSON.parse(document.currentScript.getAttribute('data-campaigns') || '{}');
+  } catch (e) { /* Missing configuration means no campaign attribution. */ }
+  function clearCampaign() {
+    campaignVisit = null;
+    try { sessionStorage.removeItem(campaignStorageKey); } catch (e) { /* unavailable */ }
+  }
+  function currentCampaign() {
+    if (optedOut()) { clearCampaign(); return ''; }
+    if (!campaignVisit || !Object.prototype.hasOwnProperty.call(campaigns, campaignVisit.key) ||
+        typeof campaignVisit.expires !== 'number' || campaignVisit.expires <= Date.now() ||
+        campaignVisit.expires > Date.now() + campaignLifetime) {
+      clearCampaign();
+      return '';
+    }
+    return campaignVisit.key;
+  }
+  if (!dnt) {
+    try { campaignVisit = JSON.parse(sessionStorage.getItem(campaignStorageKey)); } catch (e) { /* unavailable */ }
+    var params = new URLSearchParams(location.search);
+    var hasCampaign = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content']
+      .some(function (key) { return params.has(key); });
+    if (hasCampaign) {
+      clearCampaign();
+      Object.keys(campaigns).some(function (key) {
+        var entry = campaigns[key];
+        var matches = location.pathname === entry.path &&
+          ['source', 'medium', 'campaign', 'content'].every(function (field) {
+            return params.getAll('utm_' + field).length === 1 &&
+              params.get('utm_' + field) === entry[field];
+          });
+        if (!matches) return false;
+        campaignVisit = { key: key, expires: Date.now() + campaignLifetime };
+        try { sessionStorage.setItem(campaignStorageKey, JSON.stringify(campaignVisit)); } catch (e) { /* in-page only */ }
+        return true;
+      });
+    }
+  } else {
+    clearCampaign();
+  }
+  // Only a registered campaign key is carried to the form. No contact fields,
+  // raw query strings, click IDs, or visitor IDs enter this context.
+  window.rhtAnalytics = {
+    contactContext: function () {
+      var campaign = currentCampaign();
+      return { analytics_enabled: !optedOut(), campaign: campaign };
+    }
+  };
 
   // ---------------------------------------------------------------------------
   // Tracking beacons (skipped under Do Not Track)
@@ -35,6 +89,7 @@
     var ticking = false;
 
     var send = function (payload) {
+      if (optedOut()) { clearCampaign(); return; }
       try {
         fetch('/api/collect', {
           method: 'POST',
@@ -48,7 +103,7 @@
       }
     };
 
-    send({ t: 'pageview', p: location.pathname, r: document.referrer || '', v: viewId });
+    send({ t: 'pageview', p: location.pathname, r: document.referrer || '', v: viewId, campaign: currentCampaign() });
 
     var computeScroll = function () {
       ticking = false;
@@ -83,6 +138,7 @@
     computeScroll();
 
     var sendEngagement = function () {
+      if (optedOut()) { clearCampaign(); return; }
       if (sent) return;
       sent = true;
       var json = JSON.stringify({

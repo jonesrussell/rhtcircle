@@ -28,6 +28,7 @@ final class CollectController
         if (
             $raw !== '' && strlen($raw) <= self::MAX_BODY_BYTES
             && $this->originAllowed($request)
+            && \App\Analytics\TrackingPreference::allows($request)
         ) {
             $data = json_decode($raw, true);
             if (is_array($data)) {
