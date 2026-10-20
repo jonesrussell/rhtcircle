@@ -644,7 +644,14 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
         $internalFieldReader = $this->resolve(\Waaseyaa\Access\User\UserInternalFieldReaderInterface::class);
         \assert($internalFieldReader instanceof \Waaseyaa\Access\User\UserInternalFieldReaderInterface);
 
-        $admin = new AdminController($entityTypeManager, $database, $report, $renderer, $internalFieldReader);
+        $principals = $this->resolve(\Waaseyaa\Access\AccountPrincipalFactoryInterface::class);
+        \assert($principals instanceof \Waaseyaa\Access\AccountPrincipalFactoryInterface);
+        $profiles = $this->resolve(\Waaseyaa\Access\User\UserSelfProfileReaderInterface::class);
+        \assert($profiles instanceof \Waaseyaa\Access\User\UserSelfProfileReaderInterface);
+        $auth = $this->resolve(\Waaseyaa\Auth\AuthManager::class);
+        \assert($auth instanceof \Waaseyaa\Auth\AuthManager);
+
+        $admin = new AdminController($entityTypeManager, $database, $report, $renderer, new \Anokii\Access\AccountBoundary($principals, $profiles), $principals, $internalFieldReader);
 
         // Login surface from the shared package (Anokii\Dashboard\AdminLoginController),
         // branded for rhtcircle and gating on the package admin permission. Replaces
@@ -664,6 +671,9 @@ final class AppServiceProvider extends ServiceProvider implements ProvidesRolesI
                 backLabel: 'Back to the public site',
             ),
             $internalFieldReader,
+            new \Anokii\Auth\LoginThrottle(new \Waaseyaa\Auth\DatabaseRateLimiter($database)),
+            $auth,
+            $principals,
             '/admin',
         );
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "86c121a9faf18c9c9e648eb333d2754a",
+    "content-hash": "79029cbd6159d673226d95a149b88daf",
     "packages": [
         {
             "name": "deployer/deployer",
@@ -1782,16 +1782,16 @@
         },
         {
             "name": "symfony/expression-language",
-            "version": "v7.4.18",
+            "version": "v7.4.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/expression-language.git",
-                "reference": "b73866506ff02800836a40fa1f95614a71064f35"
+                "reference": "51c52817a02119ecd46a3369a2b38fc7f24dbf5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/expression-language/zipball/b73866506ff02800836a40fa1f95614a71064f35",
-                "reference": "b73866506ff02800836a40fa1f95614a71064f35",
+                "url": "https://api.github.com/repos/symfony/expression-language/zipball/51c52817a02119ecd46a3369a2b38fc7f24dbf5e",
+                "reference": "51c52817a02119ecd46a3369a2b38fc7f24dbf5e",
                 "shasum": ""
             },
             "require": {
@@ -1826,7 +1826,7 @@
             "description": "Provides an engine that can compile and evaluate expressions",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/expression-language/tree/v7.4.18"
+                "source": "https://github.com/symfony/expression-language/tree/v7.4.21"
             },
             "funding": [
                 {
@@ -1846,7 +1846,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-30T00:47:26+00:00"
+            "time": "2026-10-09T13:57:53+00:00"
         },
         {
             "name": "symfony/finder",
@@ -4107,21 +4107,21 @@
         },
         {
             "name": "waaseyaa/anokii",
-            "version": "v0.1.0-alpha.13",
+            "version": "v0.1.0-alpha.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/waaseyaa/anokii.git",
-                "reference": "a7b02fc17c1b2ad6c30ed5f1152ec01b52f34344"
+                "reference": "4fb56033226dad35b5a16aa0aea8f463b27000dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/waaseyaa/anokii/zipball/a7b02fc17c1b2ad6c30ed5f1152ec01b52f34344",
-                "reference": "a7b02fc17c1b2ad6c30ed5f1152ec01b52f34344",
+                "url": "https://api.github.com/repos/waaseyaa/anokii/zipball/4fb56033226dad35b5a16aa0aea8f463b27000dc",
+                "reference": "4fb56033226dad35b5a16aa0aea8f463b27000dc",
                 "shasum": ""
             },
             "require": {
                 "symfony/yaml": "^7.0",
-                "waaseyaa/full": "^0.1.0-alpha.276"
+                "waaseyaa/full": "^0.1.0-alpha.305"
             },
             "require-dev": {
                 "phpunit/phpunit": "^13.2"
@@ -4148,9 +4148,9 @@
             "description": "Anokii, the first opinionated distribution built on Waaseyaa. Sovereign workspace for First Nations. OCAP-by-architecture. Working name pending language-keeper verification.",
             "support": {
                 "issues": "https://github.com/waaseyaa/anokii/issues",
-                "source": "https://github.com/waaseyaa/anokii/tree/v0.1.0-alpha.13"
+                "source": "https://github.com/waaseyaa/anokii/tree/v0.1.0-alpha.14"
             },
-            "time": "2026-07-27T18:28:14+00:00"
+            "time": "2026-10-20T16:30:34+00:00"
         },
         {
             "name": "waaseyaa/api",

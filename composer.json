@@ -8,7 +8,7 @@
         "ext-pdo_sqlite": "*",
         "ext-sqlite3": "*",
         "symfony/dotenv": "^8.0",
-        "waaseyaa/anokii": "^0.1.0-alpha.13",
+        "waaseyaa/anokii": "0.1.0-alpha.14",
         "waaseyaa/framework": "0.1.0-alpha.305",
         "waaseyaa/mcp": "0.1.0-alpha.305"
     },

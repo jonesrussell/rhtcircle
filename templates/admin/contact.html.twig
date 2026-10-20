@@ -1,7 +1,7 @@
 {#
-  Contact messages, rendered inside the shared Anokii shell. No mailer is wired
-  yet, so messages submitted at /contact are stored on the Circle's database and
-  listed here for a member to act on. Context: messages (recent rows), total,
+  Contact messages, rendered inside the shared Anokii shell. Messages submitted
+  at /contact are stored on the Circle's database and reviewed here.
+  Context: messages (recent rows), total,
   plus the AdminShell context.
 #}
 {% extends "anokii/admin/_base.html.twig" %}
@@ -20,7 +20,7 @@
 
 {% block admin_content %}
   <h1>Contact messages</h1>
-  <p class="cm-note">No email notifications are wired yet (the Circle has no mailer configured). Messages from the public contact form are stored here, newest first. Reply from the email shown. Showing the {{ messages|length }} most recent of {{ total }} total.</p>
+  <p class="cm-note">Messages from the public contact form appear here, newest first. Use the sender's email address to reply. Showing the {{ messages|length }} most recent of {{ total }} total.</p>
 
   {% if messages is empty %}
     <p class="cm-empty">No messages yet.</p>

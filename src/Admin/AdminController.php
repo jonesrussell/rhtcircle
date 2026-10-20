@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Admin;
 
+use Anokii\Access\AccountBoundary;
 use Anokii\Access\AdminRoles;
 use Anokii\Admin\AdminData;
 use Anokii\Admin\AdminModules;
@@ -14,6 +15,7 @@ use App\Rendering\SiteRenderer;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Waaseyaa\Access\AccountPrincipalFactoryInterface;
 use Waaseyaa\Database\DatabaseInterface;
 use Waaseyaa\Entity\EntityTypeManager;
 
@@ -47,9 +49,11 @@ final class AdminController extends DashboardGate
         private readonly DatabaseInterface $db,
         private readonly AnalyticsReport $report,
         private readonly SiteRenderer $renderer,
+        private readonly AccountBoundary $accounts,
+        AccountPrincipalFactoryInterface $principals,
         ?\Waaseyaa\Access\User\UserInternalFieldReaderInterface $internalFieldReader = null,
     ) {
-        parent::__construct($entityTypeManager, $internalFieldReader);
+        parent::__construct($entityTypeManager, $internalFieldReader, $principals);
     }
 
     protected function loginPath(): string
@@ -108,7 +112,7 @@ final class AdminController extends DashboardGate
         ]));
     }
 
-    /** Contact messages from the public /contact form (no mailer wired yet). */
+    /** Contact messages from the public form, reviewed directly in this inbox. */
     public function contact(Request $request, \App\Contact\ContactRepository $contact): Response
     {
         $gate = $this->guard($request);
@@ -164,9 +168,10 @@ final class AdminController extends DashboardGate
     private function shell(string $active, array $extra = []): array
     {
         $user = $this->currentUser();
+        \assert($user !== null);
 
         return AdminShell::context(
-            $user,
+            $this->accounts->identity($user),
             $active,
             AdminModules::sharedGraph(),
             [
