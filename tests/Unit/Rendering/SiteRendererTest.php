@@ -133,8 +133,8 @@ final class SiteRendererTest extends TestCase
         ));
         self::assertSame($expectedTiles, substr_count($html, '<a class="tile-card'));
         self::assertStringContainsString('/communities/sagamok/member-election-law', $html);
-        self::assertStringContainsString('/news/sagamok-trespass-bylaw-session-was-backwards', $html);
-        self::assertStringContainsString('/news/sagamok-south-market-land-deal', $html);
+        self::assertStringNotContainsString('/news/sagamok-trespass-bylaw-session-was-backwards', $html);
+        self::assertStringNotContainsString('/news/sagamok-south-market-land-deal', $html);
         self::assertStringContainsString('Back to the Sagamok community page', $html);
         self::assertMatchesRegularExpression(
             '~<main id="main">\s*<div class="wrap wrap--wide">~',
@@ -306,6 +306,9 @@ final class SiteRendererTest extends TestCase
     {
         $articles = [];
         foreach (ArticleSeedData::all(\dirname(__DIR__, 3)) as $seed) {
+            if (in_array($seed['slug'], ArticleSeedData::unpublishedSlugs(), true)) {
+                continue;
+            }
             $articles[] = $this->articleView($seed);
         }
 

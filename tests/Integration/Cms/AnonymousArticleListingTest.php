@@ -109,13 +109,13 @@ final class AnonymousArticleListingTest extends TestCase
 
         $news = $this->request('/news');
         self::assertSame(200, $news->getStatusCode());
-        self::assertStringContainsString('/news/sagamok-trespass-bylaw-session-was-backwards', (string) $news->getContent());
-        self::assertStringContainsString('/news/sagamok-south-market-land-deal', (string) $news->getContent());
+        self::assertStringNotContainsString('/news/sagamok-trespass-bylaw-session-was-backwards', (string) $news->getContent());
+        self::assertStringContainsString('/news/inside-sagamoks-gr-truss-deal', (string) $news->getContent());
 
         $hub = $this->request('/communities/sagamok/accountability');
         self::assertSame(200, $hub->getStatusCode());
-        self::assertStringContainsString('/news/sagamok-trespass-bylaw-session-was-backwards', (string) $hub->getContent());
-        self::assertStringContainsString('/news/sagamok-south-market-land-deal', (string) $hub->getContent());
+        self::assertStringNotContainsString('/news/sagamok-trespass-bylaw-session-was-backwards', (string) $hub->getContent());
+        self::assertStringContainsString('/news/inside-sagamoks-gr-truss-deal', (string) $hub->getContent());
         self::assertStringContainsString('/communities/sagamok/members-first-plan', (string) $hub->getContent());
 
         $plan = $this->request('/communities/sagamok/members-first-plan');
@@ -148,6 +148,38 @@ final class AnonymousArticleListingTest extends TestCase
         self::assertStringContainsString('id="part11"', (string) $law->getContent());
         self::assertStringContainsString('id="changelog"', (string) $law->getContent());
         self::assertStringNotContainsString('<iframe', (string) $law->getContent());
+    }
+
+    public function testWithdrawnContentStaysStoredAndUnavailableAfterRepeatedSeeding(): void
+    {
+        $this->runCli('app:cms-migrate-articles');
+        $kernel = new HttpKernel($this->projectRoot);
+        $this->kernels[] = $kernel;
+        $kernel->bootForCli();
+        $nodes = $kernel->getEntityTypeManager()->getRepository('node');
+        $paths = [
+            '/live',
+            '/communities/sagamok/it-accountability',
+            '/communities/sagamok/members-website-issue',
+            '/communities/sagamok/where-your-data-lives',
+        ];
+        foreach (\App\Cms\ArticleSeedData::unpublishedSlugs() as $slug) {
+            $stored = $nodes->findBy(['type' => 'article', 'slug' => $slug], limit: 1);
+            self::assertCount(1, $stored, $slug);
+            self::assertFalse((bool) $stored[0]->get('status'), $slug);
+            self::assertNotEmpty($stored[0]->get('body_html'), $slug);
+            $paths[] = '/news/' . $slug;
+        }
+        foreach ($paths as $path) {
+            self::assertSame(404, $this->request($path)->getStatusCode(), $path);
+        }
+        foreach (['/', '/news', '/communities/sagamok/accountability', '/sitemap.xml'] as $index) {
+            $response = $this->request($index);
+            self::assertSame(200, $response->getStatusCode(), $index);
+            foreach ($paths as $path) {
+                self::assertStringNotContainsString($path, (string) $response->getContent(), $index);
+            }
+        }
     }
 
     public function testOperationalPipelineRecordsRemainDeniedToAnonymousReaders(): void

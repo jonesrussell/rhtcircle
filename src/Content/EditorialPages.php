@@ -11,12 +11,6 @@ final class EditorialPages
     public static function routes(): array
     {
         return [
-            // Member-run live stream of the July 23, 2026 Sagamok members'
-            // meeting. Top-level /live so the URL can be said out loud in the
-            // room; the Twitch channel embed is permanent, so the page works
-            // before, during, and after the broadcast.
-            'live' => ['/live', 'pages/live.html.twig'],
-
             // The Treaty: orientation pillar. The four-part annuity explainer and
             // its distribution-models companion migrated here from /treaty-wide
             // (301s below); fixed-content pages, no context needed.
@@ -89,8 +83,6 @@ final class EditorialPages
             'sagamok-members-first-plan-scorecard' => ['/communities/sagamok/members-first-plan/scorecard', 'pages/communities/sagamok/members-first-plan/scorecard.html.twig'],
             'sagamok-members-first-plan-sources' => ['/communities/sagamok/members-first-plan/source-record', 'pages/communities/sagamok/members-first-plan/source-record.html.twig'],
             'sagamok-how-organized' => ['/communities/sagamok/how-its-organized', 'pages/communities/sagamok/how-its-organized.html.twig'],
-            'sagamok-members-website-issue' => ['/communities/sagamok/members-website-issue', 'pages/communities/sagamok/members-website-issue.html.twig'],
-            'sagamok-where-your-data-lives' => ['/communities/sagamok/where-your-data-lives', 'pages/communities/sagamok/where-your-data-lives.html.twig'],
             'sagamok-long-term-care' => ['/communities/sagamok/long-term-care', 'pages/communities/sagamok/long-term-care.html.twig'],
             'sagamok-gr-truss' => ['/communities/sagamok/gr-truss', 'pages/communities/sagamok/gr-truss.html.twig'],
             'sagamok-play-limited-partnership' => ['/communities/sagamok/play-limited-partnership', 'pages/communities/sagamok/play-limited-partnership.html.twig'],
@@ -109,10 +101,6 @@ final class EditorialPages
             // planned interactive data hub for this section (see the
             // "companion tools" note in the build history for this page).
             'sagamok-conflict-register' => ['/communities/sagamok/conflict-register', 'pages/communities/sagamok/conflict-register.html.twig'],
-            // A member's record (Russell Jones): the members-only portal
-            // exposure, its capture in the public Internet Archive, and what
-            // is being asked of Council. Companion to members-website-issue.
-            'sagamok-it-accountability' => ['/communities/sagamok/it-accountability', 'pages/communities/sagamok/it-accountability.html.twig'],
             // Public-records kit: eleven member-compiled cards (image + ready
             // caption), built from public sources only, for members to copy
             // and post themselves.

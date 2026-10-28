@@ -206,7 +206,13 @@ final class ArticleSeedData
      */
     public static function unpublishedSlugs(): array
     {
-        return [];
+        return [
+            'sagamok-membership-did-not-begin-with-the-list',
+            'sagamok-trespass-bylaw-session-was-backwards',
+            'sagamok-south-market-land-deal',
+            'sagamok-membership-before-trespass',
+            'waasmoowin-deal-public-record',
+        ];
     }
 
     /**
@@ -216,11 +222,7 @@ final class ArticleSeedData
      */
     public static function publicationRefreshSlugs(): array
     {
-        return [
-            'waasmoowin-deal-public-record',
-            'sagamok-trespass-bylaw-session-was-backwards',
-            'sagamok-membership-did-not-begin-with-the-list',
-        ];
+        return [];
     }
 
     /**

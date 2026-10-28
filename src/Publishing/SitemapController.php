@@ -52,8 +52,6 @@ final readonly class SitemapController
         '/communities/zhiibaahaasing',
         '/communities/sagamok/awaiting-council',
         '/communities/sagamok/how-its-organized',
-        '/communities/sagamok/members-website-issue',
-        '/communities/sagamok/where-your-data-lives',
         '/communities/sagamok/long-term-care',
         '/communities/sagamok/member-election-law',
         '/community-life/indigenous-baseball-league',

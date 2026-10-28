@@ -135,14 +135,6 @@ final class CommunityHub
             ],
             [
                 'feature' => true,
-                'tag' => "A member's record",
-                'title' => 'IT accountability: what is being asked of Council',
-                'desc' => 'The gated members portal, once left open, is now confirmed captured in the public Internet Archive, permanently. What members were told, the pattern, and what is being asked of Council.',
-                'go' => 'Read the record',
-                'href' => '/communities/sagamok/it-accountability',
-            ],
-            [
-                'feature' => true,
                 'tag' => 'New, growing list',
                 'title' => 'Questions awaiting an answer',
                 'desc' => 'A living record of member questions to Chief and Council and the offices, still awaiting a reply, with the date asked and the status. Silence is its own answer.',
@@ -174,20 +166,6 @@ final class CommunityHub
                 'desc' => 'Governance, administration, and the enterprises, mapped in plain terms so the questions have somewhere to land.',
                 'go' => 'See the guide',
                 'href' => '/communities/sagamok/how-its-organized',
-            ],
-            [
-                'tag' => 'Reported, partially resolved',
-                'title' => 'The members website issue',
-                'desc' => 'A responsible disclosure of a members-portal exposure. The live site was fixed, but the gated area is confirmed captured in the public Internet Archive, permanently.',
-                'go' => 'Read what happened',
-                'href' => '/communities/sagamok/members-website-issue',
-            ],
-            [
-                'tag' => 'A member explainer',
-                'title' => 'Where your data actually lives',
-                'desc' => 'In plain terms: the US platforms the Nation\'s site runs on, where member data goes, which laws can reach it, and what data sovereignty really means.',
-                'go' => 'Read the explainer',
-                'href' => '/communities/sagamok/where-your-data-lives',
             ],
             [
                 'tag' => 'Questions for Chief and Council',

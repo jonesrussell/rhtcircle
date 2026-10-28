@@ -83,14 +83,17 @@ final class NewsFeedTest extends TestCase
         self::assertSame('/communities/sagamok/accountability', $context['transparency'][0]['href']);
     }
 
-    public function testDedicatedSagamokAccountabilityHubKeepsEveryWorkedResource(): void
+    public function testDedicatedSagamokAccountabilityHubKeepsPublishedResources(): void
     {
         $articles = array_map(
             static fn (array $article): array => $article + [
                 'href' => '/news/' . $article['slug'],
                 'action' => $article['action_label'],
             ],
-            ArticleSeedData::all(\dirname(__DIR__, 3)),
+            array_values(array_filter(
+                ArticleSeedData::all(\dirname(__DIR__, 3)),
+                static fn (array $article): bool => !in_array($article['slug'], ArticleSeedData::unpublishedSlugs(), true),
+            )),
         );
         $groups = SagamokAccountabilityHub::groups(
             ['total' => 40, 'online' => 11, 'paper' => 29],
@@ -99,18 +102,18 @@ final class NewsFeedTest extends TestCase
 
         self::assertSame(['open-questions', 'follow-the-record', 'member-proposals', 'member-tools'], array_column($groups, 'id'));
         $hrefs = array_merge(...array_map(static fn (array $group): array => array_column($group['cards'], 'href'), $groups));
-        self::assertGreaterThanOrEqual(25, count($hrefs));
+        self::assertGreaterThanOrEqual(17, count($hrefs));
         self::assertSame(count($hrefs), count(array_unique($hrefs)));
         self::assertContains(
             '/communities/sagamok/members-first-plan',
             array_column($groups[2]['cards'], 'href'),
         );
         $followTheRecord = $groups[1]['cards'];
-        self::assertContains(
+        self::assertNotContains(
             '/news/sagamok-trespass-bylaw-session-was-backwards',
             array_column($followTheRecord, 'href'),
         );
-        self::assertContains(
+        self::assertNotContains(
             '/news/sagamok-south-market-land-deal',
             array_column($followTheRecord, 'href'),
         );
@@ -124,9 +127,8 @@ final class NewsFeedTest extends TestCase
         self::assertContains('waasmoowin-deal-public-record', array_column($seeds, 'slug'));
         self::assertContains('sagamok-south-market-land-deal', array_column($seeds, 'slug'));
         self::assertContains('sagamok-trespass-bylaw-session-was-backwards', array_column($seeds, 'slug'));
-        self::assertNotContains('waasmoowin-deal-public-record', ArticleSeedData::unpublishedSlugs());
-        self::assertContains('waasmoowin-deal-public-record', ArticleSeedData::publicationRefreshSlugs());
-        self::assertContains('sagamok-membership-did-not-begin-with-the-list', ArticleSeedData::publicationRefreshSlugs());
+        self::assertContains('waasmoowin-deal-public-record', ArticleSeedData::unpublishedSlugs());
+        self::assertSame([], array_intersect(ArticleSeedData::unpublishedSlugs(), ArticleSeedData::publicationRefreshSlugs()));
         self::assertContains('aging-well-starts-before-long-term-care', ArticleSeedData::metadataRefreshSlugs());
     }
 }

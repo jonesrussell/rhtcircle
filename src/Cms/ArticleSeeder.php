@@ -86,6 +86,9 @@ final class ArticleSeeder
 
         $published = 0;
         foreach (ArticleSeedData::publicationRefreshSlugs() as $slug) {
+            if (in_array($slug, ArticleSeedData::unpublishedSlugs(), true)) {
+                continue;
+            }
             $node = $existing[$slug] ?? null;
             $article = $articlesBySlug[$slug] ?? null;
             if ($node === null || $article === null) {
@@ -160,7 +163,7 @@ final class ArticleSeeder
             $createdAt = strtotime((string) $article['date_iso'] . ' 12:00:00 UTC');
             $node = new Node($article + [
                 'type' => ArticleFields::BUNDLE,
-                'status' => true,
+                'status' => !in_array($slug, ArticleSeedData::unpublishedSlugs(), true),
                 'created' => $createdAt === false ? time() : $createdAt,
                 'changed' => $createdAt === false ? time() : $createdAt,
             ]);
