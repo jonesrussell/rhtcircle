@@ -164,9 +164,9 @@ final class AnonymousArticleListingTest extends TestCase
             '/communities/sagamok/where-your-data-lives',
         ];
         foreach (\App\Cms\ArticleSeedData::unpublishedSlugs() as $slug) {
-            $stored = $nodes->findBy(['type' => 'article', 'slug' => $slug], limit: 1);
+            $stored = $nodes->findBy(['type' => 'article', 'slug' => $slug, 'status' => false], limit: 1);
             self::assertCount(1, $stored, $slug);
-            self::assertFalse((bool) $stored[0]->get('status'), $slug);
+            self::assertSame([], $nodes->findBy(['type' => 'article', 'slug' => $slug, 'status' => true]));
             self::assertNotEmpty($stored[0]->get('body_html'), $slug);
             $paths[] = '/news/' . $slug;
         }
