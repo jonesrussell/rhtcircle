@@ -75,6 +75,7 @@ const overrides = {
 // the 'pages/' prefix and '.html.twig' stripped.
 const routeOverrides = {
   'pages/home.html.twig': '/',
+  'pages/election-2026.html.twig': '/elections/sables-spanish-rivers-2026',
   'pages/communities/sagamok/account-or-resign.html.twig': '/communities/sagamok/member-accountability-resolution',
 };
 
@@ -82,7 +83,6 @@ const routeOverrides = {
 // are partials, admin views, or per-entity shells rendered many times with
 // dynamic data (their {% block title %} is a Twig variable, not a real page).
 const ignoreTemplatePatterns = [
-  /^pages\/election-2026\.html\.twig$/,      // authored share image; see docs/election-share-tracking-2026-10-20.md
   /^_/,                                   // leading underscore = partial convention
   /^admin\//,                             // admin views - internal, not socially shared
   /^layouts\//,                           // inherited shells, not standalone routes

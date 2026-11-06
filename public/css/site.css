@@ -1505,6 +1505,10 @@ li { margin: 0 0 9px; }
 .election-guide thead { background: var(--paper-2); }
 @media (max-width: 600px) { .election-guide table { min-width: 530px; } }
 
+.election-results table { min-width: 0; margin-block: 24px; }
+.election-results th:nth-child(2), .election-results td:nth-child(2) { text-align: right; font-variant-numeric: tabular-nums; }
+.election-results td:last-child { white-space: nowrap; }
+
 .election-at-a-glance { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; background: var(--paper-2); padding: 28px; margin-top: 28px; }
 .election-at-a-glance strong { display: block; color: var(--indigo-deep); font: 600 clamp(23px, 3vw, 32px)/1.2 var(--serif); }
 .election-at-a-glance span { display: block; font-size: var(--fs-small); margin-top: 8px; }
